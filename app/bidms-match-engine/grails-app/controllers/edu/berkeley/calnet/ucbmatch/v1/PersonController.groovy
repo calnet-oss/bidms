@@ -4,11 +4,19 @@ import grails.converters.JSON
 
 class PersonController {
 
-    static namespace = "v1"
+//    static namespace = "v1"
 
     def personService
 
     def index() {
         render personService.serviceMethod() as JSON
+    }
+
+    def putRequest() {
+
+    }
+
+    def deleteRequest() {
+
     }
 }
