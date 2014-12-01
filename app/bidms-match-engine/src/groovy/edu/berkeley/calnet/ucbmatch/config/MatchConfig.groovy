@@ -7,7 +7,8 @@ class MatchConfig {
     public static final VALID_MATCH_TYPES = [MATCH_TYPE_DISTANCE, MATCH_TYPE_EXACT]
     public static final String MATCH_TYPE_DISTANCE = 'distance'
     public static final String MATCH_TYPE_EXACT = 'exact'
-
+    // Todo: Read configuration
+    MatchReference matchReference
     List<MatchAttribute> matchAttributes = []
     List<List<String>> canonicalConfidences = []
     List<Map<String, String>> potentialConfidences = []
