@@ -1,0 +1,45 @@
+package edu.berkeley.calnet.ucbmatch
+
+import edu.berkeley.calnet.ucbmatch.database.Candidate
+import grails.test.mixin.TestFor
+import spock.lang.Specification
+/**
+ * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
+ */
+@TestFor(MatchService)
+class MatchServiceSpec extends Specification {
+
+    def setup() {
+        service.databaseService = Mock(DatabaseService)
+    }
+
+    def cleanup() {
+    }
+
+    @SuppressWarnings("GroovyAssignabilityCheck")
+    void "test findCandidates where canonical returns a match"() {
+        when:
+        service.findCandidates("sis","123",[a:"b"])
+
+        then:
+        1 * service.databaseService.searchDatabase("sis","123",[a:"b"],MatchType.CANONICAL) >> [new Candidate()]
+
+        and: "There are no other calls to the service"
+        0 * service._(*_)
+    }
+
+    @SuppressWarnings("GroovyAssignabilityCheck")
+    void "test findCandidates where canonical does not returns a match"() {
+        when:
+        service.findCandidates("sis","123",[a:"b"])
+
+        then:
+        1 * service.databaseService.searchDatabase("sis","123",[a:"b"],MatchType.CANONICAL) >> []
+        1 * service.databaseService.searchDatabase("sis","123",[a:"b"],MatchType.POTENTIAL) >> [new Candidate()]
+
+        and: "There are no other calls to the service"
+        0 * service._(*_)
+    }
+
+}
+
