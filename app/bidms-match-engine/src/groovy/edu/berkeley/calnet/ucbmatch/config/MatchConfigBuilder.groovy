@@ -6,6 +6,13 @@ class MatchConfigBuilder {
 
     private MatchAttribute matchAttribute
 
+    void referenceId(Closure closure) {
+        config.matchReference = new MatchReference()
+        closure.delegate = config.matchReference
+        closure.resolveStrategy = Closure.DELEGATE_ONLY
+        closure.call()
+    }
+
     void attributes(Closure closure) {
         closure.delegate = this
         closure.resolveStrategy = Closure.DELEGATE_ONLY

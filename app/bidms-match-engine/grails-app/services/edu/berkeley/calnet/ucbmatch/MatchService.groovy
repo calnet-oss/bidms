@@ -2,6 +2,7 @@ package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.InsertResult
+import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import edu.berkeley.calnet.ucbmatch.exceptions.RecordExistsException
 import grails.transaction.Transactional
 import groovy.sql.Sql

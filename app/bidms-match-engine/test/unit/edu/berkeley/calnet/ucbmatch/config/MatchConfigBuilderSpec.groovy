@@ -1,10 +1,33 @@
 package edu.berkeley.calnet.ucbmatch.config
 
+import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class MatchConfigBuilderSpec extends Specification {
     def sut = new MatchConfigBuilder()
+
+    def "test creating referenceId element"() {
+        setup:
+        def configClosure = {
+            referenceId {
+                idGenerator = NullIdGenerator
+                responseType = 'uid'
+            }
+        }
+        configClosure.resolveStrategy = Closure.DELEGATE_ONLY
+        configClosure.delegate = sut
+
+        expect:
+        sut.config.matchReference == null
+
+        when:
+        configClosure.call()
+
+        then:
+        sut.config.matchReference.idGenerator == NullIdGenerator
+        sut.config.matchReference.responseType == 'uid'
+    }
 
     def "test creating attributes in builder"() {
         setup:
