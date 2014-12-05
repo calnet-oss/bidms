@@ -43,6 +43,7 @@ class MatchConfigBuilderSpec extends Specification {
                     invalidates = true
                     search {
                         exact = true
+                        substring = true
                         distance = 3
                     }
                 }
@@ -68,6 +69,7 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributes[0].alphanumeric
         sut.config.matchAttributes[0].invalidates
         sut.config.matchAttributes[0].search.exact
+        sut.config.matchAttributes[0].search.substring
         sut.config.matchAttributes[0].search.distance == 3
         sut.config.matchAttributes[1].name == 'id'
         sut.config.matchAttributes[1].description == 'Other description'
