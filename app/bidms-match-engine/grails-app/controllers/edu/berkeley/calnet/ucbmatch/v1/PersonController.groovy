@@ -1,7 +1,10 @@
 package edu.berkeley.calnet.ucbmatch.v1
 
 import edu.berkeley.calnet.ucbmatch.command.SorAttributesCommand
+import edu.berkeley.calnet.ucbmatch.response.Response
 import grails.converters.JSON
+
+import javax.servlet.http.HttpServletResponse
 
 class PersonController {
 
@@ -11,29 +14,29 @@ class PersonController {
 
     def getPerson(String systemOfRecord, String identifier, SorAttributesCommand command) {
         def result = personService.matchPerson(systemOfRecord, identifier, command.sorAttributes, true)
-        if(response.hasProperty('result')) {
-            response.status = result.responseCode
-            render(response.result as JSON)
-        } else {
-            response.status = result.responseCode
-            render('')
-        }
+        renderResult(result)
     }
 
     def putPerson(String systemOfRecord, String identifier, SorAttributesCommand command) {
         def result = personService.matchPerson(systemOfRecord, identifier, command.sorAttributes)
-        if(response.hasProperty('result')) {
+        renderResult(result)
+        HttpServletResponse.SC_CONFLICT
+    }
+
+    def deletePerson() {
+
+    }
+
+
+    private void renderResult(Response result) {
+        if (result.record) {
             response.status = result.responseCode
-            render(response.result as JSON)
+            render(result.record as JSON)
         } else {
             response.status = result.responseCode
             render('')
         }
-
     }
 
-    def delete() {
-
-    }
 }
 

@@ -1,8 +1,9 @@
 package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
-import edu.berkeley.calnet.ucbmatch.database.InsertResult
+import edu.berkeley.calnet.ucbmatch.database.InsertRecord
 import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
+import edu.berkeley.calnet.ucbmatch.database.UpdateRecord
 import edu.berkeley.calnet.ucbmatch.exceptions.RecordExistsException
 import grails.transaction.Transactional
 import groovy.sql.Sql
@@ -23,8 +24,8 @@ class MatchService {
         return candidates
     }
 
-    InsertResult insertCandidate(String systemOfRecord, String identifier, Map sorAttributes, String referenceId = null, boolean assignNewId = false) {
-        def result = new InsertResult()
+    InsertRecord insertCandidate(String systemOfRecord, String identifier, Map sorAttributes, String referenceId = null, boolean assignNewId = false) {
+        def result = new InsertRecord()
         def idGenerator = getIdGenerator(assignNewId)
 
         def newRecordReferenceId = referenceId
@@ -48,8 +49,14 @@ class MatchService {
 //        if(matchConfig.matchReference.responseType) {
 //
 //        }
-        return new InsertResult(referenceId: "1234", identifiers: [new Identifier(type: "Enterprise", identifier: "abcd")] )
+        return new InsertRecord(referenceId: "1234", identifiers: [new Identifier(type: "Enterprise", identifier: "abcd")] )
     }
+
+    UpdateRecord updateCandidate(String systemOfRecord, String identifier, Map sorAttributes) {
+        null
+    }
+
+
 
     private getIdGenerator(boolean assignNewId) {
         if(assignNewId && matchConfig.matchReference.idGenerator) {
@@ -58,4 +65,6 @@ class MatchService {
             return NullIdGenerator
         }
     }
+
+
 }
