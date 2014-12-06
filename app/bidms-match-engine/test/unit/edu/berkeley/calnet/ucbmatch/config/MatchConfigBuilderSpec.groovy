@@ -36,7 +36,9 @@ class MatchConfigBuilderSpec extends Specification {
                 'sor' {
                     description = "Some description"
                     column = "columnName"
-                    attribute = "some:attribute"
+                    property = "systemOfRecord"
+                    path = "somePath"
+                    attribute = "someAttribute"
                     group = "groupName"
                     caseSensitive = true
                     alphanumeric = true
@@ -47,7 +49,7 @@ class MatchConfigBuilderSpec extends Specification {
                         distance = 3
                     }
                 }
-                'id' {
+                'sorid' {
                     description = "Other description"
                 }
             }
@@ -59,27 +61,29 @@ class MatchConfigBuilderSpec extends Specification {
         configClosure.call()
 
         then:
-        sut.config.matchAttributes.size() == 2
-        sut.config.matchAttributes[0].name == 'sor'
-        sut.config.matchAttributes[0].description == 'Some description'
-        sut.config.matchAttributes[0].column == 'columnName'
-        sut.config.matchAttributes[0].attribute == 'some:attribute'
-        sut.config.matchAttributes[0].group == 'groupName'
-        sut.config.matchAttributes[0].caseSensitive
-        sut.config.matchAttributes[0].alphanumeric
-        sut.config.matchAttributes[0].invalidates
-        sut.config.matchAttributes[0].search.exact
-        sut.config.matchAttributes[0].search.substring
-        sut.config.matchAttributes[0].search.distance == 3
-        sut.config.matchAttributes[1].name == 'id'
-        sut.config.matchAttributes[1].description == 'Other description'
-        !sut.config.matchAttributes[1].column
-        !sut.config.matchAttributes[1].attribute
-        !sut.config.matchAttributes[1].group
-        !sut.config.matchAttributes[1].caseSensitive
-        !sut.config.matchAttributes[1].alphanumeric
-        !sut.config.matchAttributes[1].invalidates
-        !sut.config.matchAttributes[1].search
+        sut.config.matchAttributeConfigs.size() == 2
+        sut.config.matchAttributeConfigs[0].name == 'sor'
+        sut.config.matchAttributeConfigs[0].description == 'Some description'
+        sut.config.matchAttributeConfigs[0].column == 'columnName'
+        sut.config.matchAttributeConfigs[0].property == 'systemOfRecord'
+        sut.config.matchAttributeConfigs[0].path == 'somePath'
+        sut.config.matchAttributeConfigs[0].attribute == 'someAttribute'
+        sut.config.matchAttributeConfigs[0].group == 'groupName'
+        sut.config.matchAttributeConfigs[0].caseSensitive
+        sut.config.matchAttributeConfigs[0].alphanumeric
+        sut.config.matchAttributeConfigs[0].invalidates
+        sut.config.matchAttributeConfigs[0].search.exact
+        sut.config.matchAttributeConfigs[0].search.substring
+        sut.config.matchAttributeConfigs[0].search.distance == 3
+        sut.config.matchAttributeConfigs[1].name == 'sorid'
+        sut.config.matchAttributeConfigs[1].description == 'Other description'
+        !sut.config.matchAttributeConfigs[1].column
+        !sut.config.matchAttributeConfigs[1].attribute
+        !sut.config.matchAttributeConfigs[1].group
+        !sut.config.matchAttributeConfigs[1].caseSensitive
+        !sut.config.matchAttributeConfigs[1].alphanumeric
+        !sut.config.matchAttributeConfigs[1].invalidates
+        !sut.config.matchAttributeConfigs[1].search
     }
 
     def "test when attributes is missing config closure"() {
@@ -201,8 +205,8 @@ class MatchConfigBuilderSpec extends Specification {
 
 
     void createAttributes() {
-        sut.config.matchAttributes = ['attr1', 'attr2', 'attr3'].collect {
-            new MatchAttribute(name: it)
+        sut.config.matchAttributeConfigs = ['attr1', 'attr2', 'attr3'].collect {
+            new MatchAttributeConfig(name: it)
         }
     }
 }

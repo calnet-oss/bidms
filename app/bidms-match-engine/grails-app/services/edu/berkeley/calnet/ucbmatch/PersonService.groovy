@@ -12,6 +12,7 @@ class PersonService {
     MatchService matchService
 
     Response matchPerson(String systemOfRecord, String identifier, Map sorAttributes, boolean readOnly = false) {
+
         List<Candidate> candidates = matchService.findCandidates(systemOfRecord, identifier, sorAttributes)
         if(!candidates) {
             log.debug("")

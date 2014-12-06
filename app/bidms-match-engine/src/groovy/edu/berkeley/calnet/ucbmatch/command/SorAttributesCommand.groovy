@@ -6,7 +6,6 @@ import groovy.transform.ToString
 @ToString(includeNames = true)
 @Validateable
 class SorAttributesCommand {
-
     Map sorAttributes
 
 

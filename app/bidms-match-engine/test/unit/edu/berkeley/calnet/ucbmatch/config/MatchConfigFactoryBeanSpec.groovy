@@ -27,7 +27,7 @@ class MatchConfigFactoryBeanSpec extends Specification {
         def matchConfig = MatchConfigFactoryBean.parseConfig(config)
 
         then:
-        matchConfig.matchAttributes.name == ['sor','name']
+        matchConfig.matchAttributeConfigs.name == ['sor','name']
         matchConfig.canonicalConfidences == [['sor'],['sor','name']]
         matchConfig.potentialConfidences == [[sor:'exact',name:'distance']]
     }

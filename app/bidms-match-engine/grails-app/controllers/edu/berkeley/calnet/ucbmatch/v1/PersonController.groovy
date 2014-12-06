@@ -13,6 +13,7 @@ class PersonController {
     def personService
 
     def getPerson(String systemOfRecord, String identifier, SorAttributesCommand command) {
+
         def result = personService.matchPerson(systemOfRecord, identifier, command.sorAttributes, true)
         renderResult(result)
     }

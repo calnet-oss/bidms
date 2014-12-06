@@ -17,11 +17,11 @@ class MatchConfigBuilder {
         closure.delegate = builder
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.call()
-        config.matchAttributes = builder.matchAttributes
+        config.matchAttributeConfigs = builder.matchAttributes
     }
 
     void confidences(Closure closure) {
-        MatchConfidencesDelegate builder = new MatchConfidencesDelegate(config.matchAttributes)
+        MatchConfidencesDelegate builder = new MatchConfidencesDelegate(config.matchAttributeConfigs)
         closure.delegate = builder
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.call()
@@ -29,9 +29,9 @@ class MatchConfigBuilder {
         config.potentialConfidences = builder.potentialConfidences
     }
 
-    // Builds a list of matchAttributes by dynamically invoking each method in the closure 'attributes'
+    // Builds a list of matchAttributeConfigs by dynamically invoking each method in the closure 'attributes'
     private class MatchAttributesDelegate {
-        List<MatchAttribute> matchAttributes = []
+        List<MatchAttributeConfig> matchAttributes = []
 
         @SuppressWarnings("GroovyAssignabilityCheck")
         def invokeMethod(String name, args) {
@@ -52,17 +52,17 @@ class MatchConfigBuilder {
 
     // Creates and sets properties on a matchAttribute by invoking setProperty and handle the search closure
     private class MatchAttributeDelegate {
-        MatchAttribute matchAttribute
+        MatchAttributeConfig matchAttribute
 
         MatchAttributeDelegate(String name) {
-            this.matchAttribute = new MatchAttribute(name: name)
+            this.matchAttribute = new MatchAttributeConfig(name: name)
         }
 
         void setProperty(String name, value) {
             if(matchAttribute.hasProperty(name)) {
                 matchAttribute.setProperty(name, value)
             } else {
-                throw new MissingPropertyException(name, MatchAttribute)
+                throw new MissingPropertyException(name, MatchAttributeConfig)
             }
         }
 
@@ -71,7 +71,7 @@ class MatchConfigBuilder {
          * @param closure
          */
         void search(Closure closure) {
-            def search = new MatchAttribute.SearchSettings()
+            def search = new MatchAttributeConfig.SearchSettings()
             closure.delegate = search
             closure.resolveStrategy = Closure.DELEGATE_ONLY
             closure.call()
@@ -86,7 +86,7 @@ class MatchConfigBuilder {
         List<List<String>> canonicalConfidences = []
         List<Map<String, String>> potentialConfidences = []
 
-        MatchConfidencesDelegate(List<MatchAttribute> matchAttributes) {
+        MatchConfidencesDelegate(List<MatchAttributeConfig> matchAttributes) {
             assert matchAttributes
             this.matchAttributeNames = matchAttributes.name
         }

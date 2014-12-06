@@ -9,7 +9,7 @@ class MatchConfig {
     public static final String MATCH_TYPE_EXACT = 'exact'
     // Todo: Read configuration
     MatchReference matchReference
-    List<MatchAttribute> matchAttributes = []
+    List<MatchAttributeConfig> matchAttributeConfigs = []
     List<List<String>> canonicalConfidences = []
     List<Map<String, String>> potentialConfidences = []
 }
