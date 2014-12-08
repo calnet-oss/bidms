@@ -40,12 +40,12 @@ class MatchConfigBuilderSpec extends Specification {
                     path = "somePath"
                     attribute = "someAttribute"
                     group = "groupName"
-                    caseSensitive = true
-                    alphanumeric = true
                     invalidates = true
                     search {
+                        caseSensitive = true
+                        alphanumeric = true
                         exact = true
-                        substring = true
+                        substring = [start: 1, length:3]
                         distance = 3
                     }
                 }
@@ -69,19 +69,17 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].path == 'somePath'
         sut.config.matchAttributeConfigs[0].attribute == 'someAttribute'
         sut.config.matchAttributeConfigs[0].group == 'groupName'
-        sut.config.matchAttributeConfigs[0].caseSensitive
-        sut.config.matchAttributeConfigs[0].alphanumeric
         sut.config.matchAttributeConfigs[0].invalidates
+        sut.config.matchAttributeConfigs[0].search.caseSensitive
+        sut.config.matchAttributeConfigs[0].search.alphanumeric
         sut.config.matchAttributeConfigs[0].search.exact
-        sut.config.matchAttributeConfigs[0].search.substring
+        sut.config.matchAttributeConfigs[0].search.substring == [start: 1, length:3]
         sut.config.matchAttributeConfigs[0].search.distance == 3
         sut.config.matchAttributeConfigs[1].name == 'sorid'
         sut.config.matchAttributeConfigs[1].description == 'Other description'
         !sut.config.matchAttributeConfigs[1].column
         !sut.config.matchAttributeConfigs[1].attribute
         !sut.config.matchAttributeConfigs[1].group
-        !sut.config.matchAttributeConfigs[1].caseSensitive
-        !sut.config.matchAttributeConfigs[1].alphanumeric
         !sut.config.matchAttributeConfigs[1].invalidates
         !sut.config.matchAttributeConfigs[1].search
     }

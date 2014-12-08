@@ -11,15 +11,24 @@ class MatchAttributeConfig {
     String path
     String attribute
     String group
-    boolean caseSensitive
-    boolean alphanumeric
     boolean invalidates
     SearchSettings search
 
     @ToString(includeNames = true)
     static class SearchSettings {
         boolean exact
-        boolean substring
+        Map substring
+        boolean caseSensitive
+        boolean alphanumeric
         int distance
+        void setSubstring() {
+
+            if(!substring.start) {
+                throw new IllegalArgumentException("Missing 'start' argument in Map")
+            }
+            if(!substring.length) {
+                throw new IllegalArgumentException("Missing 'length' argument in Map")
+            }
+        }
     }
 }
