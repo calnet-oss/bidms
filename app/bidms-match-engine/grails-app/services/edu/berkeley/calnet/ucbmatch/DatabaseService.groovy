@@ -16,7 +16,6 @@ class DatabaseService {
         def sqlStatements = searchSets.inject([]) { statements, searchSet ->
             def whereClause = searchSet.buildWhereClause(sorAttributes)
             if(whereClause) {
-
                 statements << """
                 SELECT *
                     FROM   matchgrid

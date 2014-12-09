@@ -6,7 +6,7 @@ import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 class SqlWhereResolver {
     static ALL_ALPHANUMERIC = /[^A-Za-z0-9]/
 
-    static SqlWhere getWhereClause(MatchType matchType, MatchAttributeConfig config, String value) {
+    static Map getWhereClause(MatchType matchType, MatchAttributeConfig config, String value) {
         def sql = config.column
         def searchConfig = config.search
 
@@ -40,7 +40,7 @@ class SqlWhereResolver {
         }
 
         // TODO: Implement crosscheck (if needed)
-        return new SqlWhere(sql: sql, value: value)
+        return [sql: sql, value: value]
 
     }
 
@@ -50,13 +50,7 @@ class SqlWhereResolver {
         def length = searchConfig.substring.length
         "substring($sql from $from for $length)=substring(? from $from for $length)"
     }
-    private static GString equalsSql(sql) {
+    private static String equalsSql(sql) {
         "${sql}=?"
-    }
-
-
-    static class SqlWhere {
-        String sql
-        String value
     }
 }

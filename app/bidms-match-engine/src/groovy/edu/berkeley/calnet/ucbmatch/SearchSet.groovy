@@ -11,7 +11,7 @@ class SearchSet {
     List<MatchAttributeConfig> matchAttributeConfigs
 
     Map buildWhereClause(String systemOfRecord, String identifier, Map attributes) {
-        def statements = []
+        List statements = []
         for(config in matchAttributeConfigs) {
             def value = AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, attributes)
             if(!value) {
@@ -20,7 +20,7 @@ class SearchSet {
             statements << SqlWhereResolver.getWhereClause(matchType, config, value)
         }
 
-        return [sql: '', values: []]
+        return [sql: statements.sql.join(' AND ') , values: statements.value]
 
     }
 }

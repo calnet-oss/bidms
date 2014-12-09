@@ -14,6 +14,21 @@ class MatchAttributeConfig {
     boolean invalidates
     SearchSettings search
 
+    static MatchAttributeConfig create(Map params) {
+        params.inject(new MatchAttributeConfig(search: new SearchSettings())) { MatchAttributeConfig config, entry->
+            String name = entry.key
+            def value = entry.value
+            if(config.hasProperty(name)) {
+                config.setProperty(name, value)
+            } else if (config.search.hasProperty(name)) {
+                config.search.setProperty(name, value)
+            } else {
+                throw new IllegalArgumentException("Property ${name} not found in config or config.search")
+            }
+            return config
+        }
+    }
+
     @ToString(includeNames = true)
     static class SearchSettings {
         boolean exact
