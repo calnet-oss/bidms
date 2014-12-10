@@ -4,12 +4,17 @@ import groovy.transform.ToString
 
 @ToString(includeNames = true)
 class MatchConfig {
-    public static final VALID_MATCH_TYPES = [MATCH_TYPE_DISTANCE, MATCH_TYPE_EXACT]
-    public static final String MATCH_TYPE_DISTANCE = 'distance'
-    public static final String MATCH_TYPE_EXACT = 'exact'
-    // Todo: Read configuration
+    static enum MatchType {
+        EXACT,
+        SUBSTRING,
+        DISTANCE
+
+        static List CANONICAL_TYPES = [EXACT, SUBSTRING]
+        static List POTENTIAL_TYPES = [EXACT, SUBSTRING, DISTANCE]
+    }
+
     MatchReference matchReference
     List<MatchAttributeConfig> matchAttributeConfigs = []
-    List<List<String>> canonicalConfidences = []
-    List<Map<String, String>> potentialConfidences = []
+    List<Map<String, MatchType>> canonicalConfidences = []
+    List<Map<String, MatchType>> potentialConfidences = []
 }

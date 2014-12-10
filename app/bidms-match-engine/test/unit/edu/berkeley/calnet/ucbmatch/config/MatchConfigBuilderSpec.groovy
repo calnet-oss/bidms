@@ -4,6 +4,8 @@ import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+
 class MatchConfigBuilderSpec extends Specification {
     def sut = new MatchConfigBuilder()
 
@@ -44,8 +46,7 @@ class MatchConfigBuilderSpec extends Specification {
                     search {
                         caseSensitive = true
                         alphanumeric = true
-                        exact = true
-                        substring = [start: 1, length:3]
+                        substring = [start: 1, length: 3]
                         distance = 3
                     }
                 }
@@ -72,8 +73,7 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].invalidates
         sut.config.matchAttributeConfigs[0].search.caseSensitive
         sut.config.matchAttributeConfigs[0].search.alphanumeric
-        sut.config.matchAttributeConfigs[0].search.exact
-        sut.config.matchAttributeConfigs[0].search.substring == [start: 1, length:3]
+        sut.config.matchAttributeConfigs[0].search.substring == [start: 1, length: 3]
         sut.config.matchAttributeConfigs[0].search.distance == 3
         sut.config.matchAttributeConfigs[1].name == 'sorid'
         sut.config.matchAttributeConfigs[1].description == 'Other description'
@@ -135,10 +135,9 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.canonicalConfidences == [expected]
 
         where:
-        args               | expected
-        'attr1'            | ['attr1']
-        ['attr1']          | ['attr1']
-        ['attr1', 'attr2'] | ['attr1', 'attr2']
+        args                             | expected
+        [attr1: EXACT]                   | [attr1: EXACT]
+        [attr1: EXACT, attr2: SUBSTRING] | [attr1: EXACT, attr2: SUBSTRING]
     }
 
     def "test adding invalid canonical confidences to config"() {
@@ -146,7 +145,7 @@ class MatchConfigBuilderSpec extends Specification {
         createAttributes()
         def configClosure = {
             confidences {
-                canonical 'unknown'
+                canonical attr1: DISTANCE
             }
         }
         configClosure.resolveStrategy = Closure.DELEGATE_ONLY
@@ -158,13 +157,14 @@ class MatchConfigBuilderSpec extends Specification {
         then:
         thrown(AssertionError)
     }
+
     def "test addding multiple canonical confidences to config"() {
         setup:
         createAttributes()
         def configClosure = {
             confidences {
-                canonical 'attr1'
-                canonical 'attr2','attr3'
+                canonical attr1: EXACT
+                canonical attr2: EXACT, attr3: SUBSTRING
             }
         }
         configClosure.resolveStrategy = Closure.DELEGATE_ONLY
@@ -175,9 +175,10 @@ class MatchConfigBuilderSpec extends Specification {
 
         then:
         sut.config.canonicalConfidences.size() == 2
-        sut.config.canonicalConfidences == [['attr1'],['attr2','attr3']]
+        sut.config.canonicalConfidences == [[attr1: EXACT], [attr2: EXACT, attr3: SUBSTRING]]
     }
 
+    @Unroll
     def "test adding potential confidences to config"() {
         setup:
         createAttributes()
@@ -197,8 +198,9 @@ class MatchConfigBuilderSpec extends Specification {
 
         where:
         args                                | expected
-        [attr1: 'exact']                    | [attr1: 'exact']
-        [attr1: 'exact', attr2: 'distance'] | [attr1: 'exact', attr2: 'distance']
+        [attr1: EXACT]                      | [attr1: EXACT]
+        [attr1: EXACT, attr2: DISTANCE]     | [attr1: EXACT, attr2: DISTANCE]
+        [attr2: SUBSTRING, attr3: DISTANCE] | [attr2: SUBSTRING, attr3: DISTANCE]
     }
 
 

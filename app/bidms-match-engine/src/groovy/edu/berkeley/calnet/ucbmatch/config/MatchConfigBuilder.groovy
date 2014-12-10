@@ -1,5 +1,8 @@
 package edu.berkeley.calnet.ucbmatch.config
 
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.*
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+
 class MatchConfigBuilder {
 
     MatchConfig config = new MatchConfig()
@@ -83,31 +86,25 @@ class MatchConfigBuilder {
     private class MatchConfidencesDelegate {
 
         private List<String> matchAttributeNames
-        List<List<String>> canonicalConfidences = []
-        List<Map<String, String>> potentialConfidences = []
+        List<Map<String, MatchType>> canonicalConfidences = []
+        List<Map<String, MatchType>> potentialConfidences = []
 
         MatchConfidencesDelegate(List<MatchAttributeConfig> matchAttributes) {
             assert matchAttributes
             this.matchAttributeNames = matchAttributes.name
         }
 
-        void canonical(String value) {
-            assert value in matchAttributeNames
+        void canonical(Map<String,MatchType> canonical) {
+            assert canonical.keySet().every {it in matchAttributeNames}
+            assert canonical.values().every { it in CANONICAL_TYPES}
 
-            canonicalConfidences << [value]
-        }
-
-        void canonical(Object[] values) {
-            def names = values.flatten() as List<String>
-            assert names.every { it in matchAttributeNames}
-
-            canonicalConfidences << names
+            canonicalConfidences << canonical
         }
 
 
-        void potential(Map<String, String> potential) {
+        void potential(Map<String, MatchType> potential) {
             assert potential.keySet().every {it in matchAttributeNames}
-            assert potential.values().every { it in MatchConfig.VALID_MATCH_TYPES }
+            assert potential.values().every { it in POTENTIAL_TYPES}
 
             potentialConfidences << potential
         }

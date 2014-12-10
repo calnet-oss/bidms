@@ -32,19 +32,18 @@ class MatchAttributeConfig {
 
     @ToString(includeNames = true)
     static class SearchSettings {
-        boolean exact
-        Map substring
         boolean caseSensitive
         boolean alphanumeric
+        Map substring
         int distance
-        void setSubstring() {
-
+        void setSubstring(substring) {
             if(!substring.start) {
                 throw new IllegalArgumentException("Missing 'start' argument in Map")
             }
             if(!substring.length) {
                 throw new IllegalArgumentException("Missing 'length' argument in Map")
             }
+            this.substring = substring
         }
     }
 }
