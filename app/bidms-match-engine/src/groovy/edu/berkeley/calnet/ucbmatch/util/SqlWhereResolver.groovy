@@ -1,7 +1,8 @@
 package edu.berkeley.calnet.ucbmatch.util
 
-import edu.berkeley.calnet.ucbmatch.MatchType
 import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
+
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
 
 class SqlWhereResolver {
     static ALL_ALPHANUMERIC = /[^A-Za-z0-9]/
@@ -20,22 +21,15 @@ class SqlWhereResolver {
         }
 
         switch (matchType) {
-            case MatchType.CANONICAL:
-                if (searchConfig.substring) {
-                    sql = substringSql(searchConfig, sql)
-                } else {
-                    sql = equalsSql(sql)
-                }
+            case MatchType.SUBSTRING: // If type is substring check if the config has a substring setting
+                sql = searchConfig.substring ? substringSql(searchConfig, sql) : exactSql(sql)
                 break
-            case MatchType.POTENTIAL:
-                if(searchConfig.distance) {
-                    def distance = searchConfig.distance
-                    sql = "levenshtein_less_equal($sql,?,$distance)<${distance+1}"
-                } else if(searchConfig.substring) {
-                    sql = substringSql(searchConfig, sql)
-                } else {
-                    sql = equalsSql(sql)
-                }
+            case MatchType.DISTANCE:
+                def distance = searchConfig.distance // If type is distance check if the config has a distance setting
+                sql = searchConfig.distance ? "levenshtein_less_equal($sql,?,$distance)<${distance + 1}" : exactSql(sql)
+                break
+            case MatchType.EXACT:
+                sql = exactSql(sql)
                 break
         }
 
@@ -50,7 +44,8 @@ class SqlWhereResolver {
         def length = searchConfig.substring.length
         "substring($sql from $from for $length)=substring(? from $from for $length)"
     }
-    private static String equalsSql(sql) {
+
+    private static String exactSql(sql) {
         "${sql}=?"
     }
 }
