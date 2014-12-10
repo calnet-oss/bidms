@@ -1,12 +1,12 @@
 package edu.berkeley.calnet.ucbmatch
 
+import grails.transaction.Transactional
 import groovy.sql.Sql
 
 import javax.sql.DataSource
 
+@Transactional
 class SqlService {
-    static transactional = false
-
     DataSource datasource
 
     Sql getSqlInstance() {

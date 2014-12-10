@@ -1,36 +1,46 @@
 package edu.berkeley.calnet.ucbmatch
+
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
+import grails.transaction.Transactional
 import groovy.sql.Sql
 
+@Transactional
 class DatabaseService {
-    static transactional = false
 
     MatchConfig matchConfig
     def sqlService
 
-    List<Candidate> searchDatabase(String systemOfRecord, String identifier, Map sorAttributes, MatchType matchType) {
+    List<Candidate> searchDatabase(String systemOfRecord, String identifier, Map sorAttributes, ConfidenceType matchType) {
         def searchSets = getSearchSets(matchType)
-        def sqlStatements = searchSets.inject([]) { statements, searchSet ->
-            def whereClause = searchSet.buildWhereClause(sorAttributes)
-            if(whereClause) {
+        Set sqlStatements = searchSets.inject([] as Set) { statements, searchSet ->
+            def whereClause = searchSet.buildWhereClause(systemOfRecord, identifier, sorAttributes)
+            if (whereClause) {
                 statements << """
                 SELECT *
                     FROM   matchgrid
                     WHERE  reference_id IS NOT NULL
-                    AND    ${searchSet.buildWhereClause(systemOfRecord, identifier, sorAttributes)}
+                    AND    ${whereClause.sql}
              """.toString()
             }
             return statements
         }
+        println "--> $matchType"
+        println sqlStatements
 
     }
 
-    List<SearchSet> getSearchSets(MatchType matchType) {
-        matchConfig.canonicalConfidences.collect { canonicalConfidence ->
-            def matchAttributeConfigs = matchConfig.matchAttributeConfigs.findAll { it.name in canonicalConfidence}
-            new SearchSet(matchType: matchType, matchAttributeConfigs: matchAttributeConfigs)
+    private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
+        switch (confidenceType) {
+            case ConfidenceType.CANONICAL:
+                return matchConfig.canonicalConfidences.collect { matchTypes ->
+                    new SearchSet(matchTypes: matchTypes, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
+                }
+            case ConfidenceType.POTENTIAL:
+                return matchConfig.potentialConfidences.collect { confidence ->
+                    new SearchSet(matchTypes: confidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
+                }
         }
     }
 

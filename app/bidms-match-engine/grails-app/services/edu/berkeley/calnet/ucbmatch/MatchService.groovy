@@ -5,21 +5,20 @@ import edu.berkeley.calnet.ucbmatch.database.InsertRecord
 import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import edu.berkeley.calnet.ucbmatch.database.UpdateRecord
 import edu.berkeley.calnet.ucbmatch.exceptions.RecordExistsException
+import grails.transaction.Transactional
 import groovy.sql.Sql
 import org.joda.time.LocalDateTime
 
+@Transactional
 class MatchService {
     MatchConfig matchConfig
 
-    static transactional = false
-
-    @Delegate
     DatabaseService databaseService
 
     List<Candidate> findCandidates(String systemOfRecord, String identifier, Map sorAttributes) {
-        List<Candidate> candidates = searchDatabase(systemOfRecord, identifier, sorAttributes, MatchType.CANONICAL)
+        List<Candidate> candidates = databaseService.searchDatabase(systemOfRecord, identifier, sorAttributes, ConfidenceType.CANONICAL)
         if(!candidates) {
-            candidates = searchDatabase(systemOfRecord,identifier,sorAttributes,MatchType.POTENTIAL)
+            candidates = databaseService.searchDatabase(systemOfRecord,identifier,sorAttributes,ConfidenceType.POTENTIAL)
         }
         return candidates
     }
@@ -31,7 +30,7 @@ class MatchService {
         def newRecordReferenceId = referenceId
         def requestTime = LocalDateTime.now()
         def resolutionTime = null
-        withTransaction { Sql sql ->
+        databaseService.withTransaction { Sql sql ->
             def existingRecord = findRecord(systemOfRecord, identifier)
             if(existingRecord) {
                 if(existingRecord.referenceId) {
