@@ -28,7 +28,7 @@ class AttributeValueResolver {
             // does not have a type, and finally try with the first one
             Map candidate = config.group ? candidates.find { it.type == config.group } : (candidates.find { !it.type } ?: candidates.first())
 
-            return normalizeValue(config, candidate.getAt(config.attribute))
+            return normalizeValue(config, candidate?.getAt(config.attribute))
         } else {
             return normalizeValue(config, sorAttributes.getAt(config.attribute))
         }
