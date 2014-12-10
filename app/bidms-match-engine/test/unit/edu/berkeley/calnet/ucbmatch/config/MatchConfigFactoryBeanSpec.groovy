@@ -1,11 +1,25 @@
 package edu.berkeley.calnet.ucbmatch.config
 
+import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import spock.lang.Specification
+
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
 
 class MatchConfigFactoryBeanSpec extends Specification {
     def "test that parseConfig will return a valid config"() {
         setup:
         def config = """
+            import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
+
+            import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+
+            referenceId {
+                idGenerator = NullIdGenerator
+                responseType = "enterprise"
+            }
+
             attributes {
                 'sor' {
                     description = "sor description"
@@ -17,9 +31,9 @@ class MatchConfigFactoryBeanSpec extends Specification {
                 }
             }
             confidences {
-                canonical 'sor'
-                canonical 'sor','name'
-                potential sor: 'exact', name:'distance'
+                canonical sor: EXACT
+                canonical sor: EXACT, name: SUBSTRING
+                potential sor: EXACT, name: DISTANCE
             }
         """
 
@@ -27,8 +41,10 @@ class MatchConfigFactoryBeanSpec extends Specification {
         def matchConfig = MatchConfigFactoryBean.parseConfig(config)
 
         then:
+        matchConfig.matchReference.idGenerator == NullIdGenerator
+        matchConfig.matchReference.responseType == 'enterprise'
         matchConfig.matchAttributeConfigs.name == ['sor','name']
-        matchConfig.canonicalConfidences == [['sor'],['sor','name']]
-        matchConfig.potentialConfidences == [[sor:'exact',name:'distance']]
+        matchConfig.canonicalConfidences == [[sor: EXACT],[sor: EXACT,name: SUBSTRING]]
+        matchConfig.potentialConfidences == [[sor:EXACT,name:DISTANCE]]
     }
 }

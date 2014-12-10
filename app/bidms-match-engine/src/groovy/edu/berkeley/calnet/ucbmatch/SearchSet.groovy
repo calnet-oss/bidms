@@ -3,6 +3,7 @@ package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import edu.berkeley.calnet.ucbmatch.util.AttributeValueResolver
 import edu.berkeley.calnet.ucbmatch.util.SqlWhereResolver
+import groovy.transform.ToString
 import groovy.util.logging.Log4j
 
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
@@ -25,6 +26,8 @@ class SearchSet {
             return null
         }
     }
+
+    @ToString(includeNames = true)
     private static class WhereAndValue {
         String sql
         String value
