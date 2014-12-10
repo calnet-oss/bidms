@@ -4,10 +4,9 @@ import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.response.InsertResponse
 import edu.berkeley.calnet.ucbmatch.response.Response
 import edu.berkeley.calnet.ucbmatch.response.UpdateResponse
-import grails.transaction.Transactional
 
-@Transactional
 class PersonService {
+    static transactional = false
     MatchConfig matchConfig
     MatchService matchService
 

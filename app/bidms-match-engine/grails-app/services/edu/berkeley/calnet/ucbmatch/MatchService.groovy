@@ -5,13 +5,13 @@ import edu.berkeley.calnet.ucbmatch.database.InsertRecord
 import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import edu.berkeley.calnet.ucbmatch.database.UpdateRecord
 import edu.berkeley.calnet.ucbmatch.exceptions.RecordExistsException
-import grails.transaction.Transactional
 import groovy.sql.Sql
 import org.joda.time.LocalDateTime
 
-@Transactional
 class MatchService {
     MatchConfig matchConfig
+
+    static transactional = false
 
     @Delegate
     DatabaseService databaseService

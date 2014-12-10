@@ -1,13 +1,12 @@
 package edu.berkeley.calnet.ucbmatch
-
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
-import grails.transaction.Transactional
 import groovy.sql.Sql
 
-@Transactional
 class DatabaseService {
+    static transactional = false
+
     MatchConfig matchConfig
     def sqlService
 

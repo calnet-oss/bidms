@@ -12,7 +12,7 @@ class AttributeValueResolverSpec extends Specification {
             identifier = "SI12345"
     @Shared
             sorAttributes = [
-                    "names"      : [
+                    "names"                   : [
                             ["type"  : "official",
                              "given" : "Pamela",
                              "family": "Anderson"],
@@ -20,13 +20,16 @@ class AttributeValueResolverSpec extends Specification {
                              "family": "Anderson"]
 
                     ],
-                    "dateOfBirth": "1983-03-18",
-                    "identifiers": [
+                    "dateOfBirth"             : "1983-03-18",
+                    "identifiers"             : [
                             ["type"      : "national",
                              "identifier": "3B902AE12DF55196"],
                             ["type"      : "enterprise",
                              "identifier": "ABCD1234"]
-                    ]
+                    ],
+                    "nullValueAttribute-1"    : "    ",
+                    "nullValueAttribute-2"    : "000-00-0000",
+                    "customNullValueAttribute": "xxxxxx"
             ]
 
     @Unroll
@@ -68,6 +71,30 @@ class AttributeValueResolverSpec extends Specification {
         'identifiers' | 'identifier' | 'national'   || '3B902AE12DF55196'
         'identifiers' | 'identifier' | 'enterprise' || 'ABCD1234'
         'identifiers' | 'identifier' | null         || '3B902AE12DF55196'
+    }
+
+    @Unroll
+    def "test that null like values works with default and custom regular expressions for nullEquivilents"() {
+        setup:
+        def config = new MatchAttributeConfig(name: 'nullEquiv', attribute: attribute)
+        if (nullEquivilants != null) {
+            config.nullEquivalents = nullEquivilants
+        }
+
+        expect:
+        AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes) == expectedOutcome
+
+        where:
+        attribute                  | nullEquivilants | expectedOutcome
+        "nullValueAttribute-1"     | null            | null
+        "nullValueAttribute-2"     | null            | null
+        "customNullValueAttribute" | null            | "xxxxxx"
+        "customNullValueAttribute" | [/[x]+/]        | null
+        "nullValueAttribute-1"     | [/[x]+/]        | "    "
+        "nullValueAttribute-2"     | [/[x]+/]        | "000-00-0000"
+        "customNullValueAttribute" | []              | "xxxxxx"
+        "nullValueAttribute-1"     | [/[x]+/]        | "    "
+        "nullValueAttribute-2"     | [/[x]+/]        | "000-00-0000"
     }
 
 

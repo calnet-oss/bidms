@@ -12,6 +12,7 @@ class MatchAttributeConfig {
     String attribute
     String group
     boolean invalidates
+    List nullEquivalents = [/[0-]+/,/\s+/]
     SearchSettings search
 
     static MatchAttributeConfig create(Map params) {

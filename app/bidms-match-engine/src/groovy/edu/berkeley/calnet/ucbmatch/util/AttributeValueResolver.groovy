@@ -26,7 +26,6 @@ class AttributeValueResolver {
             }
             // If the config has a group specified, find the element with type = "group" otherwise take the first element from candidates that
             // does not have a type, and finally try with the first one
-
             Map candidate = config.group ? candidates.find { it.type == config.group } : (candidates.find { !it.type } ?: candidates.first())
 
             return normalizeValue(config, candidate.getAt(config.attribute))
@@ -36,9 +35,16 @@ class AttributeValueResolver {
 
     }
 
-    private static String normalizeValue(MatchAttributeConfig matchAttributeConfig, def value) {
-        // Current implementation does not normalize values (eg. truncate when null like values)
-        value
+    private static String normalizeValue(MatchAttributeConfig matchAttributeConfig, String value) {
+        // If the nullEquivalents is not set, return the value
+        if(!matchAttributeConfig.nullEquivalents) {
+            value
+        }
+        // Expect matchAttributeConfig ot be a list of Regular Expressions. If any of these matches, it's a null like value
+        def nullMatches = matchAttributeConfig.nullEquivalents.any {
+            value ==~ it
+        }
+        return nullMatches ? null : value
     }
 
 }

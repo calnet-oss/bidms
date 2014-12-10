@@ -8,12 +8,10 @@ import spock.lang.Specification
  */
 @TestFor(MatchService)
 class MatchServiceSpec extends Specification {
+    static transactional = false
 
     def setup() {
         service.databaseService = Mock(DatabaseService)
-    }
-
-    def cleanup() {
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
