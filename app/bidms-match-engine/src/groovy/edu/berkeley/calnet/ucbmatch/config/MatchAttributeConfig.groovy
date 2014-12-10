@@ -37,8 +37,8 @@ class MatchAttributeConfig {
         Map substring
         int distance
         void setSubstring(substring) {
-            if(!substring.start) {
-                throw new IllegalArgumentException("Missing 'start' argument in Map")
+            if(!substring.from) {
+                throw new IllegalArgumentException("Missing 'from' argument in Map")
             }
             if(!substring.length) {
                 throw new IllegalArgumentException("Missing 'length' argument in Map")

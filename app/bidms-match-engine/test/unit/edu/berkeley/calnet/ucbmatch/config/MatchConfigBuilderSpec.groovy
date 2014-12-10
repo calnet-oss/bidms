@@ -46,7 +46,7 @@ class MatchConfigBuilderSpec extends Specification {
                     search {
                         caseSensitive = true
                         alphanumeric = true
-                        substring = [start: 1, length: 3]
+                        substring = [from: 1, length: 3]
                         distance = 3
                     }
                 }
@@ -73,7 +73,7 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].invalidates
         sut.config.matchAttributeConfigs[0].search.caseSensitive
         sut.config.matchAttributeConfigs[0].search.alphanumeric
-        sut.config.matchAttributeConfigs[0].search.substring == [start: 1, length: 3]
+        sut.config.matchAttributeConfigs[0].search.substring == [from: 1, length: 3]
         sut.config.matchAttributeConfigs[0].search.distance == 3
         sut.config.matchAttributeConfigs[1].name == 'sorid'
         sut.config.matchAttributeConfigs[1].description == 'Other description'
