@@ -23,6 +23,7 @@ class MatchServiceSpec extends Specification {
         1 * service.databaseService.searchDatabase("sis","123",[a:"b"],ConfidenceType.CANONICAL) >> [new Candidate()]
 
         and: "There are no other calls to the service"
+        0 * service.databaseService._(*_)
         0 * service._(*_)
     }
 
@@ -36,6 +37,7 @@ class MatchServiceSpec extends Specification {
         1 * service.databaseService.searchDatabase("sis","123",[a:"b"],ConfidenceType.POTENTIAL) >> [new Candidate()]
 
         and: "There are no other calls to the service"
+        0 * service.databaseService._(*_)
         0 * service._(*_)
     }
 
