@@ -37,9 +37,11 @@ class DatabaseService {
             log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
             def sqlStatement = queryStatement.sql
             def sqlValues = queryStatement.values
-            sql.rows(sqlStatement as String, sqlValues as Object[])
+            def result = sql.rows(sqlStatement, sqlValues)
+            log.debug("--- returned: ${result}")
+            return result
         }
-        return rows
+        return rows.flatten() as Set
 
     }
 

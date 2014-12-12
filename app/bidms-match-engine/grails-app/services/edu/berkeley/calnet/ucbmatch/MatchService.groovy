@@ -15,8 +15,8 @@ class MatchService {
 
     DatabaseService databaseService
 
-    List<Candidate> findCandidates(String systemOfRecord, String identifier, Map sorAttributes) {
-        List<Candidate> candidates = databaseService.searchDatabase(systemOfRecord, identifier, sorAttributes, ConfidenceType.CANONICAL)
+    Set<Candidate> findCandidates(String systemOfRecord, String identifier, Map sorAttributes) {
+        Set<Candidate> candidates = databaseService.searchDatabase(systemOfRecord, identifier, sorAttributes, ConfidenceType.CANONICAL)
         if(!candidates) {
             candidates = databaseService.searchDatabase(systemOfRecord,identifier,sorAttributes,ConfidenceType.POTENTIAL)
         }

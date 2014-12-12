@@ -14,10 +14,10 @@ class RowMapperServiceSpec extends Specification {
      * Last two rows are dupplicate rows for the same person
      */
     @Shared def dataRows = [
-            [referenceId: 'R1', sor: "X", sorid: "X123", attr_identifier_national: "123-45-6789", attr_name_given_official: "James", attr_name_family_official: "Dean", attr_date_of_birth: "1939-02-08", attr_identifier_sor_employee: "EID-123"],
-            [referenceId: 'R1', sor: "Y", sorid: "Y123", attr_identifier_national: "123-45-6789", attr_name_given_official: "James", attr_name_family_official: "Dean", attr_date_of_birth: "1939-02-08", attr_identifier_sor_student: "SID-123"],
-            [referenceId: 'R2', sor: "X", sorid: "X234", attr_name_given_official: "Jack", attr_name_family_official: "Daniels", attr_date_of_birth: "1901-02-01"],
-            [referenceId: 'R2', sor: "X", sorid: "X234", attr_name_given_official: "Jack", attr_name_family_official: "Daniels", attr_date_of_birth: "1901-02-01"]
+            [reference_id: 'R1', sor: "X", sorid: "X123", attr_identifier_national: "123-45-6789", attr_name_given_official: "James", attr_name_family_official: "Dean", attr_date_of_birth: "1939-02-08", attr_identifier_sor_employee: "EID-123"],
+            [reference_id: 'R1', sor: "Y", sorid: "Y123", attr_identifier_national: "123-45-6789", attr_name_given_official: "James", attr_name_family_official: "Dean", attr_date_of_birth: "1939-02-08", attr_identifier_sor_student: "SID-123"],
+            [reference_id: 'R2', sor: "X", sorid: "X234", attr_name_given_official: "Jack", attr_name_family_official: "Daniels", attr_date_of_birth: "1901-02-01"],
+            [reference_id: 'R2', sor: "X", sorid: "X234", attr_name_given_official: "Jack", attr_name_family_official: "Daniels", attr_date_of_birth: "1901-02-01"]
     ]
     def setup() {
         service.matchConfig = TestMatchConfig.config

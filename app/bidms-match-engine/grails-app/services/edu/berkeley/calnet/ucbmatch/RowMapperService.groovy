@@ -13,13 +13,14 @@ class RowMapperService {
 
     Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType) {
         // Group the returned rows by referenceId. The value is a list of db rows returned
-        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it.referenceId }
+        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it.reference_id }
 
         def configByPath = matchConfig.matchAttributeConfigs.groupBy { it.path?.capitalize() ?: 'Root' }
 
         def candidates = groupedByReferenceId.inject([] as Set) { Set<Candidate> list, group ->
             def referenceId = group.key
-            group.value.each { dataRow ->
+            def groupRows = group.value
+            groupRows.each { dataRow ->
                 def systemOfRecord = getSystemOfRecordFromRow(dataRow)
 
                 // Start by find an existing candidate with the same referenceId and systemOfRecord
@@ -52,12 +53,12 @@ class RowMapperService {
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
-    private static void mapRowToCandidateIdentifiers(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
+    private void mapRowToCandidateIdentifiers(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.identifiers, dataRow, attributeConfigs, Identifier)
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
-    private static void mapRowToCandidateNames(Candidate candidate, Map row, List<MatchAttributeConfig> attributeConfigs) {
+    private void mapRowToCandidateNames(Candidate candidate, Map row, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.names, row, attributeConfigs, Name)
     }
 
