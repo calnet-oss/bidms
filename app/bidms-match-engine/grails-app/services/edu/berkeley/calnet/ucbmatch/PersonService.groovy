@@ -13,12 +13,13 @@ class PersonService {
 
     Response matchPerson(String systemOfRecord, String identifier, Map sorAttributes, boolean readOnly = false) {
 
-        List<Candidate> candidates = matchService.findCandidates(systemOfRecord, identifier, sorAttributes)
+        Set<Candidate> candidates = matchService.findCandidates(systemOfRecord, identifier, sorAttributes)
         if(!candidates) {
             log.debug("")
             return readOnly ? Response.NOT_FOUND : insertNewRecord(systemOfRecord, identifier, sorAttributes)
         } else {
-            if(candidates.size() == 1) {
+
+            if(!readOnly && candidates.size() == 1) {
                 if(candidates[0].confidence >= 90) {
                     if(isExistingCandidateIdentifiersExists(systemOfRecord, identifier, candidates[0])) {
                         log.debug("Promoted insert to update due to existing record for $systemOfRecord/$identifier")
@@ -30,12 +31,12 @@ class PersonService {
             }
         }
         log.debug("No exact match found, resorting to fuzzy match ")
-        if(candidates.any { isExistingCandidateIdentifiersExists(systemOfRecord, identifier, it)}) {
+        if(!readOnly && candidates.any { isExistingCandidateIdentifiersExists(systemOfRecord, identifier, it)}) {
             log.debug("Converted fuzzy match to conflict due to existing match for $systemOfRecord/$identifier")
             return Response.CONFLICT
         }
         if(readOnly) {
-
+            return new MultiMatchResponse(responseData: candidates)
         }
     }
 
@@ -43,16 +44,18 @@ class PersonService {
 
     Response insertNewRecord(String systemOfRecord, String identifier, Map sorAttributes, String referenceId = null) {
         def insertResult = matchService.insertCandidate(systemOfRecord, identifier, sorAttributes)
-        return new InsertResponse(record: insertResult)
+        return new InsertResponse(responseData: insertResult)
     }
 
     Response updateExistingRecord(String systemOfRecord, String identifier, Map sorAttributes) {
         def updateResult = matchService.updateCandidate(systemOfRecord, identifier, sorAttributes)
-        return new UpdateResponse(record: updateResult)
+        return new UpdateResponse(responseData: updateResult)
     }
 
     boolean isExistingCandidateIdentifiersExists(String systemOfRecord, String identifier, Candidate candidate) {
-        return candidate?.identifiers?.any { it.type == systemOfRecord && it.identifier == identifier}
+        def systemOfRecordType = matchConfig.matchReference.systemOfRecordAttribute
+
+        return candidate?.identifiers?.any { it.type == systemOfRecordType && it.identifier == identifier}
     }
 
 }
