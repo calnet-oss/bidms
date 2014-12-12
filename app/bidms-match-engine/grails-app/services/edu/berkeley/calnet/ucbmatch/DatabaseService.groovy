@@ -31,18 +31,16 @@ class DatabaseService {
     }
 
 
-    Set<Map> performSearch(Set<Map> queryStatements) {
-        def sql = sqlService.sqlInstance
-        def rows = queryStatements.collectAll { Map queryStatement ->
-            log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
-            def sqlStatement = queryStatement.sql
-            def sqlValues = queryStatement.values
-            def result = sql.rows(sqlStatement, sqlValues)
-            log.debug("--- returned: ${result}")
-            return result
-        }
-        return rows.flatten() as Set
+    Record findRecord(String systemOfRecord, String identifier, Sql sql = null) {
+        sql = sql ?: sqlService.sqlInstance
+        def row = sql.firstRow("SELECT * FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
 
+        return row ? new Record(referenceId: row.reference_id) : null
+    }
+
+    boolean removeRecord(String systemOfRecord, String identifier, Sql sql = null) {
+        sql = sql ?: sqlService.sqlInstance
+        sql.execute("DELETE FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
@@ -58,16 +56,17 @@ class DatabaseService {
         }
     }
 
-    Record findRecord(String systemOfRecord, String identifier, Sql sql = null) {
-        sql = sql ?: sqlService.sqlInstance
-        def row = sql.firstRow("SELECT * FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
-
-        return row ? new Record(referenceId: row.reference_id) : null
-    }
-
-    boolean removeRecord(String systemOfRecord, String identifier, Sql sql = null) {
-        sql = sql ?: sqlService.sqlInstance
-        sql.execute("DELETE FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
+    private Set<Map> performSearch(Set<Map> queryStatements) {
+        def sql = sqlService.sqlInstance
+        def rows = queryStatements.collect { Map queryStatement ->
+            log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
+            def sqlStatement = queryStatement.sql
+            def sqlValues = queryStatement.values
+            def result = sql.rows(sqlStatement as String, sqlValues as Object[])
+            log.debug("--- returned: ${result}")
+            return result
+        }.flatten()
+        return rows as Set
     }
 
     def withTransaction(Closure closure) {
