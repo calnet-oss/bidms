@@ -5,7 +5,7 @@ import edu.berkeley.calnet.ucbmatch.Identifier
 class Candidate extends Record {
     int confidence
     String systemOfRecord
-    String identifier
-
-    List<Identifier> identifiers
+    String dateOfBirth
+    Set<Name> names = []
+    Set<Identifier> identifiers = []
 }

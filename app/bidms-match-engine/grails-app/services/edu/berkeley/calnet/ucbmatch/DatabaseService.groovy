@@ -1,5 +1,4 @@
 package edu.berkeley.calnet.ucbmatch
-
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
@@ -11,23 +10,36 @@ class DatabaseService {
 
     MatchConfig matchConfig
     def sqlService
+    def rowMapperService
 
-    List<Candidate> searchDatabase(String systemOfRecord, String identifier, Map sorAttributes, ConfidenceType matchType) {
-        def searchSets = getSearchSets(matchType)
+    Set<Candidate> searchDatabase(String systemOfRecord, String identifier, Map sorAttributes, ConfidenceType confidenceType) {
+        def searchSets = getSearchSets(confidenceType)
         Set sqlStatements = searchSets.inject([] as Set) { statements, searchSet ->
             def whereClause = searchSet.buildWhereClause(systemOfRecord, identifier, sorAttributes)
             if (whereClause) {
-                statements << """
+                statements << [sql: """
                 SELECT *
                     FROM   matchgrid
                     WHERE  reference_id IS NOT NULL
                     AND    ${whereClause.sql}
-             """.toString()
+             """.toString(), values: whereClause.values]
             }
             return statements
+        } as Set
+        def rows = performSearch(sqlStatements)
+        return rowMapperService.mapDataRowsToCandidates(rows, confidenceType)
+    }
+
+
+    Set<Map> performSearch(Set<Map> queryStatements) {
+        def sql = sqlService.sqlInstance
+        def rows = queryStatements.collectAll { Map queryStatement ->
+            log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
+            def sqlStatement = queryStatement.sql
+            def sqlValues = queryStatement.values
+            sql.rows(sqlStatement as String, sqlValues as Object[])
         }
-        println "--> $matchType"
-        println sqlStatements
+        return rows
 
     }
 

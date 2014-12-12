@@ -16,7 +16,7 @@ class SqlWhereResolver {
             value = value?.toLowerCase()
         }
         if (searchConfig.alphanumeric) {
-            sql = "regex_replace($sql,'$ALL_ALPHANUMERIC','','g')"
+            sql = "regexp_replace($sql,'$ALL_ALPHANUMERIC','','g')"
             value = value?.replaceAll(ALL_ALPHANUMERIC, '')
         }
 
