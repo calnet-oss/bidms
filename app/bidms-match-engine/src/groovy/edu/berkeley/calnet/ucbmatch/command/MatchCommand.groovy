@@ -5,8 +5,8 @@ import groovy.transform.ToString
 
 @ToString(includeNames = true)
 @Validateable
-class SorAttributesCommand {
+class MatchCommand {
+    String systemOfRecord
+    String identifier
     Map sorAttributes
-
-
 }

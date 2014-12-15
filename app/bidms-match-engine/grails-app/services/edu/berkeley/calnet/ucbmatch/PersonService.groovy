@@ -1,9 +1,9 @@
 package edu.berkeley.calnet.ucbmatch
+
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
-import edu.berkeley.calnet.ucbmatch.response.InsertResponse
+import edu.berkeley.calnet.ucbmatch.response.ExactMatchResponse
 import edu.berkeley.calnet.ucbmatch.response.Response
-import edu.berkeley.calnet.ucbmatch.response.UpdateResponse
 import grails.transaction.Transactional
 
 @Transactional
@@ -11,51 +11,23 @@ class PersonService {
     MatchConfig matchConfig
     MatchService matchService
 
-    Response matchPerson(String systemOfRecord, String identifier, Map sorAttributes, boolean readOnly = false) {
-
-        Set<Candidate> candidates = matchService.findCandidates(systemOfRecord, identifier, sorAttributes)
-        if(!candidates) {
-            log.debug("")
-            return readOnly ? Response.NOT_FOUND : insertNewRecord(systemOfRecord, identifier, sorAttributes)
-        } else {
-
-            if(!readOnly && candidates.size() == 1) {
-                if(candidates[0].confidence >= 90) {
-                    if(isExistingCandidateIdentifiersExists(systemOfRecord, identifier, candidates[0])) {
-                        log.debug("Promoted insert to update due to existing record for $systemOfRecord/$identifier")
-                        return updateExistingRecord(systemOfRecord, identifier, sorAttributes)
-                    } else {
-                        return insertNewRecord(systemOfRecord, identifier, sorAttributes, candidates[0].referenceId)
-                    }
-                }
+    Response matchPerson(Map matchInput) {
+        Set<Candidate> candidates = matchService.findCandidates(matchInput)
+        if (!candidates) {
+            log.debug("No match found for $matchInput")
+            return Response.NOT_FOUND
+        } else if (candidates.size() == 1) {
+            if (candidates[0].confidence >= 90) {
+                return new ExactMatchResponse(responseData: candidates[0].referenceId)
             }
+        } else if(sameReferenceIdAndCanonical(candidates)) {
+            return new ExactMatchResponse(responseData: candidates[0].referenceId)
         }
-        log.debug("No exact match found, resorting to fuzzy match ")
-        if(!readOnly && candidates.any { isExistingCandidateIdentifiersExists(systemOfRecord, identifier, it)}) {
-            log.debug("Converted fuzzy match to conflict due to existing match for $systemOfRecord/$identifier")
-            return Response.CONFLICT
-        }
-        if(readOnly) {
-            return new MultiMatchResponse(responseData: candidates)
-        }
+        // Fall through is always a Fuzzy Match.
+        return new FuzzyMatchResponse(responseData: candidates.referenceId)
     }
 
-
-
-    Response insertNewRecord(String systemOfRecord, String identifier, Map sorAttributes, String referenceId = null) {
-        def insertResult = matchService.insertCandidate(systemOfRecord, identifier, sorAttributes)
-        return new InsertResponse(responseData: insertResult)
+    boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
+        return candidates.referenceId.unique().size() == 1 & candidates.every { it.confidence >= 90}
     }
-
-    Response updateExistingRecord(String systemOfRecord, String identifier, Map sorAttributes) {
-        def updateResult = matchService.updateCandidate(systemOfRecord, identifier, sorAttributes)
-        return new UpdateResponse(responseData: updateResult)
-    }
-
-    boolean isExistingCandidateIdentifiersExists(String systemOfRecord, String identifier, Candidate candidate) {
-        def systemOfRecordType = matchConfig.matchReference.systemOfRecordAttribute
-
-        return candidate?.identifiers?.any { it.type == systemOfRecordType && it.identifier == identifier}
-    }
-
 }
