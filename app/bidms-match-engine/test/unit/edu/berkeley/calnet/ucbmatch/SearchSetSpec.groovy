@@ -9,44 +9,48 @@ import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
 class SearchSetSpec extends Specification {
 
     @Shared
-            systemOfRecord = 'SIS'
-    @Shared
-            identifier = 'SIS12345'
-    @Shared
-            sorAttributes = [
-                    "names"      : [
-                            ["type"  : "official",
-                             "given" : "Pamela",
-                             "family": "Anderson"],
-                            ["given" : "Pam",
-                             "family": "Anderson"]
+    Map matchInput = [
+            systemOfRecord          : "SIS",
+            identifier              : "SI12345",
 
-                    ],
-                    "dateOfBirth": "1983-03-18",
-                    "identifiers": [
-                            ["type"      : "national",
-                             "identifier": "3B902AE12DF55196"],
-                            ["type"      : "enterprise",
-                             "identifier": "ABCD1234"]
-                    ]
-            ]
+            names                   : [[
+                                               type  : "official",
+                                               given : "Pamela",
+                                               family: "Anderson"],
+                                       [
+                                               given : "Pam",
+                                               family: "Anderson"]
+            ],
+            dateOfBirth             : "1983-03-18",
+            identifiers             : [[
+                                               type      : "national",
+                                               identifier: "3B902AE12DF55196"],
+                                       [
+                                               type      : "enterprise",
+                                               identifier: "ABCD1234"]
+            ],
+            nullValueAttribute1     : "    ",
+            nullValueAttribute2     : "000-00-0000",
+            customNullValueAttribute: "xxxxxx"
+
+    ]
 
 
     def "test buildWhereClause for simple matchAttributeConfigs and map of attributes"() {
         setup:
         def matchAttributeConfigs = [
-                create(name: 'sor', column: 'SOR', property: 'systemOfRecord'),
-                create(name: 'sorid', column: "SORID", property: 'identifier')
+                create(name: 'sor', column: 'SOR', attribute: 'systemOfRecord'),
+                create(name: 'sorid', column: "SORID", attribute: 'identifier')
         ]
         def confidences = [sor: EXACT, sorid: EXACT]
         def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
 
         when:
-        def whereClause = sut.buildWhereClause(systemOfRecord, identifier, sorAttributes)
+        def whereClause = sut.buildWhereClause(matchInput)
 
         then:
         whereClause.sql == "lower(SOR)=? AND lower(SORID)=?"
-        whereClause.values == [systemOfRecord.toLowerCase(), identifier.toLowerCase()]
+        whereClause.values == [matchInput.systemOfRecord.toLowerCase(), matchInput.identifier.toLowerCase()]
     }
 
     def "test buildWhereClause for matchAttributeConfigs with missing attribute in map of attributes"() {
@@ -61,7 +65,7 @@ class SearchSetSpec extends Specification {
         def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
 
         when:
-        def whereClause = sut.buildWhereClause(systemOfRecord, identifier, sorAttributes)
+        def whereClause = sut.buildWhereClause(matchInput)
 
         then:
         !whereClause
@@ -78,7 +82,7 @@ class SearchSetSpec extends Specification {
         def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
 
         when:
-        def whereClause = sut.buildWhereClause(systemOfRecord, identifier, sorAttributes)
+        def whereClause = sut.buildWhereClause(matchInput)
 
         then:
         whereClause.sql == "substring(lower(FIRST_NAME) from 1 for 3)=substring(? from 1 for 3) AND levenshtein_less_equal(lower(LAST_NAME),?,3)<4 AND regexp_replace(DATE_OF_BIRTH,'[^A-Za-z0-9]','','g')=?"

@@ -13,10 +13,10 @@ class SearchSet {
     Map<String, MatchType> matchTypes
     List<MatchAttributeConfig> matchAttributeConfigs
 
-    Map buildWhereClause(String systemOfRecord, String identifier, Map sorAttributes) {
+    Map buildWhereClause(Map matchInput) {
         List<WhereAndValue> whereAndValues = matchTypes.collect { name, matchType ->
             def config = matchAttributeConfigs.find { it.name == name }
-            def value = AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes)
+            def value = AttributeValueResolver.getAttributeValue(config, matchInput)
             def sqlValue = SqlWhereResolver.getWhereClause(matchType, config, value)
             new WhereAndValue(sqlValue)
         }

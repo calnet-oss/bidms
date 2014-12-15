@@ -1,5 +1,5 @@
 package edu.berkeley.calnet.ucbmatch.v1
-import edu.berkeley.calnet.ucbmatch.command.MatchCommand
+
 import grails.converters.JSON
 
 class PersonController {
@@ -8,8 +8,8 @@ class PersonController {
 
     def personService
 
-    def getPerson(MatchCommand command) {
-        def result = personService.matchPerson(command.properties['systemOfRecord','identifier','sorAttributes'])
+    def getPerson() {
+        def result = personService.matchPerson(request.JSON)
         if (result.responseData) {
             response.status = result.responseCode
             render(result.responseData as JSON)
