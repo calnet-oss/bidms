@@ -6,52 +6,47 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class AttributeValueResolverSpec extends Specification {
-    @Shared
-            systemOfRecord = "SIS"
-    @Shared
-            identifier = "SI12345"
-    @Shared
-            sorAttributes = [
-                    "names"                   : [
-                            ["type"  : "official",
-                             "given" : "Pamela",
-                             "family": "Anderson"],
-                            ["given" : "Pam",
-                             "family": "Anderson"]
 
-                    ],
-                    "dateOfBirth"             : "1983-03-18",
-                    "identifiers"             : [
-                            ["type"      : "national",
-                             "identifier": "3B902AE12DF55196"],
-                            ["type"      : "enterprise",
-                             "identifier": "ABCD1234"]
-                    ],
-                    "nullValueAttribute-1"    : "    ",
-                    "nullValueAttribute-2"    : "000-00-0000",
-                    "customNullValueAttribute": "xxxxxx"
-            ]
+    @Shared
+    Map matchInput = [
+            systemOfRecord          : "SIS",
+            identifier              : "SI12345",
+
+            names                   : [[
+                                               type  : "official",
+                                               given : "Pamela",
+                                               family: "Anderson"],
+                                       [
+                                               given : "Pam",
+                                               family: "Anderson"]
+            ],
+            dateOfBirth             : "1983-03-18",
+            identifiers             : [[
+                                               type      : "national",
+                                               identifier: "3B902AE12DF55196"],
+                                       [
+                                               type      : "enterprise",
+                                               identifier: "ABCD1234"]
+            ],
+            nullValueAttribute1     : "    ",
+            nullValueAttribute2     : "000-00-0000",
+            customNullValueAttribute: "xxxxxx"
+
+    ]
 
     @Unroll
-    def "test that a config object with property resolves the correct value"() {
-        setup:
-        def config = new MatchAttributeConfig(name: "sor", property: property)
-
-        expect:
-        AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes) == expected
-
-        where:
-        property         | expected
-        "systemOfRecord" | systemOfRecord
-        "identifier"     | identifier
-    }
-
     def "test that a config object with no path and an attribute resolves the correct value"() {
         setup:
-        def config = new MatchAttributeConfig(name: 'dob', attribute: 'dateOfBirth')
+        def config = new MatchAttributeConfig(name: name, attribute: attribute)
 
         expect:
-        AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes) == '1983-03-18'
+        AttributeValueResolver.getAttributeValue(config, matchInput) == expected
+
+        where:
+        name    | attribute        | expected
+        "dob"   | "dateOfBirth"    | matchInput.dateOfBirth
+        "sor"   | "systemOfRecord" | matchInput.systemOfRecord
+        "sorid" | "identifier"     | matchInput.identifier
     }
 
     @Unroll
@@ -60,7 +55,7 @@ class AttributeValueResolverSpec extends Specification {
         def config = new MatchAttributeConfig(name: 'alias', path: path, attribute: attribute, group: group)
 
         expect:
-        AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes) == expected
+        AttributeValueResolver.getAttributeValue(config, matchInput) == expected
 
         where:
         path          | attribute    | group        || expected
@@ -82,19 +77,19 @@ class AttributeValueResolverSpec extends Specification {
         }
 
         expect:
-        AttributeValueResolver.getAttributeValue(config, systemOfRecord, identifier, sorAttributes) == expectedOutcome
+        AttributeValueResolver.getAttributeValue(config, matchInput) == expectedOutcome
 
         where:
         attribute                  | nullEquivilants | expectedOutcome
-        "nullValueAttribute-1"     | null            | null
-        "nullValueAttribute-2"     | null            | null
+        "nullValueAttribute1"      | null            | null
+        "nullValueAttribute2"      | null            | null
         "customNullValueAttribute" | null            | "xxxxxx"
         "customNullValueAttribute" | [/[x]+/]        | null
-        "nullValueAttribute-1"     | [/[x]+/]        | "    "
-        "nullValueAttribute-2"     | [/[x]+/]        | "000-00-0000"
+        "nullValueAttribute1"      | [/[x]+/]        | "    "
+        "nullValueAttribute2"      | [/[x]+/]        | "000-00-0000"
         "customNullValueAttribute" | []              | "xxxxxx"
-        "nullValueAttribute-1"     | [/[x]+/]        | "    "
-        "nullValueAttribute-2"     | [/[x]+/]        | "000-00-0000"
+        "nullValueAttribute1"      | [/[x]+/]        | "    "
+        "nullValueAttribute2"      | [/[x]+/]        | "000-00-0000"
     }
 
 

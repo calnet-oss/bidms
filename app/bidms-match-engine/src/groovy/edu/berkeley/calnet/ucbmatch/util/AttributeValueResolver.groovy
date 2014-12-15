@@ -5,21 +5,10 @@ import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 class AttributeValueResolver {
     private AttributeValueResolver() {}
 
-    static String getAttributeValue(MatchAttributeConfig config, String systemOfRecord, String identifier, Map sorAttributes) {
-        switch (config.property) {
-            case 'systemOfRecord':
-                return systemOfRecord
-            case 'identifier':
-                return identifier
-            default: // Not the specific cases, then resolve the value from the sorAttributes
-                return getAttributeValueFromSorAttributes(config, sorAttributes)
-        }
-    }
-
-    private static String getAttributeValueFromSorAttributes(MatchAttributeConfig config, Map sorAttributes) {
+    static String getAttributeValue(MatchAttributeConfig config, Map matchInput) {
         if (config.path) {
             // Find the candidates in the given path
-            def candidates = sorAttributes[config.path] as List<Map>
+            def candidates = matchInput[config.path] as List<Map>
             // If no candidates return null
             if (!candidates) {
                 return null
@@ -30,9 +19,8 @@ class AttributeValueResolver {
 
             return normalizeValue(config, candidate?.getAt(config.attribute))
         } else {
-            return normalizeValue(config, sorAttributes.getAt(config.attribute))
+            return normalizeValue(config, matchInput.getAt(config.attribute))
         }
-
     }
 
     private static String normalizeValue(MatchAttributeConfig matchAttributeConfig, String value) {
