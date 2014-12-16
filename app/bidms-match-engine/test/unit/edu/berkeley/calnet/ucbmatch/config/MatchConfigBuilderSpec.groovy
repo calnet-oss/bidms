@@ -38,7 +38,6 @@ class MatchConfigBuilderSpec extends Specification {
                 'sor' {
                     description = "Some description"
                     column = "columnName"
-                    property = "systemOfRecord"
                     path = "somePath"
                     attribute = "someAttribute"
                     group = "groupName"
@@ -66,7 +65,6 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].name == 'sor'
         sut.config.matchAttributeConfigs[0].description == 'Some description'
         sut.config.matchAttributeConfigs[0].column == 'columnName'
-        sut.config.matchAttributeConfigs[0].property == 'systemOfRecord'
         sut.config.matchAttributeConfigs[0].path == 'somePath'
         sut.config.matchAttributeConfigs[0].attribute == 'someAttribute'
         sut.config.matchAttributeConfigs[0].group == 'groupName'

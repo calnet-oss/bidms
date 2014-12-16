@@ -7,7 +7,6 @@ class MatchAttributeConfig {
     String name
     String description
     String column
-    String property
     String path
     String attribute
     String group
