@@ -37,38 +37,4 @@ class DatabaseServiceSpec extends Specification {
         "SIS0001" | [reference_id: 'R1'] || 'R1'
         "SIS0002" | null                 || null
     }
-
-    @SuppressWarnings("GroovyAssignabilityCheck")
-    void "test findRecord within a transaction generates correct calls and sql"() {
-        def closure =  {
-            findRecord("SIS", "SIS0001", sqlMock)
-        }
-
-        when:
-        def result = service.withTransaction(closure)
-
-        then:
-        1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.withTransaction(_)  >> { Closure c -> return c.call(sqlMock) }
-        1 * sqlMock.firstRow(_) >> [reference_id: 'R1']
-
-        and:
-        0 * sqlMock._(*_)
-
-        result.referenceId == 'R1'
-    }
-
-    @SuppressWarnings("GroovyAssignabilityCheck")
-    void "test removeRecord generates correct SQL "() {
-        when:
-        def result = service.removeRecord("SIS", "SIS0001")
-
-        then:
-        1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.execute("DELETE FROM matchgrid WHERE sor='SIS' AND sorid='SIS0001'") >> true
-        result
-
-        and:
-        0 * sqlMock._(*_)
-    }
 }

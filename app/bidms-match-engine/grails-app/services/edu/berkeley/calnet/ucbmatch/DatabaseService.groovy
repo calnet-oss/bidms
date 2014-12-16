@@ -1,10 +1,7 @@
 package edu.berkeley.calnet.ucbmatch
-
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
-import edu.berkeley.calnet.ucbmatch.database.Record
 import grails.transaction.Transactional
-import groovy.sql.Sql
 
 @Transactional
 class DatabaseService {
@@ -13,10 +10,10 @@ class DatabaseService {
     def sqlService
     def rowMapperService
 
-    Set<Candidate> searchDatabase(String systemOfRecord, String identifier, Map sorAttributes, ConfidenceType confidenceType) {
+    Set<Candidate> searchDatabase(Map matchInput, ConfidenceType confidenceType) {
         def searchSets = getSearchSets(confidenceType)
         Set sqlStatements = searchSets.inject([] as Set) { statements, searchSet ->
-            def whereClause = searchSet.buildWhereClause(systemOfRecord, identifier, sorAttributes)
+            def whereClause = searchSet.buildWhereClause(matchInput)
             if (whereClause) {
                 statements << [sql: """
                 SELECT *
@@ -32,16 +29,11 @@ class DatabaseService {
     }
 
 
-    Record findRecord(String systemOfRecord, String identifier, Sql sql = null) {
-        sql = sql ?: sqlService.sqlInstance
+    Candidate findRecord(String systemOfRecord, String identifier) {
+        def sql = sqlService.sqlInstance
         def row = sql.firstRow("SELECT * FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
 
-        return row ? new Record(referenceId: row.reference_id) : null
-    }
-
-    boolean removeRecord(String systemOfRecord, String identifier, Sql sql = null) {
-        sql = sql ?: sqlService.sqlInstance
-        sql.execute("DELETE FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
+        return row ? rowMapperService.mapDataRowToCandidate(row as Set, ConfidenceType.CANONICAL) : null
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
@@ -68,17 +60,6 @@ class DatabaseService {
             return result
         }.flatten()
         return rows as Set
-    }
-
-    def withTransaction(Closure closure) {
-        def sql = sqlService.sqlInstance
-        def result = null
-        closure.delegate = this
-
-        sql.withTransaction {
-            result = closure.call(sql)
-        }
-        return result
     }
 }
 

@@ -1,13 +1,8 @@
 package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
-import edu.berkeley.calnet.ucbmatch.database.InsertRecord
 import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
-import edu.berkeley.calnet.ucbmatch.database.UpdateRecord
-import edu.berkeley.calnet.ucbmatch.exceptions.RecordExistsException
 import grails.transaction.Transactional
-import groovy.sql.Sql
-import org.joda.time.LocalDateTime
 
 @Transactional
 class MatchService {
@@ -16,59 +11,19 @@ class MatchService {
     DatabaseService databaseService
 
     Set<Candidate> findCandidates(Map matchInput) {
-
-    }
-
-
-
-    Set<Candidate> findCandidates(String systemOfRecord, String identifier, Map sorAttributes) {
-        Set<Candidate> candidates = databaseService.searchDatabase(systemOfRecord, identifier, sorAttributes, ConfidenceType.CANONICAL)
-        if(!candidates) {
-            candidates = databaseService.searchDatabase(systemOfRecord,identifier,sorAttributes,ConfidenceType.POTENTIAL)
+        Set<Candidate> candidates = databaseService.searchDatabase(matchInput, ConfidenceType.CANONICAL)
+        if (!candidates) {
+            candidates = databaseService.searchDatabase(matchInput, ConfidenceType.POTENTIAL)
         }
         return candidates
     }
 
-    InsertRecord insertCandidate(String systemOfRecord, String identifier, Map sorAttributes, String referenceId = null, boolean assignNewId = false) {
-        def result = new InsertRecord()
-        def idGenerator = getIdGenerator(assignNewId)
-
-        def newRecordReferenceId = referenceId
-        def requestTime = LocalDateTime.now()
-        def resolutionTime = null
-        databaseService.withTransaction { Sql sql ->
-            def existingRecord = findRecord(systemOfRecord, identifier)
-            if(existingRecord) {
-                if(existingRecord.referenceId) {
-                    log.warn("Existing record found for $systemOfRecord/$identifier during insert.")
-                    throw new RecordExistsException("Existing record found for $systemOfRecord/$identifier during insert.")
-                } else {
-                    log.debug("Existing unreconciled record found for $systemOfRecord/$identifier, replacing.")
-                    removeRecord(systemOfRecord, identifier, sql)
-                }
-            }
-
-
-
-
-        }
-
-
-
-//        if(matchConfig.matchReference.responseType) {
-//
-//        }
-        return new InsertRecord(referenceId: "1234", identifiers: [new Identifier(type: "Enterprise", identifier: "abcd")] )
+    Candidate findExistingRecord(Map matchInput) {
+        return databaseService.findRecord(matchInput.systemOfRecord, matchInput.identifier)
     }
-
-    UpdateRecord updateCandidate(String systemOfRecord, String identifier, Map sorAttributes) {
-        null
-    }
-
-
 
     private getIdGenerator(boolean assignNewId) {
-        if(assignNewId && matchConfig.matchReference.idGenerator) {
+        if (assignNewId && matchConfig.matchReference.idGenerator) {
             return matchConfig.matchReference.idGenerator
         } else {
             return NullIdGenerator

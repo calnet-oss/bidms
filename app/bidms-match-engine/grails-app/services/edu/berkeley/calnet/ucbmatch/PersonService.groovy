@@ -12,6 +12,11 @@ class PersonService {
     MatchService matchService
 
     Response matchPerson(Map matchInput) {
+        def existingRecord = matchService.findExistingRecord(matchInput)
+        if(existingRecord) {
+            return new ExistingMatchResponse(responseData: existingRecord)
+        }
+
         Set<Candidate> candidates = matchService.findCandidates(matchInput)
         if (!candidates) {
             log.debug("No match found for $matchInput")

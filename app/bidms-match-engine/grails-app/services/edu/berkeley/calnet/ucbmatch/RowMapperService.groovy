@@ -40,6 +40,13 @@ class RowMapperService {
         return candidates
     }
 
+    Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType) {
+        def candidates = mapDataRowsToCandidates([row] as Set, confidenceType)
+        return candidates?.size() == 1 ? candidates[0] : null
+
+    }
+
+    @SuppressWarnings("GroovyUnusedDeclaration")
     private void mapRowToCandidateRoot(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
         attributeConfigs.each {
             if (it.name == matchConfig.matchReference.systemOfRecordAttribute) {
@@ -93,10 +100,11 @@ class RowMapperService {
 
     }
 
-
     private String getSystemOfRecordFromRow(Map<String, String> databaseRow) {
         def systemOfRecordAttribute = matchConfig.matchReference.systemOfRecordAttribute
         def attributeConfig = matchConfig.matchAttributeConfigs.find { it.name == systemOfRecordAttribute }
         return databaseRow?."${attributeConfig.column}"
     }
+
+
 }
