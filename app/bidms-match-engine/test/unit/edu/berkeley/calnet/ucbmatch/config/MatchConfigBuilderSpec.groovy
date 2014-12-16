@@ -1,6 +1,5 @@
 package edu.berkeley.calnet.ucbmatch.config
 
-import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -13,7 +12,6 @@ class MatchConfigBuilderSpec extends Specification {
         setup:
         def configClosure = {
             referenceId {
-                idGenerator = NullIdGenerator
                 responseType = 'uid'
             }
         }
@@ -27,7 +25,6 @@ class MatchConfigBuilderSpec extends Specification {
         configClosure.call()
 
         then:
-        sut.config.matchReference.idGenerator == NullIdGenerator
         sut.config.matchReference.responseType == 'uid'
     }
 
@@ -39,6 +36,7 @@ class MatchConfigBuilderSpec extends Specification {
                     description = "Some description"
                     column = "columnName"
                     path = "somePath"
+                    outputPath = "someOtherPath"
                     attribute = "someAttribute"
                     group = "groupName"
                     invalidates = true
@@ -66,6 +64,7 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].description == 'Some description'
         sut.config.matchAttributeConfigs[0].column == 'columnName'
         sut.config.matchAttributeConfigs[0].path == 'somePath'
+        sut.config.matchAttributeConfigs[0].outputPath == 'someOtherPath'
         sut.config.matchAttributeConfigs[0].attribute == 'someAttribute'
         sut.config.matchAttributeConfigs[0].group == 'groupName'
         sut.config.matchAttributeConfigs[0].invalidates

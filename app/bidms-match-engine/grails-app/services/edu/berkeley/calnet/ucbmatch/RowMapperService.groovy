@@ -15,7 +15,10 @@ class RowMapperService {
         // Group the returned rows by referenceId. The value is a list of db rows returned
         def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it.reference_id }
 
-        def configByPath = matchConfig.matchAttributeConfigs.groupBy { it.path?.capitalize() ?: 'Root' }
+        def configByPath = matchConfig.matchAttributeConfigs.groupBy {
+            // Use output path, path or Root
+            it.outputPath?.capitalize() ?: it.path?.capitalize() ?: 'Root'
+        }
 
         def candidates = groupedByReferenceId.inject([] as Set) { Set<Candidate> list, group ->
             def referenceId = group.key
@@ -59,12 +62,12 @@ class RowMapperService {
         }
     }
 
-    @SuppressWarnings("GroovyUnusedDeclaration")
+    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"]) // Cannot be static because it is called dynamic
     private void mapRowToCandidateIdentifiers(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.identifiers, dataRow, attributeConfigs, Identifier)
     }
 
-    @SuppressWarnings("GroovyUnusedDeclaration")
+    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"]) // Cannot be static because it is called dynamic
     private void mapRowToCandidateNames(Candidate candidate, Map row, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.names, row, attributeConfigs, Name)
     }

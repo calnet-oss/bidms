@@ -1,22 +1,16 @@
 package edu.berkeley.calnet.ucbmatch.config
 
-import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
 import spock.lang.Specification
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
 
 class MatchConfigFactoryBeanSpec extends Specification {
     def "test that parseConfig will return a valid config"() {
         setup:
         def config = """
-            import edu.berkeley.calnet.ucbmatch.database.NullIdGenerator
-
             import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
 
             referenceId {
-                idGenerator = NullIdGenerator
                 responseType = "enterprise"
             }
 
@@ -41,7 +35,6 @@ class MatchConfigFactoryBeanSpec extends Specification {
         def matchConfig = MatchConfigFactoryBean.parseConfig(config)
 
         then:
-        matchConfig.matchReference.idGenerator == NullIdGenerator
         matchConfig.matchReference.responseType == 'enterprise'
         matchConfig.matchAttributeConfigs.name == ['sor','name']
         matchConfig.canonicalConfidences == [[sor: EXACT],[sor: EXACT,name: SUBSTRING]]

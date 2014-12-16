@@ -56,8 +56,8 @@ class SearchSetSpec extends Specification {
     def "test buildWhereClause for matchAttributeConfigs with missing attribute in map of attributes"() {
         setup:
         def matchAttributeConfigs = [
-                create(name: 'sor', column: 'SOR', property: 'systemOfRecord'),
-                create(name: 'sorid', column: "SORID", property: 'identifier'),
+                create(name: 'sor', column: 'SOR', attribute: 'systemOfRecord'),
+                create(name: 'sorid', column: "SORID", attribute: 'identifier'),
                 create(name: 'missing', column: "MISSING")
         ]
         def confidences = [sor: EXACT, sorid: EXACT, missing: EXACT]

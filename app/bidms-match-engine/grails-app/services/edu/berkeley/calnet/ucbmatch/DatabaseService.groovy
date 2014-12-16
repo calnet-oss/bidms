@@ -33,7 +33,7 @@ class DatabaseService {
         def sql = sqlService.sqlInstance
         def row = sql.firstRow("SELECT * FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
 
-        return row ? rowMapperService.mapDataRowToCandidate(row as Set, ConfidenceType.CANONICAL) : null
+        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL) : null
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {

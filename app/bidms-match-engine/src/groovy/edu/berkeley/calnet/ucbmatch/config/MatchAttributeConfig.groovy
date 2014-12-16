@@ -8,6 +8,7 @@ class MatchAttributeConfig {
     String description
     String column
     String path
+    String outputPath
     String attribute
     String group
     boolean invalidates
