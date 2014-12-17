@@ -25,7 +25,7 @@ class DatabaseService {
             return statements
         } as Set
         def rows = performSearch(sqlStatements)
-        return rowMapperService.mapDataRowsToCandidates(rows, confidenceType)
+        return rowMapperService.mapDataRowsToCandidates(rows, confidenceType, matchInput)
     }
 
 

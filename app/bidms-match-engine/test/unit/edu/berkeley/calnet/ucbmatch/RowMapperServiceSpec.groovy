@@ -20,15 +20,20 @@ class RowMapperServiceSpec extends Specification {
             [reference_id: 'R2', sor: "X", sorid: "X234", attr_name_given_official: "Jack", attr_name_family_official: "Daniels", attr_date_of_birth: "1901-02-01"]
     ]
     def setup() {
-        service.matchConfig = TestMatchConfig.config
     }
 
     void "test mapping of single database row to candidates list"() {
+        given:
+        service.matchConfig = TestMatchConfig.nonInvalidatingConfig
+
+
         when:
-        def candidates = service.mapDataRowsToCandidates(dataRows[0..0] as Set, ConfidenceType.CANONICAL)
+        def candidates = service.mapDataRowsToCandidates(dataRows[0..0] as Set, ConfidenceType.CANONICAL, [:]) // Input attributes not important here
+
 
         then:
         candidates.size() == 1
+        candidates[0].confidence == ConfidenceType.CANONICAL.levelOfConfidence
         candidates[0].referenceId == 'R1'
         candidates[0].systemOfRecord == 'X'
         candidates[0].names.size() == 1
@@ -46,11 +51,15 @@ class RowMapperServiceSpec extends Specification {
     }
 
     void "test mapping of multiple database rows to candidates list"() {
+        given:
+        service.matchConfig = TestMatchConfig.nonInvalidatingConfig
+
         when:
-        def candidates = service.mapDataRowsToCandidates(dataRows as Set, ConfidenceType.CANONICAL)
+        def candidates = service.mapDataRowsToCandidates(dataRows as Set, ConfidenceType.POTENTIAL, [:]) // Input attributes not important here
 
         then:
         candidates.size() == 3
+        candidates[0].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
         candidates[0].referenceId == 'R1'
         candidates[0].systemOfRecord == 'X'
         candidates[0].names.size() == 1
@@ -66,6 +75,7 @@ class RowMapperServiceSpec extends Specification {
         candidates[0].identifiers[2].type == 'sor-employee'
         candidates[0].identifiers[2].identifier == 'EID-123'
         candidates[1].referenceId == 'R1'
+        candidates[1].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
         candidates[1].systemOfRecord == 'Y'
         candidates[1].dateOfBirth == '1939-02-08'
         candidates[1].names.size() == 1
@@ -79,6 +89,7 @@ class RowMapperServiceSpec extends Specification {
         candidates[1].identifiers[1].identifier == '123-45-6789'
         candidates[1].identifiers[2].type == 'sor-student'
         candidates[1].identifiers[2].identifier == 'SID-123'
+        candidates[2].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
         candidates[2].referenceId == 'R2'
         candidates[2].systemOfRecord == 'X'
         candidates[2].dateOfBirth == '1901-02-01'

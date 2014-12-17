@@ -4,6 +4,7 @@ import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Name
+import edu.berkeley.calnet.ucbmatch.util.AttributeValueResolver
 import grails.transaction.Transactional
 
 @Transactional
@@ -11,7 +12,7 @@ class RowMapperService {
 
     MatchConfig matchConfig
 
-    Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType) {
+    Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType, Map matchInput) {
         // Group the returned rows by referenceId. The value is a list of db rows returned
         def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it.reference_id }
 
@@ -36,11 +37,33 @@ class RowMapperService {
                 configByPath.each { path, pathConfigs ->
                     "mapRowToCandidate$path"(candidate, dataRow, pathConfigs)
                 }
+                if(candidate.confidence == ConfidenceType.CANONICAL.levelOfConfidence) {
+                    runCrossCheckOnCandidate(candidate, dataRow, matchInput)
+                }
             }
             return list
         }
 
         return candidates
+    }
+
+    /**
+     *
+     * @param candidate
+     * @param rowData
+     * @param matchInput
+     */
+    private void runCrossCheckOnCandidate(Candidate candidate, Map rowData, Map matchInput) {
+        def invalidatingAttributes = matchConfig.matchAttributeConfigs.findAll { it.invalidates }
+        def hasInvalidatingAttribute = invalidatingAttributes.any { matchAttributeConfig ->
+            def value = AttributeValueResolver.getAttributeValue(matchAttributeConfig, matchInput)
+            def rowDataValue = rowData."${matchAttributeConfig.column}"
+            return value != rowDataValue
+        }
+
+        if(hasInvalidatingAttribute) {
+            candidate.confidence = ConfidenceType.POTENTIAL.levelOfConfidence
+        }
     }
 
     Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType) {
