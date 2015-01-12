@@ -3,6 +3,8 @@ package edu.berkeley.match
 import grails.transaction.Transactional
 import grails.util.Holders
 
+import javax.jms.MapMessage
+
 @Transactional
 class NewSORConsumerService {
     static exposes = ["jms"]
@@ -12,12 +14,36 @@ class NewSORConsumerService {
     static adapter = "transacted"
     static container = "transacted"
 
+    static MATCH_FIELDS = ['givenName','familyName','dateOfBirth','socialSecurityNumber']
+
+
     def matchClientService
     def uidClientService
     def databaseService
     def downstreamJMSService
 
     def onMessage(msg) {
+        if (!msg instanceof MapMessage) {
+            // TODO: Handle messages of wrong type. Right now expect a MapMessage, if it's not, just return null
+            log.error "Received a message that was not of type MapMessage. It has been discarded: ${msg}"
+            return null
+        }
+        def message = msg as MapMessage
+        def systemOfRecord = message.getString('systemOfRecord')
+        def sorIdentifier = message.getString('sorIdentifier')
+        def matchParams = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
+        def match = matchClientService.match(matchParams)
+
+        // If it is a partial match just store the partial and return
+        if(match instanceof PartialMatch) {
+            databaseService.storePartialMatch(systemOfRecord, sorIdentifier, match.uids)
+            return null
+        }
+
+        // If it is an exact match assign get the UID from the match otherwise go and get a new UID
+        def uid = match instanceof ExactMatch ? match.uid : uidClientService.nextUid
+        databaseService.assignUidToSOR(systemOfRecord, sorIdentifier, uid)
+        downstreamJMSService.provision(uid)
 
         return null
     }
