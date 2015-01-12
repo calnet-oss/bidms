@@ -8,6 +8,7 @@ import javax.jms.MapMessage
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
+@SuppressWarnings("GroovyAssignabilityCheck") // When using expectations in Spock
 @TestFor(NewSORConsumerService)
 class NewSORConsumerServiceSpec extends Specification {
 
