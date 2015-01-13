@@ -27,7 +27,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new NoMatch()
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new NoMatch()
         1 * service.uidClientService.nextUid >> '12345'
         1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
         1 * service.downstreamJMSService.provision('12345')
@@ -42,7 +42,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new ExactMatch(uid: '12345')
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new ExactMatch(uid: '12345')
         1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
         1 * service.downstreamJMSService.provision('12345')
         0 * service.uidClientService.nextUid
@@ -56,7 +56,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PartialMatch(uids: ['12345', '23456'])
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PartialMatch(uids: ['12345', '23456'])
         1 * service.databaseService.storePartialMatch('SIS', 'SIS00001', ['12345', '23456'])
         0 * service.uidClientService.nextUid
         0 * service.databaseService.assignUidToSOR(*_)
