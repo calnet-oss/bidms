@@ -1,12 +1,12 @@
 package edu.berkeley.calnet.ucbmatch
 
 enum ConfidenceType {
-    CANONICAL(95),
-    POTENTIAL(85)
+    CANONICAL(true),
+    POTENTIAL(false)
 
-    int levelOfConfidence
+    boolean exactMatch
 
-    ConfidenceType(int levelOfConfidence) {
-        this.levelOfConfidence = levelOfConfidence
+    ConfidenceType(boolean exactMatch) {
+        this.exactMatch = exactMatch
     }
 }

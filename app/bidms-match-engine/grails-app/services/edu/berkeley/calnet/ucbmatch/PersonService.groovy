@@ -22,7 +22,7 @@ class PersonService {
             log.debug("No match found for $matchInput")
             return Response.NOT_FOUND
         } else if (candidates.size() == 1) {
-            if (candidates[0].confidence >= 90) {
+            if (candidates[0].exactMatch) {
                 return new ExactMatchResponse(responseData: candidates[0])
             }
         } else if(sameReferenceIdAndCanonical(candidates)) {
@@ -33,6 +33,6 @@ class PersonService {
     }
 
     boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
-        return candidates.referenceId.unique().size() == 1 & candidates.every { it.confidence >= 90}
+        return candidates.referenceId.unique().size() == 1 & candidates.every { it.exactMatch }
     }
 }

@@ -30,14 +30,14 @@ class RowMapperService {
                 // Start by find an existing candidate with the same referenceId and systemOfRecord
                 def candidate = list.find { it.referenceId == referenceId && it.systemOfRecord == systemOfRecord }
                 if (!candidate) {
-                    candidate = new Candidate(systemOfRecord: systemOfRecord, referenceId: referenceId, confidence: confidenceType.levelOfConfidence)
+                    candidate = new Candidate(systemOfRecord: systemOfRecord, referenceId: referenceId, exactMatch: confidenceType.exactMatch)
                     list << candidate
                 }
                 // Transfer data from database dataRow to candidate by dynamically calling mapRowToCandidate(Root|Identifiers|Names) methods
                 configByPath.each { path, pathConfigs ->
                     "mapRowToCandidate$path"(candidate, dataRow, pathConfigs)
                 }
-                if(candidate.confidence == ConfidenceType.CANONICAL.levelOfConfidence) {
+                if(candidate.exactMatch == ConfidenceType.CANONICAL.exactMatch) {
                     runCrossCheckOnCandidate(candidate, dataRow, matchInput)
                 }
             }
@@ -62,7 +62,7 @@ class RowMapperService {
         }
 
         if(hasInvalidatingAttribute) {
-            candidate.confidence = ConfidenceType.POTENTIAL.levelOfConfidence
+            candidate.exactMatch = ConfidenceType.POTENTIAL.exactMatch
         }
     }
 

@@ -33,7 +33,7 @@ class RowMapperServiceSpec extends Specification {
 
         then:
         candidates.size() == 1
-        candidates[0].confidence == ConfidenceType.CANONICAL.levelOfConfidence
+        candidates[0].exactMatch == ConfidenceType.CANONICAL.exactMatch
         candidates[0].referenceId == 'R1'
         candidates[0].systemOfRecord == 'X'
         candidates[0].names.size() == 1
@@ -59,7 +59,7 @@ class RowMapperServiceSpec extends Specification {
 
         then:
         candidates.size() == 3
-        candidates[0].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
+        candidates[0].exactMatch == ConfidenceType.POTENTIAL.exactMatch
         candidates[0].referenceId == 'R1'
         candidates[0].systemOfRecord == 'X'
         candidates[0].names.size() == 1
@@ -75,7 +75,7 @@ class RowMapperServiceSpec extends Specification {
         candidates[0].identifiers[2].type == 'sor-employee'
         candidates[0].identifiers[2].identifier == 'EID-123'
         candidates[1].referenceId == 'R1'
-        candidates[1].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
+        candidates[1].exactMatch == ConfidenceType.POTENTIAL.exactMatch
         candidates[1].systemOfRecord == 'Y'
         candidates[1].dateOfBirth == '1939-02-08'
         candidates[1].names.size() == 1
@@ -89,7 +89,7 @@ class RowMapperServiceSpec extends Specification {
         candidates[1].identifiers[1].identifier == '123-45-6789'
         candidates[1].identifiers[2].type == 'sor-student'
         candidates[1].identifiers[2].identifier == 'SID-123'
-        candidates[2].confidence == ConfidenceType.POTENTIAL.levelOfConfidence
+        candidates[2].exactMatch == ConfidenceType.POTENTIAL.exactMatch
         candidates[2].referenceId == 'R2'
         candidates[2].systemOfRecord == 'X'
         candidates[2].dateOfBirth == '1901-02-01'
