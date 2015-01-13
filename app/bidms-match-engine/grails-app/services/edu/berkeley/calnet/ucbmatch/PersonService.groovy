@@ -23,13 +23,13 @@ class PersonService {
             return Response.NOT_FOUND
         } else if (candidates.size() == 1) {
             if (candidates[0].confidence >= 90) {
-                return new ExactMatchResponse(responseData: candidates[0].referenceId)
+                return new ExactMatchResponse(responseData: candidates[0])
             }
         } else if(sameReferenceIdAndCanonical(candidates)) {
-            return new ExactMatchResponse(responseData: candidates[0].referenceId)
+            return new ExactMatchResponse(responseData: candidates[0])
         }
         // Fall through is always a Fuzzy Match.
-        return new FuzzyMatchResponse(responseData: candidates.referenceId)
+        return new FuzzyMatchResponse(responseData: candidates)
     }
 
     boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
