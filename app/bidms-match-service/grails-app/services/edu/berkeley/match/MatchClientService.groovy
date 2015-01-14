@@ -16,7 +16,7 @@ class MatchClientService {
             accept 'application/json'
             json(jsonMap)
         }
-        switch(response.statusCode) {
+        switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
                 return new NoMatch()
             case HttpStatus.OK:
@@ -28,16 +28,16 @@ class MatchClientService {
                 // TODO: Determin what to do in this situation
                 throw new RuntimeException("Got wrong return code from match engine: $response.statusCode.reasonPhrase ($response.statusCode)")
         }
+
     }
 
-    private ExactMatch exactMatch(def json) {
-        new ExactMatch(uid: '') // TODO: Extract UID from json
+    private static ExactMatch exactMatch(def json) {
+        new ExactMatch(uid: json.matchingRecord.referenceId)
     }
 
-    private PartialMatch partialMatch(def json) {
-        new PartialMatch(uids: []) // TODO: Extract UIDS from json
+    private static PartialMatch partialMatch(def json) {
+        new PartialMatch(uids: json.partialMatchingRecords*.referenceId)
     }
-
 
 
     Map buildJsonMap(Map<String, String> p) {
