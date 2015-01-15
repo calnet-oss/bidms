@@ -28,7 +28,7 @@ class NewSORConsumerServiceSpec extends Specification {
 
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new NoMatch()
-        1 * service.uidClientService.nextUid >> '12345'
+        1 * UidClientService.getNextUid >> '12345'
         1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
         1 * service.downstreamJMSService.provision('12345')
     }
@@ -45,7 +45,7 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new ExactMatch(uid: '12345')
         1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
         1 * service.downstreamJMSService.provision('12345')
-        0 * service.uidClientService.nextUid
+        0 * service.uidClientService.getNextUid
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -58,7 +58,7 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PartialMatch(uids: ['12345', '23456'])
         1 * service.databaseService.storePartialMatch('SIS', 'SIS00001', ['12345', '23456'])
-        0 * service.uidClientService.nextUid
+        0 * service.uidClientService.getNextUid
         0 * service.databaseService.assignUidToSOR(*_)
         0 * service.downstreamJMSService.provision(_)
     }

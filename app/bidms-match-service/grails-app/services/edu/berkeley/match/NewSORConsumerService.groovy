@@ -7,6 +7,7 @@ import javax.jms.MapMessage
 
 @Transactional
 class NewSORConsumerService {
+    // Utilizing the JMS plugin
     static exposes = ["jms"]
 
     static destination = Holders.config.jms.newSORQueue
@@ -31,8 +32,8 @@ class NewSORConsumerService {
         def message = msg as MapMessage
         def systemOfRecord = message.getString('systemOfRecord')
         def sorIdentifier = message.getString('sorIdentifier')
-        def matchParams = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
-        def match = matchClientService.match(matchParams)
+        def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
+        def match = matchClientService.match(sorAttributes)
 
         // If it is a partial match just store the partial and return
         if(match instanceof PartialMatch) {
@@ -41,7 +42,7 @@ class NewSORConsumerService {
         }
 
         // If it is an exact match assign get the UID from the match otherwise go and get a new UID
-        def uid = match instanceof ExactMatch ? match.uid : uidClientService.nextUid
+        def uid = match instanceof ExactMatch ? match.uid : uidClientService.getNextUid(systemOfRecord, sorIdentifier, sorAttributes)
         databaseService.assignUidToSOR(systemOfRecord, sorIdentifier, uid)
         downstreamJMSService.provision(uid)
 
