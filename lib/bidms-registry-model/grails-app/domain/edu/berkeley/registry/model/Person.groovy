@@ -8,9 +8,15 @@ class Person {
     String socialSecurityNumber
 
     static constraints = {
+        uid unique: true
     }
 
     static mapping = {
-        id name: 'uid', generator: 'assigned'
+        id name: 'uid', column: 'UID', generator: 'assigned'
+        version false
+        firstName column: 'firstName'
+        lastName column: 'lastName'
+        dateOfBirth column: 'dateOfBirth'
+        socialSecurityNumber column: 'socialSecurityNumber'
     }
 }
