@@ -4,16 +4,21 @@ class SORObject implements Serializable {
 
     String sorObjectKey
     Date queryTime
-    long jsonVersion
-    String jsonObject
+    Person person
+
+    static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
+        def sor = SOR.findByName(systemOfRecord)
+        return SORObject.findBySorAndSorObjectKey(sor, sorObjectKey)
+    }
 
     static belongsTo = [sor: SOR]
+
     static constraints = {
         sorObjectKey nullable: false, unique: 'sor'
         queryTime nullable: false
-        jsonVersion nullable: false
-        jsonObject nullable: false
+        person nullable: true
     }
+
     static mapping = {
         table name: 'SORObject'
         id composite: ['sor', 'sorObjectKey']
@@ -21,9 +26,7 @@ class SORObject implements Serializable {
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorObjectKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
-        jsonVersion column: 'jsonVersion', sqlType: 'INTEGER'
-        jsonObject column: 'jsonObj', sqlType: 'JSONB'
+        person column: 'personUID'
+
     }
-
-
 }

@@ -1,6 +1,7 @@
 package edu.berkeley.registry.model
 
 class SOR implements Serializable {
+    Integer id
     String name
 
     static hasMany = [sorObjects: SORObject]
@@ -11,8 +12,8 @@ class SOR implements Serializable {
 
     static mapping = {
         table name: 'SOR'
-        id column: 'sorId', sqlType: 'SMALLINT', generator: 'sequence', params: [sequence: 'sorid_seq']
+        id column: 'sorId', type: "integer", sqlType: 'SMALLINT', generator: 'sequence', params: [sequence: 'sorid_seq']
         version false
-        name name: 'sorName', sqlType: 'VARCHAR(64)'
+        name column: 'sorName', sqlType: 'VARCHAR(64)'
     }
 }
