@@ -1,6 +1,8 @@
 package edu.berkeley.match
 
+import edu.berkeley.registry.model.Person
 import grails.plugins.rest.client.RestBuilder
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -21,6 +23,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
+@Mock(Person)
 @TestFor(MatchClientService)
 class MatchClientServiceSpec extends Specification {
 
@@ -30,8 +33,8 @@ class MatchClientServiceSpec extends Specification {
     def setup() {
         grailsApplication.config.match = [ucbMatchUrl: UCB_MATCH_URL]
         service.restClient = new RestBuilder()
+        createPeople()
     }
-
 
     void "test call to match engine where there is no match"() {
         setup:
@@ -47,7 +50,7 @@ class MatchClientServiceSpec extends Specification {
 
         then:
         mockServer.verify()
-        result instanceof NoMatch
+        result instanceof PersonNoMatch
     }
 
     void "test call to match engine where there result is an exact match"() {
@@ -64,8 +67,8 @@ class MatchClientServiceSpec extends Specification {
 
         then:
         mockServer.verify()
-        result instanceof ExactMatch
-        result.uid == '1'
+        result instanceof PersonExactMatch
+        result.person.uid == '1'
     }
 
      void "test call to match engine where there result is a partial match"() {
@@ -82,8 +85,8 @@ class MatchClientServiceSpec extends Specification {
 
         then:
         mockServer.verify()
-        result instanceof PartialMatch
-        result.uids == ['1','2']
+        result instanceof PersonPartialMatches
+        result.people*.uid == ['1','2']
 
     }
 
@@ -140,6 +143,12 @@ class MatchClientServiceSpec extends Specification {
     static EXACT_MATCH_RESPONSE = '{"matchingRecord":{"referenceId":"1"}}'
     static PARTIAL_MATCH_RESPONSE = '{"partialMatchingRecords":[{"referenceId":"1"},{"referenceId":"2"}]}'
     static EXISTING_RECORD_RESPONSE = '{"existingRecord":{"referenceId":"1"}}'
+
+    void createPeople() {
+        ['1','2'].each {
+            new Person(uid: it).save(validate: false)
+        }
+    }
 
     private static class TimeoutResponseCreator implements ResponseCreator {
 

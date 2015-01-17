@@ -1,5 +1,9 @@
 package edu.berkeley.match
 
+import edu.berkeley.registry.model.Person
+import edu.berkeley.registry.model.SOR
+import edu.berkeley.registry.model.SORObject
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -8,11 +12,17 @@ import javax.jms.MapMessage
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@SuppressWarnings("GroovyAssignabilityCheck") // When using expectations in Spock
+@SuppressWarnings("GroovyAssignabilityCheck")
+// When using expectations in Spock
 @TestFor(NewSORConsumerService)
+@Mock([SOR, SORObject, Person])
 class NewSORConsumerServiceSpec extends Specification {
+    SORObject sorObject
+    Person person1
+    Person person2
 
     def setup() {
+        setupModel()
         service.matchClientService = Mock(MatchClientService)
         service.uidClientService = Mock(UidClientService)
         service.databaseService = Mock(DatabaseService)
@@ -27,10 +37,10 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new NoMatch()
-        1 * UidClientService.getNextUid >> '12345'
-        1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
-        1 * service.downstreamJMSService.provision('12345')
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonNoMatch()
+        1 * service.uidClientService.createUidForPerson(['systemOfRecord': 'SIS', 'sorIdentifier': 'SIS00001', 'givenName': 'firstName', 'familyName': 'lastName', 'dateOfBirth': 'DOB', 'socialSecurityNumber': 'SSN']) >> person1
+        1 * service.databaseService.assignUidToSOR(sorObject, person1)
+        1 * service.downstreamJMSService.provision(person1)
     }
 
 
@@ -42,10 +52,10 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new ExactMatch(uid: '12345')
-        1 * service.databaseService.assignUidToSOR('SIS', 'SIS00001', '12345')
-        1 * service.downstreamJMSService.provision('12345')
-        0 * service.uidClientService.getNextUid
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonExactMatch(person: person1)
+        1 * service.databaseService.assignUidToSOR(sorObject, person1)
+        1 * service.downstreamJMSService.provision(person1)
+        0 * service.uidClientService.createUidForPerson(_)
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -56,9 +66,9 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PartialMatch(uids: ['12345', '23456'])
-        1 * service.databaseService.storePartialMatch('SIS', 'SIS00001', ['12345', '23456'])
-        0 * service.uidClientService.getNextUid
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonPartialMatches(people: [person1, person2])
+        1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
+        0 * service.uidClientService.createUidForPerson(_)
         0 * service.databaseService.assignUidToSOR(*_)
         0 * service.downstreamJMSService.provision(_)
     }
@@ -73,4 +83,13 @@ class NewSORConsumerServiceSpec extends Specification {
         message.getString('socialSecurityNumber') >> 'SSN'
         return message
     }
+
+    private void setupModel() {
+        def sor = new SOR(name: 'SIS').save(failOnError: true)
+        sorObject = new SORObject(sor: sor, sorObjectKey: 'SIS00001').save(validate: false)
+        person1 = new Person(uid: '1').save(validate: false)
+        person2 = new Person(uid: '2').save(validate: false)
+
+    }
+
 }

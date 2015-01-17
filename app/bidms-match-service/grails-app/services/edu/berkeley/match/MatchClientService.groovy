@@ -1,14 +1,15 @@
 package edu.berkeley.match
 
+import edu.berkeley.registry.model.Person
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
 
-@Transactional
+@Transactional(readOnly = true)
 class MatchClientService {
     def restClient
     def grailsApplication
 
-    MatchResponse match(Map<String, String> p) {
+    PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.match.ucbMatchUrl
         //[systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
@@ -18,7 +19,7 @@ class MatchClientService {
         }
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
-                return new NoMatch()
+                return new PersonNoMatch()
             case HttpStatus.OK:
                 return exactMatch(response.json)
             case HttpStatus.MULTIPLE_CHOICES:
@@ -31,12 +32,18 @@ class MatchClientService {
 
     }
 
-    private static ExactMatch exactMatch(def json) {
-        new ExactMatch(uid: json.matchingRecord.referenceId)
+    private static PersonExactMatch exactMatch(def json) {
+        // Person object is not to be changed
+        def person = Person.read(json.matchingRecord.referenceId as String)
+        new PersonExactMatch(person: person)
     }
 
-    private static PartialMatch partialMatch(def json) {
-        new PartialMatch(uids: json.partialMatchingRecords*.referenceId)
+    private static PersonPartialMatches partialMatch(def json) {
+        def people = json.partialMatchingRecords*.referenceId.collect {
+            // Person object is not to be changed
+            Person.read(it as String)
+        }
+        new PersonPartialMatches(people: people)
     }
 
 

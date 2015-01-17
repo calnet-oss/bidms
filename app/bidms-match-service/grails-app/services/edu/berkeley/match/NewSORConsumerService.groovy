@@ -1,5 +1,6 @@
 package edu.berkeley.match
 
+import edu.berkeley.registry.model.SORObject
 import grails.transaction.Transactional
 import grails.util.Holders
 
@@ -31,20 +32,21 @@ class NewSORConsumerService {
         }
         def message = msg as MapMessage
         def systemOfRecord = message.getString('systemOfRecord')
-        def sorIdentifier = message.getString('sorIdentifier')
+        def sorObjectKey = message.getString('sorIdentifier')
+        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorObjectKey)
         def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
         def match = matchClientService.match(sorAttributes)
 
         // If it is a partial match just store the partial and return
-        if(match instanceof PartialMatch) {
-            databaseService.storePartialMatch(systemOfRecord, sorIdentifier, match.uids)
+        if(match instanceof PersonPartialMatches) {
+            databaseService.storePartialMatch(sorObject, match.people)
             return null
         }
 
         // If it is an exact match assign get the UID from the match otherwise go and get a new UID
-        def uid = match instanceof ExactMatch ? match.uid : uidClientService.getNextUid(systemOfRecord, sorIdentifier, sorAttributes)
-        databaseService.assignUidToSOR(systemOfRecord, sorIdentifier, uid)
-        downstreamJMSService.provision(uid)
+        def person = match instanceof PersonExactMatch ? match.person : uidClientService.createUidForPerson(sorAttributes)
+        databaseService.assignUidToSOR(sorObject, person)
+        downstreamJMSService.provision(person)
 
         return null
     }
