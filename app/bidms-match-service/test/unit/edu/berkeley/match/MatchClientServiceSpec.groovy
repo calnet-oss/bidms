@@ -1,5 +1,5 @@
 package edu.berkeley.match
-
+import edu.berkeley.match.testutils.TimeoutResponseCreator
 import edu.berkeley.registry.model.Person
 import grails.plugins.rest.client.RestBuilder
 import grails.test.mixin.Mock
@@ -8,18 +8,13 @@ import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.client.ClientHttpRequest
-import org.springframework.http.client.ClientHttpResponse
 import org.springframework.test.web.client.MockRestServiceServer
-import org.springframework.test.web.client.ResponseCreator
 import org.springframework.test.web.client.response.DefaultResponseCreator
 import org.springframework.web.client.ResourceAccessException
 import spock.lang.Specification
 
-import static edu.berkeley.match.MatchClientServiceSpec.TimeoutResponseCreator.withTimeout
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -130,7 +125,7 @@ class MatchClientServiceSpec extends Specification {
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
-                .andRespond(withTimeout())
+                .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
         def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', familyName: 'Stone', socialSecurityNumber: '000-00-0002'])
@@ -150,15 +145,4 @@ class MatchClientServiceSpec extends Specification {
         }
     }
 
-    private static class TimeoutResponseCreator implements ResponseCreator {
-
-        @Override
-        public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
-            throw new SocketTimeoutException('Testing timeout exception')
-        }
-
-        public static TimeoutResponseCreator withTimeout() {
-            new TimeoutResponseCreator()
-        }
-    }
 }
