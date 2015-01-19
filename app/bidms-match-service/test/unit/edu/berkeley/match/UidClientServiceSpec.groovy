@@ -23,8 +23,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Build([Person])
 class UidClientServiceSpec extends Specification {
     private static final UCB_UID_SERVICE_URL = 'http://localhost/ucb-uid-service/nextUid'
-    private static final INPUT_ATTRIBUTE_MAP = [systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', familyName: 'Stone']
-    private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorIdentifier":"BB00002","dateOfBirth":"1930-04-20","givenName":"Pat","familyName":"Stone"}'
+    private static final INPUT_ATTRIBUTE_MAP = [systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone']
+    private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorIdentifier":"BB00002","dateOfBirth":"1930-04-20","firstName":"Pat","lastName":"Stone"}'
 
     def setup() {
         grailsApplication.config.match = [uidServiceUrl: UCB_UID_SERVICE_URL]

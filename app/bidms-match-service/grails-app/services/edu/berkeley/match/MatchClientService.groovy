@@ -11,7 +11,7 @@ class MatchClientService {
 
     PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.match.ucbMatchUrl
-        //[systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', givenName: 'firstName', familyName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
+        //[systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
@@ -53,13 +53,13 @@ class MatchClientService {
             map.dateOfBirth = p.dateOfBirth
         }
 
-        if (p.familyName || p.givenName) {
+        if (p.lastName || p.firstName) {
             def name = [type: "official"]
-            if (p.givenName) {
-                name.given = p.givenName
+            if (p.firstName) {
+                name.given = p.firstName
             }
-            if (p.familyName) {
-                name.family = p.familyName
+            if (p.lastName) {
+                name.family = p.lastName
             }
             map.names = [name]
         }

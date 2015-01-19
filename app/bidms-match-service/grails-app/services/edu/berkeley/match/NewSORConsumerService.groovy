@@ -16,7 +16,7 @@ class NewSORConsumerService {
     static adapter = "transacted"
     static container = "transacted"
 
-    static MATCH_FIELDS = ['systemOfRecord','sorIdentifier','givenName','familyName','dateOfBirth','socialSecurityNumber']
+    static MATCH_FIELDS = ['systemOfRecord','sorIdentifier','firstName','lastName','dateOfBirth','socialSecurityNumber']
 
 
     def matchClientService
