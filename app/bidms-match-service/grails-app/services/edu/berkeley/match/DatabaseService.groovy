@@ -8,11 +8,21 @@ import grails.transaction.Transactional
 @Transactional
 class DatabaseService {
 
+    /**
+     * Assign a person to a SORObject, linking the two together.
+     * @param sorObject
+     * @param person
+     */
     void assignUidToSOR(SORObject sorObject, Person person) {
         sorObject.person = person
         sorObject.save(failOnError: true)
     }
 
+    /**
+     * Store a potential match(es), linking a sorObject to the People in the Database
+     * @param sorObject
+     * @param matchingPeople
+     */
     void storePartialMatch(SORObject sorObject, List<Person> matchingPeople) {
         removeExistingPartialMatches(sorObject)
         matchingPeople.each {

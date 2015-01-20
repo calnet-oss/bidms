@@ -9,9 +9,24 @@ class MatchClientService {
     def restClient
     def grailsApplication
 
+    /**
+     * Call the match-engine to see if the database has a match on an existing record.
+     * The match-engine configuration determins if there is no match, a single (canonical) match, or a partial match
+     *
+     * @param a map containing the some or all of the following properties:
+     * systemOfRecord,
+     * sorObjectKey,
+     * firstName,
+     * lastName,
+     * dateOfBirth,
+     * socialSecurityNumber
+     *      *
+     * @return
+     * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
+     */
     PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.match.ucbMatchUrl
-        //[systemOfRecord: 'SIS', sorIdentifier: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
+        //[systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
@@ -47,8 +62,8 @@ class MatchClientService {
     }
 
 
-    Map buildJsonMap(Map<String, String> p) {
-        def map = [systemOfRecord: p.systemOfRecord, identifier: p.sorIdentifier]
+    private static Map buildJsonMap(Map<String, String> p) {
+        def map = [systemOfRecord: p.systemOfRecord, identifier: p.sorObjectKey]
         if (p.dateOfBirth) {
             map.dateOfBirth = p.dateOfBirth
         }

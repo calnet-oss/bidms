@@ -8,7 +8,11 @@ class UidClientService {
 
     def restClient
     def grailsApplication
-
+    /**
+     * Makes a REST call to the UID Service. The UID service assigns a new UID and creates a minimal Person in the registry
+     * @param sorAttributes
+     * @return Person created by the UID Service in the registry
+     */
     Person createUidForPerson(Map sorAttributes) {
         String uidServiceUrl = grailsApplication.config.match.uidServiceUrl
         def response = restClient.post(uidServiceUrl) {

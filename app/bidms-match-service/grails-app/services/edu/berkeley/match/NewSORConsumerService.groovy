@@ -16,14 +16,18 @@ class NewSORConsumerService {
     static adapter = "transacted"
     static container = "transacted"
 
-    static MATCH_FIELDS = ['systemOfRecord','sorIdentifier','firstName','lastName','dateOfBirth','socialSecurityNumber']
+    static MATCH_FIELDS = ['systemOfRecord','sorObjectKey','firstName','lastName','dateOfBirth','socialSecurityNumber']
 
 
     def matchClientService
     def uidClientService
     def databaseService
     def downstreamJMSService
-
+    /**
+     * Receives a message on the newSORQueue and processes it according to the rules
+     * @param msg
+     * @return
+     */
     def onMessage(msg) {
         if (!msg instanceof MapMessage) {
             // TODO: Handle messages of wrong type. Right now expect a MapMessage, if it's not, just return null
@@ -32,7 +36,7 @@ class NewSORConsumerService {
         }
         def message = msg as MapMessage
         def systemOfRecord = message.getString('systemOfRecord')
-        def sorObjectKey = message.getString('sorIdentifier')
+        def sorObjectKey = message.getString('sorObjectKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorObjectKey)
         def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
         def match = matchClientService.match(sorAttributes)

@@ -41,7 +41,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withStatus(HttpStatus.NOT_FOUND))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone'])
+        def result = service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone'])
 
         then:
         mockServer.verify()
@@ -58,7 +58,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withSuccess(EXACT_MATCH_RESPONSE, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -76,7 +76,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((new DefaultResponseCreator(HttpStatus.MULTIPLE_CHOICES)).body(PARTIAL_MATCH_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -95,7 +95,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((new DefaultResponseCreator(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(RuntimeException)
@@ -111,12 +111,11 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withServerError())
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(RuntimeException)
     }
-
 
     void "test call to match engine where there match engine times out"() {
         setup:
@@ -128,7 +127,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorIdentifier: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorObjectKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(ResourceAccessException)
