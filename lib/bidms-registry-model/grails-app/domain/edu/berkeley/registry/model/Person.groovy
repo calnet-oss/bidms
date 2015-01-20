@@ -9,6 +9,10 @@ class Person {
 
     static constraints = {
         uid unique: true
+        firstName nullable: true
+        lastName nullable: true
+        dateOfBirth nullable: true
+        socialSecurityNumber nullable: true
     }
 
     static mapping = {
