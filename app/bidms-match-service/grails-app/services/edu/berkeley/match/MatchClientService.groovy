@@ -25,7 +25,7 @@ class MatchClientService {
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
      */
     PersonMatch match(Map<String, String> p) {
-        String matchUrl = grailsApplication.config.match.ucbMatchUrl
+        String matchUrl = grailsApplication.config.match.ucbMatchEngineUrl
         //[systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {

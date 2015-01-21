@@ -26,7 +26,7 @@ class MatchClientServiceSpec extends Specification {
     public static final String UCB_MATCH_URL = 'http://localhost/ucb-match/v1/people'
 
     def setup() {
-        grailsApplication.config.match = [ucbMatchUrl: UCB_MATCH_URL]
+        grailsApplication.config.match = [ucbMatchEngineUrl: UCB_MATCH_URL]
         service.restClient = new RestBuilder()
         createPeople()
     }
