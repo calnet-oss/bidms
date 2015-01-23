@@ -7,7 +7,7 @@ class ExactMatchResponse extends Response {
     def responseData
     Map getJsonMap() {
         [
-                exactMatchUID: responseData
+                matchingRecord: responseData
         ]
     }
 }
