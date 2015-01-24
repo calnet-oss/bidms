@@ -15,7 +15,7 @@ class MatchClientService {
      *
      * @param a map containing the some or all of the following properties:
      * systemOfRecord,
-     * sorObjectKey,
+     * sorPrimaryKey,
      * firstName,
      * lastName,
      * dateOfBirth,
@@ -26,7 +26,7 @@ class MatchClientService {
      */
     PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.match.ucbMatchEngineUrl
-        //[systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
+        //[systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
@@ -63,7 +63,7 @@ class MatchClientService {
 
 
     private static Map buildJsonMap(Map<String, String> p) {
-        def map = [systemOfRecord: p.systemOfRecord, identifier: p.sorObjectKey]
+        def map = [systemOfRecord: p.systemOfRecord, identifier: p.sorPrimaryKey]
         if (p.dateOfBirth) {
             map.dateOfBirth = p.dateOfBirth
         }

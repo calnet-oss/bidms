@@ -36,7 +36,7 @@ class DatabaseServiceSpec extends Specification {
 
     void "when storing partial match not previusly exsting a new PartialMatch is created"() {
         given:
-        def sorObject2 = SORObject.build(sor: SOR.build(name: 'HR'), sorObjectKey: 'HR123')
+        def sorObject2 = SORObject.build(sor: SOR.build(name: 'HR'), sorPrimaryKey: 'HR123')
         def person3 = Person.build(uid: '3')
 
         expect:
@@ -67,7 +67,7 @@ class DatabaseServiceSpec extends Specification {
 
     private createModel() {
         def sor = SOR.build(name: 'SIS')
-        sorObject = SORObject.build(sor: sor, sorObjectKey: 'SIS123')
+        sorObject = SORObject.build(sor: sor, sorPrimaryKey: 'SIS123')
         person1 = Person.build(uid: 1)
         person2 = Person.build(uid: 2)
         existingPartialMatch = PartialMatch.build(sorObject: sorObject, person: person1)

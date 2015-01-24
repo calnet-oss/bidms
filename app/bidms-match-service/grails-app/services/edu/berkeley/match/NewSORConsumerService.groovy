@@ -16,7 +16,7 @@ class NewSORConsumerService {
     static adapter = "transacted"
     static container = "transacted"
 
-    static MATCH_FIELDS = ['systemOfRecord','sorObjectKey','firstName','lastName','dateOfBirth','socialSecurityNumber']
+    static MATCH_FIELDS = ['systemOfRecord','sorPrimaryKey','firstName','lastName','dateOfBirth','socialSecurityNumber']
 
 
     def matchClientService
@@ -34,10 +34,13 @@ class NewSORConsumerService {
             log.error "Received a message that was not of type MapMessage. It has been discarded: ${msg}"
             return null
         }
+
         def message = msg as MapMessage
+        // Retrieve key elements from the message
         def systemOfRecord = message.getString('systemOfRecord')
-        def sorObjectKey = message.getString('sorObjectKey')
-        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorObjectKey)
+        def sorPrimaryKey = message.getString('sorPrimaryKey')
+        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorPrimaryKey)
+
         def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
         def match = matchClientService.match(sorAttributes)
 

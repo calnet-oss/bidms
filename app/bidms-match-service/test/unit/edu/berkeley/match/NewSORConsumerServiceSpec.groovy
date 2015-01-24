@@ -37,8 +37,8 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonNoMatch()
-        1 * service.uidClientService.createUidForPerson(['systemOfRecord': 'SIS', 'sorObjectKey': 'SIS00001', 'firstName': 'firstName', 'lastName': 'lastName', 'dateOfBirth': 'DOB', 'socialSecurityNumber': 'SSN']) >> person1
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonNoMatch()
+        1 * service.uidClientService.createUidForPerson(['systemOfRecord': 'SIS', 'sorPrimaryKey': 'SIS00001', 'firstName': 'firstName', 'lastName': 'lastName', 'dateOfBirth': 'DOB', 'socialSecurityNumber': 'SSN']) >> person1
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
         1 * service.downstreamJMSService.provision(person1)
     }
@@ -52,7 +52,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonExactMatch(person: person1)
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonExactMatch(person: person1)
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
         1 * service.downstreamJMSService.provision(person1)
         0 * service.uidClientService.createUidForPerson(_)
@@ -66,7 +66,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorObjectKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonPartialMatches(people: [person1, person2])
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']) >> new PersonPartialMatches(people: [person1, person2])
         1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
         0 * service.uidClientService.createUidForPerson(_)
         0 * service.databaseService.assignUidToSOR(*_)
@@ -76,7 +76,7 @@ class NewSORConsumerServiceSpec extends Specification {
     private MapMessage mockMessage() {
         def message = Mock(MapMessage)
         message.getString('systemOfRecord') >> 'SIS'
-        message.getString('sorObjectKey') >> 'SIS00001'
+        message.getString('sorPrimaryKey') >> 'SIS00001'
         message.getString('firstName') >> 'firstName'
         message.getString('lastName') >> 'lastName'
         message.getString('dateOfBirth') >> 'DOB'
@@ -86,7 +86,7 @@ class NewSORConsumerServiceSpec extends Specification {
 
     private void setupModel() {
         def sor = new SOR(name: 'SIS').save(failOnError: true)
-        sorObject = new SORObject(sor: sor, sorObjectKey: 'SIS00001').save(validate: false)
+        sorObject = new SORObject(sor: sor, sorPrimaryKey: 'SIS00001').save(validate: false)
         person1 = new Person(uid: '1').save(validate: false)
         person2 = new Person(uid: '2').save(validate: false)
 
