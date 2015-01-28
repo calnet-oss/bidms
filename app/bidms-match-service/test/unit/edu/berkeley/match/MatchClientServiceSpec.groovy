@@ -134,7 +134,7 @@ class MatchClientServiceSpec extends Specification {
     }
 
 
-    static EXACT_MATCH_RESPONSE = '{"matchingRecord":{"referenceId":"1"}}'
+    static EXACT_MATCH_RESPONSE = '{"existingRecord":{"referenceId":"1"}}'
     static PARTIAL_MATCH_RESPONSE = '{"partialMatchingRecords":[{"referenceId":"1"},{"referenceId":"2"}]}'
     static EXISTING_RECORD_RESPONSE = '{"existingRecord":{"referenceId":"1"}}'
 
@@ -142,6 +142,7 @@ class MatchClientServiceSpec extends Specification {
         ['1','2'].each {
             new Person(uid: it).save(validate: false)
         }
+        assert Person.count() == 2
     }
 
 }

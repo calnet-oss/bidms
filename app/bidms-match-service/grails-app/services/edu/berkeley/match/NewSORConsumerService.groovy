@@ -40,9 +40,11 @@ class NewSORConsumerService {
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorPrimaryKey)
+        log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
 
         def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
         def match = matchClientService.match(sorAttributes)
+        log.debug("Response from MatchService: $match")
 
         // If it is a partial match just store the partial and return
         if(match instanceof PersonPartialMatches) {

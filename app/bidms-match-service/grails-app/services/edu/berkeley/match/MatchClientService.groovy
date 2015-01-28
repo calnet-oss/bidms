@@ -49,14 +49,14 @@ class MatchClientService {
 
     private static PersonExactMatch exactMatch(def json) {
         // Person object is not to be changed
-        def person = Person.read(json.matchingRecord.referenceId as String)
+        def person = Person.findByUid(json.existingRecord.referenceId as String)
         new PersonExactMatch(person: person)
     }
 
     private static PersonPartialMatches partialMatch(def json) {
         def people = json.partialMatchingRecords*.referenceId.collect {
             // Person object is not to be changed
-            Person.read(it as String)
+            Person.findByUid(it as String)
         }
         new PersonPartialMatches(people: people)
     }

@@ -14,14 +14,14 @@ class UidClientService {
      * @return Person created by the UID Service in the registry
      */
     Person createUidForPerson(Map sorAttributes) {
-        String uidServiceUrl = grailsApplication.config.match.uidServiceUrl
+        String uidServiceUrl = grailsApplication.config.rest.uidService.url
         def response = restClient.post(uidServiceUrl) {
             accept 'application/json'
             json(sorAttributes)
         }
         if(response.statusCode == HttpStatus.OK) {
             def uid = response.json.uid
-            return Person.get(uid)
+            return Person.findByUid(uid)
         } else {
             throw new RuntimeException("Could not generate new UID for $sorAttributes")
         }

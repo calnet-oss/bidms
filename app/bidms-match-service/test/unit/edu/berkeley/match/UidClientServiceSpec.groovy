@@ -27,7 +27,7 @@ class UidClientServiceSpec extends Specification {
     private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorPrimaryKey":"BB00002","dateOfBirth":"1930-04-20","firstName":"Pat","lastName":"Stone"}'
 
     def setup() {
-        grailsApplication.config.match = [uidServiceUrl: UCB_UID_SERVICE_URL]
+        grailsApplication.config.rest = [uidService: [url: UCB_UID_SERVICE_URL]]
         service.restClient = new RestBuilder()
     }
 
