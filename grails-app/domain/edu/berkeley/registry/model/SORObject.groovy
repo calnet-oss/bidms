@@ -8,7 +8,8 @@ class SORObject implements Serializable {
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorPrimaryKey) {
         def sor = SOR.findByName(systemOfRecord)
-        return SORObject.findBySorAndSorPrimaryKey(sor, sorPrimaryKey)
+        def sorObject = SORObject.findBySorAndSorPrimaryKey(sor, sorPrimaryKey).attach()
+        return sorObject
     }
 
     static belongsTo = [sor: SOR]
@@ -21,12 +22,12 @@ class SORObject implements Serializable {
 
     static mapping = {
         table name: 'SORObject'
-        id composite: ['sor', 'sorPrimaryKey']
+        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sorobject_seq']
         version false
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
-        person column: 'personUID'
+        person column: 'uid'
 
     }
 }
