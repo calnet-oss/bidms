@@ -3,7 +3,7 @@ package edu.berkeley.registry.model
 class PartialMatch {
     SORObject sorObject
     Person person
-    Date dateCreated
+    Date dateCreated = new Date()
 
     static constraints = {
         sorObject nullable: false
