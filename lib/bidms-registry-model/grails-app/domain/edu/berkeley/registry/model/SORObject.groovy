@@ -8,7 +8,7 @@ class SORObject implements Serializable {
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorPrimaryKey) {
         def sor = SOR.findByName(systemOfRecord)
-        def sorObject = SORObject.findBySorAndSorPrimaryKey(sor, sorPrimaryKey).attach()
+        def sorObject = SORObject.findBySorAndSorPrimaryKey(sor, sorPrimaryKey)
         return sorObject
     }
 
