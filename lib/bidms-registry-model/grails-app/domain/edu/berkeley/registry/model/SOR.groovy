@@ -12,7 +12,7 @@ class SOR implements Serializable {
 
     static mapping = {
         table name: 'SOR'
-        id column: 'sorId', type: "integer", sqlType: 'SMALLINT', generator: 'sequence', params: [sequence: 'sorid_seq']
+        id column: 'sorId', type: "integer", sqlType: 'SMALLINT', generator: 'sequence', params: [sequence: 'sor_seq']
         version false
         name column: 'sorName', sqlType: 'VARCHAR(64)'
     }
