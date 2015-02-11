@@ -1,5 +1,6 @@
 package edu.berkeley.calnet.ucbmatch
 
+import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import grails.test.mixin.TestFor
 import groovy.sql.Sql
@@ -16,6 +17,7 @@ class DatabaseServiceSpec extends Specification {
     def setup() {
         service.sqlService = Mock(SqlService)
         service.rowMapperService = Mock(RowMapperService)
+        service.matchConfig = new MatchConfig(matchTable: 'myMatchTable')
         sqlMock = Mock(Sql)
     }
 
@@ -27,7 +29,7 @@ class DatabaseServiceSpec extends Specification {
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.firstRow("SELECT * FROM matchgrid WHERE sor='SIS' AND sorid='${sorId}'") >> rowReturned
+        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sor='SIS' AND sorid='${sorId}'") >> rowReturned
         callsToMapper * service.rowMapperService.mapDataRowToCandidate(rowReturned, ConfidenceType.CANONICAL) >> mappedReturned
         result?.referenceId == expectedReferenceId
 

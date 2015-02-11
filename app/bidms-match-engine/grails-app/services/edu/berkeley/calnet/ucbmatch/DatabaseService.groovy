@@ -17,7 +17,7 @@ class DatabaseService {
             if (whereClause) {
                 statements << [sql: """
                 SELECT *
-                    FROM   matchgrid
+                    FROM   ${matchConfig.matchTable}
                     WHERE  reference_id IS NOT NULL
                     AND    ${whereClause.sql}
              """.toString(), values: whereClause.values]
@@ -31,7 +31,7 @@ class DatabaseService {
 
     Candidate findRecord(String systemOfRecord, String identifier) {
         def sql = sqlService.sqlInstance
-        def row = sql.firstRow("SELECT * FROM matchgrid WHERE sor='$systemOfRecord' AND sorid='$identifier'")
+        def row = sql.firstRow("SELECT * FROM ${matchConfig.matchTable} WHERE sor='$systemOfRecord' AND sorid='$identifier'")
 
         return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL) : null
     }
