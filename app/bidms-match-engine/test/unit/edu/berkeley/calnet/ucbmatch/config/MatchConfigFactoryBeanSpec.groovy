@@ -10,6 +10,8 @@ class MatchConfigFactoryBeanSpec extends Specification {
         def config = """
             import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
 
+            matchTable('myTableName')
+
             referenceId {
                 responseType = "enterprise"
             }
@@ -35,6 +37,7 @@ class MatchConfigFactoryBeanSpec extends Specification {
         def matchConfig = MatchConfigFactoryBean.parseConfig(config)
 
         then:
+        matchConfig.matchTable == 'myTableName'
         matchConfig.matchReference.responseType == 'enterprise'
         matchConfig.matchAttributeConfigs.name == ['sor','name']
         matchConfig.canonicalConfidences == [[sor: EXACT],[sor: EXACT,name: SUBSTRING]]

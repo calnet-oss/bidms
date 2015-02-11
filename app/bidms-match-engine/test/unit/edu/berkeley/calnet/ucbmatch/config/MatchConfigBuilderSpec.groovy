@@ -8,6 +8,24 @@ import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
 class MatchConfigBuilderSpec extends Specification {
     def sut = new MatchConfigBuilder()
 
+    def "test specifying the tableName"() {
+        setup:
+        def configClosure = {
+            matchTable('myTableName')
+        }
+        configClosure.resolveStrategy = Closure.DELEGATE_ONLY
+        configClosure.delegate = sut
+
+        expect:
+        sut.config.matchTable == null
+
+        when:
+        configClosure.call()
+
+        then:
+        sut.config.matchTable == 'myTableName'
+    }
+
     def "test creating referenceId element"() {
         setup:
         def configClosure = {

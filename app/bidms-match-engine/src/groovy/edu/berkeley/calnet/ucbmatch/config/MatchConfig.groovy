@@ -13,6 +13,7 @@ class MatchConfig {
         static List POTENTIAL_TYPES = [EXACT, SUBSTRING, DISTANCE]
     }
 
+    String matchTable
     MatchReference matchReference
     List<MatchAttributeConfig> matchAttributeConfigs = []
     List<Map<String, MatchType>> canonicalConfidences = []

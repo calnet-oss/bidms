@@ -7,6 +7,10 @@ class MatchConfigBuilder {
 
     MatchConfig config = new MatchConfig()
 
+    void matchTable(String tableName) {
+        config.matchTable = tableName
+    }
+
     void referenceId(Closure closure) {
         def matchReference = new MatchReference()
         closure.delegate = matchReference
