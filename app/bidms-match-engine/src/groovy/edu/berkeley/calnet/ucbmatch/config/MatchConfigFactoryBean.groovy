@@ -29,7 +29,11 @@ class MatchConfigFactoryBean implements FactoryBean<MatchConfig>, InitializingBe
         log.debug("MatchConfig reading config from $resource")
         def script = this.getClass().getResourceAsStream(resource).text
         log.debug("MatchConfig parsing config")
-        config = parseConfig(script)
+        try {
+            config = parseConfig(script)
+        } catch (e) {
+            throw new RuntimeException("Failed to parse script $resource",e)
+        }
     }
 
     static MatchConfig parseConfig(String script) {

@@ -1,8 +1,6 @@
 package edu.berkeley.calnet.ucbmatch.config
 
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.POTENTIAL_TYPES
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.getCANONICAL_TYPES
 
 class MatchConfigBuilder {
 
@@ -100,18 +98,18 @@ class MatchConfigBuilder {
         }
 
         void canonical(Map<String,MatchType> canonical) {
-             validateKeysAndValues("canonical", canonical, CANONICAL_TYPES)
+             validateKeysAndValues("canonical", canonical, MatchType.CANONICAL_TYPES)
             canonicalConfidences << canonical
         }
 
 
         void potential(Map<String, MatchType> potential) {
-            validateKeysAndValues("potential", potential, POTENTIAL_TYPES)
+            validateKeysAndValues("potential", potential, MatchType.POTENTIAL_TYPES)
 
             potentialConfidences << potential
         }
 
-        private void validateKeysAndValues(String type, Map<String,MatchType> set, validTypes) {
+        private void validateKeysAndValues(String type, Map<String,MatchType> set, List validTypes) {
             def wrongKeys = set.findAll { !(it.key in matchAttributeNames )}
             if(wrongKeys) {
                 throw new RuntimeException("Keys in: $type ${set.collect { "$it.key: $it.value"}.join(', ')} is mismatching on the following keys: ${wrongKeys*.key}")
