@@ -1,7 +1,8 @@
 package edu.berkeley.calnet.ucbmatch.config
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.*
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.POTENTIAL_TYPES
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.getCANONICAL_TYPES
 
 class MatchConfigBuilder {
 
@@ -99,18 +100,25 @@ class MatchConfigBuilder {
         }
 
         void canonical(Map<String,MatchType> canonical) {
-            assert canonical.keySet().every {it in matchAttributeNames}
-            assert canonical.values().every { it in CANONICAL_TYPES}
-
+             validateKeysAndValues("canonical", canonical, CANONICAL_TYPES)
             canonicalConfidences << canonical
         }
 
 
         void potential(Map<String, MatchType> potential) {
-            assert potential.keySet().every {it in matchAttributeNames}
-            assert potential.values().every { it in POTENTIAL_TYPES}
+            validateKeysAndValues("potential", potential, POTENTIAL_TYPES)
 
             potentialConfidences << potential
+        }
+
+        private void validateKeysAndValues(String type, Map<String,MatchType> set, validTypes) {
+            def wrongKeys = set.findAll { !(it.key in matchAttributeNames )}
+            if(wrongKeys) {
+                throw new RuntimeException("Keys in: $type ${set.collect { "$it.key: $it.value"}.join(', ')} is mismatching on the following keys: ${wrongKeys*.key}")
+            }
+            assert set.values().every { it in validTypes}
+
+
         }
     }
 }

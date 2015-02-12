@@ -30,6 +30,7 @@ class MatchConfigBuilderSpec extends Specification {
         setup:
         def configClosure = {
             referenceId {
+                column = 'UID'
                 responseType = 'uid'
             }
         }
@@ -44,6 +45,7 @@ class MatchConfigBuilderSpec extends Specification {
 
         then:
         sut.config.matchReference.responseType == 'uid'
+        sut.config.matchReference.column == 'UID'
     }
 
     def "test creating attributes in builder"() {

@@ -17,8 +17,8 @@ class DatabaseService {
             if (whereClause) {
                 statements << [sql: """
                 SELECT *
-                    FROM   ${matchConfig.matchTable}
-                    WHERE  reference_id IS NOT NULL
+                    FROM   """+matchConfig.matchTable+"""
+                    WHERE  """+matchConfig.matchReference.column+""" IS NOT NULL
                     AND    ${whereClause.sql}
              """.toString(), values: whereClause.values]
             }
@@ -31,7 +31,8 @@ class DatabaseService {
 
     Candidate findRecord(String systemOfRecord, String identifier) {
         def sql = sqlService.sqlInstance
-        def row = sql.firstRow("SELECT * FROM ${matchConfig.matchTable} WHERE sor='$systemOfRecord' AND sorid='$identifier'")
+        // TODO: sorname and sorobjkey must be configurable!!
+        def row = sql.firstRow("SELECT * FROM "+matchConfig.matchTable+" WHERE sorname='$systemOfRecord' AND sorobjkey='$identifier'")
 
         return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL) : null
     }

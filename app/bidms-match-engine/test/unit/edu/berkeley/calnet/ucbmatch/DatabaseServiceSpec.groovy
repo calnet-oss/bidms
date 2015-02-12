@@ -29,12 +29,10 @@ class DatabaseServiceSpec extends Specification {
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sor='SIS' AND sorid='${sorId}'") >> rowReturned
+        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname='SIS' AND sorobjkey='${sorId}'") >> rowReturned
         callsToMapper * service.rowMapperService.mapDataRowToCandidate(rowReturned, ConfidenceType.CANONICAL) >> mappedReturned
         result?.referenceId == expectedReferenceId
 
-        and:
-        0 * sqlMock._(*_)
 
 
         where:

@@ -14,7 +14,7 @@ class RowMapperService {
 
     Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType, Map matchInput) {
         // Group the returned rows by referenceId. The value is a list of db rows returned
-        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it.reference_id }
+        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it[matchConfig.matchReference.column] }
 
         def configByPath = matchConfig.matchAttributeConfigs.groupBy {
             // Use output path, path or Root
@@ -75,9 +75,9 @@ class RowMapperService {
     @SuppressWarnings("GroovyUnusedDeclaration")
     private void mapRowToCandidateRoot(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
         attributeConfigs.each {
-            if (it.name == matchConfig.matchReference.systemOfRecordAttribute) {
-                return // Skip SystemOfRecord
-            }
+//            if (it.name == matchConfig.matchReference.systemOfRecordAttribute) {
+//                return // Skip SystemOfRecord
+//            }
             def value = dataRow[it.column]
             if (value) {
                 candidate[it.attribute] = value
@@ -112,7 +112,7 @@ class RowMapperService {
                 return groupSet
             }
             // Create a new instance and mapDataRowsToCandidates database values to the new group
-            def group = groupClass.newInstance()
+            def group = [:]
             group.type = type
             attributeConfigsForType.each {
                 def value = dataRow[it.column]
