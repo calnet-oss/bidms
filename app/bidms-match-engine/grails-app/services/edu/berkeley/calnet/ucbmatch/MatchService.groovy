@@ -18,7 +18,7 @@ class MatchService {
     }
 
     Candidate findExistingRecord(Map matchInput) {
-        return databaseService.findRecord(matchInput.systemOfRecord, matchInput.identifier)
+        return databaseService.findRecord(matchInput.systemOfRecord, matchInput.identifier, matchInput)
     }
 
 }

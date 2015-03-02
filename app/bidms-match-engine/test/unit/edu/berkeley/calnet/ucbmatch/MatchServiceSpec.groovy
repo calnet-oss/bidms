@@ -46,7 +46,7 @@ class MatchServiceSpec extends Specification {
         service.findExistingRecord([systemOfRecord: "sis", identifier: "123",a:"b"])
 
         then:
-        1 * service.databaseService.findRecord("sis", "123")
+        1 * service.databaseService.findRecord("sis", "123",[systemOfRecord: "sis", identifier: "123",a:"b"])
 
         and: "There are no other calls to the service"
         0 * service.databaseService._(*_)

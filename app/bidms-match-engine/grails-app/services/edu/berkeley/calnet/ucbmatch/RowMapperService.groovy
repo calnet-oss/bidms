@@ -66,8 +66,8 @@ class RowMapperService {
         }
     }
 
-    Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType) {
-        def candidates = mapDataRowsToCandidates([row] as Set, confidenceType)
+    Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType, Map matchInput) {
+        def candidates = mapDataRowsToCandidates([row] as Set, confidenceType, matchInput)
         return candidates?.size() == 1 ? candidates[0] : null
 
     }
@@ -95,13 +95,16 @@ class RowMapperService {
         mapRowToGroupedAttribute(candidate.names, row, attributeConfigs, Name)
     }
 
-    private static void mapRowToGroupedAttribute(Set candidateGroup, Map dataRow, List<MatchAttributeConfig> attributeConfigs, Class groupClass) {
+    private void mapRowToGroupedAttribute(Set candidateGroup, Map dataRow, List<MatchAttributeConfig> attributeConfigs, Class groupClass) {
         // Split the attributeConfigs up into groups identified by the group property
         def configGroups = attributeConfigs.groupBy { it.group }
 
         configGroups.inject(candidateGroup) { Set groupSet, configGroup ->
             // For each group property find the type
             def type = configGroup.key
+//            if(type == matchConfig.matchReference.systemOfRecordAttribute) {
+//                type = getSystemOfRecordFromRow(dataRow)
+//            }
             def attributeConfigsForType = configGroup.value
             // See if there is already an existing identifier
             if (groupSet.find { it.type == type }) {

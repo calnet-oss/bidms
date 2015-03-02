@@ -1,6 +1,8 @@
 package edu.berkeley.calnet.ucbmatch
 
+import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
+import edu.berkeley.calnet.ucbmatch.config.MatchReference
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import grails.test.mixin.TestFor
 import groovy.sql.Sql
@@ -17,7 +19,7 @@ class DatabaseServiceSpec extends Specification {
     def setup() {
         service.sqlService = Mock(SqlService)
         service.rowMapperService = Mock(RowMapperService)
-        service.matchConfig = new MatchConfig(matchTable: 'myMatchTable')
+        service.matchConfig = new MatchConfig(matchTable: 'myMatchTable', matchReference: new MatchReference(systemOfRecordAttribute: 'sor', identifierAttribute: 'id'), matchAttributeConfigs: [new MatchAttributeConfig(name: 'sor', column: 'sorname'), new MatchAttributeConfig(name: 'id', column: 'sorobjkey')])
         sqlMock = Mock(Sql)
     }
 
@@ -25,12 +27,12 @@ class DatabaseServiceSpec extends Specification {
     @Unroll
     void "test findRecord generates correct SQL and outputs a record"() {
         when:
-        def result = service.findRecord("SIS", sorId)
+        def result = service.findRecord("SIS", sorId, [:])
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname='SIS' AND sorobjkey='${sorId}'") >> rowReturned
-        callsToMapper * service.rowMapperService.mapDataRowToCandidate(rowReturned, ConfidenceType.CANONICAL) >> mappedReturned
+        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname=? AND sorobjkey=?",['SIS',sorId]) >> rowReturned
+        callsToMapper * service.rowMapperService.mapDataRowToCandidate(rowReturned, ConfidenceType.CANONICAL, [:]) >> mappedReturned
         result?.referenceId == expectedReferenceId
 
 

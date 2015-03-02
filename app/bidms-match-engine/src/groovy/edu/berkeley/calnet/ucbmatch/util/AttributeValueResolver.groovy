@@ -25,7 +25,7 @@ class AttributeValueResolver {
 
     private static String normalizeValue(MatchAttributeConfig matchAttributeConfig, String value) {
         // If the nullEquivalents is not set, return the value
-        if(!matchAttributeConfig.nullEquivalents) {
+            if(!matchAttributeConfig.nullEquivalents) {
             value
         }
         // Expect matchAttributeConfig ot be a list of Regular Expressions. If any of these matches, it's a null like value

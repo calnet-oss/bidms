@@ -29,12 +29,14 @@ class DatabaseService {
     }
 
 
-    Candidate findRecord(String systemOfRecord, String identifier) {
+    Candidate findRecord(String systemOfRecord, String identifier, Map matchInput) {
         def sql = sqlService.sqlInstance
-        // TODO: sorname and sorobjkey must be configurable!!
-        def row = sql.firstRow("SELECT * FROM "+matchConfig.matchTable+" WHERE sorname='$systemOfRecord' AND sorobjkey='$identifier'")
 
-        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL) : null
+        def systemOfRecordAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.systemOfRecordAttribute }
+        def identifierAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.identifierAttribute }
+        def row = sql.firstRow('SELECT * FROM ' + matchConfig.matchTable + ' WHERE ' + systemOfRecordAttribute.column + '=? AND ' + identifierAttribute.column + '=?',[systemOfRecord, identifier])
+
+        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL, matchInput) : null
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
