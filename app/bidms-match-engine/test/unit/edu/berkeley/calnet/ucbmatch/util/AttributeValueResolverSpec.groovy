@@ -9,28 +9,25 @@ class AttributeValueResolverSpec extends Specification {
 
     @Shared
     Map matchInput = [
-            systemOfRecord          : "SIS",
-            identifier              : "SI12345",
+            systemOfRecord: "SIS",
+            identifier    : "SI12345",
 
-            names                   : [[
-                                               type  : "official",
-                                               given : "Pamela",
-                                               family: "Anderson"],
-                                       [
-                                               given : "Pam",
-                                               family: "Anderson"]
+            names         : [[
+                                     type  : "official",
+                                     given : "Pamela",
+                                     family: "Anderson"],
+                             [
+                                     given : "Pam",
+                                     family: "Anderson"]
             ],
-            dateOfBirth             : "1983-03-18",
-            identifiers             : [[
-                                               type      : "national",
-                                               identifier: "3B902AE12DF55196"],
-                                       [
-                                               type      : "enterprise",
-                                               identifier: "ABCD1234"]
-            ],
-            nullValueAttribute1     : "    ",
-            nullValueAttribute2     : "000-00-0000",
-            customNullValueAttribute: "xxxxxx"
+            dateOfBirth   : "1983-03-18",
+            identifiers   : [[
+                                     type      : "national",
+                                     identifier: "3B902AE12DF55196"],
+                             [
+                                     type      : "enterprise",
+                                     identifier: "ABCD1234"]
+            ]
 
     ]
 
@@ -71,26 +68,33 @@ class AttributeValueResolverSpec extends Specification {
     @Unroll
     def "test that null like values works with default and custom regular expressions for nullEquivilents"() {
         setup:
-        def config = new MatchAttributeConfig(name: 'nullEquiv', attribute: attribute)
+        def config = new MatchAttributeConfig(name: 'nullEquiv', attribute: 'nullAttribute')
         if (nullEquivilants != null) {
             config.nullEquivalents = nullEquivilants
         }
 
         expect:
-        AttributeValueResolver.getAttributeValue(config, matchInput) == expectedOutcome
+        AttributeValueResolver.getAttributeValue(config, [nullAttribute: attributeValue]) == expectedOutcome
 
         where:
-        attribute                  | nullEquivilants | expectedOutcome
-        "nullValueAttribute1"      | null            | null
-        "nullValueAttribute2"      | null            | null
-        "customNullValueAttribute" | null            | "xxxxxx"
-        "customNullValueAttribute" | [/[x]+/]        | null
-        "nullValueAttribute1"      | [/[x]+/]        | "    "
-        "nullValueAttribute2"      | [/[x]+/]        | "000-00-0000"
-        "customNullValueAttribute" | []              | "xxxxxx"
-        "nullValueAttribute1"      | [/[x]+/]        | "    "
-        "nullValueAttribute2"      | [/[x]+/]        | "000-00-0000"
+        attributeValue | nullEquivilants                | expectedOutcome
+        "    "         | null                           | null
+        "000-00-0000"  | null                           | null
+        "xxxxxx"       | null                           | "xxxxxx"
+        "xxxxxx"       | [/[x]+/]                       | null
+        "    "         | [/[x]+/]                       | "    "
+        "000-00-0000"  | [/[x]+/]                       | "000-00-0000"
+        "xxxxxx"       | []                             | "xxxxxx"
+        "    "         | [/[x]+/]                       | "    "
+        "000-00-0000"  | [/[x]+/]                       | "000-00-0000"
+        "____00000"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | null
+        "_____0000"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | null
+        "______000"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "______000"
+        "____99999"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | null
+        "_____9999"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | null
+        "______999"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "______999"
+        "_________"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | null
+        "_____0909"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "_____0909"
+        "123450000"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "123450000"
     }
-
-
 }
