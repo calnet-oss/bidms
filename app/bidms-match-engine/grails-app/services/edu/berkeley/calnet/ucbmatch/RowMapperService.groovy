@@ -12,6 +12,13 @@ class RowMapperService {
 
     MatchConfig matchConfig
 
+    /**
+     * Map row data to candidates. If a candidate already exists in the set of candidates, it is updated.
+     * @param rows database rows
+     * @param confidenceType canonical or potential
+     * @param matchInput the match request
+     * @return set of candidates that match
+     */
     Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType, Map matchInput) {
         // Group the returned rows by referenceId. The value is a list of db rows returned
         def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it[matchConfig.matchReference.column] }
@@ -37,6 +44,8 @@ class RowMapperService {
                 configByPath.each { path, pathConfigs ->
                     "mapRowToCandidate$path"(candidate, dataRow, pathConfigs)
                 }
+
+                // If the candidate is an exact match, go through the runCrossCheck to test if some of the attributes does not match
                 if(candidate.exactMatch == ConfidenceType.CANONICAL.exactMatch) {
                     runCrossCheckOnCandidate(candidate, dataRow, matchInput)
                 }
@@ -48,6 +57,19 @@ class RowMapperService {
     }
 
     /**
+     * If an incoming attribute (matchInput) is not part of the rule used for matching it can still
+     * veto the exact match, if this attribute is marked with 'invalidates' and the attribute value is not
+     * equals to the row value.
+     *
+     * Example:
+     *
+     * matchInput is firstName, lastName, dateOfBirth and ssn
+     * matchRule is firstName EXACT, lastName EXACT and dateOfBirth EXACT
+     *
+     * the rule finds a row in the database where firstName, lastName and dateOfBirth matches, but
+     * when crossChecking the candidate, the ssn from the row does not match the ssn in the matchInput.
+     *
+     * This will degrade the candidate to a potential match
      *
      * @param candidate
      * @param rowData
@@ -57,7 +79,7 @@ class RowMapperService {
         def invalidatingAttributes = matchConfig.matchAttributeConfigs.findAll { it.invalidates }
         def hasInvalidatingAttribute = invalidatingAttributes.any { matchAttributeConfig ->
             def value = AttributeValueResolver.getAttributeValue(matchAttributeConfig, matchInput)
-            def rowDataValue = rowData."${matchAttributeConfig.column}"
+            def rowDataValue = rowData."${matchAttributeConfig.column}" ?: null
             return value != rowDataValue
         }
 
@@ -69,7 +91,6 @@ class RowMapperService {
     Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType, Map matchInput) {
         def candidates = mapDataRowsToCandidates([row] as Set, confidenceType, matchInput)
         return candidates?.size() == 1 ? candidates[0] : null
-
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
@@ -102,9 +123,7 @@ class RowMapperService {
         configGroups.inject(candidateGroup) { Set groupSet, configGroup ->
             // For each group property find the type
             def type = configGroup.key
-//            if(type == matchConfig.matchReference.systemOfRecordAttribute) {
-//                type = getSystemOfRecordFromRow(dataRow)
-//            }
+
             def attributeConfigsForType = configGroup.value
             // See if there is already an existing identifier
             if (groupSet.find { it.type == type }) {
@@ -125,8 +144,6 @@ class RowMapperService {
             }
             groupSet << group
         }
-
-
     }
 
     private String getSystemOfRecordFromRow(Map<String, String> databaseRow) {
@@ -134,6 +151,4 @@ class RowMapperService {
         def attributeConfig = matchConfig.matchAttributeConfigs.find { it.name == systemOfRecordAttribute }
         return databaseRow?."${attributeConfig.column}"
     }
-
-
 }
