@@ -20,7 +20,7 @@ class SearchSet {
             def sqlValue = SqlWhereResolver.getWhereClause(matchType, config, value)
             new WhereAndValue(sqlValue)
         }
-        if (whereAndValues.every { it.value }) {
+        if (whereAndValues.every { it.value != null }) {
             return [sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value]
         } else {
             return null
