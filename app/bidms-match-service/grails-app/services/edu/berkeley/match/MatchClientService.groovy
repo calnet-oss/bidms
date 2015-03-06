@@ -13,20 +13,16 @@ class MatchClientService {
      * Call the match-engine to see if the database has a match on an existing record.
      * The match-engine configuration determins if there is no match, a single (canonical) match, or a partial match
      *
-     * @param a map containing the some or all of the following properties:
-     * systemOfRecord,
-     * sorPrimaryKey,
-     * firstName,
-     * lastName,
-     * dateOfBirth,
-     * socialSecurityNumber
-     *      *
+     * @param a map containing the some or all of the following properties (in this format)
+     * [
+     *      systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', fullName: 'lastName, firstName middleName', givenName: 'firstName', middleName: 'middleName', lastName: 'lastName',
+     *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz']
+     * ]
      * @return
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
      */
     PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.match.ucbMatchEngineUrl
-        //[systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', firstName: 'firstName', lastName: 'lastName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN']
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
@@ -61,27 +57,45 @@ class MatchClientService {
         new PersonPartialMatches(people: people)
     }
 
+    /**
+     * Map input parameters to a Match-Engine request
+     * @param params
+     * @return
+     */
+    private static Map buildJsonMap(Map<String, String> params) {
+        def map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
 
-    private static Map buildJsonMap(Map<String, String> p) {
-        def map = [systemOfRecord: p.systemOfRecord, identifier: p.sorPrimaryKey]
-        if (p.dateOfBirth) {
-            map.dateOfBirth = p.dateOfBirth
+        // Copy top level properties
+        ['dateOfBirth', 'email'].each {
+            if (params[it]) {
+                map[it] = params[it]
+            }
         }
 
-        if (p.lastName || p.firstName) {
-            def name = [type: "official"]
-            if (p.firstName) {
-                name.given = p.firstName
-            }
-            if (p.lastName) {
-                name.family = p.lastName
-            }
+        // Copy name attributes to names structure
+        def name = ['givenName', 'middleName', 'surName', 'fullName'].collectEntries {
+            [it, params[it]]
+        }.findAll { it.value }
+
+        if (name) {
+            name.type = "official"
             map.names = [name]
         }
-        if (p.socialSecurityNumber) {
-            map.identifiers = [
-                    [type: "national", identifier: p.socialSecurityNumber]
-            ]
+
+        if (params.socialSecurityNumber || params.otherIds) {
+
+            // Copy other identifiers (comes in a map) to the identifiers list
+            map.identifiers = params.otherIds?.collect { type, value ->
+                [
+                        type      : type,
+                        identifier: value
+                ]
+            } ?: []
+
+            // Finally add socialSecurityNumber if present
+            if (params.socialSecurityNumber) {
+                map.identifiers << [type: "national", identifier: params.socialSecurityNumber]
+            }
         }
         return map
     }

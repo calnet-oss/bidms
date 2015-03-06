@@ -16,7 +16,7 @@ class NewSORConsumerService {
     static adapter = "transacted"
     static container = "transacted"
 
-    static MATCH_FIELDS = ['systemOfRecord','sorPrimaryKey','firstName','lastName','dateOfBirth','socialSecurityNumber']
+    static MATCH_FIELDS = ['systemOfRecord','sorPrimaryKey','givenName','middleName','surName','fullName','dateOfBirth','socialSecurityNumber']
 
 
     def matchClientService
@@ -36,13 +36,11 @@ class NewSORConsumerService {
         }
 
         def message = msg as MapMessage
-        // Retrieve key elements from the message
-        def systemOfRecord = message.getString('systemOfRecord')
-        def sorPrimaryKey = message.getString('sorPrimaryKey')
-        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord,sorPrimaryKey)
-        log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
 
-        def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }
+        SORObject sorObject = getSorObjectFromMessage(message)
+
+        Map sorAttributes = getAttributesFromMessage(message)
+
         def match = matchClientService.match(sorAttributes)
         log.debug("Response from MatchService: $match")
 
@@ -58,5 +56,32 @@ class NewSORConsumerService {
         downstreamJMSService.provision(person)
 
         return null
+    }
+
+    /**
+     * Finds the SORObject by systemOfRecord and sorPrimaryKey found in the MapMessage
+     * @param message
+     * @return a SORObject key (or null if not found)
+     */
+    private SORObject getSorObjectFromMessage(MapMessage message) {
+        def systemOfRecord = message.getString('systemOfRecord')
+        def sorPrimaryKey = message.getString('sorPrimaryKey')
+        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
+        log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
+        sorObject
+    }
+
+    /**
+     * Converts a mapMessage to a Map of attributes
+     * @param message
+     * @return
+     */
+    private Map getAttributesFromMessage(MapMessage message) {
+        def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value }
+        if (message.getObject('otherIds')) {
+            Map otherIds = message.getObject('otherIds')
+            sorAttributes.otherIds = otherIds
+        }
+        sorAttributes
     }
 }

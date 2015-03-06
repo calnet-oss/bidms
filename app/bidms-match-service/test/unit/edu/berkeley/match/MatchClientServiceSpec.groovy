@@ -36,12 +36,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone'])
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone'])
 
         then:
         mockServer.verify()
@@ -53,12 +53,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess(EXACT_MATCH_RESPONSE, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -71,12 +71,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond((new DefaultResponseCreator(HttpStatus.MULTIPLE_CHOICES)).body(PARTIAL_MATCH_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -90,12 +90,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond((new DefaultResponseCreator(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(RuntimeException)
@@ -106,12 +106,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withServerError())
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(RuntimeException)
@@ -122,12 +122,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"type":"official","given":"Pat","family":"Stone"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(ResourceAccessException)
