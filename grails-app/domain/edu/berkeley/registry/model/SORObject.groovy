@@ -6,9 +6,8 @@ class SORObject implements Serializable {
     Date queryTime
     Person person
 
-    static SORObject getBySorAndObjectKey(String systemOfRecord, String sorPrimaryKey) {
-        def sor = SOR.findByName(systemOfRecord)
-        def sorObject = SORObject.findBySorAndSorPrimaryKey(sor, sorPrimaryKey)
+    static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
+        def sorObject = SORObject.where { sor.name == systemOfRecord && sorPrimaryKey == sorObjectKey }.get()
         return sorObject
     }
 
