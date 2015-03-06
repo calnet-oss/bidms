@@ -2,15 +2,15 @@ package edu.berkeley.registry.model
 
 class Person {
     String uid
-    String firstName
-    String lastName
+    String givenName
+    String surName
     String dateOfBirth
     String socialSecurityNumber
 
     static constraints = {
         uid unique: true
-        firstName nullable: true
-        lastName nullable: true
+        givenName nullable: true
+        surName nullable: true
         dateOfBirth nullable: true
         socialSecurityNumber nullable: true
     }
@@ -18,8 +18,8 @@ class Person {
     static mapping = {
         id name: 'uid', column: 'UID', generator: 'assigned'
         version false
-        firstName column: 'firstName'
-        lastName column: 'lastName'
+        givenName column: 'givenName'
+        surName column: 'surName'
         dateOfBirth column: 'dateOfBirth'
         socialSecurityNumber column: 'socialSecurityNumber'
     }
