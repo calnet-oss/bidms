@@ -23,8 +23,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Build([Person])
 class UidClientServiceSpec extends Specification {
     private static final UCB_UID_SERVICE_URL = 'http://localhost/ucb-uid-service/nextUid'
-    private static final INPUT_ATTRIBUTE_MAP = [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', firstName: 'Pat', lastName: 'Stone']
-    private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorPrimaryKey":"BB00002","dateOfBirth":"1930-04-20","firstName":"Pat","lastName":"Stone"}'
+    private static final INPUT_ATTRIBUTE_MAP = [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone']
+    private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorPrimaryKey":"BB00002","dateOfBirth":"1930-04-20","givenName":"Pat","surName":"Stone"}'
 
     def setup() {
         grailsApplication.config.rest = [uidService: [url: UCB_UID_SERVICE_URL]]
@@ -40,7 +40,7 @@ class UidClientServiceSpec extends Specification {
                 .andExpect(content().string(EXPECTED_REST_INPUT))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess("{'uid': '123'}", MediaType.APPLICATION_JSON))
-        Person.build(uid: '123', firstName: 'Pat', lastName: 'Stone', dateOfBirth: '1930-04-20') // Mock person that the uid-service would create
+        Person.build(uid: '123', givenName: 'Pat', surName: 'Stone', dateOfBirth: '1930-04-20') // Mock person that the uid-service would create
 
         when:
         def result = service.createUidForPerson(INPUT_ATTRIBUTE_MAP)
@@ -49,8 +49,8 @@ class UidClientServiceSpec extends Specification {
         mockServer.verify()
         result instanceof Person
         result.uid == '123'
-        result.firstName == 'Pat'
-        result.lastName == 'Stone'
+        result.givenName == 'Pat'
+        result.surName == 'Stone'
         result.dateOfBirth == '1930-04-20'
     }
 
