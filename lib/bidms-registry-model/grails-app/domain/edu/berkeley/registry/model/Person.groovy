@@ -1,9 +1,13 @@
 package edu.berkeley.registry.model
 
+import java.sql.Timestamp
+
 class Person {
     String uid
     String dateOfBirthMMDD
     Date dateOfBirth
+    Timestamp timeCreated
+    Timestamp timeUpdated
 
     static constraints = {
         uid unique: true
