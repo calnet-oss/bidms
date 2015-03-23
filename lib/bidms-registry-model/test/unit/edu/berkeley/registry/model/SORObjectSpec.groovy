@@ -7,14 +7,17 @@ import spock.lang.Specification
 @TestFor(SORObject)
 @Mock([SORObject, SOR])
 class SORObjectSpec extends Specification {
-    def setup() {
-        new SOR(id: 1, name: "SIS").save(failOnError: true)
+    SOR testSOR
 
+    def setup() {
+        testSOR = new SOR(name: "SIS")
+        testSOR.save(flush: true, failOnError: true)
     }
 
     def "test that a SORObject can be found when exists"() {
         given:
-        def obj = new SORObject(sor: SOR.findById(1), sorPrimaryKey: '123').save(flush: true, validate: false)
+        assert SOR.get(testSOR.id) != null
+        def obj = new SORObject(sor: SOR.findById(testSOR.id), sorPrimaryKey: '123').save(flush: true, validate: false, failOnError: true)
 
         expect:
         obj.id
