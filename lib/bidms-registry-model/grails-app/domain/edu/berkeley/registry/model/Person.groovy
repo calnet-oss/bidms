@@ -1,7 +1,5 @@
 package edu.berkeley.registry.model
 
-import java.sql.Timestamp
-
 class Person {
 
     // 'id' can be ignored and is not used, but seems to be necessary to
@@ -12,8 +10,8 @@ class Person {
     String uid
     String dateOfBirthMMDD
     Date dateOfBirth
-    Timestamp timeCreated
-    Timestamp timeUpdated
+    Date timeCreated
+    Date timeUpdated
 
     static constraints = {
         dateOfBirthMMDD nullable: true
@@ -24,8 +22,8 @@ class Person {
 
     static mapping = {
         version false
-        id name: 'uid', column: 'uid', generator: 'assigned'
-        dateOfBirthMMDD column: 'dateOfBirthMMDD'
+        id name: 'uid', column: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
+        dateOfBirthMMDD column: 'dateOfBirthMMDD', sqlType: 'CHAR(4)'
         dateOfBirth column: 'dateOfBirth'
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
