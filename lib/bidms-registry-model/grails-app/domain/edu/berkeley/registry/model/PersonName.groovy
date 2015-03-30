@@ -3,7 +3,6 @@ package edu.berkeley.registry.model
 class PersonName {
 
     Long id
-    Person uid
     NameType nameType
     String honorific
     String givenName
@@ -11,6 +10,8 @@ class PersonName {
     String surName
     String suffix
     String fullName
+
+    static belongsTo = [ person : Person ]
 
     static constraints = {
         honorific nullable: true
