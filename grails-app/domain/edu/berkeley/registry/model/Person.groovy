@@ -13,6 +13,8 @@ class Person {
     Date timeCreated
     Date timeUpdated
 
+    static hasMany = [ names : PersonName ]
+
     static constraints = {
         dateOfBirthMMDD nullable: true
         dateOfBirth nullable: true
