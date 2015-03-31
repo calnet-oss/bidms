@@ -12,6 +12,7 @@ class NameType {
     }
 
     static mapping = {
+        table name: "NameType"
         version: false
             id column: 'id', sqlType: 'SMALLINT'
             typeName sqlType: 'VARCHAR(64)'

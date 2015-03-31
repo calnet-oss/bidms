@@ -23,6 +23,7 @@ class PersonName {
     }
 
     static mapping = {
+        table name: "PersonName"
         version false
         id column: 'id', sqlType: 'BIGINT'
         honorific sqlType: 'VARCHAR(32)'
