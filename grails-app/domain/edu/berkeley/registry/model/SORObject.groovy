@@ -6,6 +6,7 @@ class SORObject implements Serializable {
     Date queryTime
     Person person
     String objJson
+    Integer jsonVersion
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
         def sorObject = SORObject.where { sor.name == systemOfRecord && sorPrimaryKey == sorObjectKey }.get()
@@ -25,6 +26,7 @@ class SORObject implements Serializable {
         id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sorobject_seq']
         version false
         objJson column: 'objJson', sqlType: 'TEXT'
+        jsonVersion column: 'jsonVerion', sqlType: 'SMALLINT'
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
