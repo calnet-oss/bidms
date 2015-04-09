@@ -17,9 +17,7 @@ class SORSpec extends Specification {
     void "confirm SOR using LogicalEqualsAndHashCode annotation"() {
         given:
             SOR obj = new SOR()
-        when:
-            boolean isInstance = obj instanceof LogicalEqualsAndHashCodeInterface
-        then:
-            isInstance == true
+        expect:
+            obj instanceof LogicalEqualsAndHashCodeInterface
     }
 }
