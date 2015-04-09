@@ -25,12 +25,14 @@ class PersonName {
     static mapping = {
         table name: "PersonName"
         version false
-        id column: 'id', sqlType: 'BIGINT'
-        honorific sqlType: 'VARCHAR(32)'
-        givenName sqlType: 'VARCHAR(127)'
-        middleName sqlType: 'VARCHAR(127)'
-        surName sqlType: 'VARCHAR(127)'
-        suffix sqlType: 'VARCHAR(32)'
-        fullName sqlType: 'VARCHAR(255)'
+        id column: 'id', generator: 'sequence', params:[sequence: 'PersonName_seq'], sqlType: 'BIGINT'
+        person column: 'uid', sqlType: 'VARCHAR(64)'
+        nameType column: 'nameTypeId', sqlType: 'SMALLINT'
+        honorific column: 'honorific', sqlType: 'VARCHAR(32)'
+        givenName column: 'givenName', sqlType: 'VARCHAR(127)'
+        middleName column: 'middleName', sqlType: 'VARCHAR(127)'
+        surName column: 'surName', sqlType: 'VARCHAR(127)'
+        suffix column: 'suffix', sqlType: 'VARCHAR(32)'
+        fullName column: 'fullName', sqlType: 'VARCHAR(255)'
     }
 }
