@@ -1,8 +1,5 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
-
-@LogicalEqualsAndHashCode(excludes=["person"])
 class PersonName {
 
     Long id
@@ -14,7 +11,7 @@ class PersonName {
     String suffix
     String fullName
 
-    static belongsTo = [person: Person]
+    static belongsTo = [ person : Person ]
 
     static constraints = {
         honorific nullable: true
@@ -28,7 +25,7 @@ class PersonName {
     static mapping = {
         table name: "PersonName"
         version false
-        id column: 'id', generator: 'sequence', params: [sequence: 'PersonName_seq'], sqlType: 'BIGINT'
+        id column: 'id', generator: 'sequence', params:[sequence: 'PersonName_seq'], sqlType: 'BIGINT'
         person column: 'uid', sqlType: 'VARCHAR(64)'
         nameType column: 'nameTypeId', sqlType: 'SMALLINT'
         honorific column: 'honorific', sqlType: 'VARCHAR(32)'
