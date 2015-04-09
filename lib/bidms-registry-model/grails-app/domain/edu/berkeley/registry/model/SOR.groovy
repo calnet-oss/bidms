@@ -1,11 +1,11 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
-
-@LogicalEqualsAndHashCode
 class SOR implements Serializable {
     Integer id
     String name
+
+    // definitely don't want to attach all sorobjects to this
+    //static hasMany = [sorObjects: SORObject]
 
     static constraints = {
         name nullable: false, unique: true
