@@ -4,7 +4,8 @@ class SOR implements Serializable {
     Integer id
     String name
 
-    static hasMany = [sorObjects: SORObject]
+    // definitely don't want to attach all sorobjects to this
+    //static hasMany = [sorObjects: SORObject]
 
     static constraints = {
         name nullable: false, unique: true
