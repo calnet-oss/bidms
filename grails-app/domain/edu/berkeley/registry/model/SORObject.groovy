@@ -26,7 +26,7 @@ class SORObject implements Serializable {
         id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sorobject_seq']
         version false
         objJson column: 'objJson', sqlType: 'TEXT'
-        jsonVersion column: 'jsonVerion', sqlType: 'SMALLINT'
+        jsonVersion column: 'jsonVersion', sqlType: 'SMALLINT'
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
