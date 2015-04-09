@@ -17,14 +17,18 @@ class PersonNameSpec extends Specification {
     void "confirm PersonName using LogicalEqualsAndHashCode annotation"() {
         given:
             PersonName obj = new PersonName()
-        expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        when:
+            boolean isInstance = obj instanceof LogicalEqualsAndHashCodeInterface
+        then:
+            isInstance == true
     }
 
     void "confirm PersonName LogicalEqualsAndHashCode excludes"() {
         given:
             PersonName obj = new PersonName()
-        expect:
-            PersonName.logicalHashCodeExcludes.contains("person")
+        when:
+            boolean hasExcludes = PersonName.logicalHashCodeExcludes.contains("person")
+        then:
+            hasExcludes == true
     }
 }

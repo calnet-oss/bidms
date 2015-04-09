@@ -17,7 +17,9 @@ class NameTypeSpec extends Specification {
     void "confirm NameType using LogicalEqualsAndHashCode annotation"() {
         given:
             NameType obj = new NameType()
-        expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        when:
+            boolean isInstance = obj instanceof LogicalEqualsAndHashCodeInterface
+        then:
+            isInstance == true
     }
 }
