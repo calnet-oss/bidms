@@ -1,8 +1,5 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
-
-@LogicalEqualsAndHashCode
 class NameType {
 
     Integer id
