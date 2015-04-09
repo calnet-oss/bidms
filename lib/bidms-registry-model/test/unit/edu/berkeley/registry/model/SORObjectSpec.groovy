@@ -5,7 +5,7 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(SORObject)
-@Mock([Person, PartialMatch, SORObject, PersonName, NameType, SOR])
+@Mock([SORObject, SOR])
 class SORObjectSpec extends Specification {
     SOR testSOR
 
@@ -41,4 +41,5 @@ class SORObjectSpec extends Specification {
         and:
         !SORObject.getBySorAndObjectKey('SIS','321')
     }
+
 }
