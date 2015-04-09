@@ -1,5 +1,8 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+
+@LogicalEqualsAndHashCode(excludes=["person"])
 class PersonName {
 
     Long id
