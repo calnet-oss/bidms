@@ -1,5 +1,7 @@
 package edu.berkeley.registry.model
 
+import groovy.json.JsonSlurper
+
 class SORObject implements Serializable {
 
     String sorPrimaryKey
@@ -7,6 +9,8 @@ class SORObject implements Serializable {
     Person person
     String objJson
     Integer jsonVersion
+
+    static transients = ['json']
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
         def sorObject = SORObject.where { sor.name == systemOfRecord && sorPrimaryKey == sorObjectKey }.get()
@@ -31,6 +35,9 @@ class SORObject implements Serializable {
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
         person column: 'uid'
+    }
 
+    Map getJson() {
+        new JsonSlurper().parseText(objJson) as Map
     }
 }
