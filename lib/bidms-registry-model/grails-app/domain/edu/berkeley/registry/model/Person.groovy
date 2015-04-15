@@ -8,7 +8,10 @@ class Person {
     Date timeCreated
     Date timeUpdated
 
-    static hasMany = [names: PersonName]
+    static hasMany = [
+            names       : PersonName,
+            datesOfBirth: DateOfBirth
+    ]
 
     static constraints = {
         dateOfBirthMMDD nullable: true
@@ -26,6 +29,7 @@ class Person {
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
         names cascade: "all-delete-orphan"
+        datesOfBirth cascade: "all-delete-orphan"
     }
 
     static transients = ['uid']
