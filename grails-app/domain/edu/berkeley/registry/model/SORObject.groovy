@@ -6,7 +6,6 @@ class SORObject implements Serializable {
 
     String sorPrimaryKey
     Date queryTime
-    Person person
     String objJson
     Integer jsonVersion
 
@@ -17,7 +16,7 @@ class SORObject implements Serializable {
         return sorObject
     }
 
-    static belongsTo = [sor: SOR]
+    static belongsTo = [sor: SOR, person: Person]
 
     static constraints = {
         sorPrimaryKey nullable: false, unique: 'sor'
