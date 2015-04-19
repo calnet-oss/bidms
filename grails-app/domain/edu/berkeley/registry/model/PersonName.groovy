@@ -7,6 +7,7 @@ class PersonName {
 
     Long id
     NameType nameType
+    SORObject sorObject
     String honorific
     String givenName
     String middleName
@@ -31,6 +32,7 @@ class PersonName {
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonName_seq'], sqlType: 'BIGINT'
         person column: 'uid', sqlType: 'VARCHAR(64)'
         nameType column: 'nameTypeId', sqlType: 'SMALLINT'
+        sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         honorific column: 'honorific', sqlType: 'VARCHAR(32)'
         givenName column: 'givenName', sqlType: 'VARCHAR(127)'
         middleName column: 'middleName', sqlType: 'VARCHAR(127)'
