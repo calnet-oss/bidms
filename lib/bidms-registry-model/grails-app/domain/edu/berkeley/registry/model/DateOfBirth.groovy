@@ -6,10 +6,11 @@ import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 class DateOfBirth {
 
     Long id
+    SORObject sorObject
     String dateOfBirthMMDD
     Date dateOfBirth
 
-    static belongsTo = [person: Person, sorObject: SORObject]
+    static belongsTo = [person: Person]
 
     static constraints = {
         dateOfBirthMMDD nullable: true
