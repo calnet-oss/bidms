@@ -1,22 +1,21 @@
 package edu.berkeley.registry.model
 
-import groovy.json.JsonSlurper
+import net.kaleidos.hibernate.usertype.JsonbMapType
 
 class SORObject implements Serializable {
 
     String sorPrimaryKey
     Date queryTime
-    String objJson
+    Person person
+    Map objJson
     Integer jsonVersion
-
-    static transients = ['json']
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
         def sorObject = SORObject.where { sor.name == systemOfRecord && sorPrimaryKey == sorObjectKey }.get()
         return sorObject
     }
 
-    static belongsTo = [sor: SOR, person: Person]
+    static belongsTo = [sor: SOR]
 
     static constraints = {
         sorPrimaryKey nullable: false, unique: 'sor'
@@ -26,17 +25,13 @@ class SORObject implements Serializable {
 
     static mapping = {
         table name: 'SORObject'
-        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'SORObject_seq']
+        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sorobject_seq']
         version false
-        objJson column: 'objJson', sqlType: 'TEXT'
+        objJson column: 'objJson', type: JsonbMapType, sqlType: 'jsonb'
         jsonVersion column: 'jsonVersion', sqlType: 'SMALLINT'
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
         queryTime column: 'sorQueryTime'
         person column: 'uid'
-    }
-
-    Map getJson() {
-        new JsonSlurper().parseText(objJson) as Map
     }
 }
