@@ -18,6 +18,7 @@ class PersonName {
     static belongsTo = [person: Person]
 
     static constraints = {
+        person unique: ['sorObject', 'nameType']
         honorific nullable: true
         givenName nullable: true
         middleName nullable: true
