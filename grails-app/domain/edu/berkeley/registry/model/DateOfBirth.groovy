@@ -22,7 +22,7 @@ class DateOfBirth {
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'DateOfBirth_seq'], sqlType: 'BIGINT'
         person column: 'uid', sqlType: 'VARCHAR(64)'
-        sorObjectId column: 'sorObjectId', sqlType: 'BIGINT'
+        sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         dateOfBirthMMDD column: 'dateOfBirthMMDD', sqlType: 'CHAR(4)'
         dateOfBirth column: 'dateOfBirth', sqlType: 'DATE'
     }
