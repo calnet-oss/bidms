@@ -15,7 +15,7 @@ class SORObject implements Serializable {
         return sorObject
     }
 
-    static belongsTo = [sor: SOR]
+    static belongsTo = [sor: SOR, person: Person]
 
     static constraints = {
         sorPrimaryKey nullable: false, unique: 'sor'
@@ -25,7 +25,7 @@ class SORObject implements Serializable {
 
     static mapping = {
         table name: 'SORObject'
-        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sorobject_seq']
+        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'SORObject_seq']
         version false
         objJson column: 'objJson', type: JsonbMapType, sqlType: 'jsonb'
         jsonVersion column: 'jsonVersion', sqlType: 'SMALLINT'
