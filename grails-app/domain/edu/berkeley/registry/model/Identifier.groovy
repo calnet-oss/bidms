@@ -13,6 +13,7 @@ class Identifier {
     static belongsTo = [person: Person]
 
     static constraints = {
+        person unique: ['sorObject', 'identifierType']
     }
 
     static mapping = {

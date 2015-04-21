@@ -13,6 +13,7 @@ class DateOfBirth {
     static belongsTo = [person: Person]
 
     static constraints = {
+        person unique: 'sorObject'
         dateOfBirthMMDD nullable: true
         dateOfBirth nullable: true
     }

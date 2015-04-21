@@ -6,7 +6,7 @@ class PartialMatch {
     Date dateCreated = new Date()
 
     static constraints = {
-        sorObject nullable: false
+        sorObject nullable: false, unique: 'person'
         person nullable: false
         dateCreated nullable: false
     }
