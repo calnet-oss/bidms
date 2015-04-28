@@ -6,7 +6,8 @@ class PartialMatch {
     Date dateCreated = new Date()
 
     static constraints = {
-        sorObject nullable: false, unique: 'person'
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        sorObject nullable: false/*, unique: 'person'*/
         person nullable: false
         dateCreated nullable: false
     }

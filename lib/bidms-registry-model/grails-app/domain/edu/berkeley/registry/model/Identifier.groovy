@@ -13,7 +13,8 @@ class Identifier {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: ['sorObject', 'identifierType']
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        //person unique: ['sorObject', 'identifierType']
     }
 
     static mapping = {

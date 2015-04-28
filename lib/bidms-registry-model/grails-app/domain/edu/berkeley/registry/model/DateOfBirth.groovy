@@ -13,7 +13,8 @@ class DateOfBirth {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: 'sorObject'
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        //person unique: 'sorObject'
         dateOfBirthMMDD nullable: true
         dateOfBirth nullable: true
     }

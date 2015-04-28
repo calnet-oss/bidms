@@ -8,7 +8,8 @@ class SOR implements Serializable {
     String name
 
     static constraints = {
-        name nullable: false, unique: true
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        name nullable: false/*, unique: true*/
     }
 
     static mapping = {
