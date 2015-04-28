@@ -20,7 +20,8 @@ class SORObject implements Serializable {
     static belongsTo = [sor: SOR, person: Person]
 
     static constraints = {
-        sorPrimaryKey nullable: false, unique: 'sor'
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        sorPrimaryKey nullable: false/*, unique: 'sor'*/
         queryTime nullable: false
         person nullable: true
     }

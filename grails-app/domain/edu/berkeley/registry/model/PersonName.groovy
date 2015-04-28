@@ -18,7 +18,8 @@ class PersonName {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: ['sorObject', 'nameType']
+        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
+        //person unique: ['sorObject', 'nameType']
         honorific nullable: true
         givenName nullable: true
         middleName nullable: true
