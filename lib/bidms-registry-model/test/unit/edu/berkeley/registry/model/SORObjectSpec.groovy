@@ -1,7 +1,9 @@
 package edu.berkeley.registry.model
 
+import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import groovy.json.JsonBuilder
 import spock.lang.Specification
 
 @TestFor(SORObject)
@@ -40,6 +42,16 @@ class SORObjectSpec extends Specification {
 
         and:
         !SORObject.getBySorAndObjectKey('SIS','321')
+    }
+
+    def "test json"() {
+        given:
+            def json = new JsonBuilder([id:3, name:'archer']).toString()
+            def obj = new SORObject(sor: SOR.findById(1), sorPrimaryKey: '123', objJson: json).save(flush: true, validate: false)
+
+        expect:
+            obj.json.id == 3
+            obj.json.name == 'archer'
     }
 
 }
