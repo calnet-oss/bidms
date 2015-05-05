@@ -42,7 +42,7 @@ public class JSONBType implements UserType {
 
     @Override
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
-        return rs.getObject(names[0]);
+        return (names != null && names.length > 0 ? rs.getObject(names[0]) : null);
     }
 
     @Override
