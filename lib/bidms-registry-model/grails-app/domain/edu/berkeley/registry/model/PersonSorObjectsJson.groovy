@@ -32,15 +32,15 @@ class PersonSorObjectsJson {
 
     /**
      * PersonSorObjectsJson is a read-only table, but tests may override
-     * enforceReadOnly to write mock data.  (Override it to do nothing.)
+     * enforceReadOnly to write mock data.  (Override it to return true.)
      */
-    protected void enforceReadOnly() {
+    protected boolean enforceReadOnly() {
         throw new RuntimeException('PersonSorObjectsJson is a read-only table')
     }
 
-    void beforeInsert() { enforceReadOnly() }
+    def beforeInsert() { return enforceReadOnly() }
 
-    void beforeUpdate() { enforceReadOnly() }
+    def beforeUpdate() { return enforceReadOnly() }
 
-    void beforeDelete() { enforceReadOnly() }
+    def beforeDelete() { return enforceReadOnly() }
 }
