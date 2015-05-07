@@ -22,7 +22,7 @@ class PersonSorObjectsJson {
         version false
 
         id column: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
-        lastUpdated column: 'lastUpdated', sqlType: 'VARCHAR(64)'
+        lastUpdated column: 'lastUpdated'
         aggregateJson column: 'aggregateJson', type: JSONBType, sqlType: 'jsonb'
         jsonHash column: 'jsonHash', sqlType: 'TEXT'
         provisionedJsonHash column: 'provisionedJsonHash', sqlType: 'TEXT'
