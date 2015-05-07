@@ -27,7 +27,7 @@ class PersonSorObjectsJson {
         jsonHash column: 'jsonHash', sqlType: 'TEXT'
         provisionedJsonHash column: 'provisionedJsonHash', sqlType: 'TEXT'
         lastProvisioned column: 'lastProvisioned'
-        forceProvision column: 'forceProvisioncolumn', sqlType: 'BOOLEAN'
+        forceProvision column: 'forceProvision', sqlType: 'BOOLEAN'
     }
 
     /**
