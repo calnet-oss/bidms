@@ -66,10 +66,8 @@ public class JSONBType implements UserType {
                 } catch (Exception e) {
                     throw new RuntimeException("Couldn't invoke getValue() on instance of " + result.getClass().getName(), e);
                 }
-            } else {
-                // is not an instanceof PGobject.  Return the object as-is.
-                return result;
             }
+            return result;
         }
         return null;
     }
