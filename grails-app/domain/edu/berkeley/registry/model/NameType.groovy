@@ -9,8 +9,7 @@ class NameType {
     String typeName
 
     static constraints = {
-        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
-        //typeName unique: true
+        typeName unique: true
     }
 
     static mapping = {
