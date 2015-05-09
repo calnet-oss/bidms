@@ -9,8 +9,7 @@ class IdentifierType {
     String idName
 
     static constraints = {
-        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
-        //idName unique: true
+        idName unique: true
     }
 
     static mapping = {

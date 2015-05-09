@@ -1,6 +1,7 @@
 package edu.berkeley.registry.model
 
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import edu.berkeley.util.domain.DomainUtil
 
 @LogicalEqualsAndHashCode(excludes = ["person"])
 class DateOfBirth {
@@ -22,9 +23,16 @@ class DateOfBirth {
         table name: "DateOfBirth"
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'DateOfBirth_seq'], sqlType: 'BIGINT'
-        person column: 'uid', sqlType: 'VARCHAR(64)'
+        person column: DateOfBirth.getUidColumnName(), sqlType: 'VARCHAR(64)'
         sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         dateOfBirthMMDD column: 'dateOfBirthMMDD', sqlType: 'CHAR(4)'
         dateOfBirth column: 'dateOfBirth', sqlType: 'DATE'
+    }
+
+    // Makes the column name unique in test mode to avoid GRAILS-11600
+    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
+    // comments in DomainUtil.
+    static String getUidColumnName() {
+        return DomainUtil.testSafeColumnName("DateOfBirth", "uid")
     }
 }
