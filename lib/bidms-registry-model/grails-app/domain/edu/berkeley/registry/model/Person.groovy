@@ -9,9 +9,12 @@ class Person {
     Date timeUpdated
 
     static hasMany = [
+            addresses   : Address,
             names       : PersonName,
             datesOfBirth: DateOfBirth,
-            identifiers : Identifier
+            identifiers : Identifier,
+            emailAddresses: EmailAddress,
+            phoneNumbers: Telephone
     ]
 
     static constraints = {
@@ -30,6 +33,9 @@ class Person {
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
         names cascade: "all-delete-orphan"
+        phoneNumbers cascade: "all-delete-orphan"
+        addresses cascade: "all-delete-orphan"
+        emailAddresses cascade: "all-delete-orphan"
         datesOfBirth cascade: "all-delete-orphan"
         identifiers cascade: "all-delete-orphan"
     }
