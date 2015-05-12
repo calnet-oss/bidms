@@ -1,5 +1,6 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
 @LogicalEqualsAndHashCode(excludes = ["person"])
