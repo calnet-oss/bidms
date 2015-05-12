@@ -5,18 +5,16 @@ import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 @LogicalEqualsAndHashCode
 class TelephoneType {
     Integer id
-    String typeName
+    String telephoneTypeName
 
     static constraints = {
-        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
-        //typeName unique: true
-        typeName size: 1..64
+        telephoneTypeName unique: true, size: 1..64
     }
 
     static mapping = {
         table name: "TelephoneType"
         version false
         id column: 'id', sqlType: 'SMALLINT'
-        typeName column: 'typeName', sqlType: 'VARCHAR(64)'
+        telephoneTypeName column: 'telephoneTypeName', sqlType: 'VARCHAR(64)'
     }
 }

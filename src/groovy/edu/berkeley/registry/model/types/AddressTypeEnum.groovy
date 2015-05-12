@@ -1,8 +1,8 @@
 package edu.berkeley.registry.model.types
 
 /**
- * The different types of names from SOR JSON that translate into a
- * NameType.
+ * The different types of addresses from SOR JSON that translate into a
+ * AddressType.
  */
 enum AddressTypeEnum {
     directoryPrimaryAddress
