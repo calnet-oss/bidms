@@ -13,8 +13,7 @@ class Telephone {
     static belongsTo = [person: Person]
 
     static constraints = {
-        // 'unique' GRAILS BUG: UNCOMMENT WHEN FIXED: https://jira.grails.org/browse/GRAILS-11600
-        //person unique: ['sorObject', 'addressType']
+        person unique: ['sorObject', 'addressType']
         extension nullable: true, size: 1..16
         phoneNumber size: 1..64
 
@@ -25,9 +24,16 @@ class Telephone {
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'Telephone_seq'], sqlType: 'BIGINT'
         telephoneType column: 'telephoneTypeId', sqlType: 'SMALLINT'
-        person column: 'uid', sqlType: 'VARCHAR(64)'
+        person column: Telephone.getUidColumnName(), sqlType: 'VARCHAR(64)'
         sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         phoneNumber column: 'phoneNumber', sqlType: 'VARCHAR(64)'
         extension column: 'extension', sqlType: 'VARCHAR(16)'
+    }
+
+    // Makes the column name unique in test mode to avoid GRAILS-11600
+    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
+    // comments in DomainUtil.
+    static String getUidColumnName() {
+        return DomainUtil.testSafeColumnName("Telephone", "uid")
     }
 }
