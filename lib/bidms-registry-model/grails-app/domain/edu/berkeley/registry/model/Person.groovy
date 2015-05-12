@@ -14,7 +14,7 @@ class Person {
             datesOfBirth: DateOfBirth,
             identifiers : Identifier,
             emails: Email,
-            phoneNumbers: Telephone
+            telephones: Telephone
     ]
 
     static constraints = {
@@ -33,7 +33,7 @@ class Person {
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
         names cascade: "all-delete-orphan"
-        phoneNumbers cascade: "all-delete-orphan"
+        telephones cascade: "all-delete-orphan"
         addresses cascade: "all-delete-orphan"
         emails cascade: "all-delete-orphan"
         datesOfBirth cascade: "all-delete-orphan"
