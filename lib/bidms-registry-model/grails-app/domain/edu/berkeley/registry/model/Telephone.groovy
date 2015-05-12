@@ -14,7 +14,7 @@ class Telephone {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: ['sorObject', 'addressType']
+        person unique: ['sorObject', 'telephoneType']
         extension nullable: true, size: 1..16
         phoneNumber size: 1..64
 
