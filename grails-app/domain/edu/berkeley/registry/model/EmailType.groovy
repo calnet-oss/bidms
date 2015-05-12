@@ -3,7 +3,7 @@ package edu.berkeley.registry.model
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
 @LogicalEqualsAndHashCode
-class TelephoneType {
+class EmailType {
     Integer id
     String typeName
 
@@ -14,7 +14,7 @@ class TelephoneType {
     }
 
     static mapping = {
-        table name: "TelephoneType"
+        table name: "EmailAddressType"
         version false
         id column: 'id', sqlType: 'SMALLINT'
         typeName column: 'typeName', sqlType: 'VARCHAR(64)'

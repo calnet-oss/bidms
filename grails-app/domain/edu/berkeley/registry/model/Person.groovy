@@ -13,7 +13,7 @@ class Person {
             names       : PersonName,
             datesOfBirth: DateOfBirth,
             identifiers : Identifier,
-            emailAddresses: EmailAddress,
+            emails: Email,
             phoneNumbers: Telephone
     ]
 
@@ -35,7 +35,7 @@ class Person {
         names cascade: "all-delete-orphan"
         phoneNumbers cascade: "all-delete-orphan"
         addresses cascade: "all-delete-orphan"
-        emailAddresses cascade: "all-delete-orphan"
+        emails cascade: "all-delete-orphan"
         datesOfBirth cascade: "all-delete-orphan"
         identifiers cascade: "all-delete-orphan"
     }
