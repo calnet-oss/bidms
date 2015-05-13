@@ -5,7 +5,7 @@ package edu.berkeley.registry.model.types
  * TelephoneType.
  */
 enum TelephoneTypeEnum {
-    directoryPrimaryTelephone,
+    directoryOfficePhone,
     directoryFaxTelephone
 
     String getName() {
