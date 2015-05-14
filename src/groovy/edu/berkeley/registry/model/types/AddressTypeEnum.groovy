@@ -5,7 +5,8 @@ package edu.berkeley.registry.model.types
  * AddressType.
  */
 enum AddressTypeEnum {
-    directoryPrimaryAddress
+    directoryPrimaryAddress,
+    directorySecondaryAddress
 
     String getName() {
         return name()
