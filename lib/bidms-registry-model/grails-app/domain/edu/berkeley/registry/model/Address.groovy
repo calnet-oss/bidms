@@ -19,7 +19,7 @@ class Address {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: ['sorObject', 'addressType']
+        person unique: ['sorObject', 'addressType', 'address1', 'address2', 'address3', 'city', 'regionState', 'postalCode', 'country']
         address1 nullable: true, size: 1..255
         address2 nullable: true, size: 1..255
         address3 nullable: true, size: 1..255

@@ -13,7 +13,7 @@ class Email {
     static belongsTo = [person: Person]
 
     static constraints = {
-        person unique: ['sorObject', 'emailType']
+        person unique: ['sorObject', 'emailType', 'emailAddress']
         emailAddress email: true, size: 1..255
 
     }
