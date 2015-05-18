@@ -6,11 +6,10 @@ class PartialMatch {
     SORObject sorObject
     Person person
     Date dateCreated = new Date()
+    Boolean isReject = false
 
     static constraints = {
         sorObject nullable: false, unique: 'person'
-        person nullable: false
-        dateCreated nullable: false
     }
 
     static mapping = {
@@ -20,6 +19,7 @@ class PartialMatch {
         sorObject column: PartialMatch.getSorObjectIdColumnName()
         person column: "personUid"
         dateCreated column: 'dateCreated'
+        isReject column : 'isReject'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
