@@ -23,10 +23,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class MatchClientServiceSpec extends Specification {
 
 
-    public static final String UCB_MATCH_URL = 'http://localhost/ucb-match/v1/people'
+    public static final String UCB_MATCH_URL = 'http://localhost/ucb-match/v1/person'
 
     def setup() {
-        grailsApplication.config.match = [ucbMatchEngineUrl: UCB_MATCH_URL]
+        grailsApplication.config.rest = [matchEngine: [url: UCB_MATCH_URL]]
         service.restClient = new RestBuilder()
         createPeople()
     }

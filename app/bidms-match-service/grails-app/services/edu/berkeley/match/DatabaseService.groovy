@@ -24,7 +24,10 @@ class DatabaseService {
      * @param matchingPeople
      */
     void storePartialMatch(SORObject sorObject, List<Person> matchingPeople) {
-        removeExistingPartialMatches(sorObject)
+        // transaction ensures that the deletes are flushed before we try to reinsert
+        PartialMatch.withTransaction {
+            removeExistingPartialMatches(sorObject)
+        }
         matchingPeople.each {
             createPartialMatch(sorObject, it)
         }
@@ -36,7 +39,7 @@ class DatabaseService {
     }
 
     private static void removeExistingPartialMatches(SORObject sorObject) {
-        def partialMatch = PartialMatch.where { sorObject == sorObject }
-        partialMatch.deleteAll()
+        List partialMatches = PartialMatch.findAllBySorObject(sorObject)
+        PartialMatch.deleteAll(partialMatches)
     }
 }

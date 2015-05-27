@@ -22,7 +22,7 @@ class MatchClientService {
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
      */
     PersonMatch match(Map<String, String> p) {
-        String matchUrl = grailsApplication.config.match.ucbMatchEngineUrl
+        String matchUrl = grailsApplication.config.rest.matchEngine.url
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
