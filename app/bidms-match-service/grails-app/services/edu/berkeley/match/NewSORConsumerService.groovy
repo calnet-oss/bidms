@@ -49,12 +49,14 @@ class NewSORConsumerService {
             databaseService.storePartialMatch(sorObject, match.people)
             return null
         }
-
-        // If it is an exact match assign get the UID from the match otherwise go and get a new UID
-        def person = match instanceof PersonExactMatch ? match.person : uidClientService.createUidForPerson(sorAttributes)
-        databaseService.assignUidToSOR(sorObject, person)
-        downstreamJMSService.provision(person)
-
+        // if it is an exact match assign the uid and provision
+        if(match instanceof PersonExactMatch) {
+            databaseService.assignUidToSOR(sorObject, match.person)
+            downstreamJMSService.provision(match.person)
+            return null
+        }
+        // provision a new person
+        uidClientService.provisionNewUid(sorObject)
         return null
     }
 

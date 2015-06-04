@@ -38,9 +38,9 @@ class NewSORConsumerServiceSpec extends Specification {
 
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonNoMatch()
-        1 * service.uidClientService.createUidForPerson(['systemOfRecord': 'SIS', 'sorPrimaryKey': 'SIS00001', 'givenName': 'givenName', 'surName': 'surName', 'dateOfBirth': 'DOB', 'socialSecurityNumber': 'SSN', otherIds: [employeeId: '123']]) >> person1
-        1 * service.databaseService.assignUidToSOR(sorObject, person1)
-        1 * service.downstreamJMSService.provision(person1)
+        1 * service.uidClientService.provisionNewUid(sorObject)
+        0 * service.databaseService.assignUidToSOR(_,_)
+        0 * service.downstreamJMSService.provision(_)
     }
 
 
@@ -55,7 +55,7 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonExactMatch(person: person1)
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
         1 * service.downstreamJMSService.provision(person1)
-        0 * service.uidClientService.createUidForPerson(_)
+        0 * service.uidClientService.provisionNewUid(_)
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -68,7 +68,7 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(people: [person1, person2])
         1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
-        0 * service.uidClientService.createUidForPerson(_)
+        0 * service.uidClientService.provisionNewUid(_)
         0 * service.databaseService.assignUidToSOR(*_)
         0 * service.downstreamJMSService.provision(_)
     }
