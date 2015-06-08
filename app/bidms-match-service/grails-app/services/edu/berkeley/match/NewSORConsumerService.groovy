@@ -11,7 +11,7 @@ class NewSORConsumerService {
     // Utilizing the JMS plugin
     static exposes = ["jms"]
 
-    static destination = Holders.config.jms.matchService.newSorObject.queue
+    static destination = Holders.config.jms.matchService.newSorObject.queueName
     static isTopic = false
     static adapter = "transacted"
     static container = "transacted"
