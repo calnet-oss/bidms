@@ -10,34 +10,34 @@ class UidClientService {
     def restClient
     def grailsApplication
     /**
-     * @Deprecated use provisionNewUid
-     * Makes a REST call to the UID Service. The UID service assigns a new UID and creates a minimal Person in the registry
-     * @param sorAttributes
-     * @return Person created by the UID Service in the registry
+     * Makes a REST call to the Registry Provisioning to provision the given person
+     * @param Person to provision
+     * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
-    Person createUidForPerson(Map sorAttributes) {
-        String uidServiceUrl = grailsApplication.config.rest.uidService.url
-        def response = restClient.post(uidServiceUrl) {
+    void provisionUid(Person person) {
+        String endpoint = grailsApplication.config.rest.provisionUid.url
+        def response = restClient.post(endpoint) {
             accept 'application/json'
-            json(sorAttributes)
+            json([uid:person.uid])
         }
-        if(response.statusCode == HttpStatus.OK) {
-            def uid = response.json.uid
-            return Person.findByUid(uid)
-        } else {
-            throw new RuntimeException("Could not generate new UID for $sorAttributes")
+        if(response.statusCode != HttpStatus.OK) {
+            throw new RuntimeException("Error provisioning person ${person.uid}")
         }
     }
 
     /**
      * Makes a REST call to the Registry Provisioning to assign new UID to person and provision
      * @param sorObject the SORObject to pass to Registry Provisioning
+     * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
     void provisionNewUid(SORObject sorObject) {
-        String uidServiceUrl = grailsApplication.config.rest.uidService.url
-        def response = restClient.post(uidServiceUrl) {
+        String endpoint = grailsApplication.config.rest.provisionNewUid.url
+        def response = restClient.post(endpoint) {
             accept 'application/json'
             json([id:sorObject.id])
+        }
+        if(response.statusCode != HttpStatus.OK) {
+            throw new RuntimeException("Could not generate a new uid for sorObject ${sorObject.id}")
         }
         if(!response.json.provisioningSuccessful) {
             log.warn "Error provisioning sorObject $response.json.sorObjectId for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"

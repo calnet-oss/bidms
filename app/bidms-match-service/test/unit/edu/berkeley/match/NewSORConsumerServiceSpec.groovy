@@ -26,7 +26,6 @@ class NewSORConsumerServiceSpec extends Specification {
         service.matchClientService = Mock(MatchClientService)
         service.uidClientService = Mock(UidClientService)
         service.databaseService = Mock(DatabaseService)
-        service.downstreamJMSService = Mock(DownstreamJMSService)
     }
 
     void "when a SOR has no match, a new UID is retrieved from the UIDService, the SOR is updated and provisioning is notified"() {
@@ -40,7 +39,8 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonNoMatch()
         1 * service.uidClientService.provisionNewUid(sorObject)
         0 * service.databaseService.assignUidToSOR(_,_)
-        0 * service.downstreamJMSService.provision(_)
+        0 * service.uidClientService.provisionUid(_)
+        0 * service.uidClientService.provisionNewUid(_)
     }
 
 
@@ -54,7 +54,7 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonExactMatch(person: person1)
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
-        1 * service.downstreamJMSService.provision(person1)
+        1 * service.uidClientService.provisionUid(person1)
         0 * service.uidClientService.provisionNewUid(_)
     }
 
@@ -70,7 +70,7 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
         0 * service.uidClientService.provisionNewUid(_)
         0 * service.databaseService.assignUidToSOR(*_)
-        0 * service.downstreamJMSService.provision(_)
+        0 * service.uidClientService.provisionUid(person1)
     }
 
     private MapMessage mockMessage() {

@@ -2,33 +2,36 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SORObject
 import grails.transaction.Transactional
-import grails.util.Holders
+import org.apache.camel.Handler
+import org.apache.camel.Message
+import org.apache.camel.component.jms.JmsMessage
+import org.hibernate.ObjectNotFoundException
 
 import javax.jms.MapMessage
 
 @Transactional
 class NewSORConsumerService {
-    // Utilizing the JMS plugin
-    static exposes = ["jms"]
-
-    static destination = Holders.config.jms.matchService.newSorObject.queueName
-    static isTopic = false
-    static adapter = "transacted"
-    static container = "transacted"
 
     static MATCH_FIELDS = ['systemOfRecord','sorPrimaryKey','givenName','middleName','surName','fullName','dateOfBirth','socialSecurityNumber']
-
 
     def matchClientService
     def uidClientService
     def databaseService
-    def downstreamJMSService
+
+    @Handler
+    public Object onMessage(Message camelMsg) {
+        return onMessage(camelMsg.getBody())
+    }
+
+    public Object onMessage(JmsMessage camelJmsMsg) {
+        return onMessage(camelJmsMsg.getJmsMessage())
+    }
     /**
      * Receives a message on the newSORQueue and processes it according to the rules
      * @param msg
      * @return
      */
-    def onMessage(msg) {
+    public Object onMessage(javax.jms.Message msg) {
         if (!msg instanceof MapMessage) {
             // TODO: Handle messages of wrong type. Right now expect a MapMessage, if it's not, just return null
             log.error "Received a message that was not of type MapMessage. It has been discarded: ${msg}"
@@ -52,7 +55,7 @@ class NewSORConsumerService {
         // if it is an exact match assign the uid and provision
         if(match instanceof PersonExactMatch) {
             databaseService.assignUidToSOR(sorObject, match.person)
-            downstreamJMSService.provision(match.person)
+            uidClientService.provisionUid(match.person)
             return null
         }
         // provision a new person
@@ -69,6 +72,9 @@ class NewSORConsumerService {
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
+        if(!sorObject) {
+            throw new ObjectNotFoundException("$systemOfRecord/$sorPrimaryKey", "SORObject")
+        }
         log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
         sorObject
     }

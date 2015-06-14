@@ -2,7 +2,7 @@ package edu.berkeley.match
 
 import edu.berkeley.match.testutils.TimeoutResponseCreator
 import edu.berkeley.registry.model.Person
-import edu.berkeley.registry.model.PersonName
+import edu.berkeley.registry.model.SORObject
 import grails.buildtestdata.mixin.Build
 import grails.plugins.rest.client.RestBuilder
 import grails.test.mixin.TestFor
@@ -21,69 +21,112 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(UidClientService)
-@Build([Person, PersonName])
+@Build([Person, SORObject])
 class UidClientServiceSpec extends Specification {
-    private static final UCB_UID_SERVICE_URL = 'http://localhost/ucb-uid-service/nextUid'
-    private static final INPUT_ATTRIBUTE_MAP = [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone']
-    private static final EXPECTED_REST_INPUT = '{"systemOfRecord":"b","sorPrimaryKey":"BB00002","dateOfBirth":"1930-04-20","givenName":"Pat","surName":"Stone"}'
+    private static final PROVISION_ENDPOINT = 'http://localhost/registry-provisioning/provision/save'
 
     def setup() {
-        grailsApplication.config.rest = [uidService: [url: UCB_UID_SERVICE_URL]]
+        grailsApplication.config.rest = [provisionUid: [url: PROVISION_ENDPOINT], provisionNewUid: [url: PROVISION_ENDPOINT]]
         service.restClient = new RestBuilder()
     }
 
-
-    void "when requesting a new UID for a Person, the UID service is called and the Person is persisted with that UID in the DB"() {
+    void "provision a new uid and return a success"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
-        def dob = Date.parse( 'yyyy-MM-dd', '1930-04-20')
-        mockServer.expect(requestTo(UCB_UID_SERVICE_URL))
+        SORObject sorObject = SORObject.build()
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(EXPECTED_REST_INPUT))
+                .andExpect(content().string("""{"id":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
-                .andRespond(withSuccess("{'uid': '123'}", MediaType.APPLICATION_JSON))
-        def person = Person.build(uid: '123', dateOfBirth: dob) // Mock person that the uid-service would create
-        person.addToNames(PersonName.build(givenName: 'Pat', surName: 'Stone'))
+                .andRespond(withSuccess("{'provisioningSuccessful': 'true'}", MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.createUidForPerson(INPUT_ATTRIBUTE_MAP)
+        service.provisionNewUid(sorObject)
 
         then:
         mockServer.verify()
-        result instanceof Person
-        result.names[0].givenName == 'Pat'
-        result.names[0].surName == 'Stone'
-        result.uid == '123'
-        result.dateOfBirth == dob
     }
 
-    void "when requesting a new UID for a Person and the server returns a not-OK answer the service call throws an exception"() {
+    void "provisioning a new uid throws an exception"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
-        mockServer.expect(requestTo(UCB_UID_SERVICE_URL))
+        SORObject sorObject = SORObject.build()
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(EXPECTED_REST_INPUT))
+                .andExpect(content().string("""{"id":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withNoContent())
 
         when:
-        service.createUidForPerson(INPUT_ATTRIBUTE_MAP)
+        service.provisionNewUid(sorObject)
 
         then:
         thrown(RuntimeException)
     }
 
-    void "when requesting a new UID for a Person and the server times out an exception is thrown"() {
+    void "provisioning a new uid server times out and exception is thrown"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
-        mockServer.expect(requestTo(UCB_UID_SERVICE_URL))
+        SORObject sorObject = SORObject.build()
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(EXPECTED_REST_INPUT))
+                .andExpect(content().string("""{"id":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
-        service.createUidForPerson(INPUT_ATTRIBUTE_MAP)
+        service.provisionNewUid(sorObject)
+
+        then:
+        thrown(ResourceAccessException)
+    }
+
+    void "provision an existing uid and return a success"() {
+        setup:
+        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        Person person = Person.build(uid: "1")
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
+                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
+                .andRespond(withSuccess())
+
+        when:
+        service.provisionUid(person)
+
+        then:
+        mockServer.verify()
+    }
+
+    void "provisioning an existing uid throws an exception"() {
+        setup:
+        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        Person person = Person.build(uid: "1")
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
+                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
+                .andRespond(withNoContent())
+
+        when:
+        service.provisionUid(person)
+
+        then:
+        thrown(RuntimeException)
+    }
+
+    void "provisioning an existing uid server times out and exception is thrown"() {
+        setup:
+        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        Person person = Person.build(uid: "1")
+        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
+                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
+                .andRespond(TimeoutResponseCreator.withTimeout())
+
+        when:
+        service.provisionUid(person)
 
         then:
         thrown(ResourceAccessException)
