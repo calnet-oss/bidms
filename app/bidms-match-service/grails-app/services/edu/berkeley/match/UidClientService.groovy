@@ -21,7 +21,7 @@ class UidClientService {
             json([uid:person.uid])
         }
         if(response.statusCode != HttpStatus.OK) {
-            throw new RuntimeException("Error provisioning person ${person.uid}")
+            log.error("Error provisioning person ${person.uid}, response code: ${response.statusCode}:${response.text}")
         }
     }
 
@@ -37,7 +37,7 @@ class UidClientService {
             json([sorObjectId:sorObject.id])
         }
         if(response.statusCode != HttpStatus.OK) {
-            throw new RuntimeException("Could not generate a new uid for sorObject ${sorObject.id}")
+            log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
         }
         if(!response.json.provisioningSuccessful) {
             log.warn "Error provisioning sorObject $response.json.sorObjectId for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"

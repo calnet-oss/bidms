@@ -47,23 +47,6 @@ class UidClientServiceSpec extends Specification {
         mockServer.verify()
     }
 
-    void "provisioning a new uid throws an exception"() {
-        setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
-        SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
-                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
-                .andRespond(withNoContent())
-
-        when:
-        service.provisionNewUid(sorObject)
-
-        then:
-        thrown(RuntimeException)
-    }
-
     void "provisioning a new uid server times out and exception is thrown"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
@@ -96,23 +79,6 @@ class UidClientServiceSpec extends Specification {
 
         then:
         mockServer.verify()
-    }
-
-    void "provisioning an existing uid throws an exception"() {
-        setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
-        Person person = Person.build(uid: "1")
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
-                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
-                .andRespond(withNoContent())
-
-        when:
-        service.provisionUid(person)
-
-        then:
-        thrown(RuntimeException)
     }
 
     void "provisioning an existing uid server times out and exception is thrown"() {
