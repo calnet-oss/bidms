@@ -34,7 +34,7 @@ class UidClientService {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
         def response = restClient.post(endpoint) {
             accept 'application/json'
-            json([id:sorObject.id])
+            json([sorObjectId:sorObject.id])
         }
         if(response.statusCode != HttpStatus.OK) {
             throw new RuntimeException("Could not generate a new uid for sorObject ${sorObject.id}")

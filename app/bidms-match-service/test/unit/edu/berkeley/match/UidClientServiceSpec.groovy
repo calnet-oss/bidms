@@ -36,7 +36,7 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = SORObject.build()
         mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"id":${sorObject.id}}"""))
+                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess("{'provisioningSuccessful': 'true'}", MediaType.APPLICATION_JSON))
 
@@ -53,7 +53,7 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = SORObject.build()
         mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"id":${sorObject.id}}"""))
+                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withNoContent())
 
@@ -70,7 +70,7 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = SORObject.build()
         mockServer.expect(requestTo(PROVISION_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"id":${sorObject.id}}"""))
+                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
