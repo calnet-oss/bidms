@@ -34,9 +34,9 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
+                .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess("{'provisioningSuccessful': 'true'}", MediaType.APPLICATION_JSON))
 
@@ -51,9 +51,9 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"sorObjectId":${sorObject.id}}"""))
+                .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
@@ -68,9 +68,9 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         Person person = Person.build(uid: "1")
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
+                .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess())
 
@@ -85,9 +85,9 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         Person person = Person.build(uid: "1")
-        mockServer.expect(requestTo(PROVISION_ENDPOINT))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string("""{"uid":"${person.uid}"}"""))
+                .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 

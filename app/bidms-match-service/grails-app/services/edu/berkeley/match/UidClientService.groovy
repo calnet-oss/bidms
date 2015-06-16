@@ -16,9 +16,8 @@ class UidClientService {
      */
     void provisionUid(Person person) {
         String endpoint = grailsApplication.config.rest.provisionUid.url
-        def response = restClient.post(endpoint) {
+        def response = restClient.post("$endpoint?uid=${person.uid}") {
             accept 'application/json'
-            json([uid:person.uid])
         }
         if(response.statusCode != HttpStatus.OK) {
             log.error("Error provisioning person ${person.uid}, response code: ${response.statusCode}:${response.text}")
@@ -32,9 +31,8 @@ class UidClientService {
      */
     void provisionNewUid(SORObject sorObject) {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
-        def response = restClient.post(endpoint) {
+        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}") {
             accept 'application/json'
-            json([sorObjectId:sorObject.id])
         }
         if(response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
