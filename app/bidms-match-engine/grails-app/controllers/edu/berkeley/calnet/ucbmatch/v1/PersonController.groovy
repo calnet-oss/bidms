@@ -9,7 +9,7 @@ class PersonController {
     def personService
 
     def getPerson() {
-        def result = personService.matchPerson(request.JSON)
+        def result = personService.matchPerson(request.parameterMap)
         if (result.hasProperty('jsonMap')) {
             response.status = result.responseCode
             render(result.jsonMap as JSON)
