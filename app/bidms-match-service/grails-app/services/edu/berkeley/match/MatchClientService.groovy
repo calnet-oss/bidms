@@ -26,7 +26,8 @@ class MatchClientService {
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
-            json(jsonMap)
+            contentType "application/x-www-form-urlencoded"
+            json jsonMap
         }
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
