@@ -1,6 +1,7 @@
 package edu.berkeley.calnet.ucbmatch.v1
 
 import grails.converters.JSON
+import groovy.json.JsonSlurper
 
 class PersonController {
 
@@ -9,7 +10,7 @@ class PersonController {
     def personService
 
     def getPerson() {
-        def result = personService.matchPerson(request.parameterMap)
+        def result = personService.matchPerson(new JsonSlurper().parseText(request.parameterMap.json[0]))
         if (result.hasProperty('jsonMap')) {
             response.status = result.responseCode
             render(result.jsonMap as JSON)
