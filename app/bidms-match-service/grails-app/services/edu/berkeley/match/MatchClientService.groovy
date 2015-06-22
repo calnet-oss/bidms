@@ -3,6 +3,7 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.Person
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
+import grails.converters.JSON
 
 @Transactional(readOnly = true)
 class MatchClientService {
@@ -27,7 +28,7 @@ class MatchClientService {
         def response = restClient.post(matchUrl) {
             accept 'application/json'
             contentType "application/x-www-form-urlencoded"
-            json jsonMap
+            setProperty("json", (jsonMap as JSON).toString())
         }
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
