@@ -1,7 +1,7 @@
 package edu.berkeley.calnet.ucbmatch.v1
 
 import grails.converters.JSON
-import groovy.json.JsonSlurper
+import org.springframework.http.HttpStatus
 
 class PersonController {
 
@@ -10,16 +10,19 @@ class PersonController {
     def personService
 
     def getPerson() {
-        if(!request.parameterMap.json?.size()) {
-            throw new RuntimeException("json is a required parameter")
-        }
-        def result = personService.matchPerson(new JsonSlurper().parseText(request.parameterMap.json[0]))
-        if (result.hasProperty('jsonMap')) {
-            response.status = result.responseCode
-            render(result.jsonMap as JSON)
-        } else {
-            response.status = result.responseCode
-            render('')
+        try {
+            def result = personService.matchPerson(request.JSON)
+            if (result.hasProperty('jsonMap')) {
+                response.status = result.responseCode
+                render(result.jsonMap as JSON)
+            } else {
+                response.status = result.responseCode
+                render('')
+            }
+        } catch(Exception ex) {
+            render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {
+                text = ex.message
+            }
         }
     }
 

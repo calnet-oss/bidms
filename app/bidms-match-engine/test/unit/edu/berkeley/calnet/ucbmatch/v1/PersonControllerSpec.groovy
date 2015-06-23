@@ -16,13 +16,13 @@ class PersonControllerSpec extends Specification {
 
     def "test that get person returns the expected json"() {
         setup:
-        request.addParameter('input1', 'xxx')
+        request.json = [input1: 'xxx']
 
         when:
         controller.getPerson()
 
         then:
-        1 * controller.personService.matchPerson(request.parameterMap) >> new ExactMatchResponse(responseData: new Candidate(referenceId: '1', systemOfRecord: 'HR'))
+        1 * controller.personService.matchPerson([input1: 'xxx']) >> new ExactMatchResponse(responseData: new Candidate(referenceId: '1', systemOfRecord: 'HR'))
 
         and:
         response.status == HttpStatus.OK.value()
