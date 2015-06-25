@@ -68,7 +68,7 @@ enum NameTypeEnum implements TypeEnum<NameType>, PrioritizedEnum {
      *         priority.  Returns Integer.MAX_VALUE if the NameType isn't
      *         prioritized.
      */
-    static int getNameTypePriority(NameType nameType) {
+    static int getPriority(NameType nameType) {
         if (!nameType) throw new RuntimeException("nameType cannot be null")
         NameTypeEnum e = getEnum(nameType)
         if (!e) {
