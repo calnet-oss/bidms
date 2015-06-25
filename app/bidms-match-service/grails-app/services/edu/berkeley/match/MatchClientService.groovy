@@ -3,7 +3,6 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.Person
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
-import grails.converters.JSON
 
 @Transactional(readOnly = true)
 class MatchClientService {
@@ -27,8 +26,8 @@ class MatchClientService {
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
             accept 'application/json'
-            contentType "application/x-www-form-urlencoded"
-            setProperty("json", (jsonMap as JSON).toString())
+            contentType "application/json"
+            json jsonMap
         }
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
@@ -40,7 +39,7 @@ class MatchClientService {
             default:
                 log.error("Got wrong return code from match engine..")
                 // TODO: Determin what to do in this situation
-                throw new RuntimeException("Got wrong return code from match engine: $response.statusCode.reasonPhrase ($response.statusCode)")
+                throw new RuntimeException("Got wrong return code from match engine: $response.statusCode.reasonPhrase ($response.statusCode) - ${response.text}")
         }
 
     }
