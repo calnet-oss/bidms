@@ -15,6 +15,7 @@ class PersonName {
     String surName
     String suffix
     String fullName
+    boolean isPrimary
 
     static belongsTo = [person: Person]
 
@@ -41,6 +42,7 @@ class PersonName {
         surName column: 'surName', sqlType: 'VARCHAR(127)'
         suffix column: 'suffix', sqlType: 'VARCHAR(32)'
         fullName column: 'fullName', sqlType: 'VARCHAR(255)'
+        isPrimary column: 'isPrimary', sqlType: 'BOOLEAN'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
