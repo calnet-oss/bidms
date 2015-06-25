@@ -35,19 +35,6 @@ class RowMapperServiceSpec extends Specification {
         candidates.size() == 1
         candidates[0].exactMatch == ConfidenceType.CANONICAL.exactMatch
         candidates[0].referenceId == 'R1'
-        candidates[0].systemOfRecord == 'X'
-        candidates[0].names.size() == 1
-        candidates[0].dateOfBirth == '1939-02-08'
-        candidates[0].names[0].type == 'official'
-        candidates[0].names[0].given == 'James'
-        candidates[0].names[0].family == 'Dean'
-        candidates[0].identifiers.size() == 3
-        candidates[0].identifiers[0].type == 'sor'
-        candidates[0].identifiers[0].identifier == 'X123'
-        candidates[0].identifiers[1].type == 'national'
-        candidates[0].identifiers[1].identifier == '123-45-6789'
-        candidates[0].identifiers[2].type == 'sor-employee'
-        candidates[0].identifiers[2].identifier == 'EID-123'
     }
 
     void "test mapping of multiple database rows to candidates list"() {
@@ -58,47 +45,8 @@ class RowMapperServiceSpec extends Specification {
         def candidates = service.mapDataRowsToRecords(dataRows as Set, ConfidenceType.POTENTIAL, [:]) // Input attributes not important here
 
         then:
-        candidates.size() == 3
+        candidates.size() == 2
         candidates[0].exactMatch == ConfidenceType.POTENTIAL.exactMatch
         candidates[0].referenceId == 'R1'
-        candidates[0].systemOfRecord == 'X'
-        candidates[0].names.size() == 1
-        candidates[0].names[0].type == 'official'
-        candidates[0].names[0].given == 'James'
-        candidates[0].names[0].family == 'Dean'
-        candidates[0].dateOfBirth == '1939-02-08'
-        candidates[0].identifiers.size() == 3
-        candidates[0].identifiers[0].type == 'sor'
-        candidates[0].identifiers[0].identifier == 'X123'
-        candidates[0].identifiers[1].type == 'national'
-        candidates[0].identifiers[1].identifier == '123-45-6789'
-        candidates[0].identifiers[2].type == 'sor-employee'
-        candidates[0].identifiers[2].identifier == 'EID-123'
-        candidates[1].referenceId == 'R1'
-        candidates[1].exactMatch == ConfidenceType.POTENTIAL.exactMatch
-        candidates[1].systemOfRecord == 'Y'
-        candidates[1].dateOfBirth == '1939-02-08'
-        candidates[1].names.size() == 1
-        candidates[1].names[0].type == 'official'
-        candidates[1].names[0].given == 'James'
-        candidates[1].names[0].family == 'Dean'
-        candidates[1].identifiers.size() == 3
-        candidates[1].identifiers[0].type == 'sor'
-        candidates[1].identifiers[0].identifier == 'Y123'
-        candidates[1].identifiers[1].type == 'national'
-        candidates[1].identifiers[1].identifier == '123-45-6789'
-        candidates[1].identifiers[2].type == 'sor-student'
-        candidates[1].identifiers[2].identifier == 'SID-123'
-        candidates[2].exactMatch == ConfidenceType.POTENTIAL.exactMatch
-        candidates[2].referenceId == 'R2'
-        candidates[2].systemOfRecord == 'X'
-        candidates[2].dateOfBirth == '1901-02-01'
-        candidates[2].names.size() == 1
-        candidates[2].names[0].type == 'official'
-        candidates[2].names[0].given == 'Jack'
-        candidates[2].names[0].family == 'Daniels'
-        candidates[2].identifiers.size() == 1
-        candidates[2].identifiers[0].type == 'sor'
-        candidates[2].identifiers[0].identifier == 'X234'
     }
 }

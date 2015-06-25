@@ -2,8 +2,6 @@ package edu.berkeley.calnet.ucbmatch.util
 
 import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 
-import java.sql.Timestamp
-
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
 
 class SqlWhereResolver {
@@ -13,7 +11,7 @@ class SqlWhereResolver {
         def sql = config.column
         def searchConfig = config.search
 
-        if (!searchConfig.timestamp && !searchConfig.caseSensitive) {
+        if (!searchConfig.caseSensitive) {
             sql = "lower($sql)"
             value = value?.toLowerCase()
         }
