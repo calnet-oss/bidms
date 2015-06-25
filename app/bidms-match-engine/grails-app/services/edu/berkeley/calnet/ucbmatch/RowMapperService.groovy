@@ -4,6 +4,7 @@ import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Name
+import edu.berkeley.calnet.ucbmatch.database.Record
 import edu.berkeley.calnet.ucbmatch.util.AttributeValueResolver
 import grails.transaction.Transactional
 
@@ -19,41 +20,45 @@ class RowMapperService {
      * @param matchInput the match request
      * @return set of candidates that match
      */
-    Set<Candidate> mapDataRowsToCandidates(Set rows, ConfidenceType confidenceType, Map matchInput) {
-        // Group the returned rows by referenceId. The value is a list of db rows returned
-        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it[matchConfig.matchReference.column] }
+    Set<Record> mapDataRowsToRecords(Set rows, ConfidenceType confidenceType, Map matchInput) {
+        def uniqueUids = rows.collect { it[matchConfig.matchReference.column] } as Set
 
-        def configByPath = matchConfig.matchAttributeConfigs.groupBy {
-            // Use output path, path or Root
-            it.outputPath?.capitalize() ?: it.path?.capitalize() ?: 'Root'
-        }
+//         Group the returned rows by referenceId. The value is a list of db rows returned
+//        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it[matchConfig.matchReference.column] }
 
-        def candidates = groupedByReferenceId.inject([] as Set) { Set<Candidate> list, group ->
-            def referenceId = group.key
-            def groupRows = group.value
-            groupRows.each { dataRow ->
-                def systemOfRecord = getSystemOfRecordFromRow(dataRow)
+        return uniqueUids.collect { new Record(referenceId: it, exactMatch: confidenceType.exactMatch)}
 
-                // Start by find an existing candidate with the same referenceId and systemOfRecord
-                def candidate = list.find { it.referenceId == referenceId && it.systemOfRecord == systemOfRecord }
-                if (!candidate) {
-                    candidate = new Candidate(systemOfRecord: systemOfRecord, referenceId: referenceId, exactMatch: confidenceType.exactMatch)
-                    list << candidate
-                }
-                // Transfer data from database dataRow to candidate by dynamically calling mapRowToCandidate(Root|Identifiers|Names) methods
-                configByPath.each { path, pathConfigs ->
-                    "mapRowToCandidate$path"(candidate, dataRow, pathConfigs)
-                }
-
-                // If the candidate is an exact match, go through the runCrossCheck to test if some of the attributes does not match
-                if(candidate.exactMatch == ConfidenceType.CANONICAL.exactMatch) {
-                    runCrossCheckOnCandidate(candidate, dataRow, matchInput)
-                }
-            }
-            return list
-        }
-
-        return candidates
+//        def configByPath = matchConfig.matchAttributeConfigs.groupBy {
+//            // Use output path, path or Root
+//            it.outputPath?.capitalize() ?: it.path?.capitalize() ?: 'Root'
+//        }
+//
+//        def candidates = groupedByReferenceId.inject([] as Set) { Set<Candidate> list, group ->
+//            def referenceId = group.key
+//            def groupRows = group.value
+//            groupRows.each { dataRow ->
+//                def systemOfRecord = getSystemOfRecordFromRow(dataRow)
+//
+//                // Start by find an existing candidate with the same referenceId and systemOfRecord
+//                def candidate = list.find { it.referenceId == referenceId && it.systemOfRecord == systemOfRecord }
+//                if (!candidate) {
+//                    candidate = new Candidate(systemOfRecord: systemOfRecord, referenceId: referenceId, exactMatch: confidenceType.exactMatch)
+//                    list << candidate
+//                }
+//                // Transfer data from database dataRow to candidate by dynamically calling mapRowToCandidate(Root|Identifiers|Names) methods
+//                configByPath.each { path, pathConfigs ->
+//                    "mapRowToCandidate$path"(candidate, dataRow, pathConfigs)
+//                }
+//
+//                // If the candidate is an exact match, go through the runCrossCheck to test if some of the attributes does not match
+//                if(candidate.exactMatch == ConfidenceType.CANONICAL.exactMatch) {
+//                    runCrossCheckOnCandidate(candidate, dataRow, matchInput)
+//                }
+//            }
+//            return list
+//        }
+//
+//        return candidates
     }
 
     /**
@@ -89,8 +94,14 @@ class RowMapperService {
     }
 
     Candidate mapDataRowToCandidate(Map row, ConfidenceType confidenceType, Map matchInput) {
-        def candidates = mapDataRowsToCandidates([row] as Set, confidenceType, matchInput)
-        return candidates?.size() == 1 ? candidates[0] : null
+        try {
+            def candidates = mapDataRowsToRecords([row] as Set, confidenceType, matchInput)
+            return candidates?.size() == 1 ? candidates[0] : null
+        } catch(ex) {
+            log.error "Error mapping row to candidate", ex
+            throw ex
+        }
+
     }
 
     @SuppressWarnings("GroovyUnusedDeclaration")
@@ -133,7 +144,7 @@ class RowMapperService {
             if (!attributeConfigsForType.any { dataRow[it.column] }) {
                 return groupSet
             }
-            // Create a new instance and mapDataRowsToCandidates database values to the new group
+            // Create a new instance and mapDataRowsToRecords database values to the new group
             def group = [:]
             group.type = type
             attributeConfigsForType.each {

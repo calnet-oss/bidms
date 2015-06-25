@@ -1,6 +1,6 @@
 package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
-import edu.berkeley.calnet.ucbmatch.database.Candidate
+import edu.berkeley.calnet.ucbmatch.database.Record
 import grails.transaction.Transactional
 
 @Transactional
@@ -10,7 +10,7 @@ class DatabaseService {
     def sqlService
     def rowMapperService
 
-    Set<Candidate> searchDatabase(Map matchInput, ConfidenceType confidenceType) {
+    Set<Record> searchDatabase(Map matchInput, ConfidenceType confidenceType) {
         def searchSets = getSearchSets(confidenceType)
         Set sqlStatements = searchSets.inject([] as Set) { statements, searchSet ->
             def whereClause = searchSet.buildWhereClause(matchInput)
@@ -25,18 +25,21 @@ class DatabaseService {
             return statements
         } as Set
         def rows = performSearch(sqlStatements)
-        return rowMapperService.mapDataRowsToCandidates(rows, confidenceType, matchInput)
+        return rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
     }
 
 
-    Candidate findRecord(String systemOfRecord, String identifier, Map matchInput) {
+    Record findRecord(String systemOfRecord, String identifier, Map matchInput) {
         def sql = sqlService.sqlInstance
 
         def systemOfRecordAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.systemOfRecordAttribute }
         def identifierAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.identifierAttribute }
-        def row = sql.firstRow('SELECT * FROM ' + matchConfig.matchTable + ' WHERE ' + systemOfRecordAttribute.column + '=? AND ' + identifierAttribute.column + '=?',[systemOfRecord, identifier])
 
-        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL, matchInput) : null
+        def query = 'SELECT * FROM ' + matchConfig.matchTable + ' WHERE ' + systemOfRecordAttribute.column + '=? AND ' + identifierAttribute.column + '=? AND '+systemOfRecordAttribute.isPrimaryKeyColumn +'=?'
+        def row = sql.firstRow(query,[systemOfRecord, identifier, true])
+
+        return row ? new Record(referenceId: getReferenceIdFromRow(row), exactMatch: true) : null
+//        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL, matchInput) : null
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
@@ -63,6 +66,11 @@ class DatabaseService {
             return result
         }.flatten()
         return rows as Set
+    }
+
+    private String getReferenceIdFromRow(Map<String, String> databaseRow) {
+        def column = matchConfig.matchReference.column
+        return databaseRow?."${column}"
     }
 }
 

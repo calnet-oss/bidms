@@ -28,7 +28,7 @@ class RowMapperServiceSpec extends Specification {
 
 
         when:
-        def candidates = service.mapDataRowsToCandidates(dataRows[0..0] as Set, ConfidenceType.CANONICAL, [:]) // Input attributes not important here
+        def candidates = service.mapDataRowsToRecords(dataRows[0..0] as Set, ConfidenceType.CANONICAL, [:]) // Input attributes not important here
 
 
         then:
@@ -55,7 +55,7 @@ class RowMapperServiceSpec extends Specification {
         service.matchConfig = TestMatchConfig.nonInvalidatingConfig
 
         when:
-        def candidates = service.mapDataRowsToCandidates(dataRows as Set, ConfidenceType.POTENTIAL, [:]) // Input attributes not important here
+        def candidates = service.mapDataRowsToRecords(dataRows as Set, ConfidenceType.POTENTIAL, [:]) // Input attributes not important here
 
         then:
         candidates.size() == 3

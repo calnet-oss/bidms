@@ -7,6 +7,7 @@ class MatchAttributeConfig {
     String name
     String description
     String column
+    String isPrimaryKeyColumn
     String path
     String outputPath
     String attribute
@@ -34,6 +35,7 @@ class MatchAttributeConfig {
     static class SearchSettings {
         boolean caseSensitive
         boolean alphanumeric
+        boolean timestamp
         Map substring
         int distance
         void setSubstring(substring) {

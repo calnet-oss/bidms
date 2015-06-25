@@ -20,10 +20,8 @@ class PersonService {
         if (!candidates) {
             log.debug("No match found for $matchInput")
             return Response.NOT_FOUND
-        } else if (candidates.size() == 1) {
-            if (candidates[0].exactMatch) {
-                return new ExactMatchResponse(responseData: candidates[0])
-            }
+        } else if (candidates.size() == 1 && candidates[0].exactMatch) {
+            return new ExactMatchResponse(responseData: candidates[0])
         } else if(sameReferenceIdAndCanonical(candidates)) {
             return new ExactMatchResponse(responseData: candidates[0])
         }

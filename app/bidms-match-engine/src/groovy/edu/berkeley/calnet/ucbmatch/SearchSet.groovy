@@ -30,6 +30,6 @@ class SearchSet {
     @ToString(includeNames = true)
     private static class WhereAndValue {
         String sql
-        String value
+        def value
     }
 }

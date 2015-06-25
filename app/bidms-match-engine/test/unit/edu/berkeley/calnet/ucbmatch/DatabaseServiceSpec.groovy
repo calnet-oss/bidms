@@ -18,8 +18,11 @@ class DatabaseServiceSpec extends Specification {
 
     def setup() {
         service.sqlService = Mock(SqlService)
-        service.rowMapperService = Mock(RowMapperService)
-        service.matchConfig = new MatchConfig(matchTable: 'myMatchTable', matchReference: new MatchReference(systemOfRecordAttribute: 'sor', identifierAttribute: 'id'), matchAttributeConfigs: [new MatchAttributeConfig(name: 'sor', column: 'sorname'), new MatchAttributeConfig(name: 'id', column: 'sorobjkey')])
+        service.matchConfig = new MatchConfig(
+                matchTable: 'myMatchTable',
+                matchReference: new MatchReference(column: 'reference_id',systemOfRecordAttribute: 'sor', identifierAttribute: 'id'),
+                matchAttributeConfigs: [new MatchAttributeConfig(name: 'sor', column: 'sorname', isPrimaryKeyColumn: 'isPrimaryKeyColumn'), new MatchAttributeConfig(name: 'id', column: 'sorobjkey')]
+        )
         sqlMock = Mock(Sql)
     }
 
@@ -31,8 +34,7 @@ class DatabaseServiceSpec extends Specification {
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname=? AND sorobjkey=?",['SIS',sorId]) >> rowReturned
-        callsToMapper * service.rowMapperService.mapDataRowToCandidate(rowReturned, ConfidenceType.CANONICAL, [:]) >> mappedReturned
+        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname=? AND sorobjkey=? AND isPrimaryKeyColumn=?",['SIS',sorId,true]) >> rowReturned
         result?.referenceId == expectedReferenceId
 
 
