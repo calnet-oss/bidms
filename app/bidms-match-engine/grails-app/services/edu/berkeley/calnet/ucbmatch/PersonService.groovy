@@ -30,6 +30,6 @@ class PersonService {
     }
 
     boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
-        return candidates.referenceId.unique().size() == 1 & candidates.every { it.exactMatch }
+        return candidates.referenceId.unique().size() == 1 && candidates.every { it.exactMatch }
     }
 }
