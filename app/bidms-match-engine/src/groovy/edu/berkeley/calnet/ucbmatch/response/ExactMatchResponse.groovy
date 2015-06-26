@@ -1,6 +1,5 @@
 package edu.berkeley.calnet.ucbmatch.response
 
-import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
 
 import javax.servlet.http.HttpServletResponse
