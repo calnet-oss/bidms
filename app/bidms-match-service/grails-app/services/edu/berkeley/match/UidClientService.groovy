@@ -20,8 +20,9 @@ class UidClientService {
             accept 'application/json'
         }
         if(response.statusCode != HttpStatus.OK) {
-            log.error("Error provisioning person ${person.uid}, response code: ${response.statusCode}:${response.text}")
+            log.error("Error provisioning existing person ${person.uid}, response code: ${response.statusCode}:${response.text}")
         }
+        log.debug "Successfully provisioned exising person ${person.uid}"
     }
 
     /**
@@ -38,7 +39,8 @@ class UidClientService {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
         }
         if(!response.json.provisioningSuccessful) {
-            log.warn "Error provisioning sorObject $response.json.sorObjectId for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"
+            log.warn "Error provisioning new sorObject $response.json.sorObjectId for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"
         }
+        log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
     }
 }

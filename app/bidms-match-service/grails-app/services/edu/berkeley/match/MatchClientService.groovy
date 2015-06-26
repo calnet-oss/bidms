@@ -46,7 +46,7 @@ class MatchClientService {
 
     private static PersonExactMatch exactMatch(def json) {
         // Person object is not to be changed
-        def person = Person.findByUid(json.existingRecord.referenceId as String)
+        def person = Person.findByUid(json.matchingRecord.referenceId as String)
         new PersonExactMatch(person: person)
     }
 

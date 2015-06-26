@@ -88,7 +88,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     def 'when entering the system with a SORObject that does match an single existing person, expect to see that persons UID on the provisioning queue'() {
         given:
             def person = Person.get('002')
-            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json:[existingRecord: [referenceId: '002']] )
+            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json:[matchingRecord: [referenceId: '002']] )
             uidService.registerPost("/registry-provisioning/provision/save?uid=${person.uid}", statusCode: HttpStatus.OK.value(), json:[uid: '001', sorObjectId: '2', provisioningSuccessful: true])
             def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
