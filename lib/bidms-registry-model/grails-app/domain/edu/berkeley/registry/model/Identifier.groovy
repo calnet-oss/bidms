@@ -10,11 +10,14 @@ class Identifier {
     IdentifierType identifierType
     SORObject sorObject
     String identifier
+    // indicates if this an active id in the SOR
+    Boolean isActive
 
     static belongsTo = [person: Person]
 
     static constraints = {
         person unique: ['sorObject', 'identifierType']
+        isActive nullable: true
     }
 
     static mapping = {
@@ -25,6 +28,7 @@ class Identifier {
         identifierType column: 'identifierTypeId', sqlType: 'SMALLINT'
         sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         identifier column: 'identifier', sqlType: 'VARCHAR(64)'
+        isActive column: 'isActive', sqlType: 'BOOLEAN'
     }
     
     // Makes the column name unique in test mode to avoid GRAILS-11600
