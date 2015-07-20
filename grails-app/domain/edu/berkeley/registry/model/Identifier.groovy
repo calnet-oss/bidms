@@ -1,8 +1,10 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.DomainUtil
+import edu.berkeley.util.domain.transform.ConverterConfig
+import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
+@ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
 class Identifier {
 
@@ -33,7 +35,7 @@ class Identifier {
         isActive column: 'isActive', sqlType: 'BOOLEAN'
         isPrimary column: 'isPrimary', sqlType: 'BOOLEAN'
     }
-    
+
     // Makes the column name unique in test mode to avoid GRAILS-11600
     // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
     // comments in DomainUtil.
