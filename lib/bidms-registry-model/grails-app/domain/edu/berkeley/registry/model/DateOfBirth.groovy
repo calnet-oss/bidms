@@ -1,8 +1,10 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.DomainUtil
+import edu.berkeley.util.domain.transform.ConverterConfig
+import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
+@ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
 class DateOfBirth {
 
