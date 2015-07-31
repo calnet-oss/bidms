@@ -3,6 +3,7 @@ package edu.berkeley.registry.model
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.transform.ConverterConfig
+import org.hibernate.FetchMode
 
 
 @ConverterConfig(excludes = ["person", "sorObject"])
@@ -25,7 +26,7 @@ class Email {
         table name: "Email"
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'Email_seq'], sqlType: 'BIGINT'
-        emailType column: 'emailTypeId', sqlType: 'SMALLINT'
+        emailType column: 'emailTypeId', sqlType: 'SMALLINT', fetch: FetchMode.JOIN
         person column: Email.getUidColumnName(), sqlType: 'VARCHAR(64)'
         sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         emailAddress column: 'emailAddress', sqlType: 'VARCHAR(255)'
