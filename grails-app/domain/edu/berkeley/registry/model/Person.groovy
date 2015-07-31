@@ -27,7 +27,7 @@ class Person {
         id name: 'uid', column: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
-        names cascade: "all-delete-orphan"//, fetch: FetchMode.JOIN
+        names cascade: "all-delete-orphan", batchSize: 25
         telephones cascade: "all-delete-orphan", batchSize: 25
         addresses cascade: "all-delete-orphan", batchSize: 25
         emails cascade: "all-delete-orphan", batchSize: 25
