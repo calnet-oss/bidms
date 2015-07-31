@@ -1,8 +1,8 @@
 package edu.berkeley.registry.model
-
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
@@ -36,7 +36,7 @@ class PersonName {
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonName_seq'], sqlType: 'BIGINT'
         person column: PersonName.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        nameType column: 'nameTypeId', sqlType: 'SMALLINT'
+        nameType column: 'nameTypeId', sqlType: 'SMALLINT', fetch: FetchMode.JOIN
         sorObject column: 'sorObjectId', sqlType: 'BIGINT'
         honorific column: 'honorific', sqlType: 'VARCHAR(32)'
         givenName column: 'givenName', sqlType: 'VARCHAR(127)'
