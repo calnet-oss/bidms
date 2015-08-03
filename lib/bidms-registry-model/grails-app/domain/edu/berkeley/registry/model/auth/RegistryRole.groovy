@@ -33,7 +33,7 @@ class RegistryRole implements Serializable {
     static mapping = {
         table name: "RegistryRole"
         version false
-        id column: 'id', generator: 'sequence', params: [sequence: 'registryRole_seq'], sqlType: 'INTEGER'
+        id column: 'id', generator: 'sequence', params: [sequence: 'RegistryRole_seq'], sqlType: 'INTEGER'
         authority column: "authority", sqlType: 'VARCHAR(127)'
 
     }
