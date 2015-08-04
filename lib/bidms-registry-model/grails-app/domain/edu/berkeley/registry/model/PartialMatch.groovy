@@ -14,7 +14,7 @@ class PartialMatch {
 
     static mapping = {
         table name: "PartialMatch"
-        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'sor_seq']
+        id sqlType: "BIGINT", generator: 'sequence', params: [sequence: 'partialmatch_seq']
         version false
         sorObject column: PartialMatch.getSorObjectIdColumnName()
         person column: "personUid"
