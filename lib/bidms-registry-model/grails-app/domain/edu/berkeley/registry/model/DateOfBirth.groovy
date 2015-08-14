@@ -6,7 +6,7 @@ import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
-class DateOfBirth {
+class DateOfBirth implements Comparable {
 
     Long id
     SORObject sorObject
@@ -36,5 +36,9 @@ class DateOfBirth {
     // comments in DomainUtil.
     static String getUidColumnName() {
         return DomainUtil.testSafeColumnName("DateOfBirth", "uid")
+    }
+
+    int compareTo(obj) {
+        return (logicalHashCode() != obj.logicalHashCode() ? logicalHashCode().compareTo(obj.logicalHashCode()) : hashCode().compareTo(obj.hashCode()))
     }
 }

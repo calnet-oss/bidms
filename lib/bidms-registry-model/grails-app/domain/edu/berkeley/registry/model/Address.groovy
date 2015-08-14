@@ -1,4 +1,5 @@
 package edu.berkeley.registry.model
+
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
@@ -6,7 +7,7 @@ import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
-class Address {
+class Address implements Comparable {
     Long id
     AddressType addressType
     SORObject sorObject
@@ -53,5 +54,9 @@ class Address {
     // comments in DomainUtil.
     static String getUidColumnName() {
         return DomainUtil.testSafeColumnName("Address", "uid")
+    }
+
+    int compareTo(obj) {
+        return (logicalHashCode() != obj.logicalHashCode() ? logicalHashCode().compareTo(obj.logicalHashCode()) : hashCode().compareTo(obj.hashCode()))
     }
 }
