@@ -1,6 +1,6 @@
 package edu.berkeley.registry.model.auth
 
-class RegistryRole implements Serializable {
+class RegistryRole implements Comparable, Serializable {
     private static final long serialVersionUID = 1
 
     Integer id
@@ -24,6 +24,10 @@ class RegistryRole implements Serializable {
     @Override
     String toString() {
         authority
+    }
+
+    int compareTo(obj) {
+        return (authority && obj.authority ? authority.compareTo(obj.authority) : hashCode().compareTo(obj.hashCode()))
     }
 
     static constraints = {

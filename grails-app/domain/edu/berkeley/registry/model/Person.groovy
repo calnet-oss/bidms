@@ -6,6 +6,16 @@ class Person {
     Date timeCreated
     Date timeUpdated
 
+    // We use sorted sets so the sets are ordered the same way each time a
+    // person is queried.  This is particularly relevant for JSON
+    // generation.  We want the JSON output to look the same each time.
+    SortedSet addresses
+    SortedSet names
+    SortedSet datesOfBirth
+    SortedSet identifiers
+    SortedSet emails
+    SortedSet telephones
+
     static hasMany = [
             addresses   : Address,
             names       : PersonName,
@@ -19,7 +29,6 @@ class Person {
         timeCreated nullable: true // assigned automatically by db trigger
         timeUpdated nullable: true // assigned automatically by db trigger
     }
-
 
     static mapping = {
         table name: "Person"

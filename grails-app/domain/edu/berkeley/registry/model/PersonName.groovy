@@ -6,7 +6,7 @@ import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
 @LogicalEqualsAndHashCode(excludes = ["person"])
-class PersonName {
+class PersonName implements Comparable {
 
     Long id
     NameType nameType
@@ -52,5 +52,9 @@ class PersonName {
     // comments in DomainUtil.
     static String getUidColumnName() {
         return DomainUtil.testSafeColumnName("PersonName", "uid")
+    }
+
+    int compareTo(obj) {
+        return (logicalHashCode() != obj.logicalHashCode() ? logicalHashCode().compareTo(obj.logicalHashCode()) : hashCode().compareTo(obj.hashCode()))
     }
 }
