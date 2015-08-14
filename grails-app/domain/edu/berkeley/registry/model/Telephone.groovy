@@ -42,6 +42,6 @@ class Telephone implements Comparable {
     }
 
     int compareTo(obj) {
-        return (logicalHashCode() != obj.logicalHashCode() ? logicalHashCode().compareTo(obj.logicalHashCode()) : hashCode().compareTo(obj.hashCode()))
+        return logicalHashCode() <=> obj.logicalHashCode() ?: hashCode() <=> obj.hashCode()
     }
 }
