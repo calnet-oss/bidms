@@ -73,7 +73,7 @@ class NewSORConsumerService {
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
         if(!sorObject) {
-            log.error("SORObject sorName=$systemOfRecord, sorPrimaryKey=$sorPrimaryKey could not found in the DB while processing message ${message.getJMSMessageID()} from the New SORObject Queue")
+            log.error("SORObject sorName=$systemOfRecord, sorPrimaryKey=$sorPrimaryKey could not be found in the DB while processing message ${message.getJMSMessageID()} from the New SORObject Queue")
             throw new ObjectNotFoundException("$systemOfRecord/$sorPrimaryKey", "SORObject")
         }
         log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
