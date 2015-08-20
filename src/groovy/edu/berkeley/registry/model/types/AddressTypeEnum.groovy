@@ -8,7 +8,8 @@ import edu.berkeley.registry.model.AddressType
  */
 enum AddressTypeEnum implements TypeEnum<AddressType> {
     directoryPrimaryAddress,
-    directorySecondaryAddress
+    directorySecondaryAddress,
+    hrmsHomeAddress
 
     AddressType addressType
 

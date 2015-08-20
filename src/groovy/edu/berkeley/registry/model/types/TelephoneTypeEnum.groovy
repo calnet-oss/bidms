@@ -8,7 +8,10 @@ import edu.berkeley.registry.model.TelephoneType
  */
 enum TelephoneTypeEnum implements TypeEnum<TelephoneType> {
     directoryOfficePhone,
-    directoryFaxPhone
+    directoryFaxPhone,
+    hrmsBusinessPhone,
+    hrmsHomePhone,
+    hrmsCellPhone
 
     TelephoneType telephoneType
 
