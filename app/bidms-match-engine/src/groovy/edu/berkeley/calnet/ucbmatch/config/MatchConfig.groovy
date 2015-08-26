@@ -7,10 +7,11 @@ class MatchConfig {
     static enum MatchType {
         EXACT,
         SUBSTRING,
-        DISTANCE
+        DISTANCE,
+        FIXED_VALUE
 
-        static List CANONICAL_TYPES = [EXACT, SUBSTRING]
-        static List POTENTIAL_TYPES = [EXACT, SUBSTRING, DISTANCE]
+        static List CANONICAL_TYPES = [EXACT, SUBSTRING, FIXED_VALUE]
+        static List POTENTIAL_TYPES = [EXACT, SUBSTRING, FIXED_VALUE, DISTANCE]
     }
 
     String matchTable

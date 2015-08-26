@@ -7,7 +7,6 @@ class MatchAttributeConfig {
     String name
     String description
     String column
-    String isPrimaryKeyColumn
     String path
     String outputPath
     String attribute
@@ -35,9 +34,9 @@ class MatchAttributeConfig {
     static class SearchSettings {
         boolean caseSensitive
         boolean alphanumeric
-        boolean timestamp
         Map substring
         int distance
+        String fixedValue
         void setSubstring(substring) {
             if(!substring.from) {
                 throw new IllegalArgumentException("Missing 'from' argument in Map")

@@ -6,6 +6,9 @@ class AttributeValueResolver {
     private AttributeValueResolver() {}
 
     static String getAttributeValue(MatchAttributeConfig config, Map matchInput) {
+        if(config?.search?.fixedValue) {
+            return config.search.fixedValue
+        }
         if (config.path) {
             // Find the candidates in the given path
             def candidates = matchInput[config.path] as List<Map>

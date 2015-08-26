@@ -96,4 +96,12 @@ class AttributeValueResolverSpec extends Specification {
         "_____0909"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "_____0909"
         "123450000"    | [/[-_]+0{4,5}/, /[-_]+9{4,5}/] | "123450000"
     }
+
+    def "test that a fixed value can be extracted"() {
+        setup:
+        def config = new MatchAttributeConfig(name: 'fixedValue', attribute: 'whatever', search: new MatchAttributeConfig.SearchSettings(fixedValue: 'FIXED'))
+
+        expect:
+        AttributeValueResolver.getAttributeValue(config, [:]) == 'FIXED'
+    }
 }

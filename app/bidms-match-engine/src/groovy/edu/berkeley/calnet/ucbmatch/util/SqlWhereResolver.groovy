@@ -28,9 +28,10 @@ class SqlWhereResolver {
                 def distance = searchConfig.distance // If type is distance check if the config has a distance setting
                 sql = searchConfig.distance ? "levenshtein_less_equal($sql,?,$distance)<${distance + 1}" : exactSql(sql)
                 break
-            case MatchType.EXACT:
+            case [MatchType.EXACT, MatchType.FIXED_VALUE]:
                 sql = exactSql(sql)
                 break
+
         }
 
         // TODO: Implement crosscheck (if needed)

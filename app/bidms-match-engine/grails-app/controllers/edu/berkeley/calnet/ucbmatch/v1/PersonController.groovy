@@ -13,13 +13,10 @@ class PersonController {
         try {
             def result = personService.matchPerson(request.JSON)
             if (result.hasProperty('jsonMap')) {
-                log.debug "Match found with results: ${result.jsonMap as JSON}"
                 response.status = result.responseCode
                 render(result.jsonMap as JSON)
             } else {
-                log.info "No Match found with params: ${request.JSON}"
-                response.status = result.responseCode
-                render('')
+                render(status: result.responseCode, text: '')
             }
         } catch(Exception ex) {
             render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {

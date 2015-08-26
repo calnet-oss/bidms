@@ -65,6 +65,7 @@ class MatchConfigBuilderSpec extends Specification {
                         alphanumeric = true
                         substring = [from: 1, length: 3]
                         distance = 3
+                        fixedValue = 'fixMe'
                     }
                 }
                 'sorid' {
@@ -92,6 +93,7 @@ class MatchConfigBuilderSpec extends Specification {
         sut.config.matchAttributeConfigs[0].search.alphanumeric
         sut.config.matchAttributeConfigs[0].search.substring == [from: 1, length: 3]
         sut.config.matchAttributeConfigs[0].search.distance == 3
+        sut.config.matchAttributeConfigs[0].search.fixedValue == 'fixMe'
         sut.config.matchAttributeConfigs[1].name == 'sorid'
         sut.config.matchAttributeConfigs[1].description == 'Other description'
         !sut.config.matchAttributeConfigs[1].column
