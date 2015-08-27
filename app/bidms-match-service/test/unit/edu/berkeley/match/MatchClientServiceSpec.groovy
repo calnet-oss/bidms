@@ -53,7 +53,7 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess(EXACT_MATCH_RESPONSE, MediaType.APPLICATION_JSON))
 
@@ -71,7 +71,7 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond((new DefaultResponseCreator(HttpStatus.MULTIPLE_CHOICES)).body(PARTIAL_MATCH_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
@@ -90,7 +90,7 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond((new DefaultResponseCreator(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
@@ -106,7 +106,7 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withServerError())
 
@@ -122,7 +122,7 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"national","identifier":"000-00-0002"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
