@@ -33,7 +33,7 @@ class DatabaseService {
         }
     }
 
-    private static void createPartialMatch(SORObject sorObject, Person person) {
+    private void createPartialMatch(SORObject sorObject, Person person) {
         def partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: person)
         try {
             partialMatch.save(failOnError: true)
