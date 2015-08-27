@@ -38,7 +38,7 @@ class DatabaseService {
         try {
             partialMatch.save(failOnError: true)
         } catch (e) {
-            log.error("Failed to save PartialMatch for SORObject: $sorObject, Person: $person.", e)
+            log.error("Failed to save PartialMatch for SORObject: $sorObject, Person: $person", e)
         }
     }
 
