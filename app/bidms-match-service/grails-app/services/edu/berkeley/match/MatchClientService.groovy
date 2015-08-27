@@ -95,7 +95,7 @@ class MatchClientService {
 
             // Finally add socialSecurityNumber if present
             if (params.socialSecurityNumber) {
-                map.identifiers << [type: "national", identifier: params.socialSecurityNumber]
+                map.identifiers << [type: "socialSecurityNumber", identifier: params.socialSecurityNumber]
             }
         }
         return map
