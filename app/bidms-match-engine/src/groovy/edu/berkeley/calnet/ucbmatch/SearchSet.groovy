@@ -20,8 +20,11 @@ class SearchSet {
             def sqlValue = SqlWhereResolver.getWhereClause(matchType, config, value)
             new WhereAndValue(sqlValue)
         }
+        log.trace("Found ${whereAndValues.size()} statements. Now checking if all has a value")
         if (whereAndValues.every { it.value != null }) {
-            return [sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value]
+            def returnValue = [sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value]
+            log.trace("Returning search sql: $returnValue.sql with values: $returnValue.values ")
+            return returnValue
         } else {
             return null
         }
