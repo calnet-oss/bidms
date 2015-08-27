@@ -34,8 +34,12 @@ class DatabaseService {
     }
 
     private static void createPartialMatch(SORObject sorObject, Person person) {
-        def partialMatch = new PartialMatch(sorObject: sorObject, person: person)
-        partialMatch.save(failOnError: true)
+        def partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: person)
+        try {
+            partialMatch.save(failOnError: true)
+        } catch (e) {
+            log.error("Failed to save PartialMatch for SORObject: $sorObject, Person: $person.", e)
+        }
     }
 
     private static void removeExistingPartialMatches(SORObject sorObject) {
