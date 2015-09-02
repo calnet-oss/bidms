@@ -9,12 +9,12 @@ class Person {
     // We use sorted sets so the sets are ordered the same way each time a
     // person is queried.  This is particularly relevant for JSON
     // generation.  We want the JSON output to look the same each time.
-    SortedSet addresses
-    SortedSet names
-    SortedSet datesOfBirth
-    SortedSet identifiers
-    SortedSet emails
-    SortedSet telephones
+    SortedSet<Address> addresses
+    SortedSet<PersonName> names
+    SortedSet<DateOfBirth> datesOfBirth
+    SortedSet<Identifier> identifiers
+    SortedSet<Email> emails
+    SortedSet<Telephone> telephones
 
     static hasMany = [
             addresses   : Address,
