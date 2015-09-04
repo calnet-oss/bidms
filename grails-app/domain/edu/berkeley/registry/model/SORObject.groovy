@@ -32,7 +32,7 @@ class SORObject implements Serializable {
         objJson column: 'objJson', type: JSONBType, sqlType: 'jsonb'
         jsonVersion column: 'jsonVersion', sqlType: 'SMALLINT'
         sor column: 'sorId', sqlType: 'SMALLINT'
-        sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(64)'
+        sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(255)'
         queryTime column: 'sorQueryTime'
         person column: 'uid'
     }
