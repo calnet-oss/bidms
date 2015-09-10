@@ -36,11 +36,11 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
         if (!_configuration) {
             // 1-time creation of the configuration
             Properties properties = new Properties()
-            properties.setProperty 'hibernate.connection.driver_class', grailsApplication.config.dataSource.driverClassName
-            properties.setProperty 'hibernate.connection.username', grailsApplication.config.dataSource.username
-            properties.setProperty 'hibernate.connection.password', grailsApplication.config.dataSource.password
-            properties.setProperty 'hibernate.connection.url', grailsApplication.config.dataSource.url
-            properties.setProperty 'hibernate.dialect', grailsApplication.config.dataSource.dialect
+            properties.'hibernate.connection.driver_class' = grailsApplication.config.dataSource.driverClassName
+            properties.'hibernate.connection.username' = grailsApplication.config.dataSource.username
+            properties.'hibernate.connection.password' = grailsApplication.config.dataSource.password
+            properties.'hibernate.connection.url' = grailsApplication.config.dataSource.url
+            properties.'hibernate.dialect' = grailsApplication.config.dataSource.dialect
 
             _configuration = new DefaultGrailsDomainConfiguration(grailsApplication: grailsApplication, properties: properties)
         }
@@ -60,63 +60,63 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def setup() {
-        def sor = new SOR(name:'HR').save(failOnError: true, flush: true)
+        grailsApplication.config.rest.matchEngine.url = 'http://localhost:8082/ucb-match/v1/person'  // Use local mock server
+        grailsApplication.config.rest.provisionNewUid.url = 'http://localhost:8084/registry-provisioning/newUid/save' // Use local mock server
+        grailsApplication.config.rest.provisionUid.url = 'http://localhost:8084/registry-provisioning/provision/save' // Use local mock server
+        def sor = new SOR(name: 'HR').save(failOnError: true, flush: true)
         new SORObject(sor: sor, sorPrimaryKey: 'HR0001', queryTime: new Date(), jsonVersion: 1, objJson: "{}").save(failOnError: true, flush: true)
-        new Person(uid:'002',dateOfBirth: Date.parse('yyy-MM-dd' , '1999-09-09')).save(failOnError: true, flush: true)
-        new Person(uid:'003',dateOfBirth: Date.parse('yyy-MM-dd' , '1999-09-09')).save(failOnError: true, flush: true)
+        new Person(uid: '002', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
+        new Person(uid: '003', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
     }
 
     static ActiveMQMapMessage createJmsMessage(Map data) {
         ActiveMQMapMessage jmsMsg = new ActiveMQMapMessage()
-        data.each {key, value ->
+        data.each { key, value ->
             jmsMsg.setString(key, value)
         }
         return jmsMsg
     }
 
-    @Ignore("TODO: CNR-376")
     def 'when entering the system with a SORObject that does not match an existing person, expect to see the new created UID on the provisioning queue'() {
         given:
-            def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
-            def sorObject = SORObject.getBySorAndObjectKey(data.systemOfRecord, data.sorPrimaryKey)
-            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.NOT_FOUND.value())
-            uidService.registerPost("/registry-provisioning/newUid/save?sorObjectId=${sorObject.id}", statusCode: HttpStatus.OK.value(), json:[uid: '001', sorObjectId: '2', provisioningSuccessful: true])
+        def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
+        def sorObject = SORObject.getBySorAndObjectKey(data.systemOfRecord, data.sorPrimaryKey)
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.NOT_FOUND.value())
+        uidService.registerPost("/registry-provisioning/newUid/save?sorObjectId=${sorObject.id}", statusCode: HttpStatus.OK.value(), json: [uid: '001', sorObjectId: '2', provisioningSuccessful: true])
         when:
-            newSORConsumerService.onMessage(createJmsMessage(data))
+        newSORConsumerService.onMessage(createJmsMessage(data))
         then:
-            matchEngine.verify()
-            uidService.verify()
+        matchEngine.verify()
+        uidService.verify()
     }
 
 
-    @Ignore("TODO: CNR-376")
     def 'when entering the system with a SORObject that does match an single existing person, expect to see that persons UID on the provisioning queue'() {
         given:
-            def person = Person.get('002')
-            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json:[matchingRecord: [referenceId: '002']] )
-            uidService.registerPost("/registry-provisioning/provision/save?uid=${person.uid}", statusCode: HttpStatus.OK.value(), json:[uid: '001', sorObjectId: '2', provisioningSuccessful: true])
-            def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
+        def person = Person.get('002')
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
+        uidService.registerPost("/registry-provisioning/provision/save?uid=${person.uid}", statusCode: HttpStatus.OK.value(), json: [uid: '001', sorObjectId: '2', provisioningSuccessful: true])
+        def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
-            newSORConsumerService.onMessage(createJmsMessage(data))
+        newSORConsumerService.onMessage(createJmsMessage(data))
         then:
-            matchEngine.verify()
-            uidService.verify()
+        matchEngine.verify()
+        uidService.verify()
     }
 
-    @Ignore("TODO: CNR-376")
     def 'when entering the system with a SORObject that matches multiple existing persons, do not expect to see a response on the queue but instead expect to find two rows in the PartialMatch table'() {
         given:
-            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json:[partialMatchingRecords: [[referenceId: '002'], [referenceId: '003']]] )
-            def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json: [partialMatchingRecords: [[referenceId: '002'], [referenceId: '003']]])
+        def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
-            newSORConsumerService.onMessage(createJmsMessage(data))
-            def rows = PartialMatch.list()
+        newSORConsumerService.onMessage(createJmsMessage(data))
+        def rows = PartialMatch.list()
 
         then: "Expect a timeout from the jms queue"
-            matchEngine.verify()
+        matchEngine.verify()
         and:
-            rows.size() == 2
-            rows.collect{it.person.id}.sort() == ['002','003']
+        rows.size() == 2
+        rows.collect { it.person.id }.sort() == ['002', '003']
     }
 }
 
