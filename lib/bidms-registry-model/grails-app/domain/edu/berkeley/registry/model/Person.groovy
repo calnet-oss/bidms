@@ -5,7 +5,6 @@ class Person {
     String id // uid
     Date timeCreated
     Date timeUpdated
-    Date timeSentToIHub
 
     // We use sorted sets so the sets are ordered the same way each time a
     // person is queried.  This is particularly relevant for JSON
@@ -29,7 +28,6 @@ class Person {
     static constraints = {
         timeCreated nullable: true // assigned automatically by db trigger
         timeUpdated nullable: true // assigned automatically by db trigger
-        timeSentToIHub nullable: true
     }
 
     static mapping = {
@@ -44,7 +42,6 @@ class Person {
         emails cascade: "all-delete-orphan", batchSize: 25
         datesOfBirth cascade: "all-delete-orphan", batchSize: 25
         identifiers cascade: "all-delete-orphan", batchSize: 25
-        timeSentToIHub column: 'timeSentToIHub'
     }
 
     static transients = ['uid']
