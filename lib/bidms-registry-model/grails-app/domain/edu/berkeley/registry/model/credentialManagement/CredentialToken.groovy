@@ -10,7 +10,7 @@ class CredentialToken {
     Person person
     Date expiryDate
     static constraints = {
-        token nullable: false
+        token nullable: false, maxSize: 32
         person nullable: false
         expiryDate nullable: false
     }
