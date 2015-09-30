@@ -25,7 +25,7 @@ class CredentialToken {
         expiryDate column: 'expiryDate'
     }
 
-    def beforeInsert() {
+    def beforeValidate() {
         if (!token) {
             token = RandomStringUtil.randomString(10, UPPER_ALPHA, LOWER_ALPHA, NUMERIC)
         }
