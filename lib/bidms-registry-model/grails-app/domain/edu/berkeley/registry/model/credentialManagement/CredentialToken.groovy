@@ -16,7 +16,7 @@ class CredentialToken {
     }
 
     static mapping = {
-        table: "credentialToken"
+        table name: "credentialToken"
         version false
 
         id column: 'id', generator: 'sequence', params: [sequence: 'CredentialToken_seq'], sqlType: 'BIGINT'
