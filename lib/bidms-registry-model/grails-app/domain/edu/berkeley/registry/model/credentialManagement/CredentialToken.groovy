@@ -1,6 +1,6 @@
 package edu.berkeley.registry.model.credentialManagement
 
-import edu.berkeley.registry.model.IdentifierType
+import edu.berkeley.registry.model.Identifier
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.RandomStringUtil
 import edu.berkeley.util.domain.DomainUtil
@@ -10,13 +10,13 @@ import static edu.berkeley.registry.model.RandomStringUtil.CharTemplate.*
 
 class CredentialToken {
     String token
-    IdentifierType identifierType
+    Identifier identifier
     Person person
     Date expiryDate
     static constraints = {
         token nullable: false, maxSize: 32
-        identifierType nullable: false
-        person nullable: false, unique: 'identifierType'
+        identifier nullable: false
+        person nullable: false, unique: 'identifier'
         expiryDate nullable: false
     }
 
@@ -26,7 +26,7 @@ class CredentialToken {
 
         id column: 'id', generator: 'sequence', params: [sequence: 'CredentialToken_seq'], sqlType: 'BIGINT'
         token column: 'token'
-        identifierType column: 'identifierTypeId', sqlType: 'SMALLINT', fetch: FetchMode.JOIN
+        identifier column: 'identifierId', fetch: FetchMode.JOIN
         person column: CredentialToken.getUidColumnName(), sqlType: 'VARCHAR(64)'
         expiryDate column: 'expiryDate'
     }
