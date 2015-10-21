@@ -71,6 +71,13 @@ class MatchConfigBuilderSpec extends Specification {
                 'sorid' {
                     description = "Other description"
                 }
+                'date' {
+                    description = "A date attribute"
+                    column = 'dateColumn'
+                    search {
+                        dateFormat = 'yyyy-MM-dd'
+                    }
+                }
             }
         }
         configClosure.resolveStrategy = Closure.DELEGATE_ONLY
@@ -80,7 +87,7 @@ class MatchConfigBuilderSpec extends Specification {
         configClosure.call()
 
         then:
-        sut.config.matchAttributeConfigs.size() == 2
+        sut.config.matchAttributeConfigs.size() == 3
         sut.config.matchAttributeConfigs[0].name == 'sor'
         sut.config.matchAttributeConfigs[0].description == 'Some description'
         sut.config.matchAttributeConfigs[0].column == 'columnName'
@@ -101,6 +108,7 @@ class MatchConfigBuilderSpec extends Specification {
         !sut.config.matchAttributeConfigs[1].group
         !sut.config.matchAttributeConfigs[1].invalidates
         !sut.config.matchAttributeConfigs[1].search
+        sut.config.matchAttributeConfigs[2].search.dateFormat == 'yyyy-MM-dd'
     }
 
     def "test when attributes is missing config closure"() {

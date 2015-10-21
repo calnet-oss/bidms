@@ -1,5 +1,4 @@
 package edu.berkeley.calnet.ucbmatch.util
-
 import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType
@@ -10,14 +9,24 @@ class SqlWhereResolver {
     static Map getWhereClause(MatchType matchType, MatchAttributeConfig config, String value) {
         def sql = config.column
         def searchConfig = config.search
+        def queryValue = value
 
-        if (!searchConfig.caseSensitive) {
+
+        if (!searchConfig.caseSensitive && !searchConfig.dateFormat) {
             sql = "lower($sql)"
-            value = value?.toLowerCase()
+            queryValue = queryValue?.toLowerCase()
         }
         if (searchConfig.alphanumeric) {
-            sql = "regexp_replace($sql,'$ALL_ALPHANUMERIC','','g')"
-            value = value?.replaceAll(ALL_ALPHANUMERIC, '')
+//            sql = "regexp_replace($sql,'$ALL_ALPHANUMERIC','','g')"
+            queryValue = queryValue?.replaceAll(ALL_ALPHANUMERIC, '')
+        }
+        if(searchConfig.dateFormat) {
+            matchType = MatchType.EXACT // Is ALWAYS Exact Match SQL
+            try {
+                queryValue = new java.sql.Date(Date.parse(searchConfig.dateFormat, queryValue).time)
+            } catch (e) {
+                queryValue = null
+            }
         }
 
         switch (matchType) {
@@ -35,7 +44,7 @@ class SqlWhereResolver {
         }
 
         // TODO: Implement crosscheck (if needed)
-        return [sql: sql, value: value]
+        return [sql: sql, value: queryValue]
 
     }
 
