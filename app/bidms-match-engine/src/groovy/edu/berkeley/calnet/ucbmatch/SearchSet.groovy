@@ -13,7 +13,7 @@ class SearchSet {
     Map<String, MatchType> matchTypes
     List<MatchAttributeConfig> matchAttributeConfigs
 
-    Map buildWhereClause(Map matchInput) {
+    WhereAndValues buildWhereClause(Map matchInput) {
         List<WhereAndValue> whereAndValues = matchTypes.collect { name, matchType ->
             def config = matchAttributeConfigs.find { it.name == name }
             def value = AttributeValueResolver.getAttributeValue(config, matchInput)
@@ -22,7 +22,7 @@ class SearchSet {
         }
         log.trace("Found ${whereAndValues.size()} statements. Now checking if all has a value")
         if (whereAndValues.every { it.value != null }) {
-            def returnValue = [sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value]
+            def returnValue = new WhereAndValues(sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value)
             log.trace("Returning search sql: $returnValue.sql with values: $returnValue.values ")
             return returnValue
         } else {
@@ -35,4 +35,11 @@ class SearchSet {
         String sql
         def value
     }
+
+    @ToString(includeNames = true)
+    static class WhereAndValues {
+        String sql
+        List values
+    }
+
 }
