@@ -20,7 +20,7 @@ class MatchServiceSpec extends Specification {
         service.findCandidates([systemOfRecord: "sis", identifier: "123",a:"b"])
 
         then:
-        1 * service.databaseService.searchDatabase2([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.CANONICAL) >> [new Candidate()]
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.CANONICAL) >> [new Candidate()]
 
         and: "There are no other calls to the service"
         0 * service.databaseService._(*_)
@@ -33,8 +33,8 @@ class MatchServiceSpec extends Specification {
         service.findCandidates([systemOfRecord: "sis", identifier: "123",a:"b"])
 
         then:
-        1 * service.databaseService.searchDatabase2([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.CANONICAL) >> []
-        1 * service.databaseService.searchDatabase2([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.POTENTIAL) >> [new Candidate()]
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.CANONICAL) >> []
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123",a:"b"],ConfidenceType.POTENTIAL) >> [new Candidate()]
 
         and: "There are no other calls to the service"
         0 * service.databaseService._(*_)
