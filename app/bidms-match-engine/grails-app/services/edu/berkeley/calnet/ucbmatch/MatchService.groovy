@@ -20,7 +20,7 @@ class MatchService {
         //todo: if more than one candidate, then it's not canonical....
         if (!candidates) {
             log.debug("findCandidates (Potential) for $matchInput.systemOfRecord/$matchInput.sorObjectKey ")
-            candidates = databaseService.searchDatabase2(matchInput, ConfidenceType.POTENTIAL)
+            candidates = databaseService.searchDatabase(matchInput, ConfidenceType.POTENTIAL)
         }
         log.debug("findCandidates found ${candidates.size()} candidates")
         return candidates
