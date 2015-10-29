@@ -24,7 +24,7 @@ class PersonService {
      *      ]
      * ]
      *
-     * * @param matchInput the format above
+     * @param matchInput the format above
      * @return either an ExistingMatchResponse if the identifier is already in the registry
      *         A not found Response if no matches were found,
      *         an ExactMatchResponse if one and only one exact match was found
@@ -40,10 +40,8 @@ class PersonService {
         if (!candidates) {
             log.debug("No match found for $matchInput")
             return Response.NOT_FOUND
-        } else if (candidates.size() == 1) {
-            if (candidates[0].exactMatch) {
-                return new ExactMatchResponse(responseData: candidates[0])
-            }
+        } else if (candidates.size() == 1 && candidates[0].exactMatch) {
+            return new ExactMatchResponse(responseData: candidates[0])
         } else if(sameReferenceIdAndCanonical(candidates)) {
             return new ExactMatchResponse(responseData: candidates[0])
         }
@@ -52,6 +50,6 @@ class PersonService {
     }
 
     boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
-        return candidates.referenceId.unique().size() == 1 & candidates.every { it.exactMatch }
+        return candidates.referenceId.unique().size() == 1 && candidates.every { it.exactMatch }
     }
 }
