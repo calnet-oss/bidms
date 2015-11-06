@@ -73,6 +73,18 @@ class NewSORConsumerServiceSpec extends Specification {
         0 * service.uidClientService.provisionUid(person1)
     }
 
+    void "check that service can be called directly to match record"() {
+        when:
+        service.matchPerson(sorObject, [systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']])
+
+        then:
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(people: [person1, person2])
+        1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
+        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.databaseService.assignUidToSOR(*_)
+        0 * service.uidClientService.provisionUid(person1)
+    }
+
     private MapMessage mockMessage() {
         def message = Mock(MapMessage)
         message.getString('systemOfRecord') >> 'SIS'

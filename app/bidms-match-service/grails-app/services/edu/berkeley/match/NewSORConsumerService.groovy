@@ -44,23 +44,29 @@ class NewSORConsumerService {
 
         Map sorAttributes = getAttributesFromMessage(message)
 
+        matchPerson(sorObject, sorAttributes)
+        return null
+    }
+
+
+    public void matchPerson(SORObject sorObject, Map sorAttributes) {
+        log.debug("Attempting to match $sorAttributes")
         def match = matchClientService.match(sorAttributes)
         log.debug("Response from MatchService: $match")
 
         // If it is a partial match just store the partial and return
-        if(match instanceof PersonPartialMatches) {
+        if (match instanceof PersonPartialMatches) {
             databaseService.storePartialMatch(sorObject, match.people)
-            return null
+            return
         }
         // if it is an exact match assign the uid and provision
-        if(match instanceof PersonExactMatch) {
+        if (match instanceof PersonExactMatch) {
             databaseService.assignUidToSOR(sorObject, match.person)
             uidClientService.provisionUid(match.person)
-            return null
+            return
         }
         // provision a new person
         uidClientService.provisionNewUid(sorObject)
-        return null
     }
 
     /**
