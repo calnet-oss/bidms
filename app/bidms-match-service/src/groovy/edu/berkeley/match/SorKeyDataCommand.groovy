@@ -2,8 +2,10 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SORObject
 import grails.validation.Validateable
+import groovy.util.logging.Log4j
 
 @Validateable
+@Log4j
 class SorKeyDataCommand {
     String systemOfRecord
     String sorPrimaryKey
@@ -18,7 +20,9 @@ class SorKeyDataCommand {
     Map otherIds = [:]
 
     SORObject getSorObject() {
+        log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
+        log.debug("-- found: $sorObject")
         return sorObject
     }
 
