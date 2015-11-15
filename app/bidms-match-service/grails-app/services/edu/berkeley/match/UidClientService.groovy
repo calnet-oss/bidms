@@ -16,7 +16,8 @@ class UidClientService {
      */
     void provisionUid(Person person) {
         String endpoint = grailsApplication.config.rest.provisionUid.url
-        def response = restClient.post("$endpoint?uid=${person.uid}") {
+        // synchronousDownstream=true means synchronous OpenIDM provisioning
+        def response = restClient.post("$endpoint?uid=${person.uid}&synchronousDownstream=true") {
             accept 'application/json'
         }
         if(response.statusCode != HttpStatus.OK) {
@@ -32,7 +33,8 @@ class UidClientService {
      */
     void provisionNewUid(SORObject sorObject) {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
-        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}") {
+        // synchronousDownstream=true means synchronous OpenIDM provisioning
+        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}&synchronousDownstream=true") {
             accept 'application/json'
         }
         if(response.statusCode != HttpStatus.OK) {

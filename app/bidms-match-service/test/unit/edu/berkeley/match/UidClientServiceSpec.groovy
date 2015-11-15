@@ -34,7 +34,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}"))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
@@ -51,7 +51,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}"))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
@@ -68,7 +68,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         Person person = Person.build(uid: "1")
-        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}"))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
@@ -85,7 +85,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         Person person = Person.build(uid: "1")
-        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}"))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
