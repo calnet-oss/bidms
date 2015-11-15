@@ -40,9 +40,16 @@ class UidClientService {
         if(response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
         }
-        if(!response.json.provisioningSuccessful) {
-            log.warn "Error provisioning new sorObject $response.json.sorObjectId for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"
+        else if(!response.json?.provisioningSuccessful) {
+            if (response.json?.provisioningErrorMessage) {
+                log.warn "Error provisioning new sorObject $sorObject.id for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"
+            }
+            else {
+                log.warn "Error provisioning new sorObject $sorObject.id: ${response.text}"
+            }
         }
-        log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
+        else {
+            log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
+        }
     }
 }
