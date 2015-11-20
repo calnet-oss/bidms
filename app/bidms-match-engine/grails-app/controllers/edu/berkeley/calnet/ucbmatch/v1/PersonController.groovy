@@ -1,5 +1,6 @@
 package edu.berkeley.calnet.ucbmatch.v1
 
+import edu.berkeley.calnet.ucbmatch.response.Response
 import grails.converters.JSON
 import org.springframework.http.HttpStatus
 
@@ -11,14 +12,23 @@ class PersonController {
 
     def getPerson() {
         try {
-            def result = personService.matchPerson(request.JSON)
-            if (result.hasProperty('jsonMap')) {
+            //log.info("Received JSON: ${request.JSON.toString()}")
+            // There is some weird bug going on introduced when we upgraded to Grails 2.5.2
+            // where the actual JSON we want is in the "target" object."
+            // I believe this to be a Grails bug somewhere, but not sure where.
+            Response result = personService.matchPerson((request.JSON.has("target") ? request.JSON.target : request.JSON))
+            if (result.hasProperty('jsonMap') && result.jsonMap) {
+                log.debug "Match found with results: ${result.jsonMap as JSON}"
                 response.status = result.responseCode
                 render(result.jsonMap as JSON)
             } else {
-                render(status: result.responseCode, text: '')
+                log.info "No Match found with params: ${request.JSON}"
+                render(status: result.responseCode, contentType: "application/json") {
+                    text = "not found"
+                }
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
+            log.error("Exception", ex)
             render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {
                 text = ex.message
             }
