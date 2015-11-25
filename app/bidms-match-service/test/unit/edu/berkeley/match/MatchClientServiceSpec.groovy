@@ -95,10 +95,12 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((new DefaultResponseCreator(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
-        thrown(RuntimeException)
+        mockServer.verify()
+        result instanceof PersonExistingMatch
+        result.person.uid == '1'
     }
 
     void "test call to match engine where it returns a INTERNAL_SERVER_ERROR"() {

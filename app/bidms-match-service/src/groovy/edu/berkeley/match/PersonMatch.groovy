@@ -11,6 +11,11 @@ class PersonExactMatch extends PersonMatch {
     Person person
 }
 
+// indicates sorobject already matched up
+class PersonExistingMatch extends PersonMatch {
+    Person person
+}
+
 class PersonPartialMatches extends PersonMatch {
     List<Person> people
 }

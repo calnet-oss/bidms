@@ -3,7 +3,6 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.Person
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
-import org.springframework.http.converter.HttpMessageConverter
 
 @Transactional(readOnly = true)
 class MatchClientService {
@@ -19,7 +18,7 @@ class MatchClientService {
      *      systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', fullName: 'lastName, firstName middleName', givenName: 'firstName', middleName: 'middleName', lastName: 'lastName',
      *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz']
      * ]
-     * @return
+     * @return PersonMatch object
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
      */
     PersonMatch match(Map<String, String> p) {
@@ -30,11 +29,18 @@ class MatchClientService {
             contentType "application/json"
             json jsonMap
         }
+        // The difference between OK and FOUND (I think) is that OK
+        // indicates the SORObject matches up to an existing uid, where
+        // as FOUND indicates the SORObject is already matched.  See
+        // difference between the ExactMatchResponse (OK) and
+        // ExistingMatchResponse (FOUND) in ucb-match.
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
                 return new PersonNoMatch()
             case HttpStatus.OK:
                 return exactMatch(response.json)
+            case HttpStatus.FOUND:
+                return existingMatch(response.json)
             case HttpStatus.MULTIPLE_CHOICES:
                 return partialMatch(response.json)
             default:
@@ -49,6 +55,11 @@ class MatchClientService {
         // Person object is not to be changed
         def person = Person.findByUid(json.matchingRecord.referenceId as String)
         new PersonExactMatch(person: person)
+    }
+
+    private static PersonExistingMatch existingMatch(def json) {
+        def person = Person.findByUid(json.matchingRecord.referenceId as String)
+        new PersonExistingMatch(person: person)
     }
 
     private static PersonPartialMatches partialMatch(def json) {

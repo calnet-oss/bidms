@@ -65,6 +65,11 @@ class NewSORConsumerService {
             uidClientService.provisionUid(match.person)
             return
         }
+        // if it's an existing match, do nothing except reprovision
+        if (match instanceof PersonExistingMatch) {
+            uidClientService.provisionUid(match.person)
+            return
+        }
         // provision a new person
         uidClientService.provisionNewUid(sorObject)
     }

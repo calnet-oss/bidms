@@ -1,8 +1,12 @@
 package edu.berkeley.match
 
+import edu.berkeley.registry.model.Identifier
+import edu.berkeley.registry.model.IdentifierType
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
+import edu.berkeley.registry.model.types.IdentifierTypeEnum
+import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -15,11 +19,12 @@ import javax.jms.MapMessage
 @SuppressWarnings("GroovyAssignabilityCheck")
 // When using expectations in Spock
 @TestFor(NewSORConsumerService)
-@Mock([SOR, SORObject, Person])
+@Mock([SOR, SORObject, Person, Identifier, IdentifierType])
 class NewSORConsumerServiceSpec extends Specification {
     SORObject sorObject
     Person person1
     Person person2
+    Person person3
 
     def setup() {
         setupModel()
@@ -56,6 +61,20 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
         1 * service.uidClientService.provisionUid(person1)
         0 * service.uidClientService.provisionNewUid(_)
+    }
+
+    void "when a SOR has an existing match, provisioning is notified"() {
+        given:
+            def message = mockMessageExisting()
+
+        when:
+            service.onMessage(message)
+
+        then:
+            1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
+            0 * service.databaseService.assignUidToSOR(sorObject, person1)
+            1 * service.uidClientService.provisionUid(person3)
+            0 * service.uidClientService.provisionNewUid(_)
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -97,12 +116,31 @@ class NewSORConsumerServiceSpec extends Specification {
         return message
     }
 
+    private MapMessage mockMessageExisting() {
+        def message = Mock(MapMessage)
+        message.getString("systemOfRecord") >> SOREnum.SIS_STUDENT.name()
+        message.getString("sorPrimaryKey") >> 'SIS00002'
+        return message
+    }
+
     private void setupModel() {
         def sor = new SOR(name: 'SIS').save(failOnError: true)
         sorObject = new SORObject(sor: sor, sorPrimaryKey: 'SIS00001').save(validate: false)
         person1 = new Person(uid: '1').save(validate: false)
         person2 = new Person(uid: '2').save(validate: false)
 
-    }
+        IdentifierType sisStudentIdType = new IdentifierType(idName: IdentifierTypeEnum.sisStudentId.name()).save(validate: false)
+        person3 = new Person(uid: '3')
+        person3.addToIdentifiers(new Identifier(
+                identifierType: sisStudentIdType,
+                identifier: "SIS00002",
+                isActive: true,
+                isPrimary: true,
+                person: person3
+        ))
+        person3.save(validate: false)
 
+        def sisStudentSor = new SOR(name: SOREnum.SIS_STUDENT.name()).save(failOnError: true)
+        new SORObject(sor: sisStudentSor, sorPrimaryKey: 'SIS00002', uid: person3.uid).save(validate: false)
+    }
 }
