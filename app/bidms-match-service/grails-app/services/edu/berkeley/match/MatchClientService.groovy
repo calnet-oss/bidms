@@ -25,7 +25,7 @@ class MatchClientService {
         String matchUrl = grailsApplication.config.rest.matchEngine.url
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
-            accept 'application/json'
+            accept Map
             contentType "application/json"
             json jsonMap
         }

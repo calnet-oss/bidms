@@ -18,7 +18,7 @@ class UidClientService {
         String endpoint = grailsApplication.config.rest.provisionUid.url
         // synchronousDownstream=true means synchronous OpenIDM provisioning
         def response = restClient.post("$endpoint?uid=${person.uid}&synchronousDownstream=true") {
-            accept 'application/json'
+            accept Map
         }
         if(response.statusCode != HttpStatus.OK) {
             log.error("Error provisioning existing person ${person.uid}, response code: ${response.statusCode}:${response.text}")
@@ -35,7 +35,7 @@ class UidClientService {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
         // synchronousDownstream=true means synchronous OpenIDM provisioning
         def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}&synchronousDownstream=true") {
-            accept 'application/json'
+            accept Map
         }
         if(response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
