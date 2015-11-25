@@ -12,11 +12,7 @@ class PersonController {
 
     def getPerson() {
         try {
-            //log.info("Received JSON: ${request.JSON.toString()}")
-            // There is some weird bug going on introduced when we upgraded to Grails 2.5.2
-            // where the actual JSON we want is in the "target" object."
-            // I believe this to be a Grails bug somewhere, but not sure where.
-            Response result = personService.matchPerson((request.JSON.has("target") ? request.JSON.target : request.JSON))
+            Response result = personService.matchPerson(request.JSON)
             if (result.hasProperty('jsonMap') && result.jsonMap) {
                 log.debug "Match found with results: ${result.jsonMap as JSON}"
                 response.status = result.responseCode
