@@ -27,7 +27,7 @@ class MatchClientService {
         def jsonMap = buildJsonMap(p)
         // FIXME: JSON Exceptions being thrown here
         restClient.restTemplate.messageConverters.each { HttpMessageConverter converter ->
-            log.info("messageConverter: ${converter.getClass().name}")
+            log.info("messageConverter: ${converter.getClass().name}, supportedMediaTypes=${converter.supportedMediaTypes}")
         }
         def response = restClient.post(matchUrl) {
             accept 'application/json'
