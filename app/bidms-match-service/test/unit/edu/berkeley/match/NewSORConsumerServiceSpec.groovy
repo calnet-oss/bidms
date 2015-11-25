@@ -73,7 +73,7 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
             1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
             0 * service.databaseService.assignUidToSOR(sorObject, person1)
-            1 * service.uidClientService.provisionUid(person3)
+            0 * service.uidClientService.provisionUid(person3)
             0 * service.uidClientService.provisionNewUid(_)
     }
 
