@@ -3,6 +3,7 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.Person
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
+import org.springframework.http.converter.HttpMessageConverter
 
 @Transactional(readOnly = true)
 class MatchClientService {
@@ -24,6 +25,10 @@ class MatchClientService {
     PersonMatch match(Map<String, String> p) {
         String matchUrl = grailsApplication.config.rest.matchEngine.url
         def jsonMap = buildJsonMap(p)
+        // FIXME: JSON Exceptions being thrown here
+        restClient.restTemplate.messageConverters.each { HttpMessageConverter converter ->
+            log.info("messageConverter: ${converter.getClass().name}")
+        }
         def response = restClient.post(matchUrl) {
             accept 'application/json'
             contentType "application/json"
