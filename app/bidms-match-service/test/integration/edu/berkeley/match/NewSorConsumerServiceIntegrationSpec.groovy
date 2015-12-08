@@ -28,7 +28,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     def newSORConsumerService
 
     @Shared
-    VertxServer matchEngine = new VertxServer(host: 'localhost', port: 8082)
+    VertxServer matchEngine = new VertxServer(host: 'localhost', port: 8085)
     @Shared
     VertxServer uidService = new VertxServer(host: 'localhost', port: 8084)
 
@@ -60,7 +60,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def setup() {
-        grailsApplication.config.rest.matchEngine.url = 'http://localhost:8082/ucb-match/v1/person'  // Use local mock server
+        grailsApplication.config.rest.matchEngine.url = 'http://localhost:8085/ucb-match/v1/person'  // Use local mock server
         grailsApplication.config.rest.provisionNewUid.url = 'http://localhost:8084/registry-provisioning/newUid/save' // Use local mock server
         grailsApplication.config.rest.provisionUid.url = 'http://localhost:8084/registry-provisioning/provision/save' // Use local mock server
         def sor = new SOR(name: 'HR').save(failOnError: true, flush: true)
