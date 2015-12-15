@@ -1,4 +1,5 @@
 package edu.berkeley.calnet.ucbmatch
+
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Record
 import grails.transaction.Transactional
@@ -33,7 +34,7 @@ class DatabaseService {
     Set<Record> searchDatabase2(Map matchInput, ConfidenceType confidenceType) {
         List<SearchSet> searchSets = getSearchSets(confidenceType)
 
-        List<SearchSet.WhereAndValues> whereClauses = searchSets.collect{ searchSet ->
+        List<SearchSet.WhereAndValues> whereClauses = searchSets.collect { searchSet ->
             searchSet.buildWhereClause(matchInput)
         }.findAll {
             it
@@ -42,7 +43,7 @@ class DatabaseService {
         String sqlWhereClauses = whereClauses.collect { "($it.sql)" }.join('\n    OR      ')
         List allValues = whereClauses.collect { it.values }.flatten()
 
-        if(sqlWhereClauses) {
+        if (sqlWhereClauses) {
             def statement = new QueryStatement(sql: """
                 SELECT *
                     FROM   ${matchConfig.matchTable}
@@ -92,6 +93,17 @@ class DatabaseService {
 
     private Set<GroovyRowResult> performSearch(QueryStatement queryStatement) {
         def sql = sqlService.sqlInstance
+        // Strange bug.  I'm not sure if it's Grails or the JDBC driver
+        // doing the wrong thing, but something along the line is improperly
+        // converting the DATE to a bad PostgreSQL date string.  The PG logs
+        // show '1980-7-20 -7:0:0'.  PostgreSQL doesn't error, but doesn't
+        // return back any rows either.  To work around it, convert dates to
+        // strings.
+        queryStatement.values.eachWithIndex { value, i ->
+            if (value instanceof Date) {
+                queryStatement.values[i] = value.toString()
+            }
+        }
         log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
         def start = System.currentTimeMillis()
         def result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
@@ -108,8 +120,9 @@ class DatabaseService {
     private static class QueryStatement {
         String sql
         List values
+
         String getNormalizedSql() {
-            sql?.replaceAll(/\s+/,' ')?.trim()
+            sql?.replaceAll(/\s+/, ' ')?.trim()
         }
     }
 }
