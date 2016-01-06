@@ -15,14 +15,16 @@ class Person {
     SortedSet<Identifier> identifiers
     SortedSet<Email> emails
     SortedSet<Telephone> telephones
+    SortedSet<PersonRole> assignedRoles
 
     static hasMany = [
-            addresses   : Address,
-            names       : PersonName,
-            datesOfBirth: DateOfBirth,
-            identifiers : Identifier,
-            emails      : Email,
-            telephones  : Telephone
+            addresses    : Address,
+            names        : PersonName,
+            datesOfBirth : DateOfBirth,
+            identifiers  : Identifier,
+            emails       : Email,
+            telephones   : Telephone,
+            assignedRoles: PersonRole
     ]
 
     static constraints = {
@@ -42,6 +44,7 @@ class Person {
         emails cascade: "all-delete-orphan", batchSize: 25
         datesOfBirth cascade: "all-delete-orphan", batchSize: 25
         identifiers cascade: "all-delete-orphan", batchSize: 25
+        assignedRoles cascade: "all-delete-orphan", batchSize: 25
     }
 
     static transients = ['uid']
