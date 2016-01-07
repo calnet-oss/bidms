@@ -11,6 +11,7 @@ import static edu.berkeley.registry.model.RandomStringUtil.CharTemplate.*
 class CredentialToken {
     String token
     Identifier identifier
+    boolean slate
     Person person
     Date expiryDate
     static constraints = {
