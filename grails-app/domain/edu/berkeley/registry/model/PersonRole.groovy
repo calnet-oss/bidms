@@ -24,7 +24,7 @@ class PersonRole implements Comparable {
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonRole_seq'], sqlType: 'BIGINT'
         role column: 'roleId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
         person column: PersonRole.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        deleted column: 'deleted', sqlType: 'BOOLEAN'
+        deleted column: 'isDeleted', sqlType: 'BOOLEAN'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
