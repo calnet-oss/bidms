@@ -17,7 +17,7 @@ class Email implements Comparable {
 
     static constraints = {
         person unique: ['sorObject', 'emailType', 'emailAddress']
-        emailAddress email: true, size: 1..255
+        emailAddress nullable: true, size: 1..255
 
     }
 

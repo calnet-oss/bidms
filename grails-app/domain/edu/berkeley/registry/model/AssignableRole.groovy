@@ -7,6 +7,8 @@ class AssignableRole {
     Integer id
     String roleName
 
+    static belongsTo = [roleCategory: AssignableRoleCategory]
+
     static constraints = {
         roleName unique: true, size: 1..255
     }
@@ -16,5 +18,6 @@ class AssignableRole {
         version false
         id column: 'id', sqlType: 'INTEGER'
         roleName column: 'roleName', sqlType: 'VARCHAR(255)'
+        roleCategory column: 'roleCategoryId', sqlType: 'INTEGER'
     }
 }

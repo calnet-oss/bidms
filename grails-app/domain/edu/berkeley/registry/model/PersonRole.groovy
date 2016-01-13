@@ -10,12 +10,25 @@ import org.hibernate.FetchMode
 class PersonRole implements Comparable {
     Long id
     AssignableRole role
-    boolean deleted
+    String roleValue
+    boolean roleAsgnUniquePerCat
 
-    static belongsTo = [person: Person]
+    /**
+     * Note that roleCategory+roleAsgnUniquePerCat is a composite foreign
+     * key reference to AssignableRoleCategory.  I don't know how to model
+     * that composite foreign key reference in GORM, so we make do with a
+     * single key foreign key reference for roleCategory.
+     */
+    static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
 
     static constraints = {
-        person unique: ['role']
+        person unique: ['role', 'roleValue']
+        /**
+         * There is also a unique constraint in the DB using a partial index
+         * "ON PersonRole(uid, roleCategoryId) WHERE roleAsgnUniquePerCat =
+         * true".  I don't know how to model partial indexes in GORM.
+         */
+        roleValue nullable: true, size: 1..255
     }
 
     static mapping = {
@@ -24,7 +37,9 @@ class PersonRole implements Comparable {
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonRole_seq'], sqlType: 'BIGINT'
         role column: 'roleId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
         person column: PersonRole.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        deleted column: 'isDeleted', sqlType: 'BOOLEAN'
+        roleValue column: 'roleValue', sqlType: 'VARCHAR(255)'
+        roleCategory column: 'roleCategoryId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
+        roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
