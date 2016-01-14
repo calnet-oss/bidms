@@ -5,8 +5,10 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
-@ConverterConfig(excludes = ["person"])
-@LogicalEqualsAndHashCode(excludes = ["person"])
+// roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
+// used here in this class as a foreign key reference for indexing purposes
+@ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
+@LogicalEqualsAndHashCode(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
 class PersonRole implements Comparable {
     Long id
     AssignableRole role
