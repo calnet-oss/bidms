@@ -4,15 +4,27 @@ import edu.berkeley.hibernate.usertype.JSONBType
 import groovy.json.JsonSlurper
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
-@LogicalEqualsAndHashCode(excludes = ["person", "json"])
+@LogicalEqualsAndHashCode(excludes = ["person", "json", "objJson"])
 class SORObject implements Serializable {
+
+    //
+    // Know that adding new properties here without excluding them in the
+    // @LogicalEqualsAndHashCode will cause a different logical hash code to
+    // be calculated which could alter the order of SortedSets in Person
+    // (and anywhere else in the model where there is a SortedSet with
+    // SORObjects somewhere in the inheritance chain.) This isn't a problem,
+    // but you may have to alter the ordering of the expected JSON or XML
+    // output in some tests, such as registry-service
+    // IdentifiersServiceIntegrationSpec.
+    //
 
     String sorPrimaryKey
     Date queryTime
     String objJson
     Integer jsonVersion
+    Long hash
 
-    static transients = ['json', 'uid']
+    static transients = ['json', 'uid', 'hash']
 
     static SORObject getBySorAndObjectKey(String systemOfRecord, String sorObjectKey) {
         def sorObject = SORObject.where { sor.name == systemOfRecord && sorPrimaryKey == sorObjectKey }.get()
@@ -23,7 +35,6 @@ class SORObject implements Serializable {
 
     static constraints = {
         sorPrimaryKey nullable: false, unique: 'sor'
-        queryTime nullable: false
         person nullable: true
     }
 
@@ -37,6 +48,7 @@ class SORObject implements Serializable {
         sorPrimaryKey column: 'sorObjKey', sqlType: 'VARCHAR(255)'
         queryTime column: 'sorQueryTime'
         person column: 'uid'
+        hash column: 'hash', sqlType: 'BIGINT'
     }
 
     Map getJson() {
