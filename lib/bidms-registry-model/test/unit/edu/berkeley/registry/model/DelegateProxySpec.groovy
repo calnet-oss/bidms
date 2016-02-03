@@ -15,6 +15,6 @@ class DelegateProxySpec extends Specification {
         given:
             DelegateProxy obj = new DelegateProxy()
         expect:
-            DelegateProxy.logicalHashCodeExcludes.contains("delegateProxyPerson")
+            DelegateProxy.logicalHashCodeExcludes.contains("person")
     }
 }
