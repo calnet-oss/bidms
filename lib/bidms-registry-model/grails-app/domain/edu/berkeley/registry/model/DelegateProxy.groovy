@@ -30,7 +30,7 @@ class DelegateProxy implements Comparable {
         table name: "DelegateProxy"
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'DelegateProxy_seq'], sqlType: 'BIGINT'
-        person column: 'delegateProxyUid', sqlType: 'VARCHAR(64)'
+        person column: 'uid', sqlType: 'VARCHAR(64)'
         delegateProxyType column: 'delegateProxyTypeId', sqlType: 'SMALLINT', fetch: FetchMode.JOIN
         delegateProxySorObject column: 'delegateProxySorObjectId', sqlType: 'BIGINT'
         sourceProxyId column: 'sourceProxyId', sqlType: 'VARCHAR(64)'
