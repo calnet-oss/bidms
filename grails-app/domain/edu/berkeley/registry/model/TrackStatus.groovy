@@ -1,5 +1,6 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.registry.statustrack.TrackStatusType
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
@@ -8,7 +9,7 @@ import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 @LogicalEqualsAndHashCode(excludes = ["person"])
 class TrackStatus implements Comparable {
     Long id
-    String trackStatusType
+    TrackStatusType trackStatusType
     Date timeCreated
     String description
 
