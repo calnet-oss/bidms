@@ -79,6 +79,8 @@ class NewSORConsumerService {
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
+        log.info("message.class=${message.getClass().name}")
+        log.info("systemOfRecord=${message.getStringProperty('systemOfRecord')}")
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
