@@ -80,20 +80,22 @@ class NewSORConsumerService {
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
         log.info("message.jmsType=${message.getJMSType()}")
-        log.info("message.size=${message.size}")
-        log.info("message.type=${message.type}")
-        log.info("message.dataStructure=${message.dataStructure}")
-        log.info("message.content=${message.content}, contentLength=${message.content?.length}")
-        log.info("message.properties=${message.properties}")
-        try {
-          String content = new String(message.contnt.data, "UTF-8")
-          log.info("content as string = $content")
-        }
-        catch(Exception e) {
-          log.info("couldn't unmarshall byte content as a string: ${e.message}")
-        }
-        message.allPropertyNames.each {
-            log.info("message property name=${it}")
+        if(message instanceof org.apache.activemq.command.ActiveMQMessage) {
+            log.info("message.size=${message.size}")
+            log.info("message.type=${message.type}")
+            log.info("message.dataStructure=${message.dataStructure}")
+            log.info("message.content=${message.content}, contentLength=${message.content?.length}")
+            log.info("message.properties=${message.properties}")
+            try {
+              String content = new String(message.contnt.data, "UTF-8")
+              log.info("content as string = $content")
+            }
+            catch(Exception e) {
+              log.info("couldn't unmarshall byte content as a string: ${e.message}")
+            }
+            message.allPropertyNames.each {
+                log.info("message property name=${it}")
+            }
         }
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
