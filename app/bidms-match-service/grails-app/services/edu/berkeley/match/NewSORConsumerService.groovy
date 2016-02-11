@@ -20,10 +20,12 @@ class NewSORConsumerService {
 
     @Handler
     public Object onMessage(Message camelMsg) {
+        log.info("In onMessage for a Camel Message: body.class=${camelMsg.body.getClass().name}")
         return onMessage(camelMsg.getBody())
     }
 
     public Object onMessage(JmsMessage camelJmsMsg) {
+        log.info("In onMessage for a Camel JmsMessage: jmsMessage.class=${camelJmsMsg.jmsMessage.getClass().name}")
         return onMessage(camelJmsMsg.getJmsMessage())
     }
     /**
@@ -32,7 +34,7 @@ class NewSORConsumerService {
      * @return
      */
     public Object onMessage(javax.jms.Message msg) {
-        if (!msg instanceof MapMessage) {
+        if (!(msg instanceof MapMessage)) {
             // TODO: Handle messages of wrong type. Right now expect a MapMessage, if it's not, just return null
             log.error "Received a message that was not of type MapMessage. It has been discarded: ${msg}"
             return null
@@ -47,7 +49,6 @@ class NewSORConsumerService {
         matchPerson(sorObject, sorAttributes)
         return null
     }
-
 
     public void matchPerson(SORObject sorObject, Map sorAttributes) {
         log.debug("Attempting to match $sorAttributes")
