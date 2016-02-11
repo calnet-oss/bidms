@@ -80,6 +80,21 @@ class NewSORConsumerService {
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
         log.info("message.jmsType=${message.getJMSType()}")
+        log.info("message.jmsMessageId=${message.getJMSMessageID()}")
+        log.info("message.propertyNames=${message.propertyNames}")
+        message.propertyNames.each {
+            log.info("message property name=${it}")
+        }
+        log.info("isBytesMessage=${message instanceof javax.jms.BytesMessage}")
+        log.info("isMapMessage=${message instanceof javax.jms.MapMessage}")
+        log.info("isObjectMessage=${message instanceof javax.jms.ObjectMessage}")
+        log.info("isStreamMessage=${message instanceof javax.jms.StreamMessage}")
+        log.info("isTextMessage=${message instanceof javax.jms.TextMessage}")
+        if(message instanceof MapMessage) {
+            log.info("mapNames=${message.mapNames}")
+            
+        }
+        /*
         if(message instanceof org.apache.activemq.command.ActiveMQMessage) {
             log.info("message.size=${message.size}")
             log.info("message.type=${message.type}")
@@ -97,6 +112,7 @@ class NewSORConsumerService {
                 log.info("message property name=${it}")
             }
         }
+        */
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
