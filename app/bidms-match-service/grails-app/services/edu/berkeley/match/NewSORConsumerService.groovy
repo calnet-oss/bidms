@@ -38,7 +38,7 @@ class NewSORConsumerService {
             return null
         }
 
-        def message = msg as MapMessage
+        MapMessage message = (MapMessage)msg
 
         SORObject sorObject = getSorObjectFromMessage(message)
 
@@ -79,6 +79,7 @@ class NewSORConsumerService {
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
+        log.info("message.class=${message.class}")
         log.info("message.jmsType=${message.getJMSType()}")
         log.info("message.jmsMessageId=${message.getJMSMessageID()}")
         log.info("message.propertyNames=${message.propertyNames}")
@@ -90,9 +91,14 @@ class NewSORConsumerService {
         log.info("isObjectMessage=${message instanceof javax.jms.ObjectMessage}")
         log.info("isStreamMessage=${message instanceof javax.jms.StreamMessage}")
         log.info("isTextMessage=${message instanceof javax.jms.TextMessage}")
+        if(message instanceof groovy.util.Proxy) {
+            log.info("Is a groovy proxy.  adaptee.class=${message.adaptee.getClass().name}")
+        }
+        else {
+            log.info("is not a groovy proxy")
+        }
         if(message instanceof MapMessage) {
             log.info("mapNames=${message.mapNames}")
-            
         }
         /*
         if(message instanceof org.apache.activemq.command.ActiveMQMessage) {
