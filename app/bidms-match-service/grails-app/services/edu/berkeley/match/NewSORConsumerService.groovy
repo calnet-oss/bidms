@@ -79,7 +79,8 @@ class NewSORConsumerService {
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
-        log.info("message.class=${message.class}")
+        log.info("message.class=${message.getClass().name}, superclass=${message.getClass().superclass.name}")
+        log.info("message.class.interfaces=${message.getClass().interfaces*.name}")
         log.info("message.jmsType=${message.getJMSType()}")
         log.info("message.jmsMessageId=${message.getJMSMessageID()}")
         log.info("message.propertyNames=${message.propertyNames}")
