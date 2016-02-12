@@ -20,12 +20,10 @@ class NewSORConsumerService {
 
     @Handler
     public Object onMessage(Message camelMsg) {
-        //log.info("In onMessage for a Camel Message: body.class=${camelMsg.body.getClass().name}")
         return onMessage(camelMsg.getBody())
     }
 
     public Object onMessage(JmsMessage camelJmsMsg) {
-        //log.info("In onMessage for a Camel JmsMessage: jmsMessage.class=${camelJmsMsg.jmsMessage.getClass().name}")
         return onMessage(camelJmsMsg.getJmsMessage())
     }
     /**
