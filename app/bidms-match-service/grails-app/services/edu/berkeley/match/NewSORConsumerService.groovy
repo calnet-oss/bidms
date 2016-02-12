@@ -20,12 +20,12 @@ class NewSORConsumerService {
 
     @Handler
     public Object onMessage(Message camelMsg) {
-        log.info("In onMessage for a Camel Message: body.class=${camelMsg.body.getClass().name}")
+        //log.info("In onMessage for a Camel Message: body.class=${camelMsg.body.getClass().name}")
         return onMessage(camelMsg.getBody())
     }
 
     public Object onMessage(JmsMessage camelJmsMsg) {
-        log.info("In onMessage for a Camel JmsMessage: jmsMessage.class=${camelJmsMsg.jmsMessage.getClass().name}")
+        //log.info("In onMessage for a Camel JmsMessage: jmsMessage.class=${camelJmsMsg.jmsMessage.getClass().name}")
         return onMessage(camelJmsMsg.getJmsMessage())
     }
     /**
@@ -42,7 +42,14 @@ class NewSORConsumerService {
 
         MapMessage message = (MapMessage)msg
 
-        SORObject sorObject = getSorObjectFromMessage(message)
+        SORObject sorObject
+        try {
+            sorObject = getSorObjectFromMessage(message)
+        }
+        catch(ObjectNotFoundException e) {
+            log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
+            return null
+        }
 
         Map sorAttributes = getAttributesFromMessage(message)
 
@@ -80,6 +87,7 @@ class NewSORConsumerService {
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
+        /*
         log.info("message.class=${message.getClass().name}, superclass=${message.getClass().superclass.name}")
         log.info("message.class.interfaces=${message.getClass().interfaces*.name}")
         log.info("message.jmsType=${message.getJMSType()}")
@@ -102,6 +110,7 @@ class NewSORConsumerService {
         if(message instanceof MapMessage) {
             log.info("mapNames=${message.mapNames}")
         }
+        */
         /*
         if(message instanceof org.apache.activemq.command.ActiveMQMessage) {
             log.info("message.size=${message.size}")
