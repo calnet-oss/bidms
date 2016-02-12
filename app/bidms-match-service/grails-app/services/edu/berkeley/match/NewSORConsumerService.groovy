@@ -12,7 +12,7 @@ import javax.jms.MapMessage
 @Transactional
 class NewSORConsumerService {
 
-    static MATCH_FIELDS = ['systemOfRecord','sorPrimaryKey','givenName','middleName','surName','fullName','dateOfBirth','socialSecurityNumber']
+    static MATCH_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
 
     def matchClientService
     def uidClientService
@@ -40,13 +40,13 @@ class NewSORConsumerService {
             return null
         }
 
-        MapMessage message = (MapMessage)msg
+        MapMessage message = (MapMessage) msg
 
         SORObject sorObject
         try {
             sorObject = getSorObjectFromMessage(message)
         }
-        catch(ObjectNotFoundException e) {
+        catch (ObjectNotFoundException e) {
             log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
             return null
         }
@@ -87,53 +87,10 @@ class NewSORConsumerService {
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
-        /*
-        log.info("message.class=${message.getClass().name}, superclass=${message.getClass().superclass.name}")
-        log.info("message.class.interfaces=${message.getClass().interfaces*.name}")
-        log.info("message.jmsType=${message.getJMSType()}")
-        log.info("message.jmsMessageId=${message.getJMSMessageID()}")
-        log.info("message.propertyNames=${message.propertyNames}")
-        message.propertyNames.each {
-            log.info("message property name=${it}")
-        }
-        log.info("isBytesMessage=${message instanceof javax.jms.BytesMessage}")
-        log.info("isMapMessage=${message instanceof javax.jms.MapMessage}")
-        log.info("isObjectMessage=${message instanceof javax.jms.ObjectMessage}")
-        log.info("isStreamMessage=${message instanceof javax.jms.StreamMessage}")
-        log.info("isTextMessage=${message instanceof javax.jms.TextMessage}")
-        if(message instanceof groovy.util.Proxy) {
-            log.info("Is a groovy proxy.  adaptee.class=${message.adaptee.getClass().name}")
-        }
-        else {
-            log.info("is not a groovy proxy")
-        }
-        if(message instanceof MapMessage) {
-            log.info("mapNames=${message.mapNames}")
-        }
-        */
-        /*
-        if(message instanceof org.apache.activemq.command.ActiveMQMessage) {
-            log.info("message.size=${message.size}")
-            log.info("message.type=${message.type}")
-            log.info("message.dataStructure=${message.dataStructure}")
-            log.info("message.content=${message.content}, contentLength=${message.content?.length}")
-            log.info("message.properties=${message.properties}")
-            try {
-              String content = new String(message.contnt.data, "UTF-8")
-              log.info("content as string = $content")
-            }
-            catch(Exception e) {
-              log.info("couldn't unmarshall byte content as a string: ${e.message}")
-            }
-            message.allPropertyNames.each {
-                log.info("message property name=${it}")
-            }
-        }
-        */
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
         def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
-        if(!sorObject) {
+        if (!sorObject) {
             log.error("SORObject sorName=$systemOfRecord, sorPrimaryKey=$sorPrimaryKey could not be found in the DB while processing message ${message.getJMSMessageID()} from the New SORObject Queue")
             throw new ObjectNotFoundException("$systemOfRecord/$sorPrimaryKey", "SORObject")
         }
