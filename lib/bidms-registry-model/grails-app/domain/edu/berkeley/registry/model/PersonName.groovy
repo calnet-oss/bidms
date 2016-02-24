@@ -8,8 +8,8 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.hibernate.FetchMode
 
-@ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["person"])
+@ConverterConfig(excludes = ["person", "sorObject", "honorifics"])
+@LogicalEqualsAndHashCode(excludes = ["person", "honorificsAsList"])
 class PersonName implements Comparable {
 
     Long id
