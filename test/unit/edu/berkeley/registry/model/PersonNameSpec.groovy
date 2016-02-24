@@ -27,4 +27,19 @@ class PersonNameSpec extends Specification {
         expect:
             PersonName.logicalHashCodeExcludes.contains("person")
     }
+
+    void "test honorificsAsMap"() {
+        given:
+            PersonName obj = new PersonName()
+            obj.setHonorificsAsList([
+                    "JD",
+                    "PhD"
+            ])
+        expect:
+            obj.honorifics == '["JD","PhD"]'
+            obj.honorificsAsList == [
+                    "JD",
+                    "PhD"
+            ]
+    }
 }
