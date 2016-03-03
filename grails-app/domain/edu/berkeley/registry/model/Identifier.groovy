@@ -17,6 +17,13 @@ class Identifier implements Comparable {
     Boolean isActive
     // If the identifier is primary for the identifier type
     boolean isPrimary
+    /**
+     * weight: lowest number (0) is highest priority identifier of the same
+     * type.  Used by PrimaryIdentifierExecutor to aid in determining
+     * isPrimary.  HrmsIdentifierBuilder is an example where the weight is
+     * set to something non-zero.  Defaults to 0.
+     */
+    int weight
 
     static belongsTo = [person: Person]
 
@@ -35,6 +42,7 @@ class Identifier implements Comparable {
         identifier column: 'identifier', sqlType: 'VARCHAR(64)'
         isActive column: 'isActive', sqlType: 'BOOLEAN'
         isPrimary column: 'isPrimary', sqlType: 'BOOLEAN'
+        weight column: 'weight', sqlType: 'INTEGER', defaultValue: 0
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
