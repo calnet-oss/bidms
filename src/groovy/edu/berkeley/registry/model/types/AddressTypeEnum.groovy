@@ -11,11 +11,8 @@ enum AddressTypeEnum implements TypeEnum<AddressType> {
     directorySecondaryAddress,
     hrmsHomeAddress
 
-    AddressType addressType
-
     AddressType get() {
-        if (!addressType)
-            addressType = AddressType.findByAddressTypeName(name())
+        AddressType addressType = AddressType.findByAddressTypeName(name())
         if (addressType == null)
             throw new RuntimeException("AddressType ${name()} could not be found")
         return addressType

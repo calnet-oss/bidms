@@ -32,11 +32,8 @@ enum NameTypeEnum implements TypeEnum<NameType>, PrioritizedEnum {
         }
     }
 
-    NameType nameType
-
     NameType get() {
-        if (!nameType)
-            nameType = NameType.findByTypeName(name())
+        NameType nameType = NameType.findByTypeName(name())
         if (nameType == null)
             throw new RuntimeException("NameType ${name()} could not be found")
         return nameType

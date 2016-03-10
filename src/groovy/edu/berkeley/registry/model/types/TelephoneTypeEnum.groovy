@@ -13,11 +13,8 @@ enum TelephoneTypeEnum implements TypeEnum<TelephoneType> {
     hrmsHomePhone,
     hrmsCellPhone
 
-    TelephoneType telephoneType
-
     TelephoneType get() {
-        if (!telephoneType)
-            telephoneType = TelephoneType.findByTelephoneTypeName(name())
+        TelephoneType telephoneType = TelephoneType.findByTelephoneTypeName(name())
         if (telephoneType == null)
             throw new RuntimeException("TelephoneType ${name()} could not be found")
         return telephoneType
