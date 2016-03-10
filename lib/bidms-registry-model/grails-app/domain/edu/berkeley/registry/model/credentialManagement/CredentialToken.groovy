@@ -2,25 +2,15 @@ package edu.berkeley.registry.model.credentialManagement
 
 import edu.berkeley.registry.credentialManagement.RegistrationSource
 import edu.berkeley.registry.model.Identifier
-import edu.berkeley.registry.model.Person
-import edu.berkeley.registry.model.RandomStringUtil
-import edu.berkeley.util.domain.DomainUtil
 import org.hibernate.FetchMode
 
-import static edu.berkeley.registry.model.RandomStringUtil.CharTemplate.*
-
-class CredentialToken {
-    String token
+class CredentialToken extends BaseToken {
     Identifier identifier
     RegistrationSource registrationSource = RegistrationSource.DEFAULT
-    Person person
-    Date expiryDate
     static constraints = {
-        token nullable: false, maxSize: 32
         identifier nullable: false
-        registrationSource nullable: false
         person nullable: false, unique: 'identifier'
-        expiryDate nullable: false
+        registrationSource nullable: false
     }
 
     static mapping = {
@@ -28,25 +18,8 @@ class CredentialToken {
         version false
 
         id column: 'id', generator: 'sequence', params: [sequence: 'CredentialToken_seq'], sqlType: 'BIGINT'
-        token column: 'token'
         identifier column: 'identifierId', fetch: FetchMode.JOIN
         registrationSource column: 'registrationsource', sqlType: 'VARCHAR(64)'
-        person column: CredentialToken.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        expiryDate column: 'expiryDate'
+        BaseToken.addBaseMappings(CredentialToken.simpleName, delegate)
     }
-
-    def beforeValidate() {
-        if (!token) {
-            token = RandomStringUtil.randomString(10, UPPER_ALPHA, LOWER_ALPHA, NUMERIC)
-        }
-    }
-
-    // Makes the column name unique in test mode to avoid GRAILS-11600
-    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
-    // comments in DomainUtil.
-    static String getUidColumnName() {
-        return DomainUtil.testSafeColumnName("CredentialToken", "uid")
-    }
-
-
 }
