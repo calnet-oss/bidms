@@ -6,7 +6,13 @@ import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["person"])
+// isPrimary is only excluded because of the order-of-operations in
+// registry-provisioning-scripts.  The isPrimary is set later in the
+// process, and if isPrimary is not excluded from logicalEquals(), then an
+// unchanged primary identifier is at risk of being deleted/readded with a
+// new Identifier.id every time the person is reprovisioned, which is not
+// what we want.
+@LogicalEqualsAndHashCode(excludes = ["person", "isPrimary"])
 class Identifier implements Comparable {
 
     Long id
