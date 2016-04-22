@@ -17,7 +17,7 @@ class TrackStatus implements Comparable {
 
     static constraints = {
         person unique: ['trackStatusType']
-        trackStatusType nullable: false, size: 1..64
+        trackStatusType nullable: false
         timeCreated nullable: true // assigned automatically by db trigger
         description nullable: true, size: 1..256
     }
