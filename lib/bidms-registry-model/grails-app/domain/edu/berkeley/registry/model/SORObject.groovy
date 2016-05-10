@@ -4,7 +4,7 @@ import edu.berkeley.hibernate.usertype.JSONBType
 import groovy.json.JsonSlurper
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 
-@LogicalEqualsAndHashCode(excludes = ["person", "json", "objJson"])
+@LogicalEqualsAndHashCode(excludes = ["person", "json", "objJson", "queryTime"])
 class SORObject implements Serializable {
 
     //
