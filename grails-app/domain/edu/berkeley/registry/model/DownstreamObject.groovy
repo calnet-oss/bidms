@@ -6,7 +6,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import groovy.json.JsonSlurper
 
-@ConverterConfig(excludes = ["person", "json"])
+@ConverterConfig(excludes = ["person", "objJson"])
 @LogicalEqualsAndHashCode(excludes = ["person", "json"])
 class DownstreamObject implements Serializable, Comparable {
 
