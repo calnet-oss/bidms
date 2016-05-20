@@ -55,7 +55,7 @@ class DownstreamObjectSpec extends Specification {
 
     def "test parsing json"() {
         given:
-            def json = new JsonBuilder([id: 3, name: 'archer']).toString()
+            def json = new JsonBuilder([name: 'archer', middleName: null]).toString()
             def obj = new DownstreamObject(
                     person: Person.get("person1"),
                     system: DownstreamSystem.findByName(DownstreamSystemEnum.LDAP.name()),
@@ -64,7 +64,7 @@ class DownstreamObjectSpec extends Specification {
             ).save(flush: true, failOnError: true)
 
         expect:
-            obj.json.id == 3
             obj.json.name == 'archer'
+            obj.json.containsKey("middleName")
     }
 }

@@ -2,6 +2,7 @@ package edu.berkeley.registry.model
 
 import edu.berkeley.hibernate.usertype.JSONBType
 import edu.berkeley.util.domain.DomainUtil
+import edu.berkeley.util.domain.IncludesExcludesInterface
 import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import groovy.json.JsonSlurper
@@ -9,6 +10,25 @@ import groovy.json.JsonSlurper
 @ConverterConfig(excludes = ["person", "objJson"])
 @LogicalEqualsAndHashCode(excludes = ["person", "json"])
 class DownstreamObject implements Serializable, Comparable {
+
+    // so that our rendered map includes nulls, which is important for OpenIDM
+    static class IncludeNullsMap<K, V> extends LinkedHashMap<K, V> implements IncludesExcludesInterface {
+        @Override
+        List<String> getExcludes() {
+            return null
+        }
+
+        @Override
+        List<String> getIncludes() {
+            return null
+        }
+
+        @Override
+        Boolean getIncludeNulls() {
+            return true
+        }
+    }
+
 
     String systemPrimaryKey
     String objJson
@@ -37,7 +57,7 @@ class DownstreamObject implements Serializable, Comparable {
     }
 
     Map getJson() {
-        new JsonSlurper().parseText(objJson) as Map
+        new JsonSlurper().parseText(objJson) as IncludeNullsMap
     }
 
     // this is here for the LogicalEqualsAndHashCode, which otherwise
