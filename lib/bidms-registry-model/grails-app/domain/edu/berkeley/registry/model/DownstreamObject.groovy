@@ -34,6 +34,7 @@ class DownstreamObject implements Serializable, Comparable {
     String objJson
     Long hash
     boolean markedForDeletion
+    Integer ownershipLevel
 
     // hash is a transient because it's always updated by DB trigger
     static transients = ['json', 'uid', 'hash']
@@ -54,6 +55,7 @@ class DownstreamObject implements Serializable, Comparable {
         person column: DownstreamObject.getUidColumnName(), sqlType: 'VARCHAR(64)'
         hash column: 'hash', sqlType: 'BIGINT'
         markedForDeletion column: 'markedForDeletion', sqlType: 'BOOLEAN', defaultValue: false
+        ownershipLevel column: 'ownershipLevel', sqlType: 'INTEGER'
     }
 
     Map getJson() {
