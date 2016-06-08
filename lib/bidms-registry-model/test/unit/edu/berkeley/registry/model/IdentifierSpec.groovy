@@ -7,24 +7,17 @@ import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
 class IdentifierSpec extends Specification {
-
-    def setup() {
-    }
-
-    def cleanup() {
-    }
-
     void "confirm Identifier using LogicalEqualsAndHashCode annotation"() {
         given:
-            Identifier obj = new Identifier()
+        Identifier obj = new Identifier()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        obj instanceof LogicalEqualsAndHashCodeInterface
     }
 
     void "confirm Identifier LogicalEqualsAndHashCode excludes"() {
         given:
-            Identifier obj = new Identifier()
+        Identifier obj = new Identifier()
         expect:
-            Identifier.logicalHashCodeExcludes.contains("person")
+        Identifier.logicalHashCodeExcludes.contains("person")
     }
 }
