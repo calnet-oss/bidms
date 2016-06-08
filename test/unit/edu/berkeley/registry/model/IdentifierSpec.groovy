@@ -18,6 +18,14 @@ class IdentifierSpec extends Specification {
         given:
         Identifier obj = new Identifier()
         expect:
-        Identifier.logicalHashCodeExcludes.contains("person")
+        Identifier.logicalHashCodeExcludes == ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"]
+    }
+
+    void "confirm Identifier LogicalEqualsAndHashCode logicalHashCodeProperties"() {
+        given:
+        Identifier obj = new Identifier()
+        println(obj.logicalHashCodeProperties)
+        expect:
+        Identifier.logicalHashCodeProperties == ["identifierType", "sorObject", "identifier", "isActive", "weight"]
     }
 }

@@ -12,7 +12,8 @@ import org.hibernate.FetchMode
 // unchanged primary identifier is at risk of being deleted/readded with a
 // new Identifier.id every time the person is reprovisioned, which is not
 // what we want.
-@LogicalEqualsAndHashCode(excludes = ["person", "isPrimary"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"])
+@edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"])
 class Identifier implements Comparable {
 
     Long id
