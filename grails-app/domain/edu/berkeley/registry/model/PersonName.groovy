@@ -3,7 +3,7 @@ package edu.berkeley.registry.model
 import edu.berkeley.hibernate.usertype.JSONBType
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.hibernate.FetchMode

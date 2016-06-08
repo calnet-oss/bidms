@@ -1,8 +1,8 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])

@@ -2,7 +2,7 @@ package edu.berkeley.registry.model
 
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are

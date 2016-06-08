@@ -1,6 +1,6 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 
 @LogicalEqualsAndHashCode
 class AssignableRole {
