@@ -2,7 +2,7 @@ package edu.berkeley.registry.model
 
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.util.domain.transform.LogicalEqualsAndHashCode
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
@@ -13,7 +13,6 @@ import org.hibernate.FetchMode
 // new Identifier.id every time the person is reprovisioned, which is not
 // what we want.
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"])
-@edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"])
 class Identifier implements Comparable {
 
     Long id
