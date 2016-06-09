@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients"])
-class IdentifierType {
+class IdentifierType implements Comparable {
 
     Integer id
     String idName
@@ -19,5 +19,9 @@ class IdentifierType {
         version false
         id column: 'id', sqlType: 'SMALLINT'
         idName column: 'idName', sqlType: 'VARCHAR(64)'
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }

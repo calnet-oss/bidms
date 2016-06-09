@@ -1,13 +1,13 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.hibernate.usertype.JSONBType
 import edu.berkeley.util.domain.transform.ConverterConfig
 import groovy.json.JsonSlurper
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 
 @ConverterConfig
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "json", "objJson", "queryTime"])
-class SORObject implements Serializable {
+class SORObject implements Serializable, Comparable {
 
     //
     // Know that adding new properties here without excluding them in the
@@ -61,5 +61,9 @@ class SORObject implements Serializable {
     // excludes person
     String getUid() {
         return person?.uid
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }

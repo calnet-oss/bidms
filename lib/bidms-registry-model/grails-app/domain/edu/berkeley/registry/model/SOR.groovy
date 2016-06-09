@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients"])
-class SOR implements Serializable {
+class SOR implements Serializable, Comparable {
     Integer id
     String name
 
@@ -18,5 +18,9 @@ class SOR implements Serializable {
         id column: 'sorId', type: "integer", sqlType: 'SMALLINT', generator: 'sequence', params: [sequence: 'sor_seq']
         version false
         name column: 'sorName', sqlType: 'VARCHAR(64)'
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }

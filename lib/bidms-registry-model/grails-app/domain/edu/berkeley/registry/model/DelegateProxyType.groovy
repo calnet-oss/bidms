@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients"])
-class DelegateProxyType {
+class DelegateProxyType implements Comparable {
 
     Integer id
     String delegateProxyTypeName
@@ -19,5 +19,9 @@ class DelegateProxyType {
         version false
         id column: 'id', sqlType: 'SMALLINT'
         delegateProxyTypeName column: 'delegateProxyTypeName', sqlType: 'VARCHAR(64)'
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }
