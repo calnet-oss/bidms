@@ -6,7 +6,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["person"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
 class Address implements Comparable {
     Long id
     AddressType addressType
@@ -57,6 +57,6 @@ class Address implements Comparable {
     }
 
     int compareTo(obj) {
-        return logicalHashCode() <=> obj.logicalHashCode() ?: hashCode() <=> obj.hashCode()
+        return hashCode() <=> obj.hashCode()
     }
 }

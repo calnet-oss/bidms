@@ -4,7 +4,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 
 @ConverterConfig(excludes = ["parent"])
-@LogicalEqualsAndHashCode(excludes = ["parent"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "parent"])
 class AssignableRoleCategory {
     Integer id
     String categoryName

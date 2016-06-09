@@ -5,11 +5,10 @@ import edu.berkeley.registry.model.types.DownstreamSystemEnum
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonBuilder
-import spock.lang.Specification
 
 @TestFor(DownstreamObject)
 @Mock([DownstreamObject, DownstreamSystem, Person])
-class DownstreamObjectSpec extends Specification {
+class DownstreamObjectSpec extends AbstractDomainObjectSpec {
     DownstreamSystem testDownstreamSystem
     Person testPerson
 
@@ -19,6 +18,23 @@ class DownstreamObjectSpec extends Specification {
 
         testPerson = new Person(uid: "person1")
         testPerson.save(flush: true, failOnError: true)
+    }
+
+    public Class<?> getDomainClass() { return DownstreamObject }
+
+    void "confirm DownstreamObject using LogicalEqualsAndHashCode annotation"() {
+        expect:
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm DownstreamObject LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes(["person", "json"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["systemPrimaryKey", "objJson", "hash", "markedForDeletion", "ownershipLevel"])
     }
 
     def "test that a DownstreamObject can be found when exists"() {

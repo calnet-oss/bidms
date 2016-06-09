@@ -1,14 +1,21 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.registry.model.AssignableRoleCategory
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCodeInterface
-import spock.lang.Specification
+class AssignableRoleCategorySpec extends AbstractDomainObjectSpec {
 
-class AssignableRoleCategorySpec extends Specification {
+    public Class<?> getDomainClass() { return AssignableRoleCategory }
+
     void "confirm AssignableRoleCategory using LogicalEqualsAndHashCode annotation"() {
-        given:
-            AssignableRoleCategory obj = new AssignableRoleCategory()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm AssignableRoleCategory LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes(["parent"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["categoryName", "roleAsgnUniquePerCat"])
     }
 }

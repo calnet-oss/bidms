@@ -15,7 +15,7 @@ import org.hibernate.FetchMode
 // unchanged primary name is at risk of being deleted/readded with a new
 // PersonName.id every time the person is reprovisioned, which is not what
 // we want.
-@LogicalEqualsAndHashCode(excludes = ["person", "isPrimary", "honorificsAsList"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "isPrimary", "honorificsAsList"])
 class PersonName implements Comparable {
 
     Long id
@@ -70,7 +70,7 @@ class PersonName implements Comparable {
     }
 
     int compareTo(obj) {
-        return logicalHashCode() <=> obj.logicalHashCode() ?: hashCode() <=> obj.hashCode()
+        return hashCode() <=> obj.hashCode()
     }
 
     List getHonorificsAsList() {

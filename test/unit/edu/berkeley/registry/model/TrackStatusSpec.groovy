@@ -1,24 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class TrackStatusSpec extends Specification {
+class TrackStatusSpec extends AbstractDomainObjectSpec {
+
+    public Class<?> getDomainClass() { return TrackStatus }
 
     void "confirm TrackStatus using LogicalEqualsAndHashCode annotation"() {
-        given:
-            TrackStatus obj = new TrackStatus()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm TrackStatus LogicalEqualsAndHashCode excludes"() {
-        given:
-            TrackStatus obj = new TrackStatus()
         expect:
-            TrackStatus.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["trackStatusType", "timeCreated", "description"])
     }
 }

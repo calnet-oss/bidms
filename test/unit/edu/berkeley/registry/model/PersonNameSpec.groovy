@@ -1,45 +1,40 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class PersonNameSpec extends Specification {
+class PersonNameSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return PersonName }
 
     void "confirm PersonName using LogicalEqualsAndHashCode annotation"() {
-        given:
-            PersonName obj = new PersonName()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm PersonName LogicalEqualsAndHashCode excludes"() {
-        given:
-            PersonName obj = new PersonName()
         expect:
-            PersonName.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person", "isPrimary", "honorificsAsList"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["nameType", "sorObject", "prefix", "givenName", "middleName", "surName", "suffix", "fullName", "honorifics"])
     }
 
     void "test honorificsAsMap"() {
         given:
-            PersonName obj = new PersonName()
-            obj.setHonorificsAsList([
-                    "JD",
-                    "PhD"
-            ])
+        PersonName obj = new PersonName()
+        obj.setHonorificsAsList([
+                "JD",
+                "PhD"
+        ])
         expect:
-            obj.honorifics == '["JD","PhD"]'
-            obj.honorificsAsList == [
-                    "JD",
-                    "PhD"
-            ]
+        obj.honorifics == '["JD","PhD"]'
+        obj.honorificsAsList == [
+                "JD",
+                "PhD"
+        ]
     }
 }
