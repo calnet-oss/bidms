@@ -9,13 +9,7 @@ import groovy.json.JsonSlurper
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject", "honorifics"])
-// isPrimary is only excluded because of the order-of-operations in
-// registry-provisioning-scripts.  The isPrimary is set later in the
-// process, and if isPrimary is not excluded from logicalEquals(), then an
-// unchanged primary name is at risk of being deleted/readded with a new
-// PersonName.id every time the person is reprovisioned, which is not what
-// we want.
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "isPrimary", "honorificsAsList"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "honorificsAsList"])
 class PersonName implements Comparable {
 
     Long id
@@ -27,7 +21,7 @@ class PersonName implements Comparable {
     String surName
     String suffix
     String fullName
-    String honorifics // This is a JSON rray of strings.  Stored in PostGreSQL as JSONB.
+    String honorifics // This is a JSON array of strings.  Stored in PostGreSQL as JSONB.
     boolean isPrimary
 
     static transients = ['honorificsAsList']

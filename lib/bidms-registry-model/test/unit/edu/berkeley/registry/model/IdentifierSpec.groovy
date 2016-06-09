@@ -15,11 +15,11 @@ class IdentifierSpec extends AbstractDomainObjectSpec {
 
     void "confirm Identifier LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person", "isPrimary"])
+        testExcludes(["person"])
     }
 
     void "confirm Identifier logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["identifierType", "sorObject", "identifier", "isActive", "weight"])
+        testHashCodeProperties(["identifierType", "sorObject", "identifier", "isActive", "isPrimary", "weight"])
     }
 }

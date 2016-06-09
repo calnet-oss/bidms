@@ -15,12 +15,12 @@ class PersonNameSpec extends AbstractDomainObjectSpec {
 
     void "confirm PersonName LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person", "isPrimary", "honorificsAsList"])
+        testExcludes(["person", "honorificsAsList"])
     }
 
     void "confirm Identifier logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["nameType", "sorObject", "prefix", "givenName", "middleName", "surName", "suffix", "fullName", "honorifics"])
+        testHashCodeProperties(["nameType", "sorObject", "prefix", "givenName", "middleName", "surName", "suffix", "fullName", "honorifics", "isPrimary"])
     }
 
     void "test honorificsAsMap"() {

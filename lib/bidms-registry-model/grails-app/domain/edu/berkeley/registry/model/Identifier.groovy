@@ -6,13 +6,7 @@ import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-// isPrimary is only excluded because of the order-of-operations in
-// registry-provisioning-scripts.  The isPrimary is set later in the
-// process, and if isPrimary is not excluded from logicalEquals(), then an
-// unchanged primary identifier is at risk of being deleted/readded with a
-// new Identifier.id every time the person is reprovisioned, which is not
-// what we want.
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "isPrimary"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
 class Identifier implements Comparable {
 
     Long id
