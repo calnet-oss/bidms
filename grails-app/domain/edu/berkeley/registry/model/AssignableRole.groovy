@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients"])
-class AssignableRole {
+class AssignableRole implements Comparable {
     Integer id
     String roleName
 
@@ -21,5 +21,9 @@ class AssignableRole {
         id column: 'id', sqlType: 'INTEGER'
         roleName column: 'roleName', sqlType: 'VARCHAR(255)'
         roleCategory column: 'roleCategoryId', sqlType: 'INTEGER'
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }

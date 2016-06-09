@@ -1,15 +1,15 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
+import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig(excludes = ["parent"])
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "parent"])
-class AssignableRoleCategory {
+class AssignableRoleCategory implements Comparable {
     Integer id
     String categoryName
     boolean roleAsgnUniquePerCat
-    
+
     static belongsTo = [parent: AssignableRoleCategory]
 
     static constraints = {
@@ -24,5 +24,9 @@ class AssignableRoleCategory {
         categoryName column: 'categoryName', sqlType: 'VARCHAR(255)'
         parent column: 'parentCategoryId', sqlType: 'INTEGER'
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
+    }
+
+    int compareTo(obj) {
+        return hashCode() <=> obj.hashCode()
     }
 }
