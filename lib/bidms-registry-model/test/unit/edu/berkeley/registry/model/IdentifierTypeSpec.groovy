@@ -1,23 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class IdentifierTypeSpec extends Specification {
+class IdentifierTypeSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return IdentifierType }
 
     void "confirm IdentifierType using LogicalEqualsAndHashCode annotation"() {
-        given:
-            IdentifierType obj = new IdentifierType()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm IdentifierType LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes([])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["idName"])
     }
 }

@@ -1,16 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class DownstreamSystemSpec extends Specification {
+class DownstreamSystemSpec extends AbstractDomainObjectSpec {
+
+    public Class<?> getDomainClass() { return DownstreamSystem }
+
     void "confirm DownstreamSystem using LogicalEqualsAndHashCode annotation"() {
-        given:
-            DownstreamSystem obj = new DownstreamSystem()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm DownstreamSystem LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes([])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["name"])
     }
 }

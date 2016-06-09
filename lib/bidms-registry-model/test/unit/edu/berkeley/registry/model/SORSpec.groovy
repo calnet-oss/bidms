@@ -1,23 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class SORSpec extends Specification {
+class SORSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return SOR }
 
     void "confirm SOR using LogicalEqualsAndHashCode annotation"() {
-        given:
-            SOR obj = new SOR()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm SOR LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes([])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["name"])
     }
 }

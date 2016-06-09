@@ -1,24 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class TelephoneSpec extends Specification {
+class TelephoneSpec extends AbstractDomainObjectSpec {
+
+    public Class<?> getDomainClass() { return Telephone }
 
     void "confirm Telephone using LogicalEqualsAndHashCode annotation"() {
-        given:
-            Telephone obj = new Telephone()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm Telephone LogicalEqualsAndHashCode excludes"() {
-        given:
-            Telephone obj = new Telephone()
         expect:
-            Telephone.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["telephoneType", "sorObject", "phoneNumber", "extension"])
     }
 }

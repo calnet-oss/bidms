@@ -1,19 +1,34 @@
 package edu.berkeley.registry.model
 
-import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonBuilder
-import spock.lang.Specification
 
 @TestFor(SORObject)
 @Mock([SORObject, SOR])
-class SORObjectSpec extends Specification {
+class SORObjectSpec extends AbstractDomainObjectSpec {
     SOR testSOR
 
     def setup() {
         testSOR = new SOR(name: "SIS")
         testSOR.save(flush: true, failOnError: true)
+    }
+
+    public Class<?> getDomainClass() { return SORObject }
+
+    void "confirm SORObject using LogicalEqualsAndHashCode annotation"() {
+        expect:
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm SORObject LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes(["person", "json", "objJson", "queryTime"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["sorPrimaryKey", "jsonVersion", "hash"])
     }
 
     def "test that a SORObject can be found when exists"() {
@@ -38,20 +53,20 @@ class SORObjectSpec extends Specification {
         obj.id
 
         and:
-        !SORObject.getBySorAndObjectKey('HR','123')
+        !SORObject.getBySorAndObjectKey('HR', '123')
 
         and:
-        !SORObject.getBySorAndObjectKey('SIS','321')
+        !SORObject.getBySorAndObjectKey('SIS', '321')
     }
 
     def "test json"() {
         given:
-            def json = new JsonBuilder([id:3, name:'archer']).toString()
-            def obj = new SORObject(sor: SOR.findById(1), sorPrimaryKey: '123', objJson: json).save(flush: true, validate: false)
+        def json = new JsonBuilder([id: 3, name: 'archer']).toString()
+        def obj = new SORObject(sor: SOR.findById(1), sorPrimaryKey: '123', objJson: json).save(flush: true, validate: false)
 
         expect:
-            obj.json.id == 3
-            obj.json.name == 'archer'
+        obj.json.id == 3
+        obj.json.name == 'archer'
     }
 
 }

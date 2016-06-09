@@ -1,23 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class NameTypeSpec extends Specification {
+class NameTypeSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return NameType }
 
     void "confirm NameType using LogicalEqualsAndHashCode annotation"() {
-        given:
-            NameType obj = new NameType()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
+    }
+
+    void "confirm NameType LogicalEqualsAndHashCode excludes"() {
+        expect:
+        testExcludes([])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["typeName"])
     }
 }

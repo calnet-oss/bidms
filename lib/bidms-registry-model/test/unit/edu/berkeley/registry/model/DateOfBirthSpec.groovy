@@ -1,30 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class DateOfBirthSpec extends Specification {
+class DateOfBirthSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return DateOfBirth }
 
     void "confirm DateOfBirth using LogicalEqualsAndHashCode annotation"() {
-        given:
-            DateOfBirth obj = new DateOfBirth()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm DateOfBirth LogicalEqualsAndHashCode excludes"() {
-        given:
-            DateOfBirth obj = new DateOfBirth()
         expect:
-            DateOfBirth.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["sorObject", "dateOfBirthMMDD", "dateOfBirth"])
     }
 }

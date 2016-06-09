@@ -12,7 +12,7 @@ import org.hibernate.FetchMode
 // unchanged primary identifier is at risk of being deleted/readded with a
 // new Identifier.id every time the person is reprovisioned, which is not
 // what we want.
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "person", "isPrimary"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "isPrimary"])
 class Identifier implements Comparable {
 
     Long id
@@ -59,6 +59,6 @@ class Identifier implements Comparable {
     }
 
     int compareTo(obj) {
-        return logicalHashCode() <=> obj.logicalHashCode() ?: hashCode() <=> obj.hashCode()
+        return hashCode() <=> obj.hashCode()
     }
 }

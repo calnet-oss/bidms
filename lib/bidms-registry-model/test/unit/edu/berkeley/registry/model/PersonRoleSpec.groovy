@@ -1,29 +1,24 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestFor
-import spock.lang.Specification
 
 @TestFor(PersonRole)
-class PersonRoleSpec extends Specification {
+class PersonRoleSpec extends AbstractDomainObjectSpec {
 
-    def setup() {
-    }
-
-    def cleanup() {
-    }
+    public Class<?> getDomainClass() { return PersonRole }
 
     void "confirm PersonRole using LogicalEqualsAndHashCode annotation"() {
-        given:
-            PersonRole obj = new PersonRole()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm PersonRole LogicalEqualsAndHashCode excludes"() {
-        given:
-            PersonRole obj = new PersonRole()
         expect:
-            PersonRole.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person", "roleCategory", "roleAsgnUniquePerCat"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["role", "roleValue"])
     }
 }

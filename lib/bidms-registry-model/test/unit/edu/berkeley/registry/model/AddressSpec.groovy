@@ -1,24 +1,25 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import spock.lang.Specification
 
 @TestMixin(GrailsUnitTestMixin)
-class AddressSpec extends Specification {
+class AddressSpec extends AbstractDomainObjectSpec {
+
+    public Class<?> getDomainClass() { return Address }
 
     void "confirm Address using LogicalEqualsAndHashCode annotation"() {
-        given:
-            Address obj = new Address()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm Address LogicalEqualsAndHashCode excludes"() {
-        given:
-            Address obj = new Address()
         expect:
-            Address.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["addressType", "sorObject", "address1", "address2", "address3", "city", "regionState", "postalCode", "country"])
     }
 }

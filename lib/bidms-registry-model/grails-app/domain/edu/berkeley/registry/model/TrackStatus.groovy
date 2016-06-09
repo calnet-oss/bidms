@@ -1,12 +1,12 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.registry.statustrack.TrackStatusType
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 
 @ConverterConfig(excludes = ["person"])
-@LogicalEqualsAndHashCode(excludes = ["person"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
 class TrackStatus implements Comparable {
     Long id
     TrackStatusType trackStatusType
@@ -41,7 +41,7 @@ class TrackStatus implements Comparable {
     }
 
     int compareTo(obj) {
-        return logicalHashCode() <=> obj.logicalHashCode() ?: hashCode() <=> obj.hashCode()
+        return hashCode() <=> obj.hashCode()
     }
 
 }

@@ -1,20 +1,22 @@
 package edu.berkeley.registry.model
 
-import edu.berkeley.util.domain.LogicalEqualsAndHashCodeInterface
-import spock.lang.Specification
+class DelegateProxySpec extends AbstractDomainObjectSpec {
 
-class DelegateProxySpec extends Specification {
+
+    public Class<?> getDomainClass() { return DelegateProxy }
+
     void "confirm DelegateProxy using LogicalEqualsAndHashCode annotation"() {
-        given:
-            DelegateProxy obj = new DelegateProxy()
         expect:
-            obj instanceof LogicalEqualsAndHashCodeInterface
+        testIsLogicalEqualsAndHashCode()
     }
 
     void "confirm DelegateProxy LogicalEqualsAndHashCode excludes"() {
-        given:
-            DelegateProxy obj = new DelegateProxy()
         expect:
-            DelegateProxy.logicalHashCodeExcludes.contains("person")
+        testExcludes(["person", "proxyForIdentifier", "proxyForPerson", "proxyForPersonUid"])
+    }
+
+    void "confirm Identifier logicalHashCodeProperties"() {
+        expect:
+        testHashCodeProperties(["delegateProxyType", "sourceProxyId", "delegateProxySorObject", "delegateProxySecurityKey", "proxyForId"])
     }
 }
