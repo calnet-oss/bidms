@@ -27,7 +27,7 @@ class RegistryRole implements Comparable, Serializable {
     }
 
     int compareTo(obj) {
-        return authority?.hashCode() <=> obj.authority?.hashCode() ?: hashCode() <=> obj.hashCode()
+        return authority?.hashCode() <=> obj.authority?.hashCode() ?: hashCode() <=> obj?.hashCode()
     }
 
     static constraints = {
