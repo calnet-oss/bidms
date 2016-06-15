@@ -21,6 +21,6 @@ class AddressType implements Comparable {
     }
 
     int compareTo(obj) {
-        return hashCode() <=> obj.hashCode()
+        return hashCode() <=> obj?.hashCode()
     }
 }
