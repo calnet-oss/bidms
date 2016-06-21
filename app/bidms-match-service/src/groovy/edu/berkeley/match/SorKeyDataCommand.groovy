@@ -7,6 +7,8 @@ import groovy.util.logging.Log4j
 @Validateable
 @Log4j
 class SorKeyDataCommand {
+    // these correspond to properties in SorKeyData from the
+    // registry-sor-key-data plugin
     String systemOfRecord
     String sorPrimaryKey
     String uid
@@ -18,6 +20,7 @@ class SorKeyDataCommand {
     String dateOfBirth
     String socialSecurityNumber
     Map otherIds = [:]
+    String matchOnly
 
     SORObject getSorObject() {
         log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")
@@ -28,7 +31,7 @@ class SorKeyDataCommand {
 
     Map getAttributes() {
         def sorAttributes = NewSORConsumerService.MATCH_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] }
-        if(otherIds) {
+        if (otherIds) {
             sorAttributes.otherIds = otherIds
         }
         sorAttributes
@@ -38,7 +41,7 @@ class SorKeyDataCommand {
     static constraints = {
         systemOfRecord nullable: false
         sorPrimaryKey nullable: false, validator: { value, object ->
-            if(!object.sorObject) {
+            if (!object.sorObject) {
                 "does.not.match.sorObject"
             }
         }
@@ -50,6 +53,6 @@ class SorKeyDataCommand {
         email nullable: true
         dateOfBirth nullable: true
         socialSecurityNumber nullable: true
+        matchOnly nullable: true
     }
-
 }

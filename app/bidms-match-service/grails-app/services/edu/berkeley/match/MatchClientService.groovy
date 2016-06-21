@@ -16,7 +16,7 @@ class MatchClientService {
      * @param a map containing the some or all of the following properties (in this format)
      * [
      *      systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', fullName: 'lastName, firstName middleName', givenName: 'firstName', middleName: 'middleName', lastName: 'lastName',
-     *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz']
+     *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz'], matchOnly: false
      * ]
      * @return PersonMatch object
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
@@ -36,7 +36,8 @@ class MatchClientService {
         // ExistingMatchResponse (FOUND) in ucb-match.
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
-                return new PersonNoMatch()
+                // matchOnly=true on input will cause person not to go to newUid queue
+                return new PersonNoMatch(matchOnly: jsonMap.matchOnly as Boolean)
             case HttpStatus.OK:
                 return exactMatch(response.json)
             case HttpStatus.FOUND:
@@ -79,7 +80,7 @@ class MatchClientService {
         def map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
 
         // Copy top level properties
-        ['dateOfBirth', 'email'].each {
+        ['dateOfBirth', 'email', 'matchOnly'].each {
             if (params[it]) {
                 map[it] = params[it]
             }
@@ -110,6 +111,7 @@ class MatchClientService {
                 map.identifiers << [type: "socialSecurityNumber", identifier: params.socialSecurityNumber]
             }
         }
+
         return map
     }
 }

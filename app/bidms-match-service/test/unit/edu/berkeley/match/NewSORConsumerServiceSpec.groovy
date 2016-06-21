@@ -1,10 +1,6 @@
 package edu.berkeley.match
 
-import edu.berkeley.registry.model.Identifier
-import edu.berkeley.registry.model.IdentifierType
-import edu.berkeley.registry.model.Person
-import edu.berkeley.registry.model.SOR
-import edu.berkeley.registry.model.SORObject
+import edu.berkeley.registry.model.*
 import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
@@ -43,7 +39,39 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonNoMatch()
         1 * service.uidClientService.provisionNewUid(sorObject)
-        0 * service.databaseService.assignUidToSOR(_,_)
+        0 * service.databaseService.assignUidToSOR(_, _)
+        0 * service.uidClientService.provisionUid(_)
+        0 * service.uidClientService.provisionNewUid(_)
+    }
+
+    void "when a SOR has no match and the matchOnly flag is set as a String, then no new UID is obtained"() {
+        given:
+        def message = mockMessage()
+        mockMatchOnly(message, true)
+
+        when:
+        service.onMessage(message)
+
+        then:
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123'], matchOnly: 'true']) >> new PersonNoMatch(matchOnly: true)
+        0 * service.uidClientService.provisionNewUid(sorObject)
+        0 * service.databaseService.assignUidToSOR(_, _)
+        0 * service.uidClientService.provisionUid(_)
+        0 * service.uidClientService.provisionNewUid(_)
+    }
+
+    void "when a SOR has no match and the matchOnly flag is set as a Boolean, then no new UID is obtained"() {
+        given:
+        def message = mockMessage()
+        mockMatchOnlyAsBoolean(message, true)
+
+        when:
+        service.onMessage(message)
+
+        then:
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123'], matchOnly: 'true']) >> new PersonNoMatch(matchOnly: true)
+        0 * service.uidClientService.provisionNewUid(sorObject)
+        0 * service.databaseService.assignUidToSOR(_, _)
         0 * service.uidClientService.provisionUid(_)
         0 * service.uidClientService.provisionNewUid(_)
     }
@@ -65,16 +93,16 @@ class NewSORConsumerServiceSpec extends Specification {
 
     void "when a SOR has an existing match, provisioning is notified"() {
         given:
-            def message = mockMessageExisting()
+        def message = mockMessageExisting()
 
         when:
-            service.onMessage(message)
+        service.onMessage(message)
 
         then:
-            1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
-            0 * service.databaseService.assignUidToSOR(sorObject, person1)
-            0 * service.uidClientService.provisionUid(person3)
-            0 * service.uidClientService.provisionNewUid(_)
+        1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
+        0 * service.databaseService.assignUidToSOR(sorObject, person1)
+        0 * service.uidClientService.provisionUid(person3)
+        0 * service.uidClientService.provisionNewUid(_)
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -121,6 +149,16 @@ class NewSORConsumerServiceSpec extends Specification {
         message.getString("systemOfRecord") >> SOREnum.SIS_STUDENT.name()
         message.getString("sorPrimaryKey") >> 'SIS00002'
         return message
+    }
+
+    private void mockMatchOnly(MapMessage message, Boolean matchOnly) {
+        message.itemExists("matchOnly") >> true
+        message.getString("matchOnly") >> matchOnly?.toString()
+    }
+
+    private void mockMatchOnlyAsBoolean(MapMessage message, Boolean matchOnly) {
+        message.itemExists("matchOnly") >> true
+        message.getBoolean("matchOnly") >> matchOnly
     }
 
     private void setupModel() {

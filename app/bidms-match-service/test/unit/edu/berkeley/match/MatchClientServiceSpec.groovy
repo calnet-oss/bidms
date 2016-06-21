@@ -1,4 +1,5 @@
 package edu.berkeley.match
+
 import edu.berkeley.match.testutils.TimeoutResponseCreator
 import edu.berkeley.registry.model.Person
 import grails.plugins.rest.client.RestBuilder
@@ -15,6 +16,7 @@ import spock.lang.Specification
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -46,6 +48,25 @@ class MatchClientServiceSpec extends Specification {
         then:
         mockServer.verify()
         result instanceof PersonNoMatch
+        !((PersonNoMatch) result).matchOnly
+    }
+
+    void "test call to match engine where there is no match and matchOnly flag is set true"() {
+        setup:
+        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        mockServer.expect(requestTo(UCB_MATCH_URL))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","matchOnly":"true","names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
+                .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND))
+
+        when:
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', matchOnly: 'true'])
+
+        then:
+        mockServer.verify()
+        result instanceof PersonNoMatch
+        ((PersonNoMatch) result).matchOnly
     }
 
     void "test call to match engine where there result is an exact match"() {
@@ -66,7 +87,7 @@ class MatchClientServiceSpec extends Specification {
         result.person.uid == '1'
     }
 
-     void "test call to match engine where there result is a partial match"() {
+    void "test call to match engine where there result is a partial match"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
@@ -81,7 +102,7 @@ class MatchClientServiceSpec extends Specification {
         then:
         mockServer.verify()
         result instanceof PersonPartialMatches
-        result.people*.uid == ['1','2']
+        result.people*.uid == ['1', '2']
 
     }
 
@@ -141,7 +162,7 @@ class MatchClientServiceSpec extends Specification {
     static EXISTING_RECORD_RESPONSE = '{"matchingRecord":{"referenceId":"1"}}'
 
     void createPeople() {
-        ['1','2'].each {
+        ['1', '2'].each {
             new Person(uid: it).save(validate: false)
         }
         assert Person.count() == 2

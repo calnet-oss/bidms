@@ -15,7 +15,6 @@ class SorKeyDataCommandSpec extends Specification {
         new SORObject(sor: new SOR(name: 'SIS').save(validate: false), sorPrimaryKey: '12345').save(validate: false, flush: true)
     }
 
-
     @Unroll
     def "test that it's possible to get the SORObject, if sor and primay key are correct"() {
         when:
@@ -33,11 +32,10 @@ class SorKeyDataCommandSpec extends Specification {
         null   | null    | null        | null
     }
 
-
     @Unroll
     def "test that get attributes returns the correct values"() {
         when:
-        def command = new SorKeyDataCommand(systemOfRecord: 'SIS', sorPrimaryKey: '123', givenName: givenName, middleName: middleName, surName: surName, dateOfBirth: dateOfBirth, otherIds: otherIds)
+        def command = new SorKeyDataCommand(systemOfRecord: 'SIS', sorPrimaryKey: '123', givenName: givenName, middleName: middleName, surName: surName, dateOfBirth: dateOfBirth, otherIds: otherIds, matchOnly: matchOnly)
 
         then:
         command.attributes.systemOfRecord == 'SIS'
@@ -45,11 +43,12 @@ class SorKeyDataCommandSpec extends Specification {
         command.attributes.keySet().sort() == expectedOutputAttributes.sort()
 
         where:
-        givenName | middleName | surName | dateOfBirth | otherIds       | expectedOutputAttributes
-        null      | null       | null    | null        | null           | ['systemOfRecord', 'sorPrimaryKey']
-        null      | null       | null    | null        | [:]            | ['systemOfRecord', 'sorPrimaryKey']
-        'b'       | null       | null    | 'e'         | [:]            | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth']
-        'b'       | 'c'        | 'd'     | 'e'         | [:]            | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'dateOfBirth']
-        'b'       | null       | null    | 'e'         | [kryf: 'plyf'] | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth', 'otherIds']
+        givenName | middleName | surName | dateOfBirth | otherIds       | matchOnly | expectedOutputAttributes
+        null      | null       | null    | null        | null           | null      | ['systemOfRecord', 'sorPrimaryKey']
+        null      | null       | null    | null        | [:]            | null      | ['systemOfRecord', 'sorPrimaryKey']
+        'b'       | null       | null    | 'e'         | [:]            | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth']
+        'b'       | 'c'        | 'd'     | 'e'         | [:]            | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'dateOfBirth']
+        'b'       | null       | null    | 'e'         | [kryf: 'plyf'] | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth', 'otherIds']
+        null      | null       | null    | null        | null           | 'true'    | ['systemOfRecord', 'sorPrimaryKey', 'matchOnly']
     }
 }

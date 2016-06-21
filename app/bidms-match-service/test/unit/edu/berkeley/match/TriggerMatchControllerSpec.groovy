@@ -18,19 +18,18 @@ class TriggerMatchControllerSpec extends Specification {
     def setup() {
         controller.newSORConsumerService = Mock(NewSORConsumerService)
         new SORObject(sor: new SOR(name: 'SIS').save(validate: false), sorPrimaryKey: '12345').save(validate: false, flush: true)
-
     }
 
     @Unroll
     void "test that expected path is chosen in controller,depending on input"() {
         given:
-        request.json = [ systemOfRecord: 'SIS', sorPrimaryKey: sorPk, givenName: 'Kryf', surName: 'Plyf']
+        request.json = [systemOfRecord: 'SIS', sorPrimaryKey: sorPk, givenName: 'Kryf', surName: 'Plyf']
 
         when:
         controller.matchPerson()
 
         then:
-        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject,[systemOfRecord: 'SIS', sorPrimaryKey: '12345', givenName: 'Kryf', surName: 'Plyf'])
+        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, [systemOfRecord: 'SIS', sorPrimaryKey: '12345', givenName: 'Kryf', surName: 'Plyf'])
         response.status == expectedStatus
 
         where:

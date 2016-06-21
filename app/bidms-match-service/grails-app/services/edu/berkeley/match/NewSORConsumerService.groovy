@@ -12,7 +12,8 @@ import javax.jms.MapMessage
 @Transactional
 class NewSORConsumerService {
 
-    static MATCH_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
+    // these correspond to properties in SorKeyData from the registry-sor-key-data plugin
+    static MATCH_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber', 'matchOnly']
 
     def matchClientService
     def uidClientService
@@ -33,11 +34,8 @@ class NewSORConsumerService {
      */
     public Object onMessage(javax.jms.Message msg) {
         if (!(msg instanceof MapMessage)) {
-            // TODO: Handle messages of wrong type. Right now expect a MapMessage, if it's not, just return null
-            log.error "Received a message that was not of type MapMessage. It has been discarded: ${msg}"
-            return null
+            throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
         }
-
         MapMessage message = (MapMessage) msg
 
         SORObject sorObject
@@ -76,7 +74,20 @@ class NewSORConsumerService {
             return
         }
         // provision a new person
-        uidClientService.provisionNewUid(sorObject)
+        if (!(match instanceof PersonNoMatch))
+            throw new RuntimeException("Expecting match to be an instanceof PersonNoMatch.  Instead it's: ${match?.getClass()?.name}")
+        PersonNoMatch personNoMatch = (PersonNoMatch) match
+        /**
+         * If matchOnly=true, then matchOnly flag was true on match input,
+         * meaning this person should not go to the newUid queue.  This
+         * happens when we receive data about a person from a SOR where the
+         * "SOR" really isn't the true System of Record for the person.
+         * Example: Employees in Campus Solutions that were imported from
+         * HCM.
+         */
+        if (!personNoMatch.matchOnly) {
+            uidClientService.provisionNewUid(sorObject)
+        }
     }
 
     /**
@@ -106,6 +117,10 @@ class NewSORConsumerService {
         if (message.getObject('otherIds')) {
             Map otherIds = message.getObject('otherIds')
             sorAttributes.otherIds = otherIds
+        }
+        if (message.itemExists("matchOnly") && !sorAttributes.containsKey("matchOnly")) {
+            // accept as a Boolean as well if it wasn't given as a String
+            sorAttributes.matchOnly = message.getBoolean("matchOnly") as String
         }
         sorAttributes
     }
