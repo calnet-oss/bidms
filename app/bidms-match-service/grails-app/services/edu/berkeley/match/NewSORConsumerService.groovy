@@ -89,6 +89,9 @@ class NewSORConsumerService {
         if (!personNoMatch.matchOnly) {
             uidClientService.provisionNewUid(sorObject)
         }
+        else {
+            log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
+        }
     }
 
     /**
