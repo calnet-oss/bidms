@@ -20,7 +20,7 @@ class SorKeyDataCommand {
     String dateOfBirth
     String socialSecurityNumber
     Map otherIds = [:]
-    String matchOnly
+    Boolean matchOnly
 
     SORObject getSorObject() {
         log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")
@@ -29,8 +29,9 @@ class SorKeyDataCommand {
         return sorObject
     }
 
-    Map getAttributes() {
-        def sorAttributes = NewSORConsumerService.MATCH_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] }
+    Map<String, Object> getAttributes() {
+        def sorAttributes = NewSORConsumerService.MATCH_STRING_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] } +
+                NewSORConsumerService.MATCH_BOOLEAN_FIELDS.findAll { this[it] }.collectEntries { [it, this[it] as Boolean] }
         if (otherIds) {
             sorAttributes.otherIds = otherIds
         }

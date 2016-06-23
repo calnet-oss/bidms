@@ -5,6 +5,8 @@ import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
 import javax.jms.MapMessage
@@ -47,13 +49,14 @@ class NewSORConsumerServiceSpec extends Specification {
     void "when a SOR has no match and the matchOnly flag is set as a String, then no new UID is obtained"() {
         given:
         def message = mockMessage()
-        mockMatchOnly(message, true)
+        mockMatchOnlyAsString(message, true)
 
         when:
+        def sorAttributes = [systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123'], matchOnly: 'true']) >> new PersonNoMatch(matchOnly: true)
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]) >> new PersonNoMatch(matchOnly: true)
         0 * service.uidClientService.provisionNewUid(sorObject)
         0 * service.databaseService.assignUidToSOR(_, _)
         0 * service.uidClientService.provisionUid(_)
@@ -69,7 +72,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123'], matchOnly: 'true']) >> new PersonNoMatch(matchOnly: true)
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]) >> new PersonNoMatch(matchOnly: true)
         0 * service.uidClientService.provisionNewUid(sorObject)
         0 * service.databaseService.assignUidToSOR(_, _)
         0 * service.uidClientService.provisionUid(_)
@@ -151,14 +154,14 @@ class NewSORConsumerServiceSpec extends Specification {
         return message
     }
 
-    private void mockMatchOnly(MapMessage message, Boolean matchOnly) {
-        message.itemExists("matchOnly") >> true
-        message.getString("matchOnly") >> matchOnly?.toString()
-    }
-
     private void mockMatchOnlyAsBoolean(MapMessage message, Boolean matchOnly) {
         message.itemExists("matchOnly") >> true
         message.getBoolean("matchOnly") >> matchOnly
+    }
+
+    private void mockMatchOnlyAsString(MapMessage message, Boolean matchOnly) {
+        message.itemExists("matchOnly") >> true
+        message.getString("matchOnly") >> matchOnly?.toString()
     }
 
     private void setupModel() {

@@ -56,12 +56,12 @@ class MatchClientServiceSpec extends Specification {
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","matchOnly":"true","names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
+                .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","matchOnly":true,"names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', matchOnly: 'true'])
+        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', matchOnly: true])
 
         then:
         mockServer.verify()

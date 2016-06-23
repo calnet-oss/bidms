@@ -49,6 +49,7 @@ class SorKeyDataCommandSpec extends Specification {
         'b'       | null       | null    | 'e'         | [:]            | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth']
         'b'       | 'c'        | 'd'     | 'e'         | [:]            | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'dateOfBirth']
         'b'       | null       | null    | 'e'         | [kryf: 'plyf'] | null      | ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'dateOfBirth', 'otherIds']
+        null      | null       | null    | null        | null           | true      | ['systemOfRecord', 'sorPrimaryKey', 'matchOnly']
         null      | null       | null    | null        | null           | 'true'    | ['systemOfRecord', 'sorPrimaryKey', 'matchOnly']
     }
 }

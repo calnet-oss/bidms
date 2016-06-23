@@ -21,7 +21,7 @@ class MatchClientService {
      * @return PersonMatch object
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
      */
-    PersonMatch match(Map<String, String> p) {
+    PersonMatch match(Map<String, Object> p) {
         String matchUrl = grailsApplication.config.rest.matchEngine.url
         def jsonMap = buildJsonMap(p)
         def response = restClient.post(matchUrl) {
@@ -76,7 +76,7 @@ class MatchClientService {
      * @param params
      * @return
      */
-    private static Map buildJsonMap(Map<String, String> params) {
+    private static Map buildJsonMap(Map<String, Object> params) {
         def map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
 
         // Copy top level properties

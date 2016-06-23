@@ -13,7 +13,8 @@ import javax.jms.MapMessage
 class NewSORConsumerService {
 
     // these correspond to properties in SorKeyData from the registry-sor-key-data plugin
-    static MATCH_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber', 'matchOnly']
+    static MATCH_STRING_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
+    static MATCH_BOOLEAN_FIELDS = ['matchOnly']
 
     def matchClientService
     def uidClientService
@@ -47,13 +48,13 @@ class NewSORConsumerService {
             return null
         }
 
-        Map sorAttributes = getAttributesFromMessage(message)
+        Map<String, Object> sorAttributes = getAttributesFromMessage(message)
 
         matchPerson(sorObject, sorAttributes)
         return null
     }
 
-    public void matchPerson(SORObject sorObject, Map sorAttributes) {
+    public void matchPerson(SORObject sorObject, Map<String, Object> sorAttributes) {
         log.debug("Attempting to match $sorAttributes")
         def match = matchClientService.match(sorAttributes)
         log.debug("Response from MatchService: $match")
@@ -112,15 +113,12 @@ class NewSORConsumerService {
      * @param message
      * @return
      */
-    private Map getAttributesFromMessage(MapMessage message) {
-        def sorAttributes = MATCH_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value }
+    private Map<String, Object> getAttributesFromMessage(MapMessage message) {
+        def sorAttributes = MATCH_STRING_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value } +
+                MATCH_BOOLEAN_FIELDS.collectEntries { [it, message.getString(it) as Boolean ?: message.getBoolean(it)] }.findAll { it.value }
         if (message.getObject('otherIds')) {
-            Map otherIds = message.getObject('otherIds')
+            Map otherIds = (Map) message.getObject('otherIds')
             sorAttributes.otherIds = otherIds
-        }
-        if (message.itemExists("matchOnly") && !sorAttributes.containsKey("matchOnly")) {
-            // accept as a Boolean as well if it wasn't given as a String
-            sorAttributes.matchOnly = message.getBoolean("matchOnly") as String
         }
         sorAttributes
     }
