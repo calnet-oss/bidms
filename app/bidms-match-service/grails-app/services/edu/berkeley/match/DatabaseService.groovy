@@ -16,7 +16,7 @@ class DatabaseService {
     void assignUidToSOR(SORObject sorObject, Person person) {
         sorObject.person = person
         // clear sorObject out of PartialMatch table if it's there
-        PartialMatch.findBySorObject(sorObject)?.delete()
+        removeExistingPartialMatches(sorObject)
         sorObject.save(failOnError: true)
     }
 

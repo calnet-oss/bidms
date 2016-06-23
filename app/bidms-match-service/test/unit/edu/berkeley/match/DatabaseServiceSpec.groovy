@@ -34,7 +34,7 @@ class DatabaseServiceSpec extends Specification {
         sorObject.person == person1
     }
 
-    void "when storing partial match not previusly exsting a new PartialMatch is created"() {
+    void "when storing partial match not previously exsting a new PartialMatch is created"() {
         given:
         def sorObject2 = SORObject.build(sor: SOR.build(name: 'HR'), sorPrimaryKey: 'HR123')
         def person3 = Person.build(uid: '3')
@@ -49,7 +49,6 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject2) == 2
         PartialMatch.countBySorObjectAndPerson(sorObject2, person2) == 1
         PartialMatch.countBySorObjectAndPerson(sorObject2, person3) == 1
-
     }
 
     void "when storing partial match on existing PartialMatch, where there was only one match the correct update takes place"() {
@@ -63,6 +62,19 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject) == 2
         PartialMatch.countBySorObjectAndPerson(sorObject, person1) == 1
         PartialMatch.countBySorObjectAndPerson(sorObject, person2) == 1
+    }
+
+    void "when assigning a new uid to a SORObject in the PartialMatch table, confirm the PartialMatch is removed"() {
+        expect:
+        PartialMatch.countBySorObject(sorObject) == 1
+
+        when:
+        service.storePartialMatch(sorObject, [person1, person2])
+        assert PartialMatch.countBySorObject(sorObject) == 2
+        service.assignUidToSOR(sorObject, person1)
+
+        then:
+        PartialMatch.countBySorObject(sorObject) == 0
     }
 
     private createModel() {

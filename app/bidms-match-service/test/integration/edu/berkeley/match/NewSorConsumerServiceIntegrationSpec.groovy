@@ -12,7 +12,6 @@ import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import org.hibernate.tool.hbm2ddl.SchemaExport
 import org.springframework.http.HttpStatus
-import spock.lang.Ignore
 import spock.lang.Shared
 
 @Log4j
@@ -26,6 +25,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     static transactional = false
 
     def newSORConsumerService
+    def databaseService
 
     @Shared
     VertxServer matchEngine = new VertxServer(host: 'localhost', port: 8089)
@@ -117,6 +117,23 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
         and:
         rows.size() == 2
         rows.collect { it.person.id }.sort() == ['002', '003']
+    }
+
+    def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
+        given:
+        databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), [Person.get('002'), Person.get('003')])
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
+        def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
+
+        when:
+        assert PartialMatch.list().size() == 2
+        PartialMatch.list().each { it.save(flush: true, failOnError: true) }
+        newSORConsumerService.onMessage(createJmsMessage(data))
+        def rows = PartialMatch.list()
+
+        then:
+        matchEngine.verify()
+        rows.size() == 0
     }
 }
 
