@@ -5,8 +5,6 @@ import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
 import javax.jms.MapMessage
