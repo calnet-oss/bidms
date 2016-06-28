@@ -37,7 +37,7 @@ abstract class BaseToken {
 
     def beforeValidate() {
         if (!token) {
-            token = RandomStringUtil.randomString(10, RandomStringUtil.CharTemplate.UPPER_ALPHA, RandomStringUtil.CharTemplate.LOWER_ALPHA, RandomStringUtil.CharTemplate.NUMERIC)
+            token = RandomStringUtil.randomString(20, RandomStringUtil.CharTemplate.UPPER_ALPHA, RandomStringUtil.CharTemplate.LOWER_ALPHA, RandomStringUtil.CharTemplate.NUMERIC)
         }
     }
 }
