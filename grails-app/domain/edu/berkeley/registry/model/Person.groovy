@@ -5,6 +5,7 @@ class Person {
     String id // uid
     Date timeCreated
     Date timeUpdated
+    boolean isLocked
 
     // We use sorted sets so the sets are ordered the same way each time a
     // person is queried.  This is particularly relevant for JSON
@@ -44,6 +45,7 @@ class Person {
         id name: 'uid', column: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
+        isLocked column: 'isLocked', sqlType: 'BOOLEAN'
         names cascade: "all-delete-orphan", batchSize: 25
         telephones cascade: "all-delete-orphan", batchSize: 25
         addresses cascade: "all-delete-orphan", batchSize: 25
