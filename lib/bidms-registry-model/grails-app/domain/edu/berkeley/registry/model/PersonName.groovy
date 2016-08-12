@@ -30,13 +30,13 @@ class PersonName implements Comparable {
 
     static constraints = {
         person unique: ['sorObject', 'nameType']
-        prefix nullable: true
-        givenName nullable: true
-        middleName nullable: true
-        surName nullable: true
-        suffix nullable: true
+        prefix nullable: true, size: 1..32
+        givenName nullable: true, size: 1..127
+        middleName nullable: true, size: 1..127
+        surName nullable: true, size: 1..127
+        suffix nullable: true, size: 1..32
         honorifics nullable: true
-        fullName nullable: true
+        fullName nullable: true, size: 1..255
     }
 
     static mapping = {
