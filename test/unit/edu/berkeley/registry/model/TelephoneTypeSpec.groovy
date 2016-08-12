@@ -18,7 +18,7 @@ class TelephoneTypeSpec extends AbstractDomainObjectSpec {
         testExcludes([])
     }
 
-    void "confirm Identifier logicalHashCodeProperties"() {
+    void "confirm TelephoneType logicalHashCodeProperties"() {
         expect:
         testHashCodeProperties(["telephoneTypeName"])
     }
