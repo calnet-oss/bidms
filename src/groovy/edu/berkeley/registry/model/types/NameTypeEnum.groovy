@@ -16,10 +16,10 @@ enum NameTypeEnum implements TypeEnum<NameType>, PrioritizedEnum {
      * The first listed is highest priority.
      */
     static NameTypeEnum[] priorityList = [
+            ldapBerkeleyEduName,
             directoryDisplayName,
             sorPreferredName,
-            sorPrimaryName,
-            ldapBerkeleyEduName
+            sorPrimaryName
     ]
 
     /**
