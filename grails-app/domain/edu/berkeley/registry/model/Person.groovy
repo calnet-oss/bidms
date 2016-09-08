@@ -21,19 +21,21 @@ class Person {
     SortedSet<DelegateProxy> delegations
     SortedSet<DownstreamObject> downstreamObjects
     SortedSet<JobAppointment> jobAppointments
+    SortedSet<IdentifierArchive> archivedIdentifiers
 
     static hasMany = [
-            addresses        : Address,
-            names            : PersonName,
-            datesOfBirth     : DateOfBirth,
-            identifiers      : Identifier,
-            emails           : Email,
-            telephones       : Telephone,
-            assignedRoles    : PersonRole,
-            trackStatuses    : TrackStatus,
-            delegations      : DelegateProxy,
-            downstreamObjects: DownstreamObject,
-            jobAppointments  : JobAppointment
+            addresses          : Address,
+            names              : PersonName,
+            datesOfBirth       : DateOfBirth,
+            identifiers        : Identifier,
+            emails             : Email,
+            telephones         : Telephone,
+            assignedRoles      : PersonRole,
+            trackStatuses      : TrackStatus,
+            delegations        : DelegateProxy,
+            downstreamObjects  : DownstreamObject,
+            jobAppointments    : JobAppointment,
+            archivedIdentifiers: IdentifierArchive
     ]
 
     static constraints = {
@@ -59,6 +61,7 @@ class Person {
         delegations cascade: "all-delete-orphan", batchSize: 25
         downstreamObjects cascade: "all-delete-orphan", batchSize: 25
         jobAppointments cascade: "all-delete-orphan", batchSize: 25
+        archivedIdentifiers cascade: "all-delete-orphan", batchSize: 25
     }
 
     static transients = ['uid']
