@@ -61,7 +61,8 @@ class Person {
         delegations cascade: "all-delete-orphan", batchSize: 25
         downstreamObjects cascade: "all-delete-orphan", batchSize: 25
         jobAppointments cascade: "all-delete-orphan", batchSize: 25
-        archivedIdentifiers cascade: "all-delete-orphan", batchSize: 25
+        // archivedIdentifiers is read-only
+        archivedIdentifiers batchSize: 25
     }
 
     static transients = ['uid']
