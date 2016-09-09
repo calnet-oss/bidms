@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 import org.hibernate.FetchMode
 
-@ConverterConfig(excludes = ["person", "originalSorObjectId"])
+@ConverterConfig(excludes = ["person"])
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
 class IdentifierArchive implements Comparable {
 
