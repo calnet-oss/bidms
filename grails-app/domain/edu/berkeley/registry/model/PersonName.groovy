@@ -36,7 +36,7 @@ class PersonName implements Comparable {
         surName nullable: true, size: 1..127
         suffix nullable: true, size: 1..32
         honorifics nullable: true
-        fullName nullable: true, size: 1..255
+        fullName nullable: true, size: 1..1023
     }
 
     static mapping = {
