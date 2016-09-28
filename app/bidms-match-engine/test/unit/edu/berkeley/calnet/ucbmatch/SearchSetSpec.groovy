@@ -1,5 +1,6 @@
 package edu.berkeley.calnet.ucbmatch
 
+import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -43,7 +44,7 @@ class SearchSetSpec extends Specification {
                 create(name: 'sorid', column: "SORID", attribute: 'identifier')
         ]
         def confidences = [sor: EXACT, sorid: EXACT]
-        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
+        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchConfidence: new MatchConfidence(confidence: confidences, ruleName: 'name'))
 
         when:
         def whereClause = sut.buildWhereClause(matchInput)
@@ -62,7 +63,7 @@ class SearchSetSpec extends Specification {
         ]
         def confidences = [sor: EXACT, sorid: EXACT, missing: EXACT]
 
-        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
+        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchConfidence: new MatchConfidence(confidence: confidences, ruleName: 'name'))
 
         when:
         def whereClause = sut.buildWhereClause(matchInput)
@@ -79,7 +80,7 @@ class SearchSetSpec extends Specification {
                 create(name: 'dob', column: 'DATE_OF_BIRTH', attribute: 'dateOfBirth', alphanumeric: true, caseSensitive: true)
         ]
         def confidences = [firstName: SUBSTRING, lastName: DISTANCE, dob: EXACT]
-        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchTypes: confidences)
+        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchConfidence: new MatchConfidence(confidence: confidences, ruleName: 'name'))
 
         when:
         def whereClause = sut.buildWhereClause(matchInput)

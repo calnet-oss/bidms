@@ -159,7 +159,8 @@ class MatchConfigBuilderSpec extends Specification {
         configClosure.call()
 
         then:
-        sut.config.canonicalConfidences == [expected]
+        sut.config.canonicalConfidences*.confidence == [expected]
+        sut.config.canonicalConfidences*.ruleName == ["Canonical #1"]
 
         where:
         args                             | expected
@@ -202,7 +203,8 @@ class MatchConfigBuilderSpec extends Specification {
 
         then:
         sut.config.canonicalConfidences.size() == 2
-        sut.config.canonicalConfidences == [[attr1: EXACT], [attr2: EXACT, attr3: SUBSTRING]]
+        sut.config.canonicalConfidences*.confidence == [[attr1: EXACT], [attr2: EXACT, attr3: SUBSTRING]]
+        sut.config.canonicalConfidences*.ruleName == ["Canonical #1","Canonical #2"]
     }
 
     @Unroll
@@ -221,7 +223,8 @@ class MatchConfigBuilderSpec extends Specification {
         configClosure.call()
 
         then:
-        sut.config.potentialConfidences == [expected]
+        sut.config.potentialConfidences*.confidence == [expected]
+        sut.config.potentialConfidences*.ruleName == ["Potential #1"]
 
         where:
         args                                | expected

@@ -27,7 +27,7 @@ class MatchService {
     }
 
     Record findExistingRecord(Map matchInput) {
-        return databaseService.findRecord(matchInput.systemOfRecord, matchInput.identifier as String, matchInput)
+        return databaseService.findRecord(matchInput.systemOfRecord, matchInput.identifier as String)
     }
 
 }

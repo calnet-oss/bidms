@@ -27,7 +27,7 @@ class MatchConfigFactoryBeanSpec extends Specification {
                 }
             }
             confidences {
-                canonical sor: EXACT
+                canonical "Custom Name", sor: EXACT
                 canonical sor: EXACT, name: SUBSTRING
                 potential sor: EXACT, name: DISTANCE
             }
@@ -40,7 +40,9 @@ class MatchConfigFactoryBeanSpec extends Specification {
         matchConfig.matchTable == 'myTableName'
         matchConfig.matchReference.responseType == 'enterprise'
         matchConfig.matchAttributeConfigs.name == ['sor','name']
-        matchConfig.canonicalConfidences == [[sor: EXACT],[sor: EXACT,name: SUBSTRING]]
-        matchConfig.potentialConfidences == [[sor:EXACT,name:DISTANCE]]
+        matchConfig.canonicalConfidences*.confidence == [[sor: EXACT],[sor: EXACT,name: SUBSTRING]]
+        matchConfig.canonicalConfidences*.ruleName == ["Custom Name","Canonical #2"]
+        matchConfig.potentialConfidences*.confidence == [[sor:EXACT,name:DISTANCE]]
+        matchConfig.potentialConfidences*.ruleName == ["Potential #1"]
     }
 }

@@ -1,5 +1,6 @@
 package edu.berkeley.calnet.ucbmatch
 
+import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchReference
 import edu.berkeley.calnet.ucbmatch.database.Candidate
@@ -31,12 +32,7 @@ class DatabaseServiceSpec extends Specification {
                         create(name: 'firstName', column: "FIRST_NAME", path: 'names', attribute: 'given', group: 'official'),
                         create(name: 'lastName', column: "SUR_NAME", path: 'names', attribute: 'sur', group: 'official')
                 ],
-                canonicalConfidences: [[firstName: EXACT], [lastName: EXACT]]
-
-//                [
-//                        new MatchAttributeConfig(name: 'sor', column: 'sorname', isPrimaryKeyColumn: 'isPrimaryKeyColumn'),
-//                        new MatchAttributeConfig(name: 'id', column: 'sorobjkey')
-//                ]
+                canonicalConfidences: [[firstName: EXACT], [lastName: EXACT]].collect { new MatchConfidence(confidence: it, ruleName: 'random')}
         )
         sqlMock = Mock(Sql)
     }
@@ -45,7 +41,7 @@ class DatabaseServiceSpec extends Specification {
     @Unroll
     void "test findRecord generates correct SQL and outputs a record"() {
         when:
-        def result = service.findRecord("SIS", sorId, [:])
+        def result = service.findRecord("SIS", sorId)
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
@@ -78,21 +74,4 @@ class DatabaseServiceSpec extends Specification {
         "SIS0030" | []                     | []                     | 0             | []                                                                                                  | []
     }
 
-    @SuppressWarnings("GroovyAssignabilityCheck")
-    @Unroll
-    void "test searchDatabase2 generates correct SQL and outputs a record"() {
-        when:
-        def result = service.searchDatabase2([names: [[given: 'Kryf', sur: 'Plyf', type: 'official']], sor: 'SIS', id: sorId], ConfidenceType.CANONICAL)
-
-        then:
-        1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.rows('SELECT * FROM myMatchTable WHERE reference_id IS NOT NULL AND ((lower(FIRST_NAME)=?) OR (lower(SUR_NAME)=?))', ['kryf', 'plyf']) >> rowReturned
-        1 * service.rowMapperService.mapDataRowsToRecords(_, ConfidenceType.CANONICAL, _) >> mappedReturned
-        result*.referenceId == expectedReferenceIds
-        where:
-        sorId     | rowReturned                                  | callsToMapper | mappedReturned                                                                                     || expectedReferenceIds
-        "SIS0001" | [[reference_id: 'R1']]                       | 1             | [new Record(referenceId: 'R1', exactMatch: true)]                                                  || ['R1']
-        "SIS0002" | [[reference_id: 'R1'], [reference_id: 'R2']] | 0             | [new Record(referenceId: 'R1', exactMatch: true), new Record(referenceId: 'R2', exactMatch: true)] || ['R1', 'R2']
-        "SIS0030" | []                                           | 0             | []                                                                                                  | []
-    }
 }

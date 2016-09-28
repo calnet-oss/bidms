@@ -65,7 +65,7 @@ class MatchConfigBuilder {
         }
 
         void setProperty(String name, value) {
-            if(matchAttribute.hasProperty(name)) {
+            if (matchAttribute.hasProperty(name)) {
                 matchAttribute.setProperty(name, value)
             } else {
                 throw new MissingPropertyException(name, MatchAttributeConfig)
@@ -89,34 +89,34 @@ class MatchConfigBuilder {
     private class MatchConfidencesDelegate {
 
         private List<String> matchAttributeNames
-        List<Map<String, MatchType>> canonicalConfidences = []
-        List<Map<String, MatchType>> potentialConfidences = []
+        List<MatchConfidence> canonicalConfidences = []
+        List<MatchConfidence> potentialConfidences = []
 
         MatchConfidencesDelegate(List<MatchAttributeConfig> matchAttributes) {
             assert matchAttributes
             this.matchAttributeNames = matchAttributes.name
         }
 
-        void canonical(Map<String,MatchType> canonical) {
-             validateKeysAndValues("canonical", canonical, MatchType.CANONICAL_TYPES)
-            canonicalConfidences << canonical
+        void canonical(Map<String, MatchType> canonical, String rule = null) {
+            validateKeysAndValues("canonical", canonical, MatchType.CANONICAL_TYPES)
+            rule = rule ?: "Canonical #${canonicalConfidences.size()+1}"
+            canonicalConfidences << new MatchConfidence(ruleName: rule, confidence: canonical)
         }
 
 
-        void potential(Map<String, MatchType> potential) {
+        void potential(Map<String, MatchType> potential, String rule = null) {
             validateKeysAndValues("potential", potential, MatchType.POTENTIAL_TYPES)
+            rule = rule ?: "Potential #${potentialConfidences.size() + 1}"
 
-            potentialConfidences << potential
+            potentialConfidences << new MatchConfidence(ruleName: rule, confidence: potential)
         }
 
-        private void validateKeysAndValues(String type, Map<String,MatchType> set, List validTypes) {
-            def wrongKeys = set.findAll { !(it.key in matchAttributeNames )}
-            if(wrongKeys) {
-                throw new RuntimeException("Keys in: $type ${set.collect { "$it.key: $it.value"}.join(', ')} is mismatching on the following keys: ${wrongKeys*.key}")
+        private void validateKeysAndValues(String type, Map<String, MatchType> set, List validTypes) {
+            def wrongKeys = set.findAll { !(it.key in matchAttributeNames) }
+            if (wrongKeys) {
+                throw new RuntimeException("Keys in: $type ${set.collect { "$it.key: $it.value" }.join(', ')} is mismatching on the following keys: ${wrongKeys*.key}")
             }
-            assert set.values().every { it in validTypes}
-
-
+            assert set.values().every { it in validTypes }
         }
     }
 }

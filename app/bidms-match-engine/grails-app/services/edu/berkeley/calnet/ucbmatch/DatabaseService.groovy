@@ -1,63 +1,61 @@
 package edu.berkeley.calnet.ucbmatch
+
+import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Record
 import grails.transaction.Transactional
-import groovy.sql.GroovyRowResult
 import groovy.transform.ToString
 
-@Transactional
+@Transactional(readOnly = true)
 class DatabaseService {
 
     MatchConfig matchConfig
     def sqlService
     def rowMapperService
 
+    /**
+     * Search the view for (fuzzy) matches based on the matchInput, the confidenceType and the matchConfig
+     * @param matchInput
+     * @param confidenceType
+     * @return a list of Record objects, if any rows matches
+     */
     Set<Record> searchDatabase(Map matchInput, ConfidenceType confidenceType) {
         def searchSets = getSearchSets(confidenceType)
-        Set sqlStatements = searchSets.inject([] as Set) { statements, searchSet ->
-            def whereClause = searchSet.buildWhereClause(matchInput)
-            if (whereClause) {
-                statements << new QueryStatement(sql: """
-                SELECT *
-                    FROM   """ + matchConfig.matchTable + """
-                    WHERE  """ + matchConfig.matchReference.column + """ IS NOT NULL
-                    AND    ${whereClause.sql}
-             """.toString(), values: whereClause.values)
-            }
-            return statements
-        } as Set
-        def rows = performSearch(sqlStatements)
-        return rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
-    }
 
-    Set<Record> searchDatabase2(Map matchInput, ConfidenceType confidenceType) {
-        List<SearchSet> searchSets = getSearchSets(confidenceType)
-
-        List<SearchSet.WhereAndValues> whereClauses = searchSets.collect{ searchSet ->
+        // Find where clauses that has content
+        List<WhereAndValues> whereClauses = searchSets.collect { searchSet ->
             searchSet.buildWhereClause(matchInput)
         }.findAll {
             it
         }
 
-        String sqlWhereClauses = whereClauses.collect { "($it.sql)" }.join('\n    OR      ')
-        List allValues = whereClauses.collect { it.values }.flatten()
-
-        if(sqlWhereClauses) {
-            def statement = new QueryStatement(sql: """
-                SELECT *
-                    FROM   ${matchConfig.matchTable}
-                    WHERE  ${matchConfig.matchReference.column} IS NOT NULL
-                    AND    (${sqlWhereClauses})
-             """.stripIndent(), values: allValues)
-            def rows = performSearch(statement)
-
-            return rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
+        if (!whereClauses) {
+            return []
         }
-        return []
 
+        Set<QueryStatement> sqlStatements = whereClauses.collect { whereClause ->
+            new QueryStatement(
+                    ruleName: whereClause.ruleName,
+                    sql: """
+                            SELECT *
+                                FROM   ${matchConfig.matchTable}
+                                WHERE  ${matchConfig.matchReference.column} IS NOT NULL
+                                AND    ${whereClause.sql}
+                         """.stripIndent(),
+                    values: whereClause.values)
+        } as Set
+
+        def rows = performSearch(sqlStatements)
+        return rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
     }
 
-    Record findRecord(String systemOfRecord, String identifier, Map matchInput) {
+    /**
+     * Search to see if the identifier for the system of record is found. This would be an identical match.
+     * @param systemOfRecord
+     * @param identifier
+     * @return a Record if found, null if not
+     */
+    Record findRecord(String systemOfRecord, String identifier) {
         def sql = sqlService.sqlInstance
 
         def systemOfRecordAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.systemOfRecordAttribute }
@@ -67,36 +65,44 @@ class DatabaseService {
         def row = sql.firstRow(query, [systemOfRecord, identifier, true])
 
         return row ? new Record(referenceId: getReferenceIdFromRow(row), exactMatch: true) : null
-//        return row ? rowMapperService.mapDataRowToCandidate(row, ConfidenceType.CANONICAL, matchInput) : null
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
         switch (confidenceType) {
             case ConfidenceType.CANONICAL:
-                return matchConfig.canonicalConfidences.collect { matchTypes ->
-                    new SearchSet(matchTypes: matchTypes, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
+                return matchConfig.canonicalConfidences.collect { MatchConfidence matchConfidence ->
+                    new SearchSet(matchConfidence: matchConfidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
                 }
             case ConfidenceType.POTENTIAL:
                 return matchConfig.potentialConfidences.collect { confidence ->
-                    new SearchSet(matchTypes: confidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
+                    new SearchSet(matchConfidence: confidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
                 }
         }
     }
 
-    private Set<Map> performSearch(Set<QueryStatement> queryStatements) {
-        def rows = queryStatements.collect { queryStatement ->
+    private List<SearchResult> performSearch(Set<QueryStatement> queryStatements) {
+        List<SearchResult> results = queryStatements.collect { queryStatement ->
             return performSearch(queryStatement)
-        }.flatten()
-        return rows as Set
+        }
+        // If more than one searchResult stems from the same ruleName, collect the rows into one entry
+        Map<String, List<SearchResult>> resultsGroupedByName = results.groupBy { it.ruleName }
+        List<SearchResult> rows = resultsGroupedByName.collect { name, searchResults ->
+            new SearchResult(name, searchResults.collect { it.rows }.flatten() as Set<Map>)
+        }
+
+        return rows
     }
 
-    private Set<GroovyRowResult> performSearch(QueryStatement queryStatement) {
+    private SearchResult performSearch(QueryStatement queryStatement) {
         def sql = sqlService.sqlInstance
         log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
         def start = System.currentTimeMillis()
-        def result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
-        log.debug("--- returned: ${result} in ${System.currentTimeMillis() - start} ms")
-        return result as Set
+        List<Map> result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
+        if (log.isDebugEnabled()) {
+            List<Map> forLogging = result.collect { it.subMap([matchConfig.matchReference.column]) }
+            log.debug("--- returned: ${forLogging} in ${System.currentTimeMillis() - start} ms")
+        }
+        return new SearchResult(queryStatement.ruleName, result as Set)
     }
 
     private String getReferenceIdFromRow(Map<String, String> databaseRow) {
@@ -106,10 +112,12 @@ class DatabaseService {
 
     @ToString(includeNames = true)
     private static class QueryStatement {
+        String ruleName
         String sql
         List values
+
         String getNormalizedSql() {
-            sql?.replaceAll(/\s+/,' ')?.trim()
+            sql?.replaceAll(/\s+/, ' ')?.trim()
         }
     }
 }

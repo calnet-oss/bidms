@@ -15,19 +15,36 @@ class RowMapperService {
 
     /**
      * Map row data to candidates. If a candidate already exists in the set of candidates, it is updated.
-     * @param rows database rows
+     * @param searchResults database rows
      * @param confidenceType canonical or potential
      * @param matchInput the match request
      * @return set of candidates that match
      */
-    Set<Record> mapDataRowsToRecords(Set rows, ConfidenceType confidenceType, Map matchInput) {
-        def uniqueUids = rows.collect { it[matchConfig.matchReference.column] } as Set
+    Set<Record> mapDataRowsToRecords(List<SearchResult> searchResults, ConfidenceType confidenceType, Map matchInput) {
 
-//         Group the returned rows by referenceId. The value is a list of db rows returned
+        // Group all searchResults by the ruleName
+        Map<String, List<SearchResult>> searchResultsByRuleName = searchResults.groupBy {it.ruleName }
+
+        // Create a list of each referenceId and what ruleName that caused the match
+        List<Map<String, String>> referenceIdByRuleName = searchResultsByRuleName.collectMany { ruleName, searchResults1 ->
+            searchResults1*.rows.flatten().collect {
+                [ruleName: ruleName, referenceId: it[matchConfig.matchReference.column]]
+            }
+        }
+        // Group the list by referenceId
+        Map<String, List<Map<String, String>>> referenceIdByRuleNameGrouped = referenceIdByRuleName.groupBy {
+            it.referenceId
+        }
+        // For each group of referenceIds create a list of referenceIds and the rules that caused the match
+        List<Map<String, List<String>>> ruleNamesByReferenceId = referenceIdByRuleNameGrouped.collect { String referenceId, def referenceByIdByRuleName ->
+            [referenceId: referenceId, ruleNames: referenceByIdByRuleName*.ruleName.unique()]
+        }
+
+        // Collect a list of Record objects that holds the referenceId, the rules that caused the match, and what match type
+        return ruleNamesByReferenceId.collect { new Record(ruleNames: it.ruleNames, referenceId: it.referenceId, exactMatch: confidenceType.exactMatch) }
+
+//        Group the returned rows by referenceId. The value is a list of db rows returned
 //        def Map<String, List<Map>> groupedByReferenceId = rows.groupBy { it[matchConfig.matchReference.column] }
-
-        return uniqueUids.collect { new Record(referenceId: it, exactMatch: confidenceType.exactMatch)}
-
 //        def configByPath = matchConfig.matchAttributeConfigs.groupBy {
 //            // Use output path, path or Root
 //            it.outputPath?.capitalize() ?: it.path?.capitalize() ?: 'Root'
@@ -88,7 +105,7 @@ class RowMapperService {
             return value != rowDataValue
         }
 
-        if(hasInvalidatingAttribute) {
+        if (hasInvalidatingAttribute) {
             candidate.exactMatch = ConfidenceType.POTENTIAL.exactMatch
         }
     }
@@ -97,7 +114,7 @@ class RowMapperService {
         try {
             def candidates = mapDataRowsToRecords([row] as Set, confidenceType, matchInput)
             return candidates?.size() == 1 ? candidates[0] : null
-        } catch(ex) {
+        } catch (ex) {
             log.error "Error mapping row to candidate", ex
             throw ex
         }
@@ -117,12 +134,14 @@ class RowMapperService {
         }
     }
 
-    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"]) // Cannot be static because it is called dynamic
+    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"])
+    // Cannot be static because it is called dynamic
     private void mapRowToCandidateIdentifiers(Candidate candidate, Map dataRow, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.identifiers, dataRow, attributeConfigs, Identifier)
     }
 
-    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"]) // Cannot be static because it is called dynamic
+    @SuppressWarnings(["GroovyUnusedDeclaration", "GrMethodMayBeStatic"])
+    // Cannot be static because it is called dynamic
     private void mapRowToCandidateNames(Candidate candidate, Map row, List<MatchAttributeConfig> attributeConfigs) {
         mapRowToGroupedAttribute(candidate.names, row, attributeConfigs, Name)
     }

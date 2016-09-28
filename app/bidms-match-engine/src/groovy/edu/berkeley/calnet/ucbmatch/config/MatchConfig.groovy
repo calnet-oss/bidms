@@ -17,6 +17,6 @@ class MatchConfig {
     String matchTable
     MatchReference matchReference
     List<MatchAttributeConfig> matchAttributeConfigs = []
-    List<Map<String, MatchType>> canonicalConfidences = []
-    List<Map<String, MatchType>> potentialConfidences = []
+    List<MatchConfidence> canonicalConfidences = []
+    List<MatchConfidence> potentialConfidences = []
 }
