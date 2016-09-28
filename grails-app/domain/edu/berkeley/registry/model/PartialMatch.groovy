@@ -7,9 +7,21 @@ class PartialMatch {
     Person person
     Date dateCreated = new Date()
     Boolean isReject = false
+    String matchRuleString
+
+    void setMatchRules(List<String> matchRules) {
+        matchRuleString = matchRules?.join('|') ?: ''
+    }
+
+    List<String> getMatchRules() {
+        matchRuleString ? matchRuleString.tokenize('|').toList() : []
+    }
+
+    static transients = ['matchRules']
 
     static constraints = {
         sorObject nullable: false, unique: 'person'
+        matchRuleString nullable: true, maxSize: 255
     }
 
     static mapping = {
@@ -19,7 +31,8 @@ class PartialMatch {
         sorObject column: PartialMatch.getSorObjectIdColumnName()
         person column: "personUid"
         dateCreated column: 'dateCreated'
-        isReject column : 'isReject'
+        isReject column: 'isReject'
+        matchRuleString column: 'matchRules'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
