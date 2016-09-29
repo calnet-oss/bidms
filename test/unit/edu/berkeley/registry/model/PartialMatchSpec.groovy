@@ -1,42 +1,62 @@
 package edu.berkeley.registry.model
 
+import grails.test.mixin.Mock
 import spock.lang.Specification
 import spock.lang.Unroll
 
+@Mock([PartialMatch, Person, SORObject])
 class PartialMatchSpec extends Specification {
 
-    @Unroll
-    def "test serialization of matchRules"() {
-        given:
-        def sut = new PartialMatch()
+    def person
+    def sorObject
 
-        when:
-        sut.setMatchRules(rules)
+    def setup() {
+        person = new Person(uid: '1').save(flush: true, validate: false)
+        sorObject = new SORObject().save(flush: true, validate: false)
 
-        then:
-        sut.matchRuleString == expectedString
-
-        where:
-        rules        | expectedString
-        null         | ''
-        []           | ''
-        ['AA']       | 'AA'
-        ['AA', 'BB'] | 'AA|BB'
     }
 
     @Unroll
-    def "test deserialization of matchRules"() {
+    def "test metaData serialization"() {
         given:
-        def sut = new PartialMatch(matchRuleString: matchRuleString)
+        def sut = new PartialMatch(sorObject: sorObject, person: person, dateCreated: new Date())
 
-        expect:
-        sut.getMatchRules() == expectedRules
+        when: "Set new metaData"
+        sut.metaData = metaData
+
+        and: "trigger beforeValidate"
+        sut.beforeValidate()
+
+        then:
+        sut.metaDataJson == expectedString
 
         where:
-        matchRuleString | expectedRules
-        null            | []
-        ''              | []
-        'AA'            | ['AA']
-        'AA|BB'         | ['AA', 'BB']
+        metaData          | expectedString
+        null              | '{}'
+        [:]               | '{}'
+        [x: 'AA']         | '{"x":"AA"}'
+        [x: ['AA', 'BB']] | '{"x":["AA","BB"]}'
+        [x: [1, 2, 3]]    | '{"x":[1,2,3]}'
+    }
+
+    @Unroll
+    def "test metaData deserialization"() {
+        when:
+        def sut = new PartialMatch(sorObject: sorObject, person: person, dateCreated: new Date(), metaDataJson: metaDataJson)
+
+        and: "trigger onLoad event"
+        sut.onLoad()
+
+        then:
+        sut.metaData == expectedMetaData
+
+        where:
+        metaDataJson        | expectedMetaData
+        null                | [:]
+        ''                  | [:]
+        '{}'                | [:]
+        '{"x":"AA"}'        | [x: 'AA']
+        '{"x":["AA","BB"]}' | [x: ['AA', 'BB']]
+        '{"x":[1,2,3]}'     | [x: [1, 2, 3]]
     }
 }

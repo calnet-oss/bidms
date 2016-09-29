@@ -1,27 +1,24 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.hibernate.usertype.JSONBType
 import edu.berkeley.util.domain.DomainUtil
+import grails.converters.JSON
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 class PartialMatch {
     SORObject sorObject
     Person person
     Date dateCreated = new Date()
     Boolean isReject = false
-    String matchRuleString
+    String metaDataJson = '{}'
+    Map metaData = [:]
 
-    void setMatchRules(List<String> matchRules) {
-        matchRuleString = matchRules?.join('|') ?: ''
-    }
-
-    List<String> getMatchRules() {
-        matchRuleString ? matchRuleString.tokenize('|').toList() : []
-    }
-
-    static transients = ['matchRules']
+    static transients = ['metaData']
 
     static constraints = {
         sorObject nullable: false, unique: 'person'
-        matchRuleString nullable: true, maxSize: 255
+        metaDataJson nullable: true
     }
 
     static mapping = {
@@ -32,7 +29,7 @@ class PartialMatch {
         person column: "personUid"
         dateCreated column: 'dateCreated'
         isReject column: 'isReject'
-        matchRuleString column: 'matchRules'
+        metaDataJson column: 'metaDataJson', type: JSONBType, sqlType: 'jsonb'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
@@ -40,5 +37,13 @@ class PartialMatch {
     // comments in DomainUtil.
     static String getSorObjectIdColumnName() {
         return DomainUtil.testSafeColumnName("PartialMatch", "sorObjectId")
+    }
+
+    def onLoad() {
+        metaData = new JsonSlurper().parseText(metaDataJson ?: '{}') as Map
+    }
+
+    def beforeValidate() {
+        metaDataJson = JsonOutput.toJson(metaData ?: [:])
     }
 }
