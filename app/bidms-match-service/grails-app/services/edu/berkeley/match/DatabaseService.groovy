@@ -25,7 +25,7 @@ class DatabaseService {
      * @param sorObject
      * @param matchingPeople
      */
-    void storePartialMatch(SORObject sorObject, List<Person> matchingPeople) {
+    void storePartialMatch(SORObject sorObject, List<PersonPartialMatch> matchingPeople) {
         // transaction ensures that the deletes are flushed before we try to reinsert
         PartialMatch.withTransaction {
             removeExistingPartialMatches(sorObject)
@@ -35,12 +35,14 @@ class DatabaseService {
         }
     }
 
-    private void createPartialMatch(SORObject sorObject, Person person) {
-        def partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: person)
+    private void createPartialMatch(SORObject sorObject, PersonPartialMatch personPartialMatch) {
+        def partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: personPartialMatch.person)
+
         try {
+            partialMatch.metaData.ruleNames = personPartialMatch.ruleNames
             partialMatch.save(failOnError: true)
         } catch (e) {
-            log.error("Failed to save PartialMatch for SORObject: ${sorObject}, Person: ${person}", e)
+            log.error("Failed to save PartialMatch for SORObject: ${sorObject}, Person: ${personPartialMatch}", e)
         }
     }
 

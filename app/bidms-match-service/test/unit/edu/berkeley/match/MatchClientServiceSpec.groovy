@@ -79,12 +79,12 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withSuccess(EXACT_MATCH_RESPONSE, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        PersonExactMatch result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
-        result instanceof PersonExactMatch
         result.person.uid == '1'
+        result.ruleNames == ['Canonical #1']
     }
 
     void "test call to match engine where there result is a partial match"() {
@@ -97,12 +97,12 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((new DefaultResponseCreator(HttpStatus.MULTIPLE_CHOICES)).body(PARTIAL_MATCH_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        PersonPartialMatches result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
-        result instanceof PersonPartialMatches
-        result.people*.uid == ['1', '2']
+        result.partialMatches.person.uid == ['1', '2']
+        result.partialMatches.ruleNames == [['Potential #1'], ['Potential #2']]
 
     }
 
@@ -157,9 +157,9 @@ class MatchClientServiceSpec extends Specification {
     }
 
 
-    static EXACT_MATCH_RESPONSE = '{"matchingRecord":{"referenceId":"1"}}'
-    static PARTIAL_MATCH_RESPONSE = '{"partialMatchingRecords":[{"referenceId":"1"},{"referenceId":"2"}]}'
-    static EXISTING_RECORD_RESPONSE = '{"matchingRecord":{"referenceId":"1"}}'
+    static EXACT_MATCH_RESPONSE = '{"matchingRecord":{"exactMatch":true,"referenceId":"1","ruleNames":["Canonical #1"]}}'
+    static PARTIAL_MATCH_RESPONSE = ' {"partialMatchingRecords":[{"exactMatch":false,"referenceId":"1","ruleNames":["Potential #1"]},{"exactMatch":false,"referenceId":"2","ruleNames":["Potential #2"]}]}}'
+    static EXISTING_RECORD_RESPONSE = '{"matchingRecord":{"exactMatch":true,"referenceId":"1","ruleNames":[]}}'
 
     void createPeople() {
         ['1', '2'].each {

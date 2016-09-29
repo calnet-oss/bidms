@@ -5,6 +5,7 @@ import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.jms.MapMessage
@@ -21,7 +22,7 @@ class NewSORConsumerServiceSpec extends Specification {
     Person person1
     Person person2
     Person person3
-
+    List<PersonPartialMatch> personPartialMatches
     def setup() {
         setupModel()
         service.matchClientService = Mock(MatchClientService)
@@ -114,11 +115,12 @@ class NewSORConsumerServiceSpec extends Specification {
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(people: [person1, person2])
-        1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(personPartialMatches)
+        1 * service.databaseService.storePartialMatch(sorObject, personPartialMatches)
         0 * service.uidClientService.provisionNewUid(_)
         0 * service.databaseService.assignUidToSOR(*_)
         0 * service.uidClientService.provisionUid(person1)
+
     }
 
     void "check that service can be called directly to match record"() {
@@ -126,8 +128,8 @@ class NewSORConsumerServiceSpec extends Specification {
         service.matchPerson(sorObject, [systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']])
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(people: [person1, person2])
-        1 * service.databaseService.storePartialMatch(sorObject, [person1, person2])
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(personPartialMatches)
+        1 * service.databaseService.storePartialMatch(sorObject, personPartialMatches)
         0 * service.uidClientService.provisionNewUid(_)
         0 * service.databaseService.assignUidToSOR(*_)
         0 * service.uidClientService.provisionUid(person1)
@@ -181,5 +183,10 @@ class NewSORConsumerServiceSpec extends Specification {
 
         def sisStudentSor = new SOR(name: SOREnum.SIS_STUDENT.name()).save(failOnError: true)
         new SORObject(sor: sisStudentSor, sorPrimaryKey: 'SIS00002', uid: person3.uid).save(validate: false)
+        personPartialMatches = [createPersonPartialMatch("Potential #1", person1), createPersonPartialMatch("Potential #2", person2)]
+    }
+
+    private static createPersonPartialMatch(String name, Person person) {
+        return new PersonPartialMatch(person, [name])
     }
 }

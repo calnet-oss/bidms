@@ -1,7 +1,9 @@
 package edu.berkeley.match
 
 import edu.berkeley.registry.model.Person
+import grails.plugins.rest.client.RestResponse
 import grails.transaction.Transactional
+import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.http.HttpStatus
 
 @Transactional(readOnly = true)
@@ -19,56 +21,61 @@ class MatchClientService {
      *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz'], matchOnly: false
      * ]
      * @return PersonMatch object
-     * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK or MULTIPLE_CHOICES
+     * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK, FOUND or MULTIPLE_CHOICES
      */
-    PersonMatch match(Map<String, Object> p) {
+    PersonMatch match(Map<String, Object> sorKeyData) {
         String matchUrl = grailsApplication.config.rest.matchEngine.url
-        def jsonMap = buildJsonMap(p)
-        def response = restClient.post(matchUrl) {
+        Map matchInputData = buildMatchInputData(sorKeyData)
+        RestResponse response = restClient.post(matchUrl) {
             accept 'application/json'
             contentType "application/json"
-            json jsonMap
+            json matchInputData
         }
         // The difference between OK and FOUND (I think) is that OK
         // indicates the SORObject matches up to an existing uid, where
         // as FOUND indicates the SORObject is already matched.  See
         // difference between the ExactMatchResponse (OK) and
         // ExistingMatchResponse (FOUND) in ucb-match.
+        Map jsonResponse = response.json as Map
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
                 // matchOnly=true on input will cause person not to go to newUid queue
-                return new PersonNoMatch(matchOnly: jsonMap.matchOnly as Boolean)
+                return new PersonNoMatch(matchOnly: matchInputData.matchOnly as Boolean)
             case HttpStatus.OK:
-                return exactMatch(response.json)
+                return exactMatch(jsonResponse)
             case HttpStatus.FOUND:
-                return existingMatch(response.json)
+                return existingMatch(jsonResponse)
             case HttpStatus.MULTIPLE_CHOICES:
-                return partialMatch(response.json)
+                return partialMatch(jsonResponse)
             default:
                 log.error("Got wrong return code from match engine..")
-                // TODO: Determin what to do in this situation
+                // TODO: Determine what to do in this situation
                 throw new RuntimeException("Got wrong return code from match engine: $response.statusCode.reasonPhrase ($response.statusCode) - ${response.text}")
         }
 
     }
 
-    private static PersonExactMatch exactMatch(def json) {
+    private static PersonExactMatch exactMatch(Map json) {
         // Person object is not to be changed
-        def person = Person.findByUid(json.matchingRecord.referenceId as String)
-        new PersonExactMatch(person: person)
+        Person person = Person.findByUid(json.matchingRecord.referenceId as String)
+        List<String> ruleNames = json.matchingRecord.ruleNames
+
+        new PersonExactMatch(person, ruleNames)
     }
 
-    private static PersonExistingMatch existingMatch(def json) {
+    private static PersonExistingMatch existingMatch(Map json) {
         def person = Person.findByUid(json.matchingRecord.referenceId as String)
-        new PersonExistingMatch(person: person)
+        new PersonExistingMatch(person)
     }
 
-    private static PersonPartialMatches partialMatch(def json) {
-        def people = json.partialMatchingRecords*.referenceId.collect {
+    private static PersonPartialMatches partialMatch(Map json) {
+        def partialMatches = json.partialMatchingRecords.collect {
             // Person object is not to be changed
-            Person.findByUid(it as String)
+            Person person = Person.findByUid(it.referenceId as String)
+            List<String> ruleNames = it.ruleNames
+            new PersonPartialMatch(person, ruleNames)
         }
-        new PersonPartialMatches(people: people)
+        new PersonPartialMatches(partialMatches)
     }
 
     /**
@@ -76,7 +83,7 @@ class MatchClientService {
      * @param params
      * @return
      */
-    private static Map buildJsonMap(Map<String, Object> params) {
+    private static Map buildMatchInputData(Map<String, Object> params) {
         def map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
 
         // Copy top level properties

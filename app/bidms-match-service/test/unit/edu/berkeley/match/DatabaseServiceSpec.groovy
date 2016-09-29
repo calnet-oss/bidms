@@ -43,12 +43,18 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject2) == 0
 
         when:
-        service.storePartialMatch(sorObject2, [person2, person3])
+        service.storePartialMatch(sorObject2, [createPersonPartialMatch("Potential #2",person2), createPersonPartialMatch("Potential #3",person3)])
 
         then:
         PartialMatch.countBySorObject(sorObject2) == 2
         PartialMatch.countBySorObjectAndPerson(sorObject2, person2) == 1
         PartialMatch.countBySorObjectAndPerson(sorObject2, person3) == 1
+        with(PartialMatch.findBySorObjectAndPerson(sorObject2, person2)) {
+            metaData.ruleNames == ['Potential #2']
+        }
+        with(PartialMatch.findBySorObjectAndPerson(sorObject2, person3)) {
+            metaData.ruleNames == ['Potential #3']
+        }
     }
 
     void "when storing partial match on existing PartialMatch, where there was only one match the correct update takes place"() {
@@ -56,24 +62,34 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject) == 1
 
         when:
-        service.storePartialMatch(sorObject, [person1, person2])
+        service.storePartialMatch(sorObject, [createPersonPartialMatch("Potential #1",person1), createPersonPartialMatch("Potential #2",person2)])
 
         then:
         PartialMatch.countBySorObject(sorObject) == 2
         PartialMatch.countBySorObjectAndPerson(sorObject, person1) == 1
         PartialMatch.countBySorObjectAndPerson(sorObject, person2) == 1
+        with(PartialMatch.findBySorObjectAndPerson(sorObject, person1)) {
+            metaData.ruleNames == ['Potential #1']
+        }
+        with(PartialMatch.findBySorObjectAndPerson(sorObject, person2)) {
+            metaData.ruleNames == ['Potential #2']
+        }
     }
 
     void "when assigning a new uid to a SORObject in the PartialMatch table, confirm the PartialMatch is removed"() {
-        expect:
+        expect: "That there are exactly one partialMatch record for the sorObject"
         PartialMatch.countBySorObject(sorObject) == 1
 
-        when:
-        service.storePartialMatch(sorObject, [person1, person2])
-        assert PartialMatch.countBySorObject(sorObject) == 2
+        when: "Storing additional partialMatches for the sorObject"
+        service.storePartialMatch(sorObject, [createPersonPartialMatch("Potential #1", person1), createPersonPartialMatch("Potential #2", person2)])
+
+        then: "there are now two partial matches"
+        PartialMatch.countBySorObject(sorObject) == 2
+
+        when: "assigning UID to the sorObject for person1"
         service.assignUidToSOR(sorObject, person1)
 
-        then:
+        then: "The there is no partial match records for sorObject"
         PartialMatch.countBySorObject(sorObject) == 0
     }
 
@@ -83,5 +99,9 @@ class DatabaseServiceSpec extends Specification {
         person1 = Person.build(uid: 1)
         person2 = Person.build(uid: 2)
         existingPartialMatch = PartialMatch.build(sorObject: sorObject, person: person1)
+    }
+
+    private static createPersonPartialMatch(String name, Person person) {
+        return new PersonPartialMatch(person, [name])
     }
 }

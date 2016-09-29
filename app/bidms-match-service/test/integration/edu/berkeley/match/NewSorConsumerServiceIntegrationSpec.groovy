@@ -94,7 +94,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     def 'when entering the system with a SORObject that does match an single existing person, expect to see that persons UID on the provisioning queue'() {
         given:
         def person = Person.get('002')
-        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002', ruleNames: ["Canonical #1"]]])
         uidService.registerPost("/registry-provisioning/provision/save?uid=${person.uid}&synchronousDownstream=true", statusCode: HttpStatus.OK.value(), json: [uid: '001', sorObjectId: '2', provisioningSuccessful: true])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
@@ -106,7 +106,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
 
     def 'when entering the system with a SORObject that matches multiple existing persons, do not expect to see a response on the queue but instead expect to find two rows in the PartialMatch table'() {
         given:
-        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json: [partialMatchingRecords: [[referenceId: '002'], [referenceId: '003']]])
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json: [partialMatchingRecords: [[referenceId: '002', ruleNames: ["Potential #1","Potential #2"]], [referenceId: '003', ruleNames: ["Potential #2"]]]])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
         newSORConsumerService.onMessage(createJmsMessage(data))
@@ -121,7 +121,8 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
 
     def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
         given:
-        databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), [Person.get('002'), Person.get('003')])
+        def personPartialMatches = [new PersonPartialMatch(Person.get('002'), ['Potential #1']), new PersonPartialMatch(Person.get('003'),['Potential #2'])]
+        databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), personPartialMatches)
         matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
 
