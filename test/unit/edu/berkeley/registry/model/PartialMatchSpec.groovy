@@ -4,22 +4,14 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@Mock([PartialMatch, Person, SORObject])
+@Mock([PartialMatch])
 class PartialMatchSpec extends Specification {
 
-    def person
-    def sorObject
-
-    def setup() {
-        person = new Person(uid: '1').save(flush: true, validate: false)
-        sorObject = new SORObject().save(flush: true, validate: false)
-
-    }
 
     @Unroll
     def "test metaData serialization"() {
         given:
-        def sut = new PartialMatch(sorObject: sorObject, person: person, dateCreated: new Date())
+        def sut = new PartialMatch()
 
         when: "Set new metaData"
         sut.metaData = metaData
@@ -42,7 +34,7 @@ class PartialMatchSpec extends Specification {
     @Unroll
     def "test metaData deserialization"() {
         when:
-        def sut = new PartialMatch(sorObject: sorObject, person: person, dateCreated: new Date(), metaDataJson: metaDataJson)
+        def sut = new PartialMatch(metaDataJson: metaDataJson)
 
         and: "trigger onLoad event"
         sut.onLoad()
