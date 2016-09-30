@@ -2,6 +2,8 @@ package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.response.ExactMatchResponse
+import edu.berkeley.calnet.ucbmatch.response.ExistingMatchResponse
+import edu.berkeley.calnet.ucbmatch.response.FuzzyMatchResponse
 import edu.berkeley.calnet.ucbmatch.response.Response
 import grails.transaction.Transactional
 
