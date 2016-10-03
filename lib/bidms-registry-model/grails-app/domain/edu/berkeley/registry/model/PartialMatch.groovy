@@ -39,7 +39,7 @@ class PartialMatch {
         return DomainUtil.testSafeColumnName("PartialMatch", "sorObjectId")
     }
 
-    def onLoad() {
+    def afterLoad() {
         metaData = new JsonSlurper().parseText(metaDataJson ?: '{}') as Map
     }
 

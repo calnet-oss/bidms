@@ -37,7 +37,7 @@ class PartialMatchSpec extends Specification {
         def sut = new PartialMatch(metaDataJson: metaDataJson)
 
         and: "trigger onLoad event"
-        sut.onLoad()
+        sut.afterLoad()
 
         then:
         sut.metaData == expectedMetaData
