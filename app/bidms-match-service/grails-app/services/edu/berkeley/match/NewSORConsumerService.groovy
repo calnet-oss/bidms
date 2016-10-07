@@ -22,7 +22,7 @@ class NewSORConsumerService {
     def transactionService
 
     @Handler
-     Object onMessage(Message camelMsg) {
+    Object onMessage(Message camelMsg) {
         return onMessage(camelMsg.getBody())
     }
 
@@ -57,7 +57,7 @@ class NewSORConsumerService {
         }
         finally {
             // avoid hibernate cache growth
-            transactionService.clearHibernateSession()
+            transactionService.flushAndClearHibernateSession()
         }
 
         return null
@@ -84,7 +84,7 @@ class NewSORConsumerService {
             return
         }
         // provision a new person
-        if (!(match instanceof PersonNoMatch)){
+        if (!(match instanceof PersonNoMatch)) {
             throw new RuntimeException("Expecting match to be an instanceof PersonNoMatch.  Instead it's: ${match?.getClass()?.name}")
         }
         PersonNoMatch personNoMatch = (PersonNoMatch) match
@@ -98,8 +98,7 @@ class NewSORConsumerService {
          */
         if (!personNoMatch.matchOnly) {
             uidClientService.provisionNewUid(sorObject)
-        }
-        else {
+        } else {
             log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
         }
     }
