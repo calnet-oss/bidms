@@ -3,9 +3,9 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.*
 import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
+import edu.berkeley.util.gorm.TransactionService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.jms.MapMessage
@@ -23,11 +23,13 @@ class NewSORConsumerServiceSpec extends Specification {
     Person person2
     Person person3
     List<PersonPartialMatch> personPartialMatches
+
     def setup() {
         setupModel()
         service.matchClientService = Mock(MatchClientService)
         service.uidClientService = Mock(UidClientService)
         service.databaseService = Mock(DatabaseService)
+        service.transactionService = Mock(TransactionService)
     }
 
     void "when a SOR has no match, a new UID is retrieved from the UIDService, the SOR is updated and provisioning is notified"() {
