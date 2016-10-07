@@ -19,6 +19,7 @@ class NewSORConsumerService {
     def matchClientService
     def uidClientService
     def databaseService
+    def transactionService
 
     @Handler
      Object onMessage(Message camelMsg) {
@@ -40,18 +41,25 @@ class NewSORConsumerService {
         }
         MapMessage message = (MapMessage) msg
 
-        SORObject sorObject
         try {
-            sorObject = getSorObjectFromMessage(message)
+            SORObject sorObject
+            try {
+                sorObject = getSorObjectFromMessage(message)
+            }
+            catch (ObjectNotFoundException e) {
+                log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
+                return null
+            }
+
+            Map<String, Object> sorAttributes = getAttributesFromMessage(message)
+
+            matchPerson(sorObject, sorAttributes)
         }
-        catch (ObjectNotFoundException e) {
-            log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
-            return null
+        finally {
+            // avoid hibernate cache growth
+            transactionService.clearHibernateSession()
         }
 
-        Map<String, Object> sorAttributes = getAttributesFromMessage(message)
-
-        matchPerson(sorObject, sorAttributes)
         return null
     }
 
