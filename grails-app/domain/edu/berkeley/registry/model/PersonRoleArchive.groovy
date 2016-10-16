@@ -24,6 +24,7 @@ class PersonRoleArchive implements Comparable {
          * "ON PersonRoleArchive(uid, roleCategoryId) WHERE roleAsgnUniquePerCat =
          * true".  I don't know how to model partial indexes in GORM.
          */
+        startOfRoleGraceTime nullable: true
     }
 
     static mapping = {
