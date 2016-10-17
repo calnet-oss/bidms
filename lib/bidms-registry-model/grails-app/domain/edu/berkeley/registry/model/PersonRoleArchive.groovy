@@ -30,7 +30,7 @@ class PersonRoleArchive implements Comparable {
     static mapping = {
         table name: "PersonRoleArchive"
         version false
-        id column: 'originalPersonRoleId', generator: 'assigned', sqlType: 'BIGINT'
+        id column: 'id', generator: 'sequence', params: [sequence: 'PersonRoleArchive_seq'], sqlType: 'BIGINT'
         person column: PersonRoleArchive.getUidColumnName(), sqlType: 'VARCHAR(64)'
         roleCategory column: 'roleCategoryId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
