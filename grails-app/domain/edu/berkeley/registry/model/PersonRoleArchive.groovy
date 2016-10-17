@@ -15,6 +15,7 @@ class PersonRoleArchive implements Comparable {
     Long originalPersonRoleId
     boolean roleAsgnUniquePerCat
     Date startOfRoleGraceTime
+    Date endOfRoleGraceTime
 
     static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
 
@@ -25,8 +26,9 @@ class PersonRoleArchive implements Comparable {
          * "ON PersonRoleArchive(uid, roleCategoryId) WHERE roleAsgnUniquePerCat =
          * true".  I don't know how to model partial indexes in GORM.
          */
-        startOfRoleGraceTime nullable: true
         originalPersonRoleId nullable: true
+        startOfRoleGraceTime nullable: true
+        endOfRoleGraceTime nullable: true
     }
 
     static mapping = {
@@ -38,6 +40,7 @@ class PersonRoleArchive implements Comparable {
         originalPersonRoleId column: 'originalPersonRoleId', sqlType: 'BIGINT'
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
         startOfRoleGraceTime column: 'startOfRoleGraceTime', sqlType: 'TIMESTAMP'
+        endOfRoleGraceTime column: 'endOfRoleGraceTime', sqlType: 'TIMESTAMP'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
