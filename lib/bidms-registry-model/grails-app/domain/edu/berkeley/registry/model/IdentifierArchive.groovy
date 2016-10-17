@@ -61,5 +61,5 @@ class IdentifierArchive implements Comparable {
 
     def beforeUpdate() { return enforceReadOnly() }
 
-    def beforeDelete() { return enforceReadOnly() }
+    // beforeDelete() is not present to allow for deletion of Person objects
 }
