@@ -15,7 +15,7 @@ class PersonRoleArchiveSpec extends AbstractDomainObjectSpec {
 
     void "confirm PersonRoleArchive LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person", "roleCategory", "roleAsgnUniquePerCat"])
+        testExcludes(["person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat"])
     }
 
     void "confirm PersonRoleArchive logicalHashCodeProperties"() {

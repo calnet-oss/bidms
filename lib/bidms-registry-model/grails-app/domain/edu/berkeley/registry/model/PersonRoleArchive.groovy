@@ -8,10 +8,11 @@ import org.hibernate.FetchMode
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
 @ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "roleAsgnUniquePerCat"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat"])
 class PersonRoleArchive implements Comparable {
     Long id
     AssignableRole role
+    Long originalPersonRoleId
     boolean roleAsgnUniquePerCat
     Date startOfRoleGraceTime
 
@@ -25,6 +26,7 @@ class PersonRoleArchive implements Comparable {
          * true".  I don't know how to model partial indexes in GORM.
          */
         startOfRoleGraceTime nullable: true
+        originalPersonRoleId nullable: true
     }
 
     static mapping = {
@@ -33,6 +35,7 @@ class PersonRoleArchive implements Comparable {
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonRoleArchive_seq'], sqlType: 'BIGINT'
         person column: PersonRoleArchive.getUidColumnName(), sqlType: 'VARCHAR(64)'
         roleCategory column: 'roleCategoryId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
+        originalPersonRoleId column: 'originalPersonRoleId', sqlType: 'BIGINT'
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
         startOfRoleGraceTime column: 'startOfRoleGraceTime', sqlType: 'TIMESTAMP'
     }
