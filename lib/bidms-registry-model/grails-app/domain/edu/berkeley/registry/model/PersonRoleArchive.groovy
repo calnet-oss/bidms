@@ -35,6 +35,7 @@ class PersonRoleArchive implements Comparable {
         table name: "PersonRoleArchive"
         version false
         id column: 'id', generator: 'sequence', params: [sequence: 'PersonRoleArchive_seq'], sqlType: 'BIGINT'
+        role column: 'roleId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
         person column: PersonRoleArchive.getUidColumnName(), sqlType: 'VARCHAR(64)'
         roleCategory column: 'roleCategoryId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
         originalPersonRoleId column: 'originalPersonRoleId', sqlType: 'BIGINT'
