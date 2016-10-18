@@ -16,6 +16,8 @@ class PersonRoleArchive implements Comparable {
     boolean roleAsgnUniquePerCat
     Date startOfRoleGraceTime
     Date endOfRoleGraceTime
+    Date originalTimeCreated
+    Date originalTimeUpdated
 
     static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
 
@@ -42,6 +44,8 @@ class PersonRoleArchive implements Comparable {
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
         startOfRoleGraceTime column: 'startOfRoleGraceTime', sqlType: 'TIMESTAMP'
         endOfRoleGraceTime column: 'endOfRoleGraceTime', sqlType: 'TIMESTAMP'
+        originalTimeCreated column: 'originalTimeCreated', sqlType: 'TIMESTAMP'
+        originalTimeUpdated column: 'originalTimeUpdated', sqlType: 'TIMESTAMP'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
