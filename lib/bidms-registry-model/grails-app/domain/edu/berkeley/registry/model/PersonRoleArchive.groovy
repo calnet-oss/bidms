@@ -8,7 +8,7 @@ import org.hibernate.FetchMode
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
 @ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated"])
 class PersonRoleArchive implements Comparable {
     Long id
     AssignableRole role
@@ -20,6 +20,8 @@ class PersonRoleArchive implements Comparable {
     Date originalTimeUpdated
     boolean roleInGrace
     boolean rolePostGrace
+    Date timeCreated
+    Date timeUpdated
 
     static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
 
@@ -35,6 +37,8 @@ class PersonRoleArchive implements Comparable {
         endOfRoleGraceTime nullable: true
         roleInGrace nullable: true
         rolePostGrace nullable: true
+        timeCreated nullable: true // assigned automatically by db trigger
+        timeUpdated nullable: true // assigned automatically by db trigger
     }
 
     static mapping = {
@@ -52,6 +56,8 @@ class PersonRoleArchive implements Comparable {
         originalTimeUpdated column: 'originalTimeUpdated', sqlType: 'TIMESTAMP'
         roleInGrace column: 'roleInGrace', sqlType: 'BOOLEAN'
         rolePostGrace column: 'rolePostGrace', sqlType: 'BOOLEAN'
+        timeCreated column: 'timeCreated', insertable: false, updateable: false
+        timeUpdated column: 'timeUpdated', insertable: false, updateable: false
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
