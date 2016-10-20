@@ -18,6 +18,8 @@ class PersonRoleArchive implements Comparable {
     Date endOfRoleGraceTime
     Date originalTimeCreated
     Date originalTimeUpdated
+    boolean roleInGrace
+    boolean rolePostGrace
 
     static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
 
@@ -31,6 +33,8 @@ class PersonRoleArchive implements Comparable {
         originalPersonRoleId nullable: true
         startOfRoleGraceTime nullable: true
         endOfRoleGraceTime nullable: true
+        roleInGrace nullable: true
+        rolePostGrace nullable: true
     }
 
     static mapping = {
@@ -46,6 +50,8 @@ class PersonRoleArchive implements Comparable {
         endOfRoleGraceTime column: 'endOfRoleGraceTime', sqlType: 'TIMESTAMP'
         originalTimeCreated column: 'originalTimeCreated', sqlType: 'TIMESTAMP'
         originalTimeUpdated column: 'originalTimeUpdated', sqlType: 'TIMESTAMP'
+        roleInGrace column: 'roleInGrace', sqlType: 'BOOLEAN'
+        rolePostGrace column: 'rolePostGrace', sqlType: 'BOOLEAN'
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
