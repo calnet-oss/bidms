@@ -18,8 +18,8 @@ class PersonRoleArchive implements Comparable {
     Date endOfRoleGraceTime
     Date originalTimeCreated
     Date originalTimeUpdated
-    boolean roleInGrace
-    boolean rolePostGrace
+    Boolean roleInGrace
+    Boolean rolePostGrace
     Date timeCreated
     Date timeUpdated
 
