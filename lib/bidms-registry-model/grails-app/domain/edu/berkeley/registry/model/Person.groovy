@@ -1,5 +1,7 @@
 package edu.berkeley.registry.model
 
+import org.codehaus.groovy.grails.exceptions.GrailsRuntimeException
+
 class Person {
 
     String id // uid
@@ -73,4 +75,33 @@ class Person {
     public String getUid() { return id }
 
     public void setUid(String uid) { this.id = uid }
+
+    protected void validatedAssignedRoles() {
+        assignedRoles?.each { role ->
+            if (archivedRoles?.any { it.roleAsgnUniquePerCat && it.roleCategoryId == role.roleCategoryId }) {
+                throw new GrailsRuntimeException("Can't have role ${role.role.roleName} as an assignedRole because a role with the same roleCategory exists as an archivedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from archiveRoles first, using removeFromArchivedRoles().")
+            }
+
+            if (archivedRoles?.any { it.roleId == role.roleId }) {
+                throw new GrailsRuntimeException("Can't have role ${role.role.roleName} as an assignedRole because a role with the same roleId exists as an archivedRole.  Remove the role with roleId=${role.roleId} from archiveRoles first, using removeFromArchivedRoles().")
+            }
+        }
+    }
+
+    protected void validatedArchivedRoles() {
+        archivedRoles?.each { role ->
+            if (assignedRoles?.any { it.roleAsgnUniquePerCat && it.roleCategoryId == role.roleCategoryId }) {
+                throw new GrailsRuntimeException("Can't have role ${role.role.roleName} as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from assignedRoles first, using removeFromAssignedRoles().")
+            }
+
+            if (assignedRoles?.any { it.roleId == role.roleId }) {
+                throw new GrailsRuntimeException("Can't have role ${role.role.roleName} as an archivedRole because a role with the same roleId exists as an assignedRole.  Remove the role with roleId=${role.roleId} from assignedRoles first, using removeFromAssignedRoles().")
+            }
+        }
+    }
+
+    def beforeValidate() {
+        validatedArchivedRoles()
+        validatedAssignedRoles()
+    }
 }
