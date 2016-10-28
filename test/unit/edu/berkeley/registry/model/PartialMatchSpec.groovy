@@ -10,11 +10,8 @@ class PartialMatchSpec extends Specification {
 
     @Unroll
     def "test metaData serialization"() {
-        given:
-        def sut = new PartialMatch()
-
         when: "Set new metaData"
-        sut.metaData = metaData
+        def sut = new PartialMatch(metaData: metaData)
 
         and: "trigger beforeValidate"
         sut.beforeValidate()

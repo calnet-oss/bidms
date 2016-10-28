@@ -19,6 +19,7 @@ class PartialMatch {
     static constraints = {
         sorObject nullable: false, unique: 'person'
         metaDataJson nullable: true
+        metaData nullable: true, bindable: true
     }
 
     static mapping = {
