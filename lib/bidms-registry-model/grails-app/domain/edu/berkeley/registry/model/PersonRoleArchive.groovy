@@ -7,8 +7,8 @@ import org.hibernate.FetchMode
 
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
-@ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated"])
+@ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat", "endOfRoleGraceTimeOverrideFirst"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated", "endOfRoleGraceTimeOverrideFirst"])
 class PersonRoleArchive implements Comparable {
     Long id
     AssignableRole role
@@ -63,6 +63,15 @@ class PersonRoleArchive implements Comparable {
         rolePostGrace column: 'rolePostGrace', sqlType: 'BOOLEAN'
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
+    }
+
+    static transients = ['endOfRoleGraceTimeOverrideFirst']
+
+    /**
+     * @return endOfRoleGraceTimeOverride if it has a value, otherwise will return endOfRoleGraceTime
+     */
+    Date getEndOfRoleGraceTimeOverrideFirst() {
+        return (endOfRoleGraceTimeOverride ?: endOfRoleGraceTime)
     }
 
     // Makes the column name unique in test mode to avoid GRAILS-11600
