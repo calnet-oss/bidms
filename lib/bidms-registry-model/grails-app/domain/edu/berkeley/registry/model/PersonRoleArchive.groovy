@@ -16,6 +16,9 @@ class PersonRoleArchive implements Comparable {
     boolean roleAsgnUniquePerCat
     Date startOfRoleGraceTime
     Date endOfRoleGraceTime
+    // endOfRoleGraceTimeOverride is manually set and overrides the
+    // automatically calculated endOfRoleGraceTime
+    Date endOfRoleGraceTimeOverride
     Date originalTimeCreated
     Date originalTimeUpdated
     Boolean roleInGrace
@@ -35,6 +38,7 @@ class PersonRoleArchive implements Comparable {
         originalPersonRoleId nullable: true
         startOfRoleGraceTime nullable: true
         endOfRoleGraceTime nullable: true
+        endOfRoleGraceTimeOverride nullable: true
         roleInGrace nullable: true
         rolePostGrace nullable: true
         timeCreated nullable: true // assigned automatically by db trigger
@@ -52,6 +56,7 @@ class PersonRoleArchive implements Comparable {
         roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
         startOfRoleGraceTime column: 'startOfRoleGraceTime', sqlType: 'TIMESTAMP'
         endOfRoleGraceTime column: 'endOfRoleGraceTime', sqlType: 'TIMESTAMP'
+        endOfRoleGraceTimeOverride column: 'endOfRoleGraceTimeOverride', sqlType: 'TIMESTAMP'
         originalTimeCreated column: 'originalTimeCreated', sqlType: 'TIMESTAMP'
         originalTimeUpdated column: 'originalTimeUpdated', sqlType: 'TIMESTAMP'
         roleInGrace column: 'roleInGrace', sqlType: 'BOOLEAN'

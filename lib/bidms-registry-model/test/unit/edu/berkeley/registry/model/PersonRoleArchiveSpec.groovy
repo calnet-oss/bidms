@@ -20,6 +20,6 @@ class PersonRoleArchiveSpec extends AbstractDomainObjectSpec {
 
     void "confirm PersonRoleArchive logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["role", "startOfRoleGraceTime", "endOfRoleGraceTime", "originalTimeCreated", "originalTimeUpdated", "roleInGrace", "rolePostGrace"])
+        testHashCodeProperties(["role", "startOfRoleGraceTime", "endOfRoleGraceTime", "endOfRoleGraceTimeOverride", "originalTimeCreated", "originalTimeUpdated", "roleInGrace", "rolePostGrace"])
     }
 }
