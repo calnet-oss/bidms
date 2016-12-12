@@ -11,11 +11,13 @@ class SORObjectChecksum implements Serializable {
     Long hash
     Integer hashVersion
     Date timeMarker
+    long numericMarker
 
     static constraints = {
         hash nullable: false
         hashVersion nullable: false
         timeMarker nullable: false
+        numericMarker nullable: false
     }
 
     static mapping = {
@@ -27,6 +29,7 @@ class SORObjectChecksum implements Serializable {
         timeMarker column: 'timeMarker'
         sor column: 'sorId', sqlType: 'SMALLINT'
         sorObjKey column: 'sorObjKey', sqlType: 'VARCHAR(255)'
+        numericMarker column: 'numericMarker', sqlType: 'BIGINT'
     }
 
     /**
