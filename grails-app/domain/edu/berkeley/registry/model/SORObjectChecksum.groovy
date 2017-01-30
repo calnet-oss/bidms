@@ -17,7 +17,6 @@ class SORObjectChecksum implements Serializable {
         hash nullable: false
         hashVersion nullable: false
         timeMarker nullable: false
-        numericMarker nullable: false
     }
 
     static mapping = {
