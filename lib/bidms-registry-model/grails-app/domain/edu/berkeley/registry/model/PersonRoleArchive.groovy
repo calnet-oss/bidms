@@ -21,8 +21,8 @@ class PersonRoleArchive implements Comparable {
     Date endOfRoleGraceTimeOverride
     Date originalTimeCreated
     Date originalTimeUpdated
-    Boolean roleInGrace
-    Boolean rolePostGrace
+    boolean roleInGrace
+    boolean rolePostGrace
     Date timeCreated
     Date timeUpdated
 
@@ -36,11 +36,29 @@ class PersonRoleArchive implements Comparable {
          * true".  I don't know how to model partial indexes in GORM.
          */
         originalPersonRoleId nullable: true
-        startOfRoleGraceTime nullable: true
+        // startOfRoleGraceTime must be set and can't be in the future
+        // set to current time if the start-of-grace is unknown
+        startOfRoleGraceTime max: new Date() + 1
         endOfRoleGraceTime nullable: true
         endOfRoleGraceTimeOverride nullable: true
-        roleInGrace nullable: true
-        rolePostGrace nullable: true
+        roleInGrace validator: { roleInGraceVal, obj, errors ->
+            // one and only one of roleInGrace or rolePostGrace must be true
+            if (!roleInGraceVal && !obj.rolePostGrace) {
+                errors.rejectValue("roleInGrace", "roleInGrace and rolePostGrace can't both be false: only one must be true")
+            }
+            else if (roleInGraceVal && obj.rolePostGrace) {
+                errors.rejectValue("roleInGrace", "roleInGrace and rolePostGrace can't both be true: only one must be true")
+            }
+        }
+        rolePostGrace validator: { rolePostGraceVal, obj, errors ->
+            // one and only one of roleInGrace or rolePostGrace must be true
+            if (!rolePostGraceVal && !obj.roleInGrace) {
+                errors.rejectValue("rolePostGrace", "roleInGrace and rolePostGrace can't both be false: only one must be true")
+            }
+            else if (rolePostGraceVal && obj.roleInGrace) {
+                errors.rejectValue("rolePostGrace", "roleInGrace and rolePostGrace can't both be true: only one must be true")
+            }
+        }
         timeCreated nullable: true // assigned automatically by db trigger
         timeUpdated nullable: true // assigned automatically by db trigger
     }
