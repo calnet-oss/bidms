@@ -36,27 +36,50 @@ class PersonRoleArchive implements Comparable {
          * true".  I don't know how to model partial indexes in GORM.
          */
         originalPersonRoleId nullable: true
-        // startOfRoleGraceTime must be set and can't be in the future
+        // startOfRoleGraceTime must be set
         // set to current time if the start-of-grace is unknown
-        startOfRoleGraceTime max: new Date() + 1
-        endOfRoleGraceTime nullable: true
+        startOfRoleGraceTime validator: { startOfRoleGraceTimeVal, obj, errors ->
+            if (!startOfRoleGraceTimeVal) {
+                errors.rejectValue("startOfRoleGraceTime", "startOfRoleGraceTime can't be null")
+            }
+            // startOfRoleGraceTime can't be in the future
+            if (startOfRoleGraceTimeVal > new Date() + 1) {
+                errors.rejectValue("startOfRoleGraceTime", "startOfRoleGraceTime can't be set to a future date")
+            }
+            // startOfRoleGraceTime can't be later than endOfRoleGraceTime if it's not null
+            if (obj.endOfRoleGraceTime && startOfRoleGraceTimeVal > obj.endOfRoleGraceTime) {
+                errors.rejectValue("startOfRoleGraceTime", "startOfRoleGraceTime can't be set to a value later than endOfRoleGraceTime")
+            }
+        }
+        endOfRoleGraceTime nullable: true, validator: { endOfRoleGraceTimeVal, obj, errors ->
+            // if not null, endOfRoleGraceTimeOverride can't be earlier than startOfRoleGraceTime
+            if (endOfRoleGraceTimeVal && endOfRoleGraceTimeVal < obj.startOfRoleGraceTime) {
+                errors.rejectValue("endOfRoleGraceTime", "endOfRoleGraceTime can't be set to a value earlier than startOfRoleGraceTime")
+            }
+        }
         endOfRoleGraceTimeOverride nullable: true
         roleInGrace validator: { roleInGraceVal, obj, errors ->
             // one and only one of roleInGrace or rolePostGrace must be true
             if (!roleInGraceVal && !obj.rolePostGrace) {
                 errors.rejectValue("roleInGrace", "roleInGrace and rolePostGrace can't both be false: only one must be true")
-            }
-            else if (roleInGraceVal && obj.rolePostGrace) {
+            } else if (roleInGraceVal && obj.rolePostGrace) {
                 errors.rejectValue("roleInGrace", "roleInGrace and rolePostGrace can't both be true: only one must be true")
+            }
+            // roleInGrace can't be true if the endOfRoleGraceTime, if it's not null, is in the past
+            if (roleInGraceVal && obj.endOfRoleGraceTime && obj.endOfRoleGraceTime < new Date() - 1) {
+                errors.rejectValue("roleInGrace", "roleInGrace can't be true if endOfRoleGraceTime is in the past, indicating post-grace")
             }
         }
         rolePostGrace validator: { rolePostGraceVal, obj, errors ->
             // one and only one of roleInGrace or rolePostGrace must be true
             if (!rolePostGraceVal && !obj.roleInGrace) {
                 errors.rejectValue("rolePostGrace", "roleInGrace and rolePostGrace can't both be false: only one must be true")
-            }
-            else if (rolePostGraceVal && obj.roleInGrace) {
+            } else if (rolePostGraceVal && obj.roleInGrace) {
                 errors.rejectValue("rolePostGrace", "roleInGrace and rolePostGrace can't both be true: only one must be true")
+            }
+            // rolePostGrace can't be true if endOfRoleGraceTime, if it's not null, is in the future
+            if (rolePostGraceVal && obj.endOfRoleGraceTime && obj.endOfRoleGraceTime > new Date() + 1) {
+                errors.rejectValue("rolePostGrace", "rolePostGrace can't be true if endOfRoleGraceTime is in the future, indicating in-grace")
             }
         }
         timeCreated nullable: true // assigned automatically by db trigger
