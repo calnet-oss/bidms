@@ -94,10 +94,15 @@ class Person {
     }
 
     protected void validatedArchivedRoles() {
+        Date currentTime = new Date()
         archivedRoles?.each { role ->
             if (assignedRoles?.any { it.roleAsgnUniquePerCat && it.roleCategoryId == role.roleCategoryId }) {
                 throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from assignedRoles first, using removeFromAssignedRoles().")
             }
+
+            /* Flip the in-grace/post-grace booleans, if need be.
+             * Necessary, otherwise validation errors could happen when saving the person. */
+            resetArchivedRoleFlags(currentTime, role)
         }
 
         // the second iteration on the same collection is on purpose so that
@@ -108,6 +113,19 @@ class Person {
                 throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an archivedRole because a role with the same roleId exists as an assignedRole.  Remove the role with roleId=${role.roleId} from assignedRoles first, using removeFromAssignedRoles().")
             }
         }
+    }
+
+    /**
+     * It's possible that a role is in the archive and it has switched
+     * from in-grace to post-grace based on the end grace date, but the
+     * quartz job hasn't had a chance yet to flip this row to
+     * isPostGrace=true.  So we do the check here and do that flipping
+     * here, otherwise we will encounter a validation error when the
+     * person is saved.
+     */
+    static void resetArchivedRoleFlags(Date currentTime, PersonRoleArchive archivedRole) {
+        archivedRole.roleInGrace = (archivedRole.endOfRoleGraceTimeUseOverrideIfLater ? currentTime >= archivedRole.startOfRoleGraceTime && currentTime < archivedRole.endOfRoleGraceTimeUseOverrideIfLater : true)
+        archivedRole.rolePostGrace = (archivedRole.endOfRoleGraceTimeUseOverrideIfLater ? currentTime >= archivedRole.endOfRoleGraceTimeUseOverrideIfLater : false)
     }
 
     def beforeValidate() {
