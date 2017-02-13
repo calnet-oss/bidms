@@ -19,6 +19,6 @@ class AssignableRoleSpec extends AbstractDomainObjectSpec {
 
     void "confirm Identifier logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["roleName"])
+        testHashCodeProperties(["roleName", "roleCategory"])
     }
 }

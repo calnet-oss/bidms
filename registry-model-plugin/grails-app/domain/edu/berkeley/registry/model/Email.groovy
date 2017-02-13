@@ -6,7 +6,7 @@ import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"])
 class Email implements Comparable {
     Long id
     EmailType emailType

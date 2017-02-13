@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig(excludes = ["person", "sorObject", "person_"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "person_"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "person_"])
 class JobAppointment extends PersonAppointment {
     String jobCode
     String jobTitle

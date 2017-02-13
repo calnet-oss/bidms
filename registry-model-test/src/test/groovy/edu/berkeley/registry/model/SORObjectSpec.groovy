@@ -28,7 +28,7 @@ class SORObjectSpec extends AbstractDomainObjectSpec {
 
     void "confirm Identifier logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["sorPrimaryKey", "jsonVersion", "hash"])
+        testHashCodeProperties(["sorPrimaryKey", "jsonVersion", "hash", "sor"])
     }
 
     def "test that a SORObject can be found when exists"() {

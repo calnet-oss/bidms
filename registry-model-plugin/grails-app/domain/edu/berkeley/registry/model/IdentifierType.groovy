@@ -4,7 +4,7 @@ import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version"])
 class IdentifierType implements Comparable {
 
     Integer id
