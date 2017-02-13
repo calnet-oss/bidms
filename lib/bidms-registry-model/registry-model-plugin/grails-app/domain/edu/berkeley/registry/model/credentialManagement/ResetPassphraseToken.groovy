@@ -2,6 +2,7 @@ package edu.berkeley.registry.model.credentialManagement
 
 class ResetPassphraseToken extends BaseToken {
     static constraints = {
+        BaseToken.addBaseConstraints(delegate)
     }
 
     static mapping = {

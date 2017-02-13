@@ -9,7 +9,14 @@ abstract class BaseToken {
     Person person
     Date expiryDate
 
-    static constraints = {
+    protected static addBaseConstraints(Object constraintsDelegate) {
+        Closure constraintsClone = abstractConstraints.clone() as Closure
+        constraintsClone.delegate = constraintsDelegate
+        constraintsClone.resolveStrategy = Closure.DELEGATE_FIRST
+        constraintsClone.call()
+    }
+
+    private static abstractConstraints = {
         token nullable: false, maxSize: 32
         person nullable: false
         expiryDate nullable: false
@@ -22,14 +29,14 @@ abstract class BaseToken {
         return DomainUtil.testSafeColumnName(className, "uid")
     }
 
-    static addBaseMappings(String className, Object mappingDelegate) {
-        Closure mappingClone = mapping.clone() as Closure
+    protected static addBaseMappings(String className, Object mappingDelegate) {
+        Closure mappingClone = abstractMapping.clone() as Closure
         mappingClone.delegate = mappingDelegate
         mappingClone.resolveStrategy = Closure.DELEGATE_FIRST
         mappingClone.call(className)
     }
 
-    static mapping = { String className ->
+    private static abstractMapping = { String className ->
         token column: 'token'
         person column: BaseToken.getUidColumnName(className), sqlType: 'VARCHAR(64)'
         expiryDate column: 'expiryDate'

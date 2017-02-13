@@ -11,6 +11,7 @@ class CredentialToken extends BaseToken {
         identifier nullable: false
         person nullable: false, unique: 'identifier'
         registrationSource nullable: false
+        BaseToken.addBaseConstraints(delegate)
     }
 
     static mapping = {

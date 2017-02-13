@@ -4,6 +4,7 @@ class ChangeEmailToken extends BaseToken {
     String emailAddress
     static constraints = {
         emailAddress nullable: false, email: true
+        BaseToken.addBaseConstraints(delegate)
     }
 
     static mapping = {
