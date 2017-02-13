@@ -8,7 +8,7 @@ import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import groovy.json.JsonSlurper
 
 @ConverterConfig(excludes = ["person", "objJson"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "json"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json"])
 class DownstreamObject implements Serializable, Comparable {
 
     // so that our rendered map includes nulls, which is important for OpenIDM

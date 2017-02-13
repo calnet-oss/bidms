@@ -4,7 +4,7 @@ import edu.berkeley.registry.model.Person
 import grails.test.mixin.Mock
 import spock.lang.Specification
 
-@Mock([ChangeEmailToken, Person])
+@Mock([ChangeEmailToken, Person, ResetPassphraseToken])
 class ResetPassphraseTokenSpec extends Specification {
     def "test that object validates because beforeValidate assigns token"() {
         given:

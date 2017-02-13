@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"])
 class DateOfBirth implements Comparable {
 
     Long id

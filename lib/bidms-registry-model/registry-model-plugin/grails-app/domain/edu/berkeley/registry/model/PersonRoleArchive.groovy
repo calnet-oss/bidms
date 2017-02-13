@@ -8,7 +8,7 @@ import org.hibernate.FetchMode
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
 @ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat", "endOfRoleGraceTimeUseOverrideIfLater"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated", "endOfRoleGraceTimeUseOverrideIfLater"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated", "endOfRoleGraceTimeUseOverrideIfLater"])
 class PersonRoleArchive implements Comparable {
     Long id
     AssignableRole role

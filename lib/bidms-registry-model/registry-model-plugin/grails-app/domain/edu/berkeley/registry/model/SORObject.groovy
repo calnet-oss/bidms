@@ -6,7 +6,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import groovy.json.JsonSlurper
 
 @ConverterConfig
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "person", "json", "objJson", "queryTime"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json", "objJson", "queryTime"])
 class SORObject implements Serializable, Comparable {
 
     //
