@@ -1,6 +1,6 @@
 package edu.berkeley.registry.model
 
-import org.codehaus.groovy.grails.exceptions.GrailsRuntimeException
+import org.grails.core.exceptions.GrailsRuntimeException
 
 class Person {
 
