@@ -4,7 +4,7 @@ import org.grails.core.exceptions.GrailsRuntimeException
 
 class Person {
 
-    String id // uid
+    String uid
     Date timeCreated
     Date timeUpdated
     boolean isLocked
@@ -50,7 +50,7 @@ class Person {
     static mapping = {
         table name: "Person"
         version false
-        id name: 'uid', column: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
+        id column: 'uid', name: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
         isLocked column: 'isLocked', sqlType: 'BOOLEAN'
@@ -69,12 +69,6 @@ class Person {
         archivedIdentifiers batchSize: 25
         archivedRoles cascade: "all-delete-orphan", batchSize: 25
     }
-
-    static transients = ['uid']
-
-    public String getUid() { return id }
-
-    public void setUid(String uid) { this.id = uid }
 
     protected void validatedAssignedRoles() {
         assignedRoles?.each { role ->
