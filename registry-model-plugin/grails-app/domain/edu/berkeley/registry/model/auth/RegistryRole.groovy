@@ -1,7 +1,7 @@
 package edu.berkeley.registry.model.auth
 
 class RegistryRole implements Comparable, Serializable {
-    private static final long serialVersionUID = 1
+    private static final long serialVersionUID = -5511132041642946798L
 
     Integer id
     String authority
