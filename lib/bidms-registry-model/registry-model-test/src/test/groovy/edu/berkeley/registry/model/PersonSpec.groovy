@@ -1,11 +1,11 @@
 package edu.berkeley.registry.model
 
-import grails.test.hibernate.HibernateSpec
+import grails.test.mixin.Mock
+import spock.lang.Specification
 
-class PersonSpec extends HibernateSpec {
+@Mock([Person])
+class PersonSpec extends Specification {
     private static final Map opts = [failOnError: true, flush: true]
-
-    List<Class> getDomainClasses() { [Person] }
 
     /**
      * Since using 'uid' as the identifier property, this confirms Person
