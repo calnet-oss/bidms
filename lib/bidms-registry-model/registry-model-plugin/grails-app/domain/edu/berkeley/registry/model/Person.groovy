@@ -126,4 +126,12 @@ class Person {
         validatedArchivedRoles()
         validatedAssignedRoles()
     }
+
+    void setId(String uid) {
+        this.uid = uid
+    }
+
+    String getId() {
+        return uid
+    }
 }
