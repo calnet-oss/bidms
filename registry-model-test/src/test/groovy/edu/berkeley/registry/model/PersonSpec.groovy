@@ -12,7 +12,7 @@ import spock.lang.Specification
 class PersonSpec extends Specification {
     private static final Map opts = [failOnError: true, flush: true]
 
-    void "save test using Hibernate in unit test environment"() {
+    void "save test in non-Hibernate unit test environment"() {
         given:
         AppointmentType apptType = new AppointmentType(apptTypeName: "testApptType")
         SOR sor = new SOR(name: "HRMS")
