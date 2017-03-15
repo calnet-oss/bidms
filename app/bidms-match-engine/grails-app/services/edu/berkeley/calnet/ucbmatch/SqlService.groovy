@@ -7,10 +7,9 @@ import javax.sql.DataSource
 
 @Transactional
 class SqlService {
-    DataSource datasource
+    DataSource dataSource_functionalDS
 
     Sql getSqlInstance() {
-        new Sql(datasource)
-
+        new Sql(dataSource_functionalDS)
     }
 }
