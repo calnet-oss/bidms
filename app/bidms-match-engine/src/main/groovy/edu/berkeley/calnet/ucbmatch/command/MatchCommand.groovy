@@ -4,8 +4,7 @@ import grails.validation.Validateable
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
-@Validateable
-class MatchCommand {
+class MatchCommand implements Validateable {
     String systemOfRecord
     String identifier
     Map sorAttributes
