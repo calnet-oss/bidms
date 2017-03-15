@@ -2,11 +2,10 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SORObject
 import grails.validation.Validateable
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Validateable
-@Log4j
-class SorKeyDataCommand {
+@Slf4j
+class SorKeyDataCommand implements Validateable {
     // these correspond to properties in SorKeyData from the
     // registry-sor-key-data plugin
     String systemOfRecord

@@ -6,7 +6,7 @@ import edu.berkeley.registry.model.SORObject
 import grails.buildtestdata.mixin.Build
 import grails.plugins.rest.client.RestBuilder
 import grails.test.mixin.TestFor
-import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import grails.web.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer

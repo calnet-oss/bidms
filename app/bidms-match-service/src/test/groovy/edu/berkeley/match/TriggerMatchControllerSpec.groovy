@@ -21,15 +21,16 @@ class TriggerMatchControllerSpec extends Specification {
     }
 
     @Unroll
-    void "test that expected path is chosen in controller,depending on input"() {
+    void "test that expected path is chosen in controller, depending on input"() {
         given:
-        request.json = [systemOfRecord: 'SIS', sorPrimaryKey: sorPk, givenName: 'Kryf', surName: 'Plyf']
+        Map attrMap = [systemOfRecord: 'SIS', sorPrimaryKey: sorPk, givenName: 'Kryf', surName: 'Plyf']
+        request.json = attrMap
 
         when:
-        controller.matchPerson()
+        controller.matchPerson(new SorKeyDataCommand(attrMap))
 
         then:
-        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, [systemOfRecord: 'SIS', sorPrimaryKey: '12345', givenName: 'Kryf', surName: 'Plyf'])
+        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, attrMap)
         response.status == expectedStatus
 
         where:

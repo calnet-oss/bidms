@@ -4,8 +4,10 @@ import javax.servlet.http.HttpServletResponse
 
 class TriggerMatchController {
     def newSORConsumerService
+
     def matchPerson(SorKeyDataCommand sorKeyDataCommand) {
-        if(sorKeyDataCommand.hasErrors())  {
+        def hasErrors = !sorKeyDataCommand.validate()
+        if (hasErrors) {
             log.debug("could not trigger a match: $sorKeyDataCommand.errors")
             render(status: HttpServletResponse.SC_BAD_REQUEST)
         } else {

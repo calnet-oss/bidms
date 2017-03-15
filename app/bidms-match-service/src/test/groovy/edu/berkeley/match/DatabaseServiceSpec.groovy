@@ -6,6 +6,7 @@ import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
+import grails.transaction.Rollback
 import spock.lang.Specification
 
 /**
@@ -93,7 +94,7 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject) == 0
     }
 
-    private createModel() {
+    private void createModel() {
         def sor = SOR.build(name: 'SIS')
         sorObject = SORObject.build(sor: sor, sorPrimaryKey: 'SIS123')
         person1 = Person.build(uid: 1)
@@ -101,7 +102,7 @@ class DatabaseServiceSpec extends Specification {
         existingPartialMatch = PartialMatch.build(sorObject: sorObject, person: person1)
     }
 
-    private static createPersonPartialMatch(String name, Person person) {
+    private static PersonPartialMatch createPersonPartialMatch(String name, Person person) {
         return new PersonPartialMatch(person, [name])
     }
 }

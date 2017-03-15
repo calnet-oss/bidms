@@ -4,20 +4,23 @@ import edu.berkeley.registry.model.PartialMatch
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
-import grails.test.spock.IntegrationSpec
-import groovy.util.logging.Log4j
+import grails.test.mixin.integration.Integration
+import grails.transaction.Rollback
+import grails.transaction.Transactional
+import groovy.transform.Synchronized
+import groovy.util.logging.Slf4j
 import org.apache.activemq.command.ActiveMQMapMessage
-import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration
-import org.hibernate.SessionFactory
-import org.hibernate.cfg.Configuration
-import org.hibernate.tool.hbm2ddl.SchemaExport
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
+import spock.lang.Specification
 
-@Log4j
-class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
+@Slf4j
+@Integration
+class NewSorConsumerServiceIntegrationSpec extends Specification {
+    /*
     @Shared
     private static Configuration _configuration
+    */
 
     @Shared
     def grailsApplication
@@ -32,41 +35,25 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     @Shared
     VertxServer uidService = new VertxServer(host: 'localhost', port: 8084)
 
-    def setupSpec() {
-        if (!_configuration) {
-            // 1-time creation of the configuration
-            Properties properties = new Properties()
-            properties.'hibernate.connection.driver_class' = grailsApplication.config.dataSource.driverClassName
-            properties.'hibernate.connection.username' = grailsApplication.config.dataSource.username
-            properties.'hibernate.connection.password' = grailsApplication.config.dataSource.password
-            properties.'hibernate.connection.url' = grailsApplication.config.dataSource.url
-            properties.'hibernate.dialect' = grailsApplication.config.dataSource.dialect
-
-            _configuration = new DefaultGrailsDomainConfiguration(grailsApplication: grailsApplication, properties: properties)
-        }
-
-    }
-
-    def cleanup() {
-        //After spec nuke and pave the test db
-        new SchemaExport(_configuration).create(false, true)
-
-        //Clear the sessions
-        SessionFactory sf = grailsApplication.getMainContext().getBean('sessionFactory')
-        sf.getCurrentSession().clear()
-
-        matchEngine.reset()
-        uidService.reset()
-    }
-
+    @Synchronized
+    @Transactional
     def setup() {
         grailsApplication.config.rest.matchEngine.url = 'http://localhost:8089/ucb-match/v1/person'  // Use local mock server
         grailsApplication.config.rest.provisionNewUid.url = 'http://localhost:8084/registry-provisioning/newUid/save' // Use local mock server
         grailsApplication.config.rest.provisionUid.url = 'http://localhost:8084/registry-provisioning/provision/save' // Use local mock server
-        def sor = new SOR(name: 'HR').save(failOnError: true, flush: true)
-        new SORObject(sor: sor, sorPrimaryKey: 'HR0001', queryTime: new Date(), jsonVersion: 1, objJson: "{}").save(failOnError: true, flush: true)
-        new Person(uid: '002', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
-        new Person(uid: '003', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
+        SOR sor
+        if (!(sor = SOR.findByName("HR"))) {
+            sor = new SOR(name: 'HR').save(failOnError: true, flush: true)
+        }
+        if (!SORObject.findBySorAndSorPrimaryKey(sor, "HR0001")) {
+            new SORObject(sor: sor, sorPrimaryKey: 'HR0001', queryTime: new Date(), jsonVersion: 1, objJson: "{}").save(failOnError: true, flush: true)
+        }
+        if (!Person.findByUid("002")) {
+            new Person(uid: '002', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
+        }
+        if (!Person.findByUid("003")) {
+            new Person(uid: '003', dateOfBirth: Date.parse('yyy-MM-dd', '1999-09-09')).save(failOnError: true, flush: true)
+        }
     }
 
     static ActiveMQMapMessage createJmsMessage(Map data) {
@@ -77,6 +64,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
         return jmsMsg
     }
 
+    @Rollback
     def 'when entering the system with a SORObject that does not match an existing person, expect to see the new created UID on the provisioning queue'() {
         given:
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
@@ -91,6 +79,7 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
     }
 
 
+    @Rollback
     def 'when entering the system with a SORObject that does match an single existing person, expect to see that persons UID on the provisioning queue'() {
         given:
         def person = Person.get('002')
@@ -104,9 +93,10 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
         uidService.verify()
     }
 
+    @Rollback
     def 'when entering the system with a SORObject that matches multiple existing persons, do not expect to see a response on the queue but instead expect to find two rows in the PartialMatch table'() {
         given:
-        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json: [partialMatchingRecords: [[referenceId: '002', ruleNames: ["Potential #1","Potential #2"]], [referenceId: '003', ruleNames: ["Potential #2"]]]])
+        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.MULTIPLE_CHOICES.value(), json: [partialMatchingRecords: [[referenceId: '002', ruleNames: ["Potential #1", "Potential #2"]], [referenceId: '003', ruleNames: ["Potential #2"]]]])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
         newSORConsumerService.onMessage(createJmsMessage(data))
@@ -119,9 +109,10 @@ class NewSorConsumerServiceIntegrationSpec extends IntegrationSpec {
         rows.collect { it.person.id }.sort() == ['002', '003']
     }
 
+    @Rollback
     def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
         given:
-        def personPartialMatches = [new PersonPartialMatch(Person.get('002'), ['Potential #1']), new PersonPartialMatch(Person.get('003'),['Potential #2'])]
+        def personPartialMatches = [new PersonPartialMatch(Person.get('002'), ['Potential #1']), new PersonPartialMatch(Person.get('003'), ['Potential #2'])]
         databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), personPartialMatches)
         matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
