@@ -25,6 +25,7 @@ class JobAppointment extends PersonAppointment {
     static mapping = {
         table name: "JobAppointment"
         version false
+        id column: 'apptId', generator: 'foreign', params: [property: 'id'], sqlType: 'BIGINT'
         // workaround for GORM bug when using inheritance/table-per-subclass
         person_ column: PersonAppointment.getUidColumnName(), sqlType: 'VARCHAR(64)'
         jobCode column: 'jobCode', sqlType: 'VARCHAR(64)'
@@ -49,5 +50,5 @@ class JobAppointment extends PersonAppointment {
     Person getPerson_() { return person }
 
     // workaround for GORM bug when using inheritance/table-per-subclass
-    void setPerson_(Person person) { this.person = person }
+    void setPerson_(Person p) { person = p }
 }
