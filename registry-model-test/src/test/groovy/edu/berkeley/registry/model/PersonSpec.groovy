@@ -44,5 +44,7 @@ class PersonSpec extends Specification {
         /* Confirm jobAppointments collection persisted */
         person.jobAppointments?.size() > 0
         person.jobAppointments.first().apptIdentifier == "appt123"
+        /* Test findById() finds the uid */
+        Person.findById("uid123")
     }
 }

@@ -134,4 +134,8 @@ class Person {
     String getId() {
         return uid
     }
+
+    static Person findById(String id) {
+        return findByUid(id)
+    }
 }
