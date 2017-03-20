@@ -135,6 +135,10 @@ class Person {
         return uid
     }
 
+    /**
+     * @deprecated Use findByUid() or get() instead.
+     */
+    @Deprecated
     static Person findById(String id) {
         return findByUid(id)
     }
