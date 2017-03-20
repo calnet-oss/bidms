@@ -2,11 +2,15 @@ package edu.berkeley.registry.model.credentialManagement
 
 import edu.berkeley.registry.credentialManagement.RegistrationSource
 import edu.berkeley.registry.model.Identifier
+import edu.berkeley.registry.model.Person
 import org.hibernate.FetchMode
 
 class CredentialToken extends BaseToken {
     Identifier identifier
     RegistrationSource registrationSource = RegistrationSource.DEFAULT
+
+    static belongsTo = [person: Person]
+
     static constraints = {
         identifier nullable: false
         person nullable: false, unique: 'identifier'

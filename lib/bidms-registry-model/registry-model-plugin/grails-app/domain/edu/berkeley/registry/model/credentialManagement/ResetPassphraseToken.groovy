@@ -1,6 +1,10 @@
 package edu.berkeley.registry.model.credentialManagement
 
+import edu.berkeley.registry.model.Person
+
 class ResetPassphraseToken extends BaseToken {
+    static belongsTo = [person: Person]
+
     static constraints = {
         BaseToken.addBaseConstraints(delegate)
     }

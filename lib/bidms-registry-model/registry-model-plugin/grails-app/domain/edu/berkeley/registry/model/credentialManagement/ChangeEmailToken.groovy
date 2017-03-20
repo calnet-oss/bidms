@@ -1,7 +1,12 @@
 package edu.berkeley.registry.model.credentialManagement
 
+import edu.berkeley.registry.model.Person
+
 class ChangeEmailToken extends BaseToken {
     String emailAddress
+
+    static belongsTo = [person: Person]
+
     static constraints = {
         emailAddress nullable: false, email: true
         BaseToken.addBaseConstraints(delegate)
