@@ -7,14 +7,14 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PartialMatch {
-    SORObject sorObject
-    Person person
     Date dateCreated = new Date()
     Boolean isReject = false
     String metaDataJson = '{}'
     Map metaData = [:]
 
     static transients = ['metaData']
+
+    static belongsTo = [person: Person, sorObject: SORObject]
 
     static constraints = {
         sorObject nullable: false, unique: 'person'
