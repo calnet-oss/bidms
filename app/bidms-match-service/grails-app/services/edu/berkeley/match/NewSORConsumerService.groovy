@@ -7,6 +7,7 @@ import org.apache.camel.Handler
 import org.apache.camel.Message
 import org.apache.camel.component.jms.JmsMessage
 import org.hibernate.ObjectNotFoundException
+import org.hibernate.SessionFactory
 
 import javax.jms.MapMessage
 
@@ -20,7 +21,7 @@ class NewSORConsumerService {
     def matchClientService
     def uidClientService
     def databaseService
-    def transactionService
+    SessionFactory sessionFactory
 
     @Handler
     void process(Exchange exchange) {
@@ -67,10 +68,10 @@ class NewSORConsumerService {
         finally {
             // avoid hibernate cache growth
             try {
-                transactionService.flushAndClearHibernateSession()
+                sessionFactory?.currentSession?.clear()
             }
             catch (Exception e) {
-                log.error("failed to flush and clear hibernate session at the end of onMessage()", e)
+                log.error("failed to clear hibernate session at the end of onMessage()", e)
             }
         }
 
