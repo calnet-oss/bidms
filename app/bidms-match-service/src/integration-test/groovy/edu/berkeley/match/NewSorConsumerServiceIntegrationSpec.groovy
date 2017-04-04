@@ -17,11 +17,6 @@ import spock.lang.Specification
 @Slf4j
 @Integration
 class NewSorConsumerServiceIntegrationSpec extends Specification {
-    /*
-    @Shared
-    private static Configuration _configuration
-    */
-
     @Shared
     def grailsApplication
 
@@ -109,23 +104,41 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         rows.collect { it.person.id }.sort() == ['002', '003']
     }
 
-    @Rollback
     def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
         given:
-        def personPartialMatches = [new PersonPartialMatch(Person.get('002'), ['Potential #1']), new PersonPartialMatch(Person.get('003'), ['Potential #2'])]
-        databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), personPartialMatches)
-        matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
+        PartialMatch.withNewTransaction {
+            PartialMatch.list().each {
+                it.delete(failOnError: true, flush: true)
+            }
+        }
+        Person.withNewTransaction {
+            def personPartialMatches = [new PersonPartialMatch(Person.get('002'), ['Potential #1']), new PersonPartialMatch(Person.get('003'), ['Potential #2'])]
+            databaseService.storePartialMatch(SORObject.findBySorPrimaryKeyAndSor("HR0001", SOR.findByName("HR")), personPartialMatches)
+        }
+        SORObject.withNewTransaction {
+            matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.OK.value(), json: [matchingRecord: [referenceId: '002']])
+        }
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
 
         when:
-        assert PartialMatch.list().size() == 2
-        PartialMatch.list().each { it.save(flush: true, failOnError: true) }
+        def pmSize = 0
+        PartialMatch.withNewTransaction {
+            pmSize = PartialMatch.list().size()
+        }
+        assert pmSize == 2
+        PartialMatch.withNewTransaction {
+            PartialMatch.list().each {
+                it.save(flush: true, failOnError: true)
+            }
+        }
         newSORConsumerService.onMessage(createJmsMessage(data))
-        def rows = PartialMatch.list()
+        def rows = null
+        PartialMatch.withNewTransaction {
+            rows = PartialMatch.list()
+        }
 
         then:
         matchEngine.verify()
         rows.size() == 0
     }
 }
-
