@@ -4,6 +4,7 @@ import edu.berkeley.registry.model.PartialMatch
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
+import edu.berkeley.util.gorm.TransactionService
 import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import grails.transaction.Rollback
@@ -22,6 +23,7 @@ class DatabaseServiceSpec extends Specification {
 
     def setup() {
         createModel()
+        service.transactionService = Mock(TransactionService)
     }
 
     void "when assigning a uid to a SORObject it will be persisted"() {

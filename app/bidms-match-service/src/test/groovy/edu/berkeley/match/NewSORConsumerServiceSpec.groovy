@@ -29,7 +29,7 @@ class NewSORConsumerServiceSpec extends Specification {
         service.matchClientService = Mock(MatchClientService)
         service.uidClientService = Mock(UidClientService)
         service.databaseService = Mock(DatabaseService)
-        service.transactionService = Mock(TransactionService)
+        service.databaseService.transactionService = Mock(TransactionService)
     }
 
     void "when a SOR has no match, a new UID is retrieved from the UIDService, the SOR is updated and provisioning is notified"() {
