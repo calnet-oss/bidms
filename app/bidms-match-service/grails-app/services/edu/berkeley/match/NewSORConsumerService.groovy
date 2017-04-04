@@ -60,9 +60,18 @@ class NewSORConsumerService {
 
             matchPerson(sorObject, sorAttributes)
         }
+        catch (Exception e) {
+            log.error("onMessage() failed", e)
+            throw e
+        }
         finally {
             // avoid hibernate cache growth
-            transactionService.flushAndClearHibernateSession()
+            try {
+                transactionService.flushAndClearHibernateSession()
+            }
+            catch (Exception e) {
+                log.error("failed to flush and clear hibernate session at the end of onMessage()", e)
+            }
         }
 
         return null
