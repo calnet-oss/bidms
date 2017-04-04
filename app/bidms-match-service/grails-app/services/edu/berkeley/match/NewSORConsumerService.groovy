@@ -2,6 +2,7 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SORObject
 import grails.transaction.Transactional
+import org.apache.camel.Exchange
 import org.apache.camel.Handler
 import org.apache.camel.Message
 import org.apache.camel.component.jms.JmsMessage
@@ -9,7 +10,7 @@ import org.hibernate.ObjectNotFoundException
 
 import javax.jms.MapMessage
 
-@Transactional
+@Transactional(rollbackFor = Exception)
 class NewSORConsumerService {
 
     // these correspond to properties in SorKeyData from the registry-sor-key-data plugin
@@ -22,6 +23,10 @@ class NewSORConsumerService {
     def transactionService
 
     @Handler
+    void process(Exchange exchange) {
+        onMessage(exchange.in)
+    }
+
     Object onMessage(Message camelMsg) {
         return onMessage(camelMsg.getBody())
     }
