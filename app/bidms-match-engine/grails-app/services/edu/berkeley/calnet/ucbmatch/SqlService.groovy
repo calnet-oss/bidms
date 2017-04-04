@@ -8,8 +8,9 @@ import javax.sql.DataSource
 @Transactional
 class SqlService {
     DataSource dataSource_functionalDS
+    DataSource dataSource
 
     Sql getSqlInstance() {
-        new Sql(dataSource_functionalDS)
+        new Sql(dataSource_functionalDS ?: dataSource)
     }
 }

@@ -20,13 +20,13 @@ class PersonController {
             } else {
                 log.info "No Match found with params: ${request.JSON}"
                 render(status: result.responseCode, contentType: "application/json") {
-                    text = "not found"
+                    text: "not found"
                 }
             }
         } catch (Exception ex) {
             log.error("Exception", ex)
             render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {
-                text = ex.message
+                text: ex.message
             }
         }
     }
