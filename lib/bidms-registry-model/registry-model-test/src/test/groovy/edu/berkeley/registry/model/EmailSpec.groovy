@@ -15,10 +15,10 @@ class EmailSpec extends AbstractDomainObjectSpec {
 
     void "confirm Email LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person"])
+        testExcludes(["person", "emailAddressLowerCase"])
     }
 
-    void "confirm Identifier logicalHashCodeProperties"() {
+    void "confirm Email logicalHashCodeProperties"() {
         expect:
         testHashCodeProperties(["emailType", "sorObject", "emailAddress"])
     }
