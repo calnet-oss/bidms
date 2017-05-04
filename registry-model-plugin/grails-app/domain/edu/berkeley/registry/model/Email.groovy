@@ -43,4 +43,12 @@ class Email implements Comparable {
     int compareTo(obj) {
         return hashCode() <=> obj?.hashCode()
     }
+
+    String getEmailAddressLowerCase() {
+        return emailAddress?.toLowerCase()
+    }
+
+    void setEmailAddressLowerCase() {
+        throw new UnsupportedOperationException("emailAddressLowerCase is read-only.  Use setEmailAddress() instead.")
+    }
 }
