@@ -18,8 +18,9 @@ abstract class AuditUtil {
      * Log an audit event operation to the audit log by converting it to JSON and logging it to the audit log via SLF4J.
      *
      * @param event An AuditEvent object that contains information about the audit log event.
+     * @param noLoggedInUser Defaults to false, but if true, loggedInUid and loggedInUsername won't be added to the log message.
      */
-    static void logAuditEvent(AuditEvent event) {
+    static void logAuditEvent(AuditEvent event, boolean noLoggedInUser = false) {
         event.attrs.op = event.op.name()
         event.attrs.result = (event instanceof AuditSuccessEvent ? "success" : "fail")
         event.attrs.app = Metadata.current?.getApplicationName()
@@ -30,8 +31,10 @@ abstract class AuditUtil {
         if (event.request) {
             event.attrs.remoteIpAddr = event.request.remoteAddr
         }
-        event.attrs.loggedInUid = event.loggedInUid
-        event.attrs.loggedInUsername = event.loggedInUsername ?: event.request?.remoteUser
+        if (!noLoggedInUser) {
+            event.attrs.loggedInUid = event.loggedInUid
+            event.attrs.loggedInUsername = event.loggedInUsername ?: event.request?.remoteUser
+        }
         if (event.forUid) {
             event.attrs.forUid = event.forUid
         }
