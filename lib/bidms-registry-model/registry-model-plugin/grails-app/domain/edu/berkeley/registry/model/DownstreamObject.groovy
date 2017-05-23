@@ -35,7 +35,6 @@ class DownstreamObject implements Serializable, Comparable {
     String systemPrimaryKey
     String objJson
     Long hash
-    boolean markedForDeletion
     Integer ownershipLevel
 
     // hash is a transient because it's always updated by DB trigger
@@ -56,7 +55,6 @@ class DownstreamObject implements Serializable, Comparable {
         systemPrimaryKey column: 'sysObjKey', sqlType: 'VARCHAR(255)'
         person column: DownstreamObject.getUidColumnName(), sqlType: 'VARCHAR(64)'
         hash column: 'hash', sqlType: 'BIGINT'
-        markedForDeletion column: 'markedForDeletion', sqlType: 'BOOLEAN', defaultValue: false
         ownershipLevel column: 'ownershipLevel', sqlType: 'INTEGER'
     }
 
