@@ -11,7 +11,9 @@ import groovy.json.JsonSlurper
 @LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json"])
 class DownstreamObject implements Serializable, Comparable {
 
-    // so that our rendered map includes nulls, which is important for OpenIDM
+    // so that our rendered map includes nulls, which is important for the
+    // downstream provisioning engine to know which attributes to clear out
+    // downstream
     static class IncludeNullsMap<K, V> extends LinkedHashMap<K, V> implements IncludesExcludesInterface {
         @Override
         List<String> getExcludes() {
