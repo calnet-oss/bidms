@@ -8,19 +8,21 @@ import org.apache.camel.Message
 import org.apache.camel.component.jms.JmsMessage
 import org.hibernate.ObjectNotFoundException
 import org.hibernate.SessionFactory
+import org.springframework.transaction.annotation.Propagation
 
 import javax.jms.MapMessage
 
-@Transactional(rollbackFor = Exception)
+@Transactional(rollbackFor = Exception, readOnly = true)
 class NewSORConsumerService {
 
-    // these correspond to properties in SorKeyData from the registry-sor-key-data plugin
+    // these correspond to properties in SorKeyData from the
+    // registry-sor-key-data plugin
     static MATCH_STRING_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
     static MATCH_BOOLEAN_FIELDS = ['matchOnly']
 
-    def matchClientService
-    def uidClientService
-    def databaseService
+    MatchClientService matchClientService
+    UidClientService uidClientService
+    DatabaseService databaseService
     SessionFactory sessionFactory
 
     @Handler
@@ -29,41 +31,18 @@ class NewSORConsumerService {
     }
 
     Object onMessage(Message camelMsg) {
-        return onMessage(camelMsg.getBody())
-    }
-
-    Object onMessage(JmsMessage camelJmsMsg) {
-        return onMessage(camelJmsMsg.getJmsMessage())
-    }
-
-    /**
-     * Receives a message on the newSORQueue and processes it according to the rules
-     * @param msg
-     * @return
-     */
-    Object onMessage(javax.jms.Message msg) {
-        if (!(msg instanceof MapMessage)) {
-            throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
-        }
-        MapMessage message = (MapMessage) msg
-
         try {
-            SORObject sorObject
-            try {
-                sorObject = getSorObjectFromMessage(message)
-            }
-            catch (ObjectNotFoundException e) {
-                log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
-                return null
-            }
-
-            Map<String, Object> sorAttributes = getAttributesFromMessage(message)
-
-            matchPerson(sorObject, sorAttributes)
+            return onMessage(camelMsg.getBody())
         }
         catch (Exception e) {
             log.error("onMessage() failed", e)
             throw e
+        }
+    }
+
+    Object onMessage(JmsMessage camelJmsMsg) {
+        try {
+            return onMessage(camelJmsMsg.getJmsMessage())
         }
         finally {
             // avoid hibernate cache growth
@@ -74,53 +53,102 @@ class NewSORConsumerService {
                 log.error("failed to clear hibernate session at the end of onMessage()", e)
             }
         }
+    }
+
+    /**
+     * Receives a message on the newSORQueue and processes it according to
+     * the rules
+     */
+    Object onMessage(javax.jms.Message msg) {
+        if (!(msg instanceof MapMessage)) {
+            throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
+        }
+        MapMessage message = (MapMessage) msg
+
+        SORObject sorObject
+        try {
+            sorObject = getSorObjectFromMessage(message)
+        }
+        catch (ObjectNotFoundException e) {
+            log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
+            return null
+        }
+
+        matchPerson(sorObject, getAttributesFromMessage(message))
 
         return null
     }
 
     void matchPerson(SORObject sorObject, Map<String, Object> sorAttributes) {
-        log.debug("Attempting to match $sorAttributes")
-        def match = matchClientService.match(sorAttributes)
-        log.debug("Response from MatchService: $match")
+        // done in a new transaction
+        PersonMatch personMatch = doMatch(sorObject, sorAttributes)
+        // resumes previous read-only transaction
+        doProvisionIfNecessary(personMatch, sorObject)
+    }
 
-        // If it is a partial match just store the partial and return
-        if (match instanceof PersonPartialMatches) {
-            databaseService.storePartialMatch(sorObject, match.partialMatches)
-            return
+    @Transactional(rollbackFor = Exception, propagation = Propagation.REQUIRES_NEW)
+    PersonMatch doMatch(SORObject sorObject, Map<String, Object> sorAttributes) {
+        try {
+            log.debug("Attempting to match $sorAttributes")
+            PersonMatch match = matchClientService.match(sorAttributes)
+            log.debug("Response from MatchService: $match")
+
+            // If it is a partial match just store the partial and return
+            if (match instanceof PersonPartialMatches) {
+                databaseService.storePartialMatch(sorObject, match.partialMatches)
+            }
+            // if it is an exact match assign the uid and provision
+            else if (match instanceof PersonExactMatch) {
+                databaseService.assignUidToSOR(sorObject, match.person)
+            }
+
+            // if it's an existing match, do nothing
+
+            return match
         }
-        // if it is an exact match assign the uid and provision
+        finally {
+            // avoid hibernate cache growth
+            try {
+                sessionFactory?.currentSession?.clear()
+            }
+            catch (Exception e) {
+                log.error("failed to clear hibernate session at the end of doMatch()", e)
+            }
+        }
+    }
+
+    void doProvisionIfNecessary(PersonMatch match, SORObject sorObject) {
+        // if it is an exact match, provision
         if (match instanceof PersonExactMatch) {
-            databaseService.assignUidToSOR(sorObject, match.person)
             uidClientService.provisionUid(match.person)
-            return
-        }
-        // if it's an existing match, do nothing
-        if (match instanceof PersonExistingMatch) {
-            return
-        }
-        // provision a new person
-        if (!(match instanceof PersonNoMatch)) {
-            throw new RuntimeException("Expecting match to be an instanceof PersonNoMatch.  Instead it's: ${match?.getClass()?.name}")
-        }
-        PersonNoMatch personNoMatch = (PersonNoMatch) match
-        /**
-         * If matchOnly=true, then matchOnly flag was true on match input,
-         * meaning this person should not go to the newUid queue.  This
-         * happens when we receive data about a person from a SOR where the
-         * "SOR" really isn't the true System of Record for the person.
-         * Example: Employees in Campus Solutions that were imported from
-         * HCM.
-         */
-        if (!personNoMatch.matchOnly) {
-            uidClientService.provisionNewUid(sorObject)
+        } else if (match instanceof PersonExistingMatch || match instanceof PersonPartialMatches) {
+            // do nothing
+        } else if (match instanceof PersonNoMatch) {
+            // provision a new person
+            PersonNoMatch personNoMatch = (PersonNoMatch) match
+
+            /**
+             * If matchOnly=true, then matchOnly flag was true on match
+             * input, meaning this person should not go to the newUid queue. 
+             * This happens when we receive data about a person from a SOR
+             * where the "SOR" really isn't the true System of Record for
+             * the person.  Example: Employees in Campus Solutions that were
+             * imported from HCM.
+             */
+            if (!personNoMatch.matchOnly) {
+                uidClientService.provisionNewUid(sorObject)
+            } else {
+                log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
+            }
         } else {
-            log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
+            throw new RuntimeException("Unexpected match type: ${match?.getClass()?.name}")
         }
     }
 
     /**
-     * Finds the SORObject by systemOfRecord and sorPrimaryKey found in the MapMessage
-     * @param message
+     * Finds the SORObject by systemOfRecord and sorPrimaryKey found in the
+     * MapMessage.
+     *
      * @return a SORObject key (or null if not found)
      */
     private SORObject getSorObjectFromMessage(MapMessage message) {
@@ -136,9 +164,7 @@ class NewSORConsumerService {
     }
 
     /**
-     * Converts a mapMessage to a Map of attributes
-     * @param message
-     * @return
+     * Converts a mapMessage to a Map of attributes.
      */
     private Map<String, Object> getAttributesFromMessage(MapMessage message) {
         def sorAttributes = MATCH_STRING_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value } +

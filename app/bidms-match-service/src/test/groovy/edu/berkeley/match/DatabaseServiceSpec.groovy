@@ -23,7 +23,6 @@ class DatabaseServiceSpec extends Specification {
 
     def setup() {
         createModel()
-        service.transactionService = Mock(TransactionService)
     }
 
     void "when assigning a uid to a SORObject it will be persisted"() {

@@ -1,14 +1,16 @@
 package edu.berkeley.match
+
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SORObject
 import grails.transaction.Transactional
 import org.springframework.http.HttpStatus
 
-@Transactional
+@Transactional(rollbackFor = Exception)
 class UidClientService {
 
     def restClient
     def grailsApplication
+
     /**
      * Makes a REST call to the Registry Provisioning to provision the given person
      * @param Person to provision
@@ -20,7 +22,7 @@ class UidClientService {
         def response = restClient.post("$endpoint?uid=${person.uid}&synchronousDownstream=true") {
             accept 'application/json'
         }
-        if(response.statusCode != HttpStatus.OK) {
+        if (response.statusCode != HttpStatus.OK) {
             log.error("Error provisioning existing person ${person.uid}, response code: ${response.statusCode}:${response.text}")
         }
         log.debug "Successfully provisioned exising person ${person.uid}"
@@ -37,18 +39,15 @@ class UidClientService {
         def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}&synchronousDownstream=true") {
             accept 'application/json'
         }
-        if(response.statusCode != HttpStatus.OK) {
+        if (response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
-        }
-        else if(!response.json?.provisioningSuccessful) {
+        } else if (!response.json?.provisioningSuccessful) {
             if (response.json?.provisioningErrorMessage) {
                 log.warn "Error provisioning new sorObject $sorObject.id for person ${response.json.uid}: ${response.json.provisioningErrorMessage}"
-            }
-            else {
+            } else {
                 log.warn "Error provisioning new sorObject $sorObject.id: ${response.text}"
             }
-        }
-        else {
+        } else {
             log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
         }
     }
