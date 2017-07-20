@@ -22,4 +22,9 @@ class DateOfBirthSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["sorObject", "dateOfBirthMMDD", "dateOfBirth"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

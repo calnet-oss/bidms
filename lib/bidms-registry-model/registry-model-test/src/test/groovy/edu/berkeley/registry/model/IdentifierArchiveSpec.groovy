@@ -22,4 +22,9 @@ class IdentifierArchiveSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["identifierType", "originalSorObjectId", "identifier", "wasActive", "wasPrimary", "oldWeight"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

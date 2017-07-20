@@ -37,4 +37,9 @@ class PersonNameSpec extends AbstractDomainObjectSpec {
                 "PhD"
         ]
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

@@ -8,8 +8,18 @@ import org.hibernate.FetchMode
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
 @ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat", "endOfRoleGraceTimeUseOverrideIfLater"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated", "endOfRoleGraceTimeUseOverrideIfLater"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "originalPersonRoleId", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated", "endOfRoleGraceTimeUseOverrideIfLater"],
+        changeCallbackClass = PersonRoleArchiveHashCodeChangeCallback
+)
 class PersonRoleArchive implements Comparable {
+
+    static class PersonRoleArchiveHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<PersonRoleArchive> {
+        PersonRoleArchiveHashCodeChangeCallback() {
+            super("archivedRoles")
+        }
+    }
+
     Long id
     AssignableRole role
     Long originalPersonRoleId

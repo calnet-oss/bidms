@@ -6,8 +6,18 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject", "emailAddressLowerCase"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "emailAddressLowerCase"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "emailAddressLowerCase"],
+        changeCallbackClass = EmailHashCodeChangeCallback
+)
 class Email implements Comparable {
+
+    static class EmailHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<Email> {
+        EmailHashCodeChangeCallback() {
+            super("emails")
+        }
+    }
+
     Long id
     EmailType emailType
     SORObject sorObject

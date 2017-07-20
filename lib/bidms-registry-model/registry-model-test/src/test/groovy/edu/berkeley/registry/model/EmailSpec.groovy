@@ -22,4 +22,9 @@ class EmailSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["emailType", "sorObject", "emailAddress"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

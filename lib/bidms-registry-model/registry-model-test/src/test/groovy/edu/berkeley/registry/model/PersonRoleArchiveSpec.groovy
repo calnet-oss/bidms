@@ -56,4 +56,9 @@ class PersonRoleArchiveSpec extends AbstractDomainObjectSpec {
         current            | earlier                    | current
         current            | later                      | later
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

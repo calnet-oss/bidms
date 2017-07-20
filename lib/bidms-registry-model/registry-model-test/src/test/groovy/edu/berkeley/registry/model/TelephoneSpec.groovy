@@ -22,4 +22,9 @@ class TelephoneSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["telephoneType", "sorObject", "phoneNumber", "extension"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

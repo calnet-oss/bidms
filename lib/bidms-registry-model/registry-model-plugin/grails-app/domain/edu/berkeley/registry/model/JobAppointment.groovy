@@ -5,8 +5,18 @@ import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig(excludes = ["person", "sorObject", "person_"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "person_"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "person_"],
+        changeCallbackClass = JobAppointmentHashCodeChangeCallback
+)
 class JobAppointment extends PersonAppointment {
+
+    static class JobAppointmentHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<JobAppointment> {
+        JobAppointmentHashCodeChangeCallback() {
+            super("jobAppointments")
+        }
+    }
+
     String jobCode
     String jobTitle
     String deptCode

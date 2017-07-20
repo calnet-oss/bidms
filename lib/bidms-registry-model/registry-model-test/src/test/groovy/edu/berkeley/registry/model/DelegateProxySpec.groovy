@@ -19,4 +19,9 @@ class DelegateProxySpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["delegateProxyType", "sourceProxyId", "delegateProxySorObject", "delegateProxySecurityKey", "proxyForId"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

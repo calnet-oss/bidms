@@ -1,13 +1,22 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"],
+        changeCallbackClass = IdentifierHashCodeChangeCallback
+)
 class Identifier implements Comparable {
+
+    static class IdentifierHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<Identifier> {
+        IdentifierHashCodeChangeCallback() {
+            super("identifiers")
+        }
+    }
 
     Long id
     IdentifierType identifierType

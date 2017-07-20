@@ -9,8 +9,17 @@ import groovy.json.JsonSlurper
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject", "honorifics"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "honorificsAsList"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "honorificsAsList"],
+        changeCallbackClass = PersonNameHashCodeChangeCallback
+)
 class PersonName implements Comparable {
+
+    static class PersonNameHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<PersonName> {
+        PersonNameHashCodeChangeCallback() {
+            super("names")
+        }
+    }
 
     Long id
     NameType nameType

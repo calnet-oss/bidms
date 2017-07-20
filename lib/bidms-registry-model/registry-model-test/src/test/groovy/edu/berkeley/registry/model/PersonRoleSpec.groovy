@@ -21,4 +21,9 @@ class PersonRoleSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["role", "roleValue"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }
