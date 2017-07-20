@@ -6,8 +6,17 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"],
+        changeCallbackClass = IdentifierArchiveHashCodeChangeCallback
+)
 class IdentifierArchive implements Comparable {
+
+    static class IdentifierArchiveHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<IdentifierArchive> {
+        IdentifierArchiveHashCodeChangeCallback() {
+            super("archivedIdentifiers")
+        }
+    }
 
     Long id
     IdentifierType identifierType

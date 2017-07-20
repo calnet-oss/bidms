@@ -87,4 +87,9 @@ class DownstreamObjectSpec extends AbstractDomainObjectSpec {
         obj.json.name == 'archer'
         obj.json.containsKey("middleName")
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

@@ -1,15 +1,24 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.hibernate.usertype.JSONBType
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.IncludesExcludesInterface
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import groovy.json.JsonSlurper
 
 @ConverterConfig(excludes = ["person", "objJson"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json"],
+        changeCallbackClass = DownstreamObjectHashCodeChangeCallback
+)
 class DownstreamObject implements Serializable, Comparable {
+
+    static class DownstreamObjectHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<DownstreamObject> {
+        DownstreamObjectHashCodeChangeCallback() {
+            super("downstreamObjects")
+        }
+    }
 
     // so that our rendered map includes nulls, which is important for the
     // downstream provisioning engine to know which attributes to clear out

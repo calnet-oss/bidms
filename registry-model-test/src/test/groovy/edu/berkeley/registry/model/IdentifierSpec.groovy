@@ -22,4 +22,9 @@ class IdentifierSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["identifierType", "sorObject", "identifier", "isActive", "isPrimary", "weight"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

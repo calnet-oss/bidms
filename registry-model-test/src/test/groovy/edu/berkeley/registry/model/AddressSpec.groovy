@@ -18,8 +18,13 @@ class AddressSpec extends AbstractDomainObjectSpec {
         testExcludes(["person"])
     }
 
-    void "confirm Identifier logicalHashCodeProperties"() {
+    void "confirm Address logicalHashCodeProperties"() {
         expect:
         testHashCodeProperties(["addressType", "sorObject", "address1", "address2", "address3", "city", "regionState", "postalCode", "country"])
+    }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
     }
 }

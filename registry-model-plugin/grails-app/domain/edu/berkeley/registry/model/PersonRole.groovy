@@ -1,15 +1,25 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
 import org.hibernate.FetchMode
 
 // roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
 // used here in this class as a foreign key reference for indexing purposes
 @ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "roleAsgnUniquePerCat"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "roleAsgnUniquePerCat"],
+        changeCallbackClass = PersonRoleHashCodeChangeCallback
+)
 class PersonRole implements Comparable {
+
+    static class PersonRoleHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<PersonRole> {
+        PersonRoleHashCodeChangeCallback() {
+            super("assignedRoles")
+        }
+    }
+
     Long id
     AssignableRole role
     String roleValue

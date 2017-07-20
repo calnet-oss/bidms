@@ -21,4 +21,9 @@ class JobAppointmentSpec extends AbstractDomainObjectSpec {
         expect:
         testHashCodeProperties(["jobCode", "jobTitle", "deptCode", "deptName", "hireDate", "apptType", "sorObject", "apptIdentifier", "isPrimaryAppt", "beginDate", "endDate"])
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

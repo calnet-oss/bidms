@@ -64,4 +64,9 @@ class TrackStatusSpec extends AbstractDomainObjectSpec {
         '{"x":["AA","BB"]}' | [x: ['AA', 'BB']]
         '{"x":[1,2,3]}'     | [x: [1, 2, 3]]
     }
+
+    void "confirm has hash code change callback"() {
+        expect:
+        testHasHashCodeChangeCallback()
+    }
 }

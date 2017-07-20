@@ -6,8 +6,18 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import org.hibernate.FetchMode
 
 @ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"],
+        changeCallbackClass = AddressHashCodeChangeCallback
+)
 class Address implements Comparable {
+
+    static class AddressHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<Address> {
+        AddressHashCodeChangeCallback() {
+            super("addresses")
+        }
+    }
+
     Long id
     AddressType addressType
     SORObject sorObject

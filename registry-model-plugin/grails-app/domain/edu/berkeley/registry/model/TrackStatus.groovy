@@ -9,8 +9,17 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 @ConverterConfig(includes = ['id', 'trackStatusType', 'timeCreated', 'description', 'metaData'])
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "metaData", "metaDataJson"])
+@LogicalEqualsAndHashCode(
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "metaData", "metaDataJson"],
+        changeCallbackClass = TrackStatusHashCodeChangeCallback
+)
 class TrackStatus implements Comparable {
+    static class TrackStatusHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<TrackStatus> {
+        TrackStatusHashCodeChangeCallback() {
+            super("trackStatuses")
+        }
+    }
+
     Long id
     TrackStatusType trackStatusType
     Date timeCreated
