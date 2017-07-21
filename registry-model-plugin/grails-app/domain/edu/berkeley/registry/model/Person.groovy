@@ -1,6 +1,9 @@
 package edu.berkeley.registry.model
 
+import edu.berkeley.hibernate.usertype.RegistrySortedSetType
 import org.grails.core.exceptions.GrailsRuntimeException
+
+import java.util.concurrent.ConcurrentSkipListSet
 
 class Person {
 
@@ -12,19 +15,20 @@ class Person {
     // We use sorted sets so the sets are ordered the same way each time a
     // person is queried.  This is particularly relevant for JSON
     // generation.  We want the JSON output to look the same each time.
-    SortedSet<Address> addresses
-    SortedSet<PersonName> names
-    SortedSet<DateOfBirth> datesOfBirth
-    SortedSet<Identifier> identifiers
-    SortedSet<Email> emails
-    SortedSet<Telephone> telephones
-    SortedSet<PersonRole> assignedRoles
-    SortedSet<TrackStatus> trackStatuses
-    SortedSet<DelegateProxy> delegations
-    SortedSet<DownstreamObject> downstreamObjects
-    SortedSet<JobAppointment> jobAppointments
-    SortedSet<IdentifierArchive> archivedIdentifiers
-    SortedSet<PersonRoleArchive> archivedRoles
+    // Instantiating the set is necessary when using RegistrySortedSetType.
+    SortedSet<Address> addresses = RegistrySortedSetType.newSet(Address)
+    SortedSet<PersonName> names = RegistrySortedSetType.newSet(PersonName)
+    SortedSet<DateOfBirth> datesOfBirth = RegistrySortedSetType.newSet(DateOfBirth)
+    SortedSet<Identifier> identifiers = RegistrySortedSetType.newSet(Identifier)
+    SortedSet<Email> emails = RegistrySortedSetType.newSet(Email)
+    SortedSet<Telephone> telephones = RegistrySortedSetType.newSet(Telephone)
+    SortedSet<PersonRole> assignedRoles = RegistrySortedSetType.newSet(PersonRole)
+    SortedSet<TrackStatus> trackStatuses = RegistrySortedSetType.newSet(TrackStatus)
+    SortedSet<DelegateProxy> delegations = RegistrySortedSetType.newSet(DelegateProxy)
+    SortedSet<DownstreamObject> downstreamObjects = RegistrySortedSetType.newSet(DownstreamObject)
+    SortedSet<JobAppointment> jobAppointments = RegistrySortedSetType.newSet(JobAppointment)
+    SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive)
+    SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive)
 
     static hasMany = [
             addresses          : Address,
@@ -54,20 +58,20 @@ class Person {
         timeCreated column: 'timeCreated', insertable: false, updateable: false
         timeUpdated column: 'timeUpdated', insertable: false, updateable: false
         isLocked column: 'isLocked', sqlType: 'BOOLEAN'
-        names cascade: "all-delete-orphan", batchSize: 25
-        telephones cascade: "all-delete-orphan", batchSize: 25
-        addresses cascade: "all-delete-orphan", batchSize: 25
-        emails cascade: "all-delete-orphan", batchSize: 25
-        datesOfBirth cascade: "all-delete-orphan", batchSize: 25
-        identifiers cascade: "all-delete-orphan", batchSize: 25
-        assignedRoles cascade: "all-delete-orphan", batchSize: 25
-        trackStatuses cascade: "all-delete-orphan", batchSize: 25
-        delegations cascade: "all-delete-orphan", batchSize: 25
-        downstreamObjects cascade: "all-delete-orphan", batchSize: 25
-        jobAppointments cascade: "all-delete-orphan", batchSize: 25
+        names cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        telephones cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        addresses cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        emails cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        datesOfBirth cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        identifiers cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        assignedRoles cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        trackStatuses cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        delegations cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        downstreamObjects cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
+        jobAppointments cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
         // archivedIdentifiers is read-only
-        archivedIdentifiers batchSize: 25
-        archivedRoles cascade: "all-delete-orphan", batchSize: 25
+        archivedIdentifiers batchSize: 25, type: RegistrySortedSetType
+        archivedRoles cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
     }
 
     protected void validatedAssignedRoles() {
@@ -94,8 +98,9 @@ class Person {
                 throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from assignedRoles first, using removeFromAssignedRoles().")
             }
 
-            /* Flip the in-grace/post-grace booleans, if need be.
-             * Necessary, otherwise validation errors could happen when saving the person. */
+            // Flip the in-grace/post-grace booleans, if need be. 
+            // Necessary, otherwise validation errors could happen when
+            // saving the person.
             resetArchivedRoleFlags(currentTime, role)
         }
 
@@ -125,6 +130,12 @@ class Person {
     def beforeValidate() {
         validatedArchivedRoles()
         validatedAssignedRoles()
+
+        // Recalculate the hash codes because changing grace flags changes
+        // the hash code and the hashCodeChangeCallback needs to be invoked
+        // here before Hibernate does its save.
+        archivedRoles?.each { it.hashCode() }
+        assignedRoles?.each { it.hashCode() }
     }
 
     void setId(String uid) {
