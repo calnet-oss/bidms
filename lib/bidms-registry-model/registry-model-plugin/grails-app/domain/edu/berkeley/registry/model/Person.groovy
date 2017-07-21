@@ -3,8 +3,6 @@ package edu.berkeley.registry.model
 import edu.berkeley.hibernate.usertype.RegistrySortedSetType
 import org.grails.core.exceptions.GrailsRuntimeException
 
-import java.util.concurrent.ConcurrentSkipListSet
-
 class Person {
 
     String uid
@@ -29,6 +27,43 @@ class Person {
     SortedSet<JobAppointment> jobAppointments = RegistrySortedSetType.newSet(JobAppointment)
     SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive)
     SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive)
+
+    Person safeRemoveFromAddresses(Address obj) { return safeRemoveFrom("addresses", obj) }
+
+    Person safeRemoveFromNames(PersonName obj) { return safeRemoveFrom("names", obj) }
+
+    Person safeRemoveFromDatesOfBirth(DateOfBirth obj) { return safeRemoveFrom("datesOfBirth", obj) }
+
+    Person safeRemoveFromIdentifiers(Identifier obj) { return safeRemoveFrom("identifiers", obj) }
+
+    Person safeRemoveFromEmails(Email obj) { return safeRemoveFrom("emails", obj) }
+
+    Person safeRemoveFromTelephones(Telephone obj) { return safeRemoveFrom("telephones", obj) }
+
+    Person safeRemoveFromAssignedRoles(PersonRole obj) { return safeRemoveFrom("assignedRoles", obj) }
+
+    Person safeRemoveFromTrackStatuses(TrackStatus obj) { return safeRemoveFrom("trackStatuses", obj) }
+
+    Person safeRemoveFromDelegations(DelegateProxy obj) { return safeRemoveFrom("delegations", obj) }
+
+    Person safeRemoveFromDownstreamObjects(DownstreamObject obj) { return safeRemoveFrom("downstreamObjects", obj) }
+
+    Person safeRemoveFromJobAppointments(JobAppointment obj) { return safeRemoveFrom("jobAppointments", obj) }
+
+    Person safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) { return safeRemoveFrom("archivedIdentifiers", obj) }
+
+    Person safeRemoveFromArchivedRoles(PersonRoleArchive obj) { return safeRemoveFrom("archivedRoles", obj) }
+
+    Person safeRemoveFrom(String collectionPropertyName, Object obj) {
+        // This will cause the sorted collection to be re-sorted if any of
+        // the hash codes have changed.  Relevant because SortedSet.remove()
+        // is dependent on proper ordering to find the object.
+        SortedSet collection = (SortedSet) getProperty(collectionPropertyName)
+        Collection cloned = (collection ? new ArrayList(collection) : null)
+        cloned?.each { it.hashCode() }
+
+        return removeFrom(collectionPropertyName, obj)
+    }
 
     static hasMany = [
             addresses          : Address,
