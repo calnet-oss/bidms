@@ -45,6 +45,7 @@ class DownstreamObject implements Serializable, Comparable {
     String objJson
     Long hash
     Integer ownershipLevel
+    String globUniqId
 
     // hash is a transient because it's always updated by DB trigger
     static transients = ['json', 'uid', 'hash']
@@ -53,6 +54,7 @@ class DownstreamObject implements Serializable, Comparable {
 
     static constraints = {
         systemPrimaryKey unique: 'system'
+        globUniqId nullable: true
     }
 
     static mapping = {
@@ -65,6 +67,7 @@ class DownstreamObject implements Serializable, Comparable {
         person column: DownstreamObject.getUidColumnName(), sqlType: 'VARCHAR(64)'
         hash column: 'hash', sqlType: 'BIGINT'
         ownershipLevel column: 'ownershipLevel', sqlType: 'INTEGER'
+        globUniqId column: 'globUniqId', sqlType: 'VARCHAR(64)'
     }
 
     Map getJson() {
