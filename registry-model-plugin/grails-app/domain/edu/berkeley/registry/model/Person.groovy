@@ -28,40 +28,74 @@ class Person {
     SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive)
     SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive)
 
+    Person safeAddToAddresses(Address obj) { return safeAddTo("addresses", obj) }
+
     Person safeRemoveFromAddresses(Address obj) { return safeRemoveFrom("addresses", obj) }
+
+    Person safeAddToNames(PersonName obj) { return safeAddTo("names", obj) }
 
     Person safeRemoveFromNames(PersonName obj) { return safeRemoveFrom("names", obj) }
 
+    Person safeAddToDatesOfBirth(DateOfBirth obj) { return safeAddTo("datesOfBirth", obj) }
+
     Person safeRemoveFromDatesOfBirth(DateOfBirth obj) { return safeRemoveFrom("datesOfBirth", obj) }
+
+    Person safeAddToIdentifiers(Identifier obj) { return safeAddTo("identifiers", obj) }
 
     Person safeRemoveFromIdentifiers(Identifier obj) { return safeRemoveFrom("identifiers", obj) }
 
+    Person safeAddToEmails(Email obj) { return safeAddTo("emails", obj) }
+
     Person safeRemoveFromEmails(Email obj) { return safeRemoveFrom("emails", obj) }
+
+    Person safeAddToTelephones(Telephone obj) { return safeAddTo("telephones", obj) }
 
     Person safeRemoveFromTelephones(Telephone obj) { return safeRemoveFrom("telephones", obj) }
 
+    Person safeAddToAssignedRoles(PersonRole obj) { return safeAddTo("assignedRoles", obj) }
+
     Person safeRemoveFromAssignedRoles(PersonRole obj) { return safeRemoveFrom("assignedRoles", obj) }
+
+    Person safeAddToTrackStatuses(TrackStatus obj) { return safeAddTo("trackStatuses", obj) }
 
     Person safeRemoveFromTrackStatuses(TrackStatus obj) { return safeRemoveFrom("trackStatuses", obj) }
 
+    Person safeAddToDelegations(DelegateProxy obj) { return safeAddTo("delegations", obj) }
+
     Person safeRemoveFromDelegations(DelegateProxy obj) { return safeRemoveFrom("delegations", obj) }
+
+    Person safeAddToDownstreamObjects(DownstreamObject obj) { return safeAddTo("downstreamObjects", obj) }
 
     Person safeRemoveFromDownstreamObjects(DownstreamObject obj) { return safeRemoveFrom("downstreamObjects", obj) }
 
+    Person safeAddToJobAppointments(JobAppointment obj) { return safeAddTo("jobAppointments", obj) }
+
     Person safeRemoveFromJobAppointments(JobAppointment obj) { return safeRemoveFrom("jobAppointments", obj) }
+
+    Person safeAddToArchivedIdentifiers(IdentifierArchive obj) { return safeAddTo("archivedIdentifiers", obj) }
 
     Person safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) { return safeRemoveFrom("archivedIdentifiers", obj) }
 
+    Person safeAddToArchivedRoles(PersonRoleArchive obj) { return safeAddTo("archivedRoles", obj) }
+
     Person safeRemoveFromArchivedRoles(PersonRoleArchive obj) { return safeRemoveFrom("archivedRoles", obj) }
 
-    Person safeRemoveFrom(String collectionPropertyName, Object obj) {
+    private void rebuildCollectionSetIfNecessary(String collectionPropertyName) {
         // This will cause the sorted collection to be re-sorted if any of
-        // the hash codes have changed.  Relevant because SortedSet.remove()
-        // is dependent on proper ordering to find the object.
+        // the hash codes have changed.  Relevant because SortedSet.add() and
+        // SortedSet.remove() is dependent on proper ordering to find the object.
         SortedSet collection = (SortedSet) getProperty(collectionPropertyName)
         Collection cloned = (collection ? new ArrayList(collection) : null)
         cloned?.each { it.hashCode() }
+    }
 
+    Person safeAddTo(String collectionPropertyName, Object obj) {
+        rebuildCollectionSetIfNecessary(collectionPropertyName)
+        return addTo(collectionPropertyName, obj)
+    }
+
+    Person safeRemoveFrom(String collectionPropertyName, Object obj) {
+        rebuildCollectionSetIfNecessary(collectionPropertyName)
         return removeFrom(collectionPropertyName, obj)
     }
 
