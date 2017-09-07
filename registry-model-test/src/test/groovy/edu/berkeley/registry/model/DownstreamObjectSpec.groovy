@@ -34,7 +34,7 @@ class DownstreamObjectSpec extends AbstractDomainObjectSpec {
 
     void "confirm DownstreamObject logicalHashCodeProperties"() {
         expect:
-        testHashCodeProperties(["systemPrimaryKey", "objJson", "hash", "ownershipLevel", "globUniqId", "system"])
+        testHashCodeProperties(["systemPrimaryKey", "objJson", "hash", "ownershipLevel", "globUniqId", "forceProvision", "system"])
     }
 
     def "test that a DownstreamObject can be found when exists"() {
