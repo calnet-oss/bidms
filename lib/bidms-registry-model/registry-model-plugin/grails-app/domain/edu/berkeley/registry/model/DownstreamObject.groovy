@@ -46,6 +46,7 @@ class DownstreamObject implements Serializable, Comparable {
     Long hash
     Integer ownershipLevel
     String globUniqId
+    boolean forceProvision
 
     // hash is a transient because it's always updated by DB trigger
     static transients = ['json', 'uid', 'hash']
@@ -68,6 +69,7 @@ class DownstreamObject implements Serializable, Comparable {
         hash column: 'hash', sqlType: 'BIGINT'
         ownershipLevel column: 'ownershipLevel', sqlType: 'INTEGER'
         globUniqId column: 'globUniqId', sqlType: 'VARCHAR(64)'
+        forceProvision column: 'forceProvision', sqlType: 'BOOLEAN'
     }
 
     Map getJson() {
