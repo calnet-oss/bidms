@@ -27,10 +27,11 @@ class NewSORConsumerService {
 
     @Handler
     void process(Exchange exchange) {
-        onMessage(exchange.in)
+        Map<String,String> result = onMessage(exchange.in)
+        exchange.out.body = result
     }
 
-    Object onMessage(Message camelMsg) {
+    Map<String,String> onMessage(Message camelMsg) {
         try {
             return onMessage(camelMsg.getBody())
         }
@@ -40,7 +41,7 @@ class NewSORConsumerService {
         }
     }
 
-    Object onMessage(JmsMessage camelJmsMsg) {
+    Map<String,String> onMessage(JmsMessage camelJmsMsg) {
         try {
             return onMessage(camelJmsMsg.getJmsMessage())
         }
@@ -59,7 +60,7 @@ class NewSORConsumerService {
      * Receives a message on the newSORQueue and processes it according to
      * the rules
      */
-    Object onMessage(javax.jms.Message msg) {
+    Map<String,String> onMessage(javax.jms.Message msg) {
         if (!(msg instanceof MapMessage)) {
             throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
         }
@@ -74,16 +75,31 @@ class NewSORConsumerService {
             return null
         }
 
-        matchPerson(sorObject, getAttributesFromMessage(message))
-
-        return null
+        return matchPerson(sorObject, getAttributesFromMessage(message))
     }
 
-    void matchPerson(SORObject sorObject, Map<String, Object> sorAttributes) {
+    Map<String, String> matchPerson(SORObject sorObject, Map<String, Object> sorAttributes) {
         // done in a new transaction
         PersonMatch personMatch = doMatch(sorObject, sorAttributes)
         // resumes previous read-only transaction
-        doProvisionIfNecessary(personMatch, sorObject)
+        String newlyGeneratedUid = doProvisionIfNecessary(personMatch, sorObject)
+
+        Map<String, String> resultMap = [:]
+        if (personMatch instanceof PersonExactMatch) {
+            resultMap.matchType = "exactMatch"
+            resultMap.uid = ((PersonExactMatch) personMatch).person.uid
+        } else if (personMatch instanceof PersonExistingMatch) {
+            resultMap.matchType = "existingMatch"
+            resultMap.uid = ((PersonExistingMatch) personMatch).person.uid
+        } else if (personMatch instanceof PersonNoMatch) {
+            resultMap.matchType = "noMatch"
+            // newlyGeneratedUid not guaranteed to be set.  It won't be set
+            // if matchOnly is true or if there was an error when calling
+            // the uid assignment service.
+            resultMap.uid = newlyGeneratedUid
+        }
+
+        return resultMap
     }
 
     @Transactional(rollbackFor = Exception, propagation = Propagation.REQUIRES_NEW)
@@ -117,7 +133,10 @@ class NewSORConsumerService {
         }
     }
 
-    void doProvisionIfNecessary(PersonMatch match, SORObject sorObject) {
+    /**
+     * @return If a new uid was generated for the SORObject, the uid is returned, otherwise null is returned.
+     */
+    String doProvisionIfNecessary(PersonMatch match, SORObject sorObject) {
         // if it is an exact match, provision
         if (match instanceof PersonExactMatch) {
             uidClientService.provisionUid(match.person)
@@ -136,13 +155,14 @@ class NewSORConsumerService {
              * imported from HCM.
              */
             if (!personNoMatch.matchOnly) {
-                uidClientService.provisionNewUid(sorObject)
+                return uidClientService.provisionNewUid(sorObject)
             } else {
                 log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
             }
         } else {
             throw new RuntimeException("Unexpected match type: ${match?.getClass()?.name}")
         }
+        return null /* no new uid */
     }
 
     /**

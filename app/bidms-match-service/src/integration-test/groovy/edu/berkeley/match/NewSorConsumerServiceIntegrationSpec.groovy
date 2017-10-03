@@ -67,8 +67,10 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         matchEngine.registerPost('/ucb-match/v1/person', statusCode: HttpStatus.NOT_FOUND.value())
         uidService.registerPost("/registry-provisioning/newUid/save?sorObjectId=${sorObject.id}&synchronousDownstream=true", statusCode: HttpStatus.OK.value(), json: [uid: '001', sorObjectId: '2', provisioningSuccessful: true])
         when:
-        newSORConsumerService.onMessage(createJmsMessage(data))
+        Map result = newSORConsumerService.onMessage(createJmsMessage(data))
         then:
+        result.matchType == "noMatch"
+        result.uid == "001"
         matchEngine.verify()
         uidService.verify()
     }
@@ -82,8 +84,10 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         uidService.registerPost("/registry-provisioning/provision/save?uid=${person.uid}&synchronousDownstream=true", statusCode: HttpStatus.OK.value(), json: [uid: '001', sorObjectId: '2', provisioningSuccessful: true])
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         when:
-        newSORConsumerService.onMessage(createJmsMessage(data))
+        Map result = newSORConsumerService.onMessage(createJmsMessage(data))
         then:
+        result.matchType == "exactMatch"
+        result.uid == "002"
         matchEngine.verify()
         uidService.verify()
     }
@@ -131,13 +135,15 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
                 it.save(flush: true, failOnError: true)
             }
         }
-        newSORConsumerService.onMessage(createJmsMessage(data))
+        Map result = newSORConsumerService.onMessage(createJmsMessage(data))
         def rows = null
         PartialMatch.withNewTransaction {
             rows = PartialMatch.list()
         }
 
         then:
+        result.matchType == "exactMatch"
+        result.uid == "002"
         matchEngine.verify()
         rows.size() == 0
     }

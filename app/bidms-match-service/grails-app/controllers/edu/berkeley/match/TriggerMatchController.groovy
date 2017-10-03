@@ -1,5 +1,7 @@
 package edu.berkeley.match
 
+import grails.converters.JSON
+
 import javax.servlet.http.HttpServletResponse
 
 class TriggerMatchController {
@@ -12,9 +14,13 @@ class TriggerMatchController {
             render(status: HttpServletResponse.SC_BAD_REQUEST)
         } else {
             log.debug("Sor Key Data attributes. $sorKeyDataCommand.attributes")
-            newSORConsumerService.matchPerson(sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes)
-            render(status: HttpServletResponse.SC_OK)
+            Map<String,String> result = newSORConsumerService.matchPerson(sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes)
+            if(result) {
+                render result as JSON
+            }
+            else {
+                render(status: HttpServletResponse.SC_OK)
+            }
         }
-
     }
 }

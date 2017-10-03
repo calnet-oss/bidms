@@ -33,7 +33,7 @@ class UidClientService {
      * @param sorObject the SORObject to pass to Registry Provisioning
      * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
-    void provisionNewUid(SORObject sorObject) {
+    String provisionNewUid(SORObject sorObject) {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
         // synchronousDownstream=true means synchronous downstream directory provisioning
         def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}&synchronousDownstream=true") {
@@ -49,6 +49,8 @@ class UidClientService {
             }
         } else {
             log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
+            return response.json.uid
         }
+        return null
     }
 }
