@@ -28,7 +28,9 @@ class NewSORConsumerService {
     @Handler
     void process(Exchange exchange) {
         Map<String,String> result = onMessage(exchange.in)
-        exchange.out.body = result
+        if (exchange.pattern.outCapable) {
+            exchange.out.body = result
+        }
     }
 
     Map<String,String> onMessage(Message camelMsg) {
