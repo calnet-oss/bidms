@@ -20,6 +20,7 @@ class SorKeyDataCommand implements Validateable {
     String socialSecurityNumber
     Map otherIds = [:]
     Boolean matchOnly
+    boolean synchronousDownstream = true
 
     SORObject getSorObject() {
         log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")

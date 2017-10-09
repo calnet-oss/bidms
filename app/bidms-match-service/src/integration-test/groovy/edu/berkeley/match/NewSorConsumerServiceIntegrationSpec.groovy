@@ -13,6 +13,7 @@ import org.apache.activemq.command.ActiveMQMapMessage
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @Slf4j
 @Integration
@@ -60,7 +61,8 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
     }
 
     @Rollback
-    def 'when entering the system with a SORObject that does not match an existing person, expect to see the new created UID on the provisioning queue'() {
+    @Unroll
+    def 'when entering the system with a SORObject that does not match an existing person, expect to see the new created UID on the provisioning queue: #description'() {
         given:
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
         def sorObject = SORObject.getBySorAndObjectKey(data.systemOfRecord, data.sorPrimaryKey)
@@ -73,6 +75,9 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         result.uid == "001"
         matchEngine.verify()
         uidService.verify()
+        where:
+        description                          | synchronousDownstream
+        "provision downstream synchronously" | true
     }
 
 

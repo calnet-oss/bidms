@@ -30,7 +30,7 @@ class TriggerMatchControllerSpec extends Specification {
         controller.matchPerson(new SorKeyDataCommand(attrMap))
 
         then:
-        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, attrMap)
+        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, attrMap, true)
         response.status == expectedStatus
 
         where:

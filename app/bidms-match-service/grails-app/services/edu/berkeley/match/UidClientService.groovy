@@ -16,10 +16,10 @@ class UidClientService {
      * @param Person to provision
      * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
-    void provisionUid(Person person) {
+    void provisionUid(Person person, boolean synchronousDownstream = true) {
         String endpoint = grailsApplication.config.rest.provisionUid.url
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        def response = restClient.post("$endpoint?uid=${person.uid}&synchronousDownstream=true") {
+        def response = restClient.post("$endpoint?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
             accept 'application/json'
         }
         if (response.statusCode != HttpStatus.OK) {
@@ -33,10 +33,10 @@ class UidClientService {
      * @param sorObject the SORObject to pass to Registry Provisioning
      * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
-    String provisionNewUid(SORObject sorObject) {
+    String provisionNewUid(SORObject sorObject, boolean synchronousDownstream = true) {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}&synchronousDownstream=true") {
+        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
             accept 'application/json'
         }
         if (response.statusCode != HttpStatus.OK) {

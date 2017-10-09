@@ -1,6 +1,11 @@
 package edu.berkeley.match
 
-import edu.berkeley.registry.model.*
+import edu.berkeley.registry.model.Identifier
+import edu.berkeley.registry.model.IdentifierType
+import edu.berkeley.registry.model.PartialMatch
+import edu.berkeley.registry.model.Person
+import edu.berkeley.registry.model.SOR
+import edu.berkeley.registry.model.SORObject
 import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
 import grails.test.mixin.Mock
@@ -9,13 +14,9 @@ import spock.lang.Specification
 
 import javax.jms.MapMessage
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
 @SuppressWarnings("GroovyAssignabilityCheck")
-// When using expectations in Spock
 @TestFor(NewSORConsumerService)
-@Mock([SOR, SORObject, Person, Identifier, IdentifierType])
+@Mock([SOR, SORObject, Person, Identifier, IdentifierType, PartialMatch])
 class NewSORConsumerServiceSpec extends Specification {
     SORObject sorObject
     Person person1
@@ -43,10 +44,10 @@ class NewSORConsumerServiceSpec extends Specification {
 
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonNoMatch()
-        1 * service.uidClientService.provisionNewUid(sorObject)
+        1 * service.uidClientService.provisionNewUid(sorObject, true)
         0 * service.databaseService.assignUidToSOR(_, _)
-        0 * service.uidClientService.provisionUid(_)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionUid(_, _)
+        0 * service.uidClientService.provisionNewUid(_, _)
     }
 
     void "when a SOR has no match and the matchOnly flag is set as a String, then no new UID is obtained"() {
@@ -62,8 +63,8 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]) >> new PersonNoMatch(matchOnly: true)
         0 * service.uidClientService.provisionNewUid(sorObject)
         0 * service.databaseService.assignUidToSOR(_, _)
-        0 * service.uidClientService.provisionUid(_)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionUid(_, _)
+        0 * service.uidClientService.provisionNewUid(_, _)
     }
 
     void "when a SOR has no match and the matchOnly flag is set as a Boolean, then no new UID is obtained"() {
@@ -78,8 +79,8 @@ class NewSORConsumerServiceSpec extends Specification {
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]) >> new PersonNoMatch(matchOnly: true)
         0 * service.uidClientService.provisionNewUid(sorObject)
         0 * service.databaseService.assignUidToSOR(_, _)
-        0 * service.uidClientService.provisionUid(_)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionUid(_, _)
+        0 * service.uidClientService.provisionNewUid(_, _)
     }
 
 
@@ -93,8 +94,8 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonExactMatch(person: person1)
         1 * service.databaseService.assignUidToSOR(sorObject, person1)
-        1 * service.uidClientService.provisionUid(person1)
-        0 * service.uidClientService.provisionNewUid(_)
+        1 * service.uidClientService.provisionUid(person1, true)
+        0 * service.uidClientService.provisionNewUid(_, _)
     }
 
     void "when a SOR has an existing match, provisioning is notified"() {
@@ -107,8 +108,8 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
         0 * service.databaseService.assignUidToSOR(sorObject, person1)
-        0 * service.uidClientService.provisionUid(person3)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionUid(person3, _)
+        0 * service.uidClientService.provisionNewUid(_, _)
     }
 
     void "when a SOR has partial matches, the matches are stored in the match bucket and provisioning is not notified"() {
@@ -121,10 +122,9 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(personPartialMatches)
         1 * service.databaseService.storePartialMatch(sorObject, personPartialMatches)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionNewUid(_, _)
         0 * service.databaseService.assignUidToSOR(*_)
-        0 * service.uidClientService.provisionUid(person1)
-
+        0 * service.uidClientService.provisionUid(person1, _)
     }
 
     void "check that service can be called directly to match record"() {
@@ -134,9 +134,9 @@ class NewSORConsumerServiceSpec extends Specification {
         then:
         1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', otherIds: [employeeId: '123']]) >> new PersonPartialMatches(personPartialMatches)
         1 * service.databaseService.storePartialMatch(sorObject, personPartialMatches)
-        0 * service.uidClientService.provisionNewUid(_)
+        0 * service.uidClientService.provisionNewUid(_, _)
         0 * service.databaseService.assignUidToSOR(*_)
-        0 * service.uidClientService.provisionUid(person1)
+        0 * service.uidClientService.provisionUid(person1, _)
     }
 
     private MapMessage mockMessage() {

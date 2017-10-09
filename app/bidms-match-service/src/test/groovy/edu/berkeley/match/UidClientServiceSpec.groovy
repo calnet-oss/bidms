@@ -12,9 +12,12 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.web.client.ResourceAccessException
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
 
 /**
@@ -30,21 +33,27 @@ class UidClientServiceSpec extends Specification {
         service.restClient = new RestBuilder()
     }
 
-    void "provision a new uid and return a success"() {
+    @Unroll
+    void "provision a new uid and #description and return a success"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
         SORObject sorObject = SORObject.build()
-        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
+        mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
                 .andRespond(withSuccess("{'provisioningSuccessful': 'true'}", MediaType.APPLICATION_JSON))
 
         when:
-        service.provisionNewUid(sorObject)
+        service.provisionNewUid(sorObject, synchronousDownstream)
 
         then:
         mockServer.verify()
+
+        where:
+        description                           | synchronousDownstream
+        "provision downstream synchronously"  | true
+        "provision downstream asynchronously" | false
     }
 
     void "provisioning a new uid server times out and exception is thrown"() {

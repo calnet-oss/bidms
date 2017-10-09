@@ -80,11 +80,11 @@ class NewSORConsumerService {
         return matchPerson(sorObject, getAttributesFromMessage(message))
     }
 
-    Map<String, String> matchPerson(SORObject sorObject, Map<String, Object> sorAttributes) {
+    Map<String, String> matchPerson(SORObject sorObject, Map<String, Object> sorAttributes, boolean synchronousDownstream = true) {
         // done in a new transaction
         PersonMatch personMatch = doMatch(sorObject, sorAttributes)
         // resumes previous read-only transaction
-        String newlyGeneratedUid = doProvisionIfNecessary(personMatch, sorObject)
+        String newlyGeneratedUid = doProvisionIfNecessary(personMatch, sorObject, synchronousDownstream)
 
         Map<String, String> resultMap = [:]
         if (personMatch instanceof PersonExactMatch) {
@@ -138,10 +138,10 @@ class NewSORConsumerService {
     /**
      * @return If a new uid was generated for the SORObject, the uid is returned, otherwise null is returned.
      */
-    String doProvisionIfNecessary(PersonMatch match, SORObject sorObject) {
+    String doProvisionIfNecessary(PersonMatch match, SORObject sorObject, boolean synchronousDownstream) {
         // if it is an exact match, provision
         if (match instanceof PersonExactMatch) {
-            uidClientService.provisionUid(match.person)
+            uidClientService.provisionUid(match.person, synchronousDownstream)
         } else if (match instanceof PersonExistingMatch || match instanceof PersonPartialMatches) {
             // do nothing
         } else if (match instanceof PersonNoMatch) {
@@ -157,7 +157,7 @@ class NewSORConsumerService {
              * imported from HCM.
              */
             if (!personNoMatch.matchOnly) {
-                return uidClientService.provisionNewUid(sorObject)
+                return uidClientService.provisionNewUid(sorObject, synchronousDownstream)
             } else {
                 log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
             }

@@ -14,7 +14,7 @@ class TriggerMatchController {
             render(status: HttpServletResponse.SC_BAD_REQUEST)
         } else {
             log.debug("Sor Key Data attributes. $sorKeyDataCommand.attributes")
-            Map<String,String> result = newSORConsumerService.matchPerson(sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes)
+            Map<String,String> result = newSORConsumerService.matchPerson(sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes, sorKeyDataCommand.synchronousDownstream)
             if(result) {
                 render result as JSON
             }
