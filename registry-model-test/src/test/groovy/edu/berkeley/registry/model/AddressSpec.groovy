@@ -1,12 +1,8 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-
-@TestMixin(GrailsUnitTestMixin)
 class AddressSpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return Address }
+    Class<?> getDomainClass() { return Address }
 
     void "confirm Address using LogicalEqualsAndHashCode annotation"() {
         expect:

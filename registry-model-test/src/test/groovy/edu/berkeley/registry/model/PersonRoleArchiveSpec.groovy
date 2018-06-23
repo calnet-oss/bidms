@@ -1,14 +1,11 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Shared
 import spock.lang.Unroll
 
-@TestMixin(GrailsUnitTestMixin)
 class PersonRoleArchiveSpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return PersonRoleArchive }
+    Class<?> getDomainClass() { return PersonRoleArchive }
 
     void "confirm PersonRoleArchive using LogicalEqualsAndHashCode annotation"() {
         expect:

@@ -1,12 +1,8 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-
-@TestMixin(GrailsUnitTestMixin)
 class DateOfBirthSpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return DateOfBirth }
+    Class<?> getDomainClass() { return DateOfBirth }
 
     void "confirm DateOfBirth using LogicalEqualsAndHashCode annotation"() {
         expect:

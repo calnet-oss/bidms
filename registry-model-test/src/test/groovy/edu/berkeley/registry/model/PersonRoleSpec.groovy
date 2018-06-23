@@ -1,11 +1,10 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 
-@TestFor(PersonRole)
-class PersonRoleSpec extends AbstractDomainObjectSpec {
+class PersonRoleSpec extends AbstractDomainObjectSpec implements DomainUnitTest<PersonRole> {
 
-    public Class<?> getDomainClass() { return PersonRole }
+    Class<?> getDomainClass() { return PersonRole }
 
     void "confirm PersonRole using LogicalEqualsAndHashCode annotation"() {
         expect:

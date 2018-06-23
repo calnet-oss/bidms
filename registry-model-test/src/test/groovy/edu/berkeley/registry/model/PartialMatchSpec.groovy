@@ -1,12 +1,10 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.Mock
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@Mock([PartialMatch])
-class PartialMatchSpec extends Specification {
-
+class PartialMatchSpec extends Specification implements DomainUnitTest<PartialMatch> {
 
     @Unroll
     def "test metaData serialization"() {

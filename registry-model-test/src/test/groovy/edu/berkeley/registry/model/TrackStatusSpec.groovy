@@ -1,10 +1,7 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Unroll
 
-@TestMixin(GrailsUnitTestMixin)
 class TrackStatusSpec extends AbstractDomainObjectSpec {
 
     Class<?> getDomainClass() { return TrackStatus }

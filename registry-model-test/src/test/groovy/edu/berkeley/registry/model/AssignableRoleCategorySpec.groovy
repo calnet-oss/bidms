@@ -2,7 +2,7 @@ package edu.berkeley.registry.model
 
 class AssignableRoleCategorySpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return AssignableRoleCategory }
+    Class<?> getDomainClass() { return AssignableRoleCategory }
 
     void "confirm AssignableRoleCategory using LogicalEqualsAndHashCode annotation"() {
         expect:

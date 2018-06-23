@@ -1,20 +1,21 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
 import groovy.json.JsonBuilder
 
-@TestFor(SORObject)
-@Mock([SORObject, SOR])
-class SORObjectSpec extends AbstractDomainObjectSpec {
+class SORObjectSpec extends AbstractDomainObjectSpec implements DataTest {
     SOR testSOR
+
+    void setupSpec() {
+        mockDomains SORObject, SOR
+    }
 
     def setup() {
         testSOR = new SOR(name: "SIS")
         testSOR.save(flush: true, failOnError: true)
     }
 
-    public Class<?> getDomainClass() { return SORObject }
+    Class<?> getDomainClass() { return SORObject }
 
     void "confirm SORObject using LogicalEqualsAndHashCode annotation"() {
         expect:

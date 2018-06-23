@@ -2,15 +2,16 @@ package edu.berkeley.registry.model
 
 import edu.berkeley.registry.model.types.DownstreamObjectOwnershipLevelEnum
 import edu.berkeley.registry.model.types.DownstreamSystemEnum
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DataTest
 import groovy.json.JsonBuilder
 
-@TestFor(DownstreamObject)
-@Mock([DownstreamObject, DownstreamSystem, Person])
-class DownstreamObjectSpec extends AbstractDomainObjectSpec {
+class DownstreamObjectSpec extends AbstractDomainObjectSpec implements DataTest {
     DownstreamSystem testDownstreamSystem
     Person testPerson
+
+    void setupSpec() {
+        mockDomains DownstreamObject, DownstreamSystem, Person
+    }
 
     def setup() {
         testDownstreamSystem = new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name())
@@ -20,7 +21,7 @@ class DownstreamObjectSpec extends AbstractDomainObjectSpec {
         testPerson.save(flush: true, failOnError: true)
     }
 
-    public Class<?> getDomainClass() { return DownstreamObject }
+    Class<?> getDomainClass() { return DownstreamObject }
 
     void "confirm DownstreamObject using LogicalEqualsAndHashCode annotation"() {
         expect:

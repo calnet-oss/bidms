@@ -1,12 +1,8 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-
-@TestMixin(GrailsUnitTestMixin)
 class IdentifierSpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return Identifier }
+    Class<?> getDomainClass() { return Identifier }
 
     void "confirm Identifier using LogicalEqualsAndHashCode annotation"() {
         expect:

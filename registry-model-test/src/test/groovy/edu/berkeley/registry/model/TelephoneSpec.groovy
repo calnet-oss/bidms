@@ -1,12 +1,8 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
-
-@TestMixin(GrailsUnitTestMixin)
 class TelephoneSpec extends AbstractDomainObjectSpec {
 
-    public Class<?> getDomainClass() { return Telephone }
+    Class<?> getDomainClass() { return Telephone }
 
     void "confirm Telephone using LogicalEqualsAndHashCode annotation"() {
         expect:
