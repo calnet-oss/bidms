@@ -1,16 +1,18 @@
 package edu.berkeley.registry.model
 
-import grails.test.mixin.Mock
+import grails.testing.gorm.DataTest
 import spock.lang.Specification
 
 /**
  * This is similar to PersonHibernateSpec, but we are testing non-hibernate
- * testing here (i.e., we extend Specification, not HibernateSpec and use
- * @Mock ) .
+ * testing here (i.e., we extend Specification, not HibernateSpec) .
  */
-@Mock([AppointmentType, SOR, SORObject, Person, JobAppointment])
-class PersonSpec extends Specification {
+class PersonSpec extends Specification implements DataTest {
     private static final Map opts = [failOnError: true, flush: true]
+
+    void setupSpec() {
+        mockDomains AppointmentType, SOR, SORObject, Person, JobAppointment
+    }
 
     void "save test in non-Hibernate unit test environment"() {
         given:

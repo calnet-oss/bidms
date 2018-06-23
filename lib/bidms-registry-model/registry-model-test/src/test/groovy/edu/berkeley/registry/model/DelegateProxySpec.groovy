@@ -2,8 +2,7 @@ package edu.berkeley.registry.model
 
 class DelegateProxySpec extends AbstractDomainObjectSpec {
 
-
-    public Class<?> getDomainClass() { return DelegateProxy }
+    Class<?> getDomainClass() { return DelegateProxy }
 
     void "confirm DelegateProxy using LogicalEqualsAndHashCode annotation"() {
         expect:

@@ -23,6 +23,8 @@ class JobAppointment extends PersonAppointment {
     String deptName
     Date hireDate
 
+    private Person person_
+
     // After testing it looks like having person here, as well as in the superclass, is necessary, since Person has a set of JobAppointments.
     static constraints = {
         jobCode size: 0..64, nullable: true
@@ -30,6 +32,7 @@ class JobAppointment extends PersonAppointment {
         deptCode size: 0..64, nullable: true
         deptName size: 0..255, nullable: true
         hireDate nullable: true
+        person_ nullable: true
     }
 
     static mapping = {
@@ -60,5 +63,8 @@ class JobAppointment extends PersonAppointment {
     Person getPerson_() { return person }
 
     // workaround for GORM bug when using inheritance/table-per-subclass
-    void setPerson_(Person p) { person = p }
+    void setPerson_(Person p) {
+        this.person = p
+        this.person_ = p
+    }
 }
