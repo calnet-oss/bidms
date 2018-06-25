@@ -93,8 +93,12 @@ class DatabaseServiceSpec extends Specification implements ServiceUnitTest<Datab
     private void createModel() {
         def sor = SOR.build(name: 'SIS')
         sorObject = SORObject.build(sor: sor, sorPrimaryKey: 'SIS123')
-        person1 = Person.build(uid: 1)
-        person2 = Person.build(uid: 2)
+        person1 = Person.build()
+        // uid is primary key and not supported setting in build()
+        person1.uid = "1"
+        person2 = Person.build()
+        // uid is primary key and not supported setting in build()
+        person2.uid = "2"
         existingPartialMatch = PartialMatch.build(sorObject: sorObject, person: person1)
     }
 

@@ -34,7 +34,7 @@ class DatabaseService {
 
     @Transactional(rollbackFor = Exception)
     private void createPartialMatch(SORObject sorObject, PersonPartialMatch personPartialMatch) {
-        def partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: personPartialMatch.person)
+        PartialMatch partialMatch = PartialMatch.findOrCreateWhere(sorObject: sorObject, person: personPartialMatch.person)
 
         try {
             partialMatch.metaData.ruleNames = personPartialMatch.ruleNames
