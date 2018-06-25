@@ -4,18 +4,13 @@ import edu.berkeley.registry.model.PartialMatch
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
-import edu.berkeley.util.gorm.TransactionService
+import grails.buildtestdata.BuildDataTest
 import grails.buildtestdata.mixin.Build
-import grails.test.mixin.TestFor
-import grails.transaction.Rollback
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(DatabaseService)
 @Build([SOR, SORObject, Person, PartialMatch])
-class DatabaseServiceSpec extends Specification {
+class DatabaseServiceSpec extends Specification implements ServiceUnitTest<DatabaseService>, BuildDataTest {
     SORObject sorObject
     PartialMatch existingPartialMatch
     Person person1
@@ -45,7 +40,7 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject2) == 0
 
         when:
-        service.storePartialMatch(sorObject2, [createPersonPartialMatch("Potential #2",person2), createPersonPartialMatch("Potential #3",person3)])
+        service.storePartialMatch(sorObject2, [createPersonPartialMatch("Potential #2", person2), createPersonPartialMatch("Potential #3", person3)])
 
         then:
         PartialMatch.countBySorObject(sorObject2) == 2
@@ -64,7 +59,7 @@ class DatabaseServiceSpec extends Specification {
         PartialMatch.countBySorObject(sorObject) == 1
 
         when:
-        service.storePartialMatch(sorObject, [createPersonPartialMatch("Potential #1",person1), createPersonPartialMatch("Potential #2",person2)])
+        service.storePartialMatch(sorObject, [createPersonPartialMatch("Potential #1", person1), createPersonPartialMatch("Potential #2", person2)])
 
         then:
         PartialMatch.countBySorObject(sorObject) == 2

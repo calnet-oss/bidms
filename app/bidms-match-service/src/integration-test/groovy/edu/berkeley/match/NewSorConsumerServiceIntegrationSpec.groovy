@@ -4,9 +4,9 @@ import edu.berkeley.registry.model.PartialMatch
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
-import grails.test.mixin.integration.Integration
-import grails.transaction.Rollback
-import grails.transaction.Transactional
+import grails.testing.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
+import grails.gorm.transactions.Transactional
 import groovy.transform.Synchronized
 import groovy.util.logging.Slf4j
 import org.apache.activemq.command.ActiveMQMapMessage

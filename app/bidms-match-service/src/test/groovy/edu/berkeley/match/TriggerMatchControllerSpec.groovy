@@ -2,19 +2,19 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
 
 import javax.servlet.http.HttpServletResponse
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(TriggerMatchController)
-@Mock([SORObject, SOR])
-class TriggerMatchControllerSpec extends Specification {
+class TriggerMatchControllerSpec extends Specification implements ControllerUnitTest<TriggerMatchController>, DataTest {
+
+    void setupSpec() {
+        mockDomains SORObject, SOR
+    }
+
     def setup() {
         controller.newSORConsumerService = Mock(NewSORConsumerService)
         new SORObject(sor: new SOR(name: 'SIS').save(validate: false), sorPrimaryKey: '12345').save(validate: false, flush: true)

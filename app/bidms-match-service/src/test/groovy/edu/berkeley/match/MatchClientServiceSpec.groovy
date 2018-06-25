@@ -3,8 +3,6 @@ package edu.berkeley.match
 import edu.berkeley.match.testutils.TimeoutResponseCreator
 import edu.berkeley.registry.model.Person
 import grails.plugins.rest.client.RestBuilder
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 import grails.web.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -13,17 +11,13 @@ import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.test.web.client.response.DefaultResponseCreator
 import org.springframework.web.client.ResourceAccessException
 import spock.lang.Specification
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@Mock(Person)
-@TestFor(MatchClientService)
-class MatchClientServiceSpec extends Specification {
-
+class MatchClientServiceSpec extends Specification implements ServiceUnitTest<MatchClientService>, DomainUnitTest<Person> {
 
     public static final String UCB_MATCH_URL = 'http://localhost/ucb-match/v1/person'
 

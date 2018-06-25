@@ -3,7 +3,7 @@ package edu.berkeley.match
 import edu.berkeley.registry.model.PartialMatch
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SORObject
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional(rollbackFor = Exception)
 class DatabaseService {

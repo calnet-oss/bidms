@@ -8,21 +8,23 @@ import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
 import edu.berkeley.registry.model.types.IdentifierTypeEnum
 import edu.berkeley.registry.model.types.SOREnum
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 import spock.lang.Specification
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
 
 import javax.jms.MapMessage
 
 @SuppressWarnings("GroovyAssignabilityCheck")
-@TestFor(NewSORConsumerService)
-@Mock([SOR, SORObject, Person, Identifier, IdentifierType, PartialMatch])
-class NewSORConsumerServiceSpec extends Specification {
+class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest<NewSORConsumerService>, DataTest {
     SORObject sorObject
     Person person1
     Person person2
     Person person3
     List<PersonPartialMatch> personPartialMatches
+
+    void setupSpec() {
+        mockDomains SOR, SORObject, Person, Identifier, IdentifierType, PartialMatch
+    }
 
     def setup() {
         setupModel()

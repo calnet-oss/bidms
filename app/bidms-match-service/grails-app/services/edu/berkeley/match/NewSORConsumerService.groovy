@@ -1,7 +1,7 @@
 package edu.berkeley.match
 
 import edu.berkeley.registry.model.SORObject
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.apache.camel.Exchange
 import org.apache.camel.Handler
 import org.apache.camel.Message

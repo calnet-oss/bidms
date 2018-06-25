@@ -3,9 +3,10 @@ package edu.berkeley.match
 import edu.berkeley.match.testutils.TimeoutResponseCreator
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SORObject
+import grails.buildtestdata.BuildDataTest
 import grails.buildtestdata.mixin.Build
 import grails.plugins.rest.client.RestBuilder
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import grails.web.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -20,12 +21,8 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(UidClientService)
 @Build([Person, SORObject])
-class UidClientServiceSpec extends Specification {
+class UidClientServiceSpec extends Specification implements ServiceUnitTest<UidClientService>, BuildDataTest {
     private static final PROVISION_ENDPOINT = 'http://localhost/registry-provisioning/provision/save'
 
     def setup() {

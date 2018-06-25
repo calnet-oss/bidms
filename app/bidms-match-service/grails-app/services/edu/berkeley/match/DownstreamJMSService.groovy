@@ -1,7 +1,7 @@
 package edu.berkeley.match
 
 import edu.berkeley.registry.model.Person
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class DownstreamJMSService {

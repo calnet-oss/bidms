@@ -2,7 +2,7 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.Person
 import edu.berkeley.registry.model.SORObject
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.http.HttpStatus
 
 @Transactional(rollbackFor = Exception)

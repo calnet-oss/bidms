@@ -2,15 +2,16 @@ package edu.berkeley.match
 
 import edu.berkeley.registry.model.SOR
 import edu.berkeley.registry.model.SORObject
-import grails.test.mixin.Mock
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.Specification
 import spock.lang.Unroll
+import grails.testing.gorm.DataTest
 
-@TestMixin(GrailsUnitTestMixin)
-@Mock([SOR, SORObject])
-class SorKeyDataCommandSpec extends Specification {
+class SorKeyDataCommandSpec extends Specification implements DataTest {
+
+    void setupSpec() {
+        mockDomains SOR, SORObject
+    }
+
     def setup() {
         new SORObject(sor: new SOR(name: 'SIS').save(validate: false), sorPrimaryKey: '12345').save(validate: false, flush: true)
     }
