@@ -1,6 +1,6 @@
 package edu.berkeley.calnet.ucbmatch
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
 
 import javax.sql.DataSource

@@ -2,7 +2,7 @@ package edu.berkeley.calnet.ucbmatch
 
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class MatchService {

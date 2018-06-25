@@ -4,7 +4,10 @@ import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.FIXED_VALUE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
 
 class SqlWhereResolverSpec extends Specification {
 

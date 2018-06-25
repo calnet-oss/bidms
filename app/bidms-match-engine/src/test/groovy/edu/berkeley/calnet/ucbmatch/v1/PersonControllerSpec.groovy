@@ -3,12 +3,11 @@ package edu.berkeley.calnet.ucbmatch.v1
 import edu.berkeley.calnet.ucbmatch.PersonService
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.response.ExactMatchResponse
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
-@TestFor(PersonController)
-class PersonControllerSpec extends Specification {
+class PersonControllerSpec extends Specification implements ControllerUnitTest<PersonController> {
 
     def setup() {
         controller.personService = Mock(PersonService)
@@ -26,7 +25,7 @@ class PersonControllerSpec extends Specification {
 
         and:
         response.status == HttpStatus.OK.value()
-        response.json.matchingRecord.systemOfRecord=='HR'
-        response.json.matchingRecord.referenceId=='1'
+        response.json.matchingRecord.systemOfRecord == 'HR'
+        response.json.matchingRecord.referenceId == '1'
     }
 }

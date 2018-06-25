@@ -5,7 +5,9 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import static edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig.create
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
 
 class SearchSetSpec extends Specification {
 

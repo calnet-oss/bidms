@@ -3,7 +3,7 @@ package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Record
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import groovy.transform.ToString
 
 @Transactional(readOnly = true)

@@ -6,7 +6,7 @@ import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Name
 import edu.berkeley.calnet.ucbmatch.database.Record
 import edu.berkeley.calnet.ucbmatch.util.AttributeValueResolver
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class RowMapperService {

@@ -5,7 +5,7 @@ import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchReference
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import groovy.sql.Sql
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -13,11 +13,7 @@ import spock.lang.Unroll
 import static edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig.create
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(DatabaseService)
-class DatabaseServiceSpec extends Specification {
+class DatabaseServiceSpec extends Specification implements ServiceUnitTest<DatabaseService> {
     private Sql sqlMock
 
     def setup() {
@@ -32,7 +28,7 @@ class DatabaseServiceSpec extends Specification {
                         create(name: 'firstName', column: "FIRST_NAME", path: 'names', attribute: 'given', group: 'official'),
                         create(name: 'lastName', column: "SUR_NAME", path: 'names', attribute: 'sur', group: 'official')
                 ],
-                canonicalConfidences: [[firstName: EXACT], [lastName: EXACT]].collect { new MatchConfidence(confidence: it, ruleName: 'random')}
+                canonicalConfidences: [[firstName: EXACT], [lastName: EXACT]].collect { new MatchConfidence(confidence: it, ruleName: 'random') }
         )
         sqlMock = Mock(Sql)
     }

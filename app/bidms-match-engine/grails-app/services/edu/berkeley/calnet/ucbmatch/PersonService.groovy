@@ -5,7 +5,7 @@ import edu.berkeley.calnet.ucbmatch.response.ExactMatchResponse
 import edu.berkeley.calnet.ucbmatch.response.ExistingMatchResponse
 import edu.berkeley.calnet.ucbmatch.response.FuzzyMatchResponse
 import edu.berkeley.calnet.ucbmatch.response.Response
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 @Transactional
 class PersonService {
