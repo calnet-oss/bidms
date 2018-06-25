@@ -5,6 +5,7 @@ import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.config.MatchReference
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.database.Record
+import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import groovy.sql.Sql
 import spock.lang.Specification
@@ -13,7 +14,7 @@ import spock.lang.Unroll
 import static edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig.create
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
 
-class DatabaseServiceSpec extends Specification implements ServiceUnitTest<DatabaseService> {
+class DatabaseServiceSpec extends Specification implements ServiceUnitTest<DatabaseService>, DataTest {
     private Sql sqlMock
 
     def setup() {
@@ -41,7 +42,7 @@ class DatabaseServiceSpec extends Specification implements ServiceUnitTest<Datab
 
         then:
         1 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname=? AND sorobjkey=? AND isPrimaryKeyColumn=?", ['SIS', sorId, true]) >> rowReturned
+        1 * sqlMock.firstRow("SELECT * FROM myMatchTable WHERE sorname=? AND sorobjkey=? AND isPrimaryKeyColumn=?" as String, ['SIS', sorId, true]) >> rowReturned
         result?.referenceId == expectedReferenceId
 
         where:
@@ -58,8 +59,8 @@ class DatabaseServiceSpec extends Specification implements ServiceUnitTest<Datab
 
         then:
         2 * service.sqlService.sqlInstance >> sqlMock
-        1 * sqlMock.rows('SELECT * FROM myMatchTable WHERE reference_id IS NOT NULL AND lower(FIRST_NAME)=?', ['kryf']) >> rowReturned1
-        1 * sqlMock.rows('SELECT * FROM myMatchTable WHERE reference_id IS NOT NULL AND lower(SUR_NAME)=?', ['plyf']) >> rowReturned2
+        1 * sqlMock.rows('SELECT * FROM myMatchTable WHERE reference_id IS NOT NULL AND lower(FIRST_NAME)=?' as String, ['kryf']) >> rowReturned1
+        1 * sqlMock.rows('SELECT * FROM myMatchTable WHERE reference_id IS NOT NULL AND lower(SUR_NAME)=?' as String, ['plyf']) >> rowReturned2
         1 * service.rowMapperService.mapDataRowsToRecords(_, ConfidenceType.CANONICAL, _) >> mappedReturned
         result*.referenceId == expectedReferenceIds
 

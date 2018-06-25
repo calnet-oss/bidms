@@ -1,10 +1,11 @@
 package edu.berkeley.calnet.ucbmatch
 
 import edu.berkeley.calnet.ucbmatch.database.Candidate
+import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class MatchServiceSpec extends Specification implements ServiceUnitTest<MatchService> {
+class MatchServiceSpec extends Specification implements ServiceUnitTest<MatchService>, DataTest {
     static transactional = false
 
     def setup() {

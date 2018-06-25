@@ -1,11 +1,12 @@
 package edu.berkeley.calnet.ucbmatch
 
 import edu.berkeley.calnet.ucbmatch.config.TestMatchConfig
+import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Shared
 import spock.lang.Specification
 
-class RowMapperServiceSpec extends Specification implements ServiceUnitTest<RowMapperService> {
+class RowMapperServiceSpec extends Specification implements ServiceUnitTest<RowMapperService>, DataTest {
     /**
      * First two rows are from different SOR's but same referenceId
      * Last two rows are dupplicate rows for the same person
