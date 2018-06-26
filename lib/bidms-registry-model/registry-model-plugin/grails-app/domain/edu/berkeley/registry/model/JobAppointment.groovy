@@ -1,7 +1,6 @@
 package edu.berkeley.registry.model
 
 import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
-import edu.berkeley.util.domain.DomainUtil
 import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig(excludes = ["person", "sorObject", "person_"])
@@ -32,7 +31,6 @@ class JobAppointment extends PersonAppointment {
         deptCode size: 0..64, nullable: true
         deptName size: 0..255, nullable: true
         hireDate nullable: true
-        person_ nullable: true
     }
 
     static mapping = {
@@ -48,13 +46,6 @@ class JobAppointment extends PersonAppointment {
         hireDate column: 'hireDate', sqlType: 'DATE'
     }
 
-    // Makes the column name unique in test mode to avoid GRAILS-11600
-    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
-    // comments in DomainUtil.
-    static String getUidColumnName() {
-        return DomainUtil.testSafeColumnName("JobAppointment", "uid")
-    }
-
     int compareTo(obj) {
         return hashCode() <=> obj?.hashCode()
     }
@@ -64,7 +55,13 @@ class JobAppointment extends PersonAppointment {
 
     // workaround for GORM bug when using inheritance/table-per-subclass
     void setPerson_(Person p) {
-        this.person = p
+        super.setPerson(p)
+        this.person_ = p
+    }
+
+    // workaround for GORM bug when using inheritance/table-per-subclass
+    void setPerson(Person p) {
+        super.setPerson(p)
         this.person_ = p
     }
 }
