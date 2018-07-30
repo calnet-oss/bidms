@@ -10,7 +10,7 @@ class JobAppointmentSpec extends AbstractDomainObjectSpec {
 
     void "confirm JobAppointment LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person", "person_"])
+        testExcludes(["person", "person_", "effSeq", "effDate"])
     }
 
     void "confirm JobAppointment logicalHashCodeProperties"() {
