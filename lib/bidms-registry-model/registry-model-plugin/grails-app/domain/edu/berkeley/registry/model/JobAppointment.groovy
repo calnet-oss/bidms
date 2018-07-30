@@ -5,7 +5,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 
 @ConverterConfig(excludes = ["person", "sorObject", "person_"])
 @LogicalEqualsAndHashCode(
-        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "person_"],
+        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "person_", "effSeq", "effDate"],
         changeCallbackClass = JobAppointmentHashCodeChangeCallback
 )
 class JobAppointment extends PersonAppointment {
@@ -22,7 +22,16 @@ class JobAppointment extends PersonAppointment {
     String deptName
     Date hireDate
 
+    // These are not persisted to the database but they are useful when
+    // doing in-memory provisioning.  For example, cross referencing the
+    // Peoplesoft-based SORs have effSeq and effDate as part of the job
+    // primary key.
+    Integer effSeq
+    Date effDate
+
     private Person person_
+
+    static transients = ['effSeq', 'effDate']
 
     // After testing it looks like having person here, as well as in the superclass, is necessary, since Person has a set of JobAppointments.
     static constraints = {
