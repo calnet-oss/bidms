@@ -37,6 +37,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         grailsApplication.config.rest.matchEngine.url = 'http://localhost:8089/ucb-match/v1/person'  // Use local mock server
         grailsApplication.config.rest.provisionNewUid.url = 'http://localhost:8084/registry-provisioning/newUid/save' // Use local mock server
         grailsApplication.config.rest.provisionUid.url = 'http://localhost:8084/registry-provisioning/provision/save' // Use local mock server
+        grailsApplication.config.rest.registryProvisioning.baseUrl = "http://localhost:8084"
         SOR sor
         if (!(sor = SOR.findByName("HR"))) {
             sor = new SOR(name: 'HR').save(failOnError: true, flush: true)

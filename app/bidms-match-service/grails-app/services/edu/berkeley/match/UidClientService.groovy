@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus
 @Transactional(rollbackFor = Exception)
 class UidClientService {
 
-    def restClient
     def grailsApplication
+    def registryProvisioningRestBuilder
 
     /**
      * Makes a REST call to the Registry Provisioning to provision the given person
@@ -19,7 +19,7 @@ class UidClientService {
     void provisionUid(Person person, boolean synchronousDownstream = true) {
         String endpoint = grailsApplication.config.rest.provisionUid.url
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        def response = restClient.post("$endpoint?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
+        def response = registryProvisioningRestBuilder.post("$endpoint?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
             accept 'application/json'
         }
         if (response.statusCode != HttpStatus.OK) {
@@ -36,7 +36,7 @@ class UidClientService {
     String provisionNewUid(SORObject sorObject, boolean synchronousDownstream = true) {
         String endpoint = grailsApplication.config.rest.provisionNewUid.url
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        def response = restClient.post("$endpoint?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
+        def response = registryProvisioningRestBuilder.post("$endpoint?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")) {
             accept 'application/json'
         }
         if (response.statusCode != HttpStatus.OK) {

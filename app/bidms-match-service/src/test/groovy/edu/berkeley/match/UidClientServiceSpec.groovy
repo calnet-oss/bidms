@@ -27,13 +27,13 @@ class UidClientServiceSpec extends Specification implements ServiceUnitTest<UidC
 
     def setup() {
         grailsApplication.config.rest = [provisionUid: [url: PROVISION_ENDPOINT], provisionNewUid: [url: PROVISION_ENDPOINT]]
-        service.restClient = new RestBuilder()
+        service.registryProvisioningRestBuilder = new RestBuilder()
     }
 
     @Unroll
     void "provision a new uid and #description and return a success"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.registryProvisioningRestBuilder.restTemplate)
         SORObject sorObject = SORObject.build()
         mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.POST))
@@ -55,7 +55,7 @@ class UidClientServiceSpec extends Specification implements ServiceUnitTest<UidC
 
     void "provisioning a new uid server times out and exception is thrown"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.registryProvisioningRestBuilder.restTemplate)
         SORObject sorObject = SORObject.build()
         mockServer.expect(requestTo("$PROVISION_ENDPOINT?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
@@ -72,7 +72,7 @@ class UidClientServiceSpec extends Specification implements ServiceUnitTest<UidC
 
     void "provision an existing uid and return a success"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.registryProvisioningRestBuilder.restTemplate)
         Person person = Person.build(uid: "1")
         mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
@@ -89,7 +89,7 @@ class UidClientServiceSpec extends Specification implements ServiceUnitTest<UidC
 
     void "provisioning an existing uid server times out and exception is thrown"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.registryProvisioningRestBuilder.restTemplate)
         Person person = Person.build(uid: "1")
         mockServer.expect(requestTo("$PROVISION_ENDPOINT?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
