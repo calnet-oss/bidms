@@ -27,13 +27,13 @@ class NewSORConsumerService {
 
     @Handler
     void process(Exchange exchange) {
-        Map<String,String> result = onMessage(exchange.in)
+        Map<String, String> result = onMessage(exchange.in)
         if (exchange.pattern.outCapable) {
             exchange.out.body = result
         }
     }
 
-    Map<String,String> onMessage(Message camelMsg) {
+    Map<String, String> onMessage(Message camelMsg) {
         try {
             return onMessage(camelMsg.getBody())
         }
@@ -43,9 +43,13 @@ class NewSORConsumerService {
         }
     }
 
-    Map<String,String> onMessage(JmsMessage camelJmsMsg) {
+    Map<String, String> onMessage(JmsMessage camelJmsMsg) {
         try {
             return onMessage(camelJmsMsg.getJmsMessage())
+        }
+        catch (Exception e) {
+            log.error("onMessage() failed", e)
+            throw e
         }
         finally {
             // avoid hibernate cache growth
@@ -62,7 +66,7 @@ class NewSORConsumerService {
      * Receives a message on the newSORQueue and processes it according to
      * the rules
      */
-    Map<String,String> onMessage(javax.jms.Message msg) {
+    Map<String, String> onMessage(javax.jms.Message msg) {
         if (!(msg instanceof MapMessage)) {
             throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
         }
