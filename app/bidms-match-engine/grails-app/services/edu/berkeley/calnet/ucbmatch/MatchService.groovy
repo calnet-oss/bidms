@@ -15,11 +15,11 @@ class MatchService {
      * @return
      */
     Set<Candidate> findCandidates(Map matchInput) {
-        log.debug("findCandidates (Canonical) for $matchInput.systemOfRecord/$matchInput.sorObjectKey ")
+        log.debug("findCandidates (Canonical) for ${matchInput.systemOfRecord}/${matchInput.identifier}")
         Set<Candidate> candidates = databaseService.searchDatabase(matchInput, ConfidenceType.CANONICAL)
         //todo: if more than one candidate, then it's not canonical....
         if (!candidates) {
-            log.debug("findCandidates (Potential) for $matchInput.systemOfRecord/$matchInput.sorObjectKey ")
+            log.debug("findCandidates (Potential) for ${matchInput.systemOfRecord}/${matchInput.identifier}")
             candidates = databaseService.searchDatabase(matchInput, ConfidenceType.POTENTIAL)
         }
         log.debug("findCandidates found ${candidates.size()} candidates")
