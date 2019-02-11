@@ -56,7 +56,7 @@ class MatchConfigBuilder {
 
     }
 
-    // Creates and sets properties on a matchAttribute by invoking setProperty and handle the search closure
+    // Creates and sets properties on a matchAttribute by invoking setProperty and handles the search and input closures
     private class MatchAttributeDelegate {
         MatchAttributeConfig matchAttribute
 
@@ -73,8 +73,7 @@ class MatchConfigBuilder {
         }
 
         /**
-         * assigns a SearchSettings as the delegate and executes the closure
-         * @param closure
+         * assigns a SearchSettings as the delegate and executes the search closure
          */
         void search(Closure closure) {
             def search = new MatchAttributeConfig.SearchSettings()
@@ -82,6 +81,17 @@ class MatchConfigBuilder {
             closure.resolveStrategy = Closure.DELEGATE_ONLY
             closure.call()
             matchAttribute.search = search
+        }
+
+        /**
+         * assigns a InputSettings as the delegate and executes the input closure
+         */
+        void input(Closure closure) {
+            def input = new MatchAttributeConfig.InputSettings()
+            closure.delegate = input
+            closure.resolveStrategy = Closure.DELEGATE_ONLY
+            closure.call()
+            matchAttribute.input = input
         }
     }
 
@@ -102,7 +112,6 @@ class MatchConfigBuilder {
             rule = rule ?: "Canonical #${canonicalConfidences.size()+1}"
             canonicalConfidences << new MatchConfidence(ruleName: rule, confidence: canonical)
         }
-
 
         void potential(Map<String, MatchType> potential, String rule = null) {
             validateKeysAndValues("potential", potential, MatchType.POTENTIAL_TYPES)

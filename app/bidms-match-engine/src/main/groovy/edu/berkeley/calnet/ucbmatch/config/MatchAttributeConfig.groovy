@@ -13,17 +13,20 @@ class MatchAttributeConfig {
     String attribute
     String group
     boolean invalidates
-    List nullEquivalents = [/[0-]+/,/\s+/]
+    List nullEquivalents = [/[0-]+/, /\s+/]
     SearchSettings search
+    InputSettings input
 
     static MatchAttributeConfig create(Map params) {
-        params.inject(new MatchAttributeConfig(search: new SearchSettings())) { MatchAttributeConfig config, entry->
+        params.inject(new MatchAttributeConfig(search: new SearchSettings())) { MatchAttributeConfig config, entry ->
             String name = entry.key
             def value = entry.value
-            if(config.hasProperty(name)) {
+            if (config.hasProperty(name)) {
                 config.setProperty(name, value)
             } else if (config.search.hasProperty(name)) {
                 config.search.setProperty(name, value)
+            } else if (config.input.hasProperty(name)) {
+                config.input.setProperty(name, value)
             } else {
                 throw new IllegalArgumentException("Property ${name} not found in config or config.search")
             }
@@ -40,14 +43,20 @@ class MatchAttributeConfig {
         int distance
         String fixedValue
         String dateFormat
+
         void setSubstring(substring) {
-            if(!substring.from) {
+            if (!substring.from) {
                 throw new IllegalArgumentException("Missing 'from' argument in Map")
             }
-            if(!substring.length) {
+            if (!substring.length) {
                 throw new IllegalArgumentException("Missing 'length' argument in Map")
             }
             this.substring = substring
         }
+    }
+
+    @ToString(includeNames = true)
+    static class InputSettings {
+        String fixedValue
     }
 }

@@ -3,10 +3,12 @@ package edu.berkeley.calnet.ucbmatch
 import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig.create
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.FIXED_VALUE
 import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
 
 class SearchSetSpec extends Specification {
@@ -92,5 +94,35 @@ class SearchSetSpec extends Specification {
         whereClause.values == ["pamela", "anderson", '19830318']
     }
 
+    /**
+     * When input.fixedValue is in the rule config, the rule should only
+     * execute if the input.fixedValue matches what's in
+     * matchInput[config.attribute].
+     *
+     * An example of where this is useful in the real world: When you have
+     * incoming data from a SOR that shares a primary key with another SOR.
+     * e.g., UCPATH_DDODS <-> UCPATH_INTER_PERUPD
+     */
+    @Unroll
+    def "test rule execution when input.fixedValue is part of the rule config: #description"() {
+        setup:
+        def matchAttributeConfigs = [
+                create(name: 'identifier', column: 'identifier', attribute: 'identifier', group: 'sor', outputPath: 'identifiers', search: [caseSensitive: true]),
+                create(name: 'sisSor', column: 'identifiersor', attribute: 'systemOfRecord', input: [fixedValue: matchOnInputSor], search: [caseSensitive: true, fixedValue: 'OTHER_SOR'])
+        ]
+        def confidences = [sisSor: FIXED_VALUE, identifier: EXACT]
+        def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchConfidence: new MatchConfidence(confidence: confidences, ruleName: 'name'))
 
+        when:
+        def whereClause = sut.buildWhereClause(matchInput)
+
+        then:
+        expectMatch ? whereClause.sql == "identifiersor=? AND identifier=?" : !whereClause
+        expectMatch ? whereClause.values == ['OTHER_SOR', 'SI12345'] : !whereClause
+
+        where:
+        description                                    | matchOnInputSor || expectMatch
+        "input matches input config input.fixedValue"  | "SIS"           || true
+        "input does not match config input.fixedValue" | "PAYROLL"       || false
+    }
 }
