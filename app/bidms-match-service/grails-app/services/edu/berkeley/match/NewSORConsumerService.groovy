@@ -111,9 +111,9 @@ class NewSORConsumerService {
     @Transactional(rollbackFor = Exception, propagation = Propagation.REQUIRES_NEW)
     PersonMatch doMatch(SORObject sorObject, Map<String, Object> sorAttributes) {
         try {
-            log.debug("Attempting to match $sorAttributes")
+            log.debug("Attempting to match $sorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
             PersonMatch match = matchClientService.match(sorAttributes)
-            log.debug("Response from MatchService: $match")
+            log.debug("Response from MatchService for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey}): $match")
 
             // If it is a partial match just store the partial and return
             if (match instanceof PersonPartialMatches) {
