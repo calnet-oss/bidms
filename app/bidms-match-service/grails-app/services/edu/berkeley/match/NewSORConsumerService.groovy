@@ -125,7 +125,7 @@ class NewSORConsumerService {
                 log.debug("Attempting to match $displaySorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
             }
             PersonMatch match = matchClientService.match(sorAttributes)
-            log.debug("Response from MatchService for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey}): $match")
+            log.info("Response from MatchService for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey}): $match")
 
             // If it is a partial match just store the partial and return
             if (match instanceof PersonPartialMatches) {
