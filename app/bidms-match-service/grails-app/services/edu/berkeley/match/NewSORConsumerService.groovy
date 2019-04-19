@@ -112,6 +112,18 @@ class NewSORConsumerService {
     PersonMatch doMatch(SORObject sorObject, Map<String, Object> sorAttributes) {
         try {
             log.debug("Attempting to match $sorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
+            if (log.debugEnabled) {
+                // Redact SSN and DOB from log
+                Map<String, Object> displaySorAttributes = [:]
+                displaySorAttributes.putAll(sorAttributes)
+                if (displaySorAttributes.containsKey("socialSecurityNumber")) {
+                    displaySorAttributes.socialSecurityNumber = "*****"
+                }
+                if (displaySorAttributes.containsKey("dateOfBirth")) {
+                    displaySorAttributes.dateOfBirth = "****-**-**"
+                }
+                log.debug("Attempting to match $displaySorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
+            }
             PersonMatch match = matchClientService.match(sorAttributes)
             log.debug("Response from MatchService for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey}): $match")
 
