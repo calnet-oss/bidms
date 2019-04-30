@@ -1,4 +1,5 @@
 package edu.berkeley.calnet.ucbmatch
+
 import edu.berkeley.calnet.ucbmatch.config.MatchConfig
 import edu.berkeley.calnet.ucbmatch.database.Candidate
 import edu.berkeley.calnet.ucbmatch.response.ExactMatchResponse
@@ -34,17 +35,17 @@ class PersonService {
      */
     Response matchPerson(Map matchInput) {
         def existingRecord = matchService.findExistingRecord(matchInput)
-        if(existingRecord) {
+        if (existingRecord) {
             return new ExistingMatchResponse(responseData: existingRecord)
         }
 
         Set<Candidate> candidates = matchService.findCandidates(matchInput)
         if (!candidates) {
-            log.debug("No match found for $matchInput")
+            log.debug("No match found for ${getRedactedParams(matchInput)}")
             return Response.NOT_FOUND
         } else if (candidates.size() == 1 && candidates[0].exactMatch) {
             return new ExactMatchResponse(responseData: candidates[0])
-        } else if(sameReferenceIdAndCanonical(candidates)) {
+        } else if (sameReferenceIdAndCanonical(candidates)) {
             return new ExactMatchResponse(responseData: candidates[0])
         }
         // Fall through is always a Fuzzy Match.
@@ -53,5 +54,26 @@ class PersonService {
 
     boolean sameReferenceIdAndCanonical(Set<Candidate> candidates) {
         return candidates.referenceId.unique().size() == 1 && candidates.every { it.exactMatch }
+    }
+
+    // Redact SSN and DOB from log
+    static Map getRedactedParams(Map params) {
+        // Redact SSN and DOB from log
+        def displayParams = [:]
+        displayParams.putAll(params)
+        if (displayParams.containsKey("socialSecurityNumber")) {
+            displayParams.socialSecurityNumber = "*****"
+        }
+        if (displayParams.containsKey("dateOfBirth")) {
+            displayParams.dateOfBirth = "****-**-**"
+        }
+        if (displayParams.containsKey("identifiers") && displayParams.identifiers instanceof List) {
+            displayParams.identifiers.each { def idMap ->
+                if (idMap.type == "socialSecurityNumber") {
+                    idMap.identifier = "___-_*-****"
+                }
+            }
+        }
+        return displayParams
     }
 }

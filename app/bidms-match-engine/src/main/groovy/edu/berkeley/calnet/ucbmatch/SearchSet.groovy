@@ -28,7 +28,7 @@ class SearchSet {
         log.trace("Found ${whereAndValues.size()} statements for ${matchConfidence.ruleName}. Now checking if all has a value")
         if (whereAndValues.every { it?.value != null }) {
             def returnValue = new WhereAndValues(ruleName: matchConfidence.ruleName, sql: whereAndValues.sql.join(' AND '), values: whereAndValues.value)
-            log.trace("Returning search sql: $returnValue.sql with values: $returnValue.values ")
+            log.trace("Returning search sql: $returnValue.sql with values: ${returnValue.redactedValues}")
             return returnValue
         } else {
             return null
@@ -49,4 +49,25 @@ class WhereAndValues {
     String ruleName
     String sql
     List values
+
+    List getRedactedValues() {
+        // Rather crude method of redacting last-5 SSNs and DOBs:
+        // Anything that is 5 digits or in the format of yyyy-mm-dd.
+        values.collect { def input ->
+            if (input) {
+                // SSN: 5 digits
+                if (input.toString() =~ /^\d\d\d\d\d$/) {
+                    "*****"
+                }
+                // DOB: yyyy-mm-dd
+                else if (input.toString() =~ /^\d\d\d\d-\d\d-\d\d$/) {
+                    "*****-**-**"
+                } else {
+                    input
+                }
+            } else {
+                input
+            }
+        }
+    }
 }

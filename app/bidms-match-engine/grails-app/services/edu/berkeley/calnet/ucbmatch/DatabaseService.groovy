@@ -95,7 +95,7 @@ class DatabaseService {
 
     private SearchResult performSearch(QueryStatement queryStatement) {
         def sql = sqlService.sqlInstance
-        log.debug("Performing query: $queryStatement.sql with values $queryStatement.values")
+        log.debug("Performing query: $queryStatement.sql with values ${queryStatement.redactedValues}")
         def start = System.currentTimeMillis()
         List<Map> result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
         if (log.isDebugEnabled()) {
@@ -118,6 +118,27 @@ class DatabaseService {
 
         String getNormalizedSql() {
             sql?.replaceAll(/\s+/, ' ')?.trim()
+        }
+
+        List getRedactedValues() {
+            // Rather crude method of redacting last-5 SSNs and DOBs:
+            // Anything that is 5 digits or in the format of yyyy-mm-dd.
+            values.collect { def input ->
+                if (input) {
+                    // SSN: 5 digits
+                    if (input.toString() =~ /^\d\d\d\d\d$/) {
+                        "*****"
+                    }
+                    // DOB: yyyy-mm-dd
+                    else if (input.toString() =~ /^\d\d\d\d-\d\d-\d\d$/) {
+                        "*****-**-**"
+                    } else {
+                        input
+                    }
+                } else {
+                    input
+                }
+            }
         }
     }
 }

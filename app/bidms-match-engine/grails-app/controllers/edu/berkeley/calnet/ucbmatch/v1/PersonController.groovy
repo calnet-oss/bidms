@@ -1,14 +1,16 @@
 package edu.berkeley.calnet.ucbmatch.v1
 
+import edu.berkeley.calnet.ucbmatch.PersonService
 import edu.berkeley.calnet.ucbmatch.response.Response
 import grails.converters.JSON
+import org.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
 
 class PersonController {
 
     static namespace = "v1"
 
-    def personService
+    PersonService personService
 
     def getPerson() {
         try {
@@ -18,7 +20,7 @@ class PersonController {
                 response.status = result.responseCode
                 render(result.jsonMap as JSON)
             } else {
-                log.info "No Match found with params: ${request.JSON}"
+                log.info "No Match found with params: ${personService.getRedactedParams((JSONObject) request.JSON)}"
                 render(status: result.responseCode, contentType: "application/json") {
                     text: "not found"
                 }
@@ -26,11 +28,10 @@ class PersonController {
         } catch (Exception ex) {
             log.error("Exception", ex)
             render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {
-                text: ex.message
+                text:
+                ex.message
             }
         }
     }
-
-
 }
 
