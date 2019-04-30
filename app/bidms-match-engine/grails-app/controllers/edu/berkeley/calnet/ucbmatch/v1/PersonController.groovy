@@ -28,8 +28,7 @@ class PersonController {
         } catch (Exception ex) {
             log.error("Exception", ex)
             render(status: HttpStatus.INTERNAL_SERVER_ERROR, contentType: "application/json") {
-                text:
-                ex.message
+                text: ex.message
             }
         }
     }
