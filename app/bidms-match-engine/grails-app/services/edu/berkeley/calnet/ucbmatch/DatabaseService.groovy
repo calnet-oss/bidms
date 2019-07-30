@@ -69,6 +69,10 @@ class DatabaseService {
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
         switch (confidenceType) {
+            case ConfidenceType.SUPERCANONICAL:
+                return matchConfig.superCanonicalConfidences.collect { MatchConfidence matchConfidence ->
+                    new SearchSet(matchConfidence: matchConfidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)
+                }
             case ConfidenceType.CANONICAL:
                 return matchConfig.canonicalConfidences.collect { MatchConfidence matchConfidence ->
                     new SearchSet(matchConfidence: matchConfidence, matchAttributeConfigs: matchConfig.matchAttributeConfigs)

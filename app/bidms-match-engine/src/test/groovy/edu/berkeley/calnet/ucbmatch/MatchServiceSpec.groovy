@@ -13,11 +13,25 @@ class MatchServiceSpec extends Specification implements ServiceUnitTest<MatchSer
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
+    void "test findCandidates where superCanonical returns a match"() {
+        when:
+        service.findCandidates([systemOfRecord: "sis", identifier: "123", a: "b"])
+
+        then:
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.SUPERCANONICAL) >> [new Candidate(referenceId: "ref123", exactMatch: true)]
+
+        and: "There are no other calls to the service"
+        0 * service.databaseService._(*_)
+        0 * service._(*_)
+    }
+
+    @SuppressWarnings("GroovyAssignabilityCheck")
     void "test findCandidates where canonical returns a match"() {
         when:
         service.findCandidates([systemOfRecord: "sis", identifier: "123", a: "b"])
 
         then:
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.SUPERCANONICAL) >> []
         1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.CANONICAL) >> [new Candidate()]
 
         and: "There are no other calls to the service"
@@ -26,11 +40,12 @@ class MatchServiceSpec extends Specification implements ServiceUnitTest<MatchSer
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
-    void "test findCandidates where canonical does not returns a match"() {
+    void "test findCandidates where superCanonical and canonical do not returns a match"() {
         when:
         service.findCandidates([systemOfRecord: "sis", identifier: "123", a: "b"])
 
         then:
+        1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.SUPERCANONICAL) >> []
         1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.CANONICAL) >> []
         1 * service.databaseService.searchDatabase([systemOfRecord: "sis", identifier: "123", a: "b"], ConfidenceType.POTENTIAL) >> [new Candidate()]
 
@@ -50,6 +65,5 @@ class MatchServiceSpec extends Specification implements ServiceUnitTest<MatchSer
         0 * service.databaseService._(*_)
         0 * service._(*_)
     }
-
 }
 

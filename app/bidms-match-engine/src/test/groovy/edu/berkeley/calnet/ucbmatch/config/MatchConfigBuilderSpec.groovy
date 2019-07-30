@@ -3,7 +3,10 @@ package edu.berkeley.calnet.ucbmatch.config
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.*
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.FIXED_VALUE
+import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
 
 class MatchConfigBuilderSpec extends Specification {
     def sut = new MatchConfigBuilder()
@@ -144,6 +147,31 @@ class MatchConfigBuilderSpec extends Specification {
     }
 
     @Unroll
+    def "test adding superCanonical confidences to config"() {
+        setup:
+        createAttributes()
+        def configClosure = {
+            confidences {
+                superCanonical args
+            }
+        }
+        configClosure.resolveStrategy = Closure.DELEGATE_ONLY
+        configClosure.delegate = sut
+
+        when:
+        configClosure.call()
+
+        then:
+        sut.config.superCanonicalConfidences*.confidence == [expected]
+        sut.config.superCanonicalConfidences*.ruleName == ["SuperCanonical #1"]
+
+        where:
+        args                               | expected
+        [attr1: EXACT]                     | [attr1: EXACT]
+        [attr1: EXACT, attr2: FIXED_VALUE] | [attr1: EXACT, attr2: FIXED_VALUE]
+    }
+
+    @Unroll
     def "test adding canonical confidences to config"() {
         setup:
         createAttributes()
@@ -168,6 +196,30 @@ class MatchConfigBuilderSpec extends Specification {
         [attr1: EXACT, attr2: SUBSTRING] | [attr1: EXACT, attr2: SUBSTRING]
     }
 
+    @Unroll
+    def "test adding invalid superCanonical confidences to config"() {
+        setup:
+        createAttributes()
+        def configClosure = {
+            confidences {
+                superCanonical attr1: attr
+            }
+        }
+        configClosure.resolveStrategy = Closure.DELEGATE_ONLY
+        configClosure.delegate = sut
+
+        when:
+        configClosure.call()
+
+        then:
+        thrown(AssertionError)
+
+        where:
+        attr      | _
+        DISTANCE  | _
+        SUBSTRING | _
+    }
+
     def "test adding invalid canonical confidences to config"() {
         setup:
         createAttributes()
@@ -184,6 +236,27 @@ class MatchConfigBuilderSpec extends Specification {
 
         then:
         thrown(AssertionError)
+    }
+
+    def "test addding multiple superCanonical confidences to config"() {
+        setup:
+        createAttributes()
+        def configClosure = {
+            confidences {
+                superCanonical attr1: EXACT
+                superCanonical attr2: EXACT, attr3: FIXED_VALUE
+            }
+        }
+        configClosure.resolveStrategy = Closure.DELEGATE_ONLY
+        configClosure.delegate = sut
+
+        when:
+        configClosure.call()
+
+        then:
+        sut.config.superCanonicalConfidences.size() == 2
+        sut.config.superCanonicalConfidences*.confidence == [[attr1: EXACT], [attr2: EXACT, attr3: FIXED_VALUE]]
+        sut.config.superCanonicalConfidences*.ruleName == ["SuperCanonical #1", "SuperCanonical #2"]
     }
 
     def "test addding multiple canonical confidences to config"() {
@@ -204,7 +277,7 @@ class MatchConfigBuilderSpec extends Specification {
         then:
         sut.config.canonicalConfidences.size() == 2
         sut.config.canonicalConfidences*.confidence == [[attr1: EXACT], [attr2: EXACT, attr3: SUBSTRING]]
-        sut.config.canonicalConfidences*.ruleName == ["Canonical #1","Canonical #2"]
+        sut.config.canonicalConfidences*.ruleName == ["Canonical #1", "Canonical #2"]
     }
 
     @Unroll

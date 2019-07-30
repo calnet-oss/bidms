@@ -4,5 +4,4 @@ class MatchConfidence {
     String ruleName
 
     Map<String, MatchConfig.MatchType> confidence
-
 }

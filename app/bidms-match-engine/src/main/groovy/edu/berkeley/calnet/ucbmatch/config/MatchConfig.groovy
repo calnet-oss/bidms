@@ -10,6 +10,7 @@ class MatchConfig {
         DISTANCE,
         FIXED_VALUE
 
+        static List SUPERCANONICAL_TYPES = [EXACT, FIXED_VALUE]
         static List CANONICAL_TYPES = [EXACT, SUBSTRING, FIXED_VALUE]
         static List POTENTIAL_TYPES = [EXACT, SUBSTRING, FIXED_VALUE, DISTANCE]
     }
@@ -17,6 +18,7 @@ class MatchConfig {
     String matchTable
     MatchReference matchReference
     List<MatchAttributeConfig> matchAttributeConfigs = []
+    List<MatchConfidence> superCanonicalConfidences = []
     List<MatchConfidence> canonicalConfidences = []
     List<MatchConfidence> potentialConfidences = []
 }

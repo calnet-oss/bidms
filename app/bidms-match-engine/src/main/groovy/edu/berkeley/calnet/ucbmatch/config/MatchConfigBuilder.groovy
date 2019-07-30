@@ -31,6 +31,7 @@ class MatchConfigBuilder {
         closure.delegate = builder
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.call()
+        config.superCanonicalConfidences = builder.superCanonicalConfidences
         config.canonicalConfidences = builder.canonicalConfidences
         config.potentialConfidences = builder.potentialConfidences
     }
@@ -99,6 +100,7 @@ class MatchConfigBuilder {
     private class MatchConfidencesDelegate {
 
         private List<String> matchAttributeNames
+        List<MatchConfidence> superCanonicalConfidences = []
         List<MatchConfidence> canonicalConfidences = []
         List<MatchConfidence> potentialConfidences = []
 
@@ -107,9 +109,15 @@ class MatchConfigBuilder {
             this.matchAttributeNames = matchAttributes.name
         }
 
+        void superCanonical(Map<String, MatchType> superCanonical, String rule = null) {
+            validateKeysAndValues("superCanonical", superCanonical, MatchType.SUPERCANONICAL_TYPES)
+            rule = rule ?: "SuperCanonical #${superCanonicalConfidences.size() + 1}"
+            superCanonicalConfidences << new MatchConfidence(ruleName: rule, confidence: superCanonical)
+        }
+
         void canonical(Map<String, MatchType> canonical, String rule = null) {
             validateKeysAndValues("canonical", canonical, MatchType.CANONICAL_TYPES)
-            rule = rule ?: "Canonical #${canonicalConfidences.size()+1}"
+            rule = rule ?: "Canonical #${canonicalConfidences.size() + 1}"
             canonicalConfidences << new MatchConfidence(ruleName: rule, confidence: canonical)
         }
 

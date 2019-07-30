@@ -1,6 +1,7 @@
 package edu.berkeley.calnet.ucbmatch
 
 enum ConfidenceType {
+    SUPERCANONICAL(true),
     CANONICAL(true),
     POTENTIAL(false)
 
