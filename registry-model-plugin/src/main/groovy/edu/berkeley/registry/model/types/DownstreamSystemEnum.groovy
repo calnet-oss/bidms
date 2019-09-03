@@ -3,7 +3,7 @@ package edu.berkeley.registry.model.types
 import edu.berkeley.registry.model.DownstreamSystem
 
 enum DownstreamSystemEnum implements TypeEnum<DownstreamSystem> {
-    LDAP, LDAP_NAMESPACE, AD, LDAP_AUTHORIZATIONS
+    LDAP, LDAP_NAMESPACE, LDAP_NAMESPACE_SECONDARY, AD, LDAP_AUTHORIZATIONS
 
     DownstreamSystem get() {
         return DownstreamSystem.findByName(name())
