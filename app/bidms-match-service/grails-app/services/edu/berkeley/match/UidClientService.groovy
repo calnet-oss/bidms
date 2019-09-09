@@ -48,7 +48,7 @@ class UidClientService {
                 log.warn "Error provisioning new sorObject $sorObject.id: ${response.text}"
             }
         } else {
-            log.debug "Successfully provisioned new sorObject $response.json.sorObjectId for person ${response.json.uid}"
+            log.debug "Successfully provisioned new sorObject sorObjectId=$response.json.sorObjectId, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} for person with new uid ${response.json.uid}"
             return response.json.uid
         }
         return null
