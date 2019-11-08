@@ -1,0 +1,176 @@
+/*
+ * Copyright (c) 2019, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+buildscript {
+    repositories {
+        // If using a Maven proxy, put the property settings in
+        // ~/.gradle/gradle.properties.
+        if (project.hasProperty("defaultCentral_proxy_url")) {
+            maven {
+                url project.property("defaultCentral_proxy_url")
+                if (project.hasProperty("default_proxy_username")) {
+                    credentials {
+                        username project.property("default_proxy_username")
+                        password project.property("default_proxy_password")
+                    }
+                }
+            }
+        } else {
+            jcenter()
+        }
+        if (project.hasProperty("gradlePlugins_proxy_url")) {
+            maven {
+                url project.property("gradlePlugins_proxy_url")
+                if (project.hasProperty("default_proxy_username")) {
+                    credentials {
+                        username project.property("default_proxy_username")
+                        password project.property("default_proxy_password")
+                    }
+                }
+            }
+        } else {
+            gradlePluginPortal()
+        }
+        // temporary for spring boot release candidates
+        maven { url 'https://repo.spring.io/milestone' }
+    }
+    dependencies {
+        classpath group: 'io.spring.dependency-management', name: 'io.spring.dependency-management.gradle.plugin', version: gradle.versions.springDependencyManagement
+        classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: gradle.versions.springBoot
+    }
+}
+
+ext {
+    licenseFile = file("LICENSE.txt").exists() ? file("LICENSE.txt") : null
+    noticeFile = file("NOTICE.txt").exists() ? file("NOTICE.txt") : null
+}
+
+allprojects {
+    apply plugin: 'idea'
+
+    ext {
+        versions = gradle.versions
+    }
+
+    repositories {
+        mavenLocal()
+        // If using a Maven proxy, put the property settings in
+        // ~/.gradle/gradle.properties.
+        if (project.hasProperty("defaultCentral_proxy_url")) {
+            maven {
+                url project.property("defaultCentral_proxy_url")
+                if (project.hasProperty("default_proxy_username")) {
+                    credentials {
+                        username project.property("default_proxy_username")
+                        password project.property("default_proxy_password")
+                    }
+                }
+            }
+        } else {
+            jcenter()
+        }
+        // temporary for spring boot release candidates
+        maven { url 'https://repo.spring.io/milestone' }
+        // temporary for springfox snapshots
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
+    }
+}
+
+subprojects {
+    evaluationDependsOn bidmsBomDep
+    apply plugin: 'io.spring.dependency-management'
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.springBoot}"
+        }
+        // dependency artifacts are configured in bidms-bom/build.gradle and
+        // their versions are set in versions.properties.
+        dependencies {
+            pdep(bidmsBomDep).dependencyManagementDependencies.each {
+                dependency group: it.group, name: it.name, version: it.version
+            }
+        }
+    }
+
+    boolean isSubproject = project.path in gradle.bidmsSubprojects
+    if(isSubproject) {
+        apply plugin: 'groovy'
+
+        assert licenseFile
+        assert noticeFile
+
+        jar {
+            from {[licenseFile, noticeFile]}
+        }
+    }
+
+    boolean isWebapp = project.path in gradle.bidmsWebapps
+    if(isWebapp) {
+        apply plugin: 'war'
+        apply plugin: 'org.springframework.boot'
+
+        assert licenseFile
+        assert noticeFile
+
+        war {
+            // build a conventional war suitable for deployment to external
+            // app server
+            enabled = true
+            from {[licenseFile, noticeFile]}
+        }
+
+        bootWar {
+            // use different classifier when a bootWar is built to not
+            // conflict with conventional war
+            classifier = 'boot'
+            // make the war executable as a unix script
+            launchScript()
+            from {[licenseFile, noticeFile]}
+        }
+    }
+
+    if(isSubproject || isWebapp) {
+        javadoc {
+            options.addBooleanOption('-frames', true)
+        }
+
+        task javadocJar(type: Jar) {
+            from javadoc
+            from {[licenseFile]}
+            archiveClassifier.set("javadoc")
+        }
+
+        task sourceJar(type: Jar) {
+            from sourceSets.main.allSource
+            from {[licenseFile, noticeFile]}
+            archiveClassifier.set("sources")
+        }
+    }
+}
+
+def pdep(String depstr) {
+    return (depstr.startsWith(":") ? project(depstr) : depstr)
+}

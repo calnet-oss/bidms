@@ -1,0 +1,11 @@
+This software is licensed by the two-clause BSD license available in the
+LICENSE.txt file in the same directory as this file.
+
+This software may include third-party software with different licenses.  We
+make no guarantees of license compatibility.  It is the responsibility of
+users and distributors of this software to abide by all licensing terms.
+
+This source code may be distributed with some files from the Gradle project,
+licensed by the Apache License (http://gradle.org/license/).  Files that are
+covered by this license: everything in gradle subdirectories and the gradlew
+and gradlew.bat files.
