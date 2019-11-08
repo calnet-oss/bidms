@@ -23,7 +23,7 @@ recommended method for production deployments.
 
 Spring Boot supports self-executable WAR files with an embedded application
 server.  If this is your preference, you can do the following:
-`./gradlew :bidms-boot:bootWar'
+`./gradlew :bidms-boot:bootWar`
 
 The WAR file ends up at
 `./bidms-boot/build/lib/bidms-VERSION-boot.war` and this can
