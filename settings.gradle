@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2019, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+pluginManagement {
+    repositories {
+        // temporary for spring boot release candidates
+        maven { url 'https://repo.spring.io/milestone' }
+        gradlePluginPortal()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'org.springframework.boot') {
+                useModule("org.springframework.boot:spring-boot-gradle-plugin:${requested.version}")
+            }
+        }
+    }
+}
+rootProject.name = 'bidms'
+
+/**
+ * Read in dependency versions from the versions.properties file.
+ */
+def getVersionPropertiesClosure = { File propsFile ->
+    def props = new Properties()
+    props.load(new FileInputStream(propsFile))
+    if (!gradle.hasProperty("versions")) {
+        gradle.ext.versions = new HashMap<String, String>()
+    }
+    props.each { prop ->
+        gradle.ext.versions[prop.key as String] = prop.value
+    }
+}
+getVersionPropertiesClosure(file("versions.properties"))
+
+/**
+ * To control which applications get included in the monolithic bidms WAR:
+ *
+ * All applications are included by default:
+ * ./gradlew :bidms-boot:war
+ *
+ * For just some applications, use the space delimited 'bidmsSubs' Gradle
+ * property where the values correspond to the <x>Subs property names found
+ * in gradle.properties.  For example, to build a WAR containing just the
+ * hello-world application:
+ * ./gradlew -PbidmsSubs="bidmsHelloWorldSubs" war
+ */
+
+def splitSpaceDelimitedPropertyClosure = { overridePropertyName, defaultList ->
+    def subprojects = []
+    List<String> subsList = (hasProperty(overridePropertyName) ? getProperty(overridePropertyName) : defaultList).split("\\s+")
+    subsList.each {
+        subprojects += getProperty(it).split("\\s+") as List<String>
+    }
+    subprojects as String[]
+}
+gradle.ext.bidmsSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubs", allBidmsSubs)
+gradle.ext.bidmsWebapps = splitSpaceDelimitedPropertyClosure("bidmsWebapps", allBidmsWebapps)
+include((gradle.ext.bidmsSubprojects + gradle.ext.bidmsWebapps + [bidmsBomDep, "bidms-aggregate-javadocs"]) as String[])
