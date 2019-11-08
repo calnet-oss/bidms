@@ -8,6 +8,8 @@ The web applications that comprise BIDMS are [Spring
 Boot](http://spring.io/projects/spring-boot) applications with a Java 11
 baseline.
 
+BIDMS source code is licensed under the [BSD two-clause license](LICENSE.txt).
+
 ## Quick-start: Running in developer mode
 
 `./gradlew :bidms-boot:bootRun`
