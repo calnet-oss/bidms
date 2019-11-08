@@ -22,7 +22,7 @@ suitable for deployment to external application servers and this is the
 recommended method for production deployments.
 
 Spring Boot supports self-executable WAR files with an embedded application
-server.  If this is your preference, you can do the following:
+server.  If this is your preference, you can do the following:<br/>
 `./gradlew :bidms-boot:bootWar`
 
 The WAR file ends up at
