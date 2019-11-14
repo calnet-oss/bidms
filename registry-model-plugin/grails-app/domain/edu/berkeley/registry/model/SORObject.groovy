@@ -6,7 +6,7 @@ import edu.berkeley.util.domain.transform.ConverterConfig
 import groovy.json.JsonSlurper
 
 @ConverterConfig
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json", "objJson", "queryTime"])
+@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "json", "objJson", "queryTime", "rematch"])
 class SORObject implements Serializable, Comparable {
 
     //
@@ -25,6 +25,7 @@ class SORObject implements Serializable, Comparable {
     String objJson
     Integer jsonVersion
     Long hash
+    boolean rematch
 
     static transients = ['json', 'uid', 'hash']
 
@@ -51,6 +52,7 @@ class SORObject implements Serializable, Comparable {
         queryTime column: 'sorQueryTime'
         person column: 'uid'
         hash column: 'hash', sqlType: 'BIGINT'
+        rematch column: 'rematch', sqlType: 'BOOLEAN'
     }
 
     Map getJson() {

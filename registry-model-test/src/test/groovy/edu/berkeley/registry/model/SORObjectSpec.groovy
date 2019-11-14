@@ -24,7 +24,7 @@ class SORObjectSpec extends AbstractDomainObjectSpec implements DataTest {
 
     void "confirm SORObject LogicalEqualsAndHashCode excludes"() {
         expect:
-        testExcludes(["person", "json", "objJson", "queryTime"])
+        testExcludes(["person", "json", "objJson", "queryTime", "rematch"])
     }
 
     void "confirm Identifier logicalHashCodeProperties"() {
