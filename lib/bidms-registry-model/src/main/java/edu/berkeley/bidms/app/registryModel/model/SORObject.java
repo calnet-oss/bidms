@@ -59,7 +59,7 @@ import java.util.Map;
  * PartialMatch}.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonIgnoreProperties({"person"})
+@JsonIgnoreProperties({"person", "rematch"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sorId", "sorObjKey"}))
 @Entity
 public class SORObject implements Comparable<SORObject> {
@@ -95,6 +95,9 @@ public class SORObject implements Comparable<SORObject> {
     @Transient
     @Column
     private Long hash;
+
+    @Column
+    private boolean rematch;
 
     private static final int HCB_INIT_ODDRAND = 1224078429;
     private static final int HCB_MULT_ODDRAND = 213039417;
@@ -201,5 +204,13 @@ public class SORObject implements Comparable<SORObject> {
     @Transient
     public void setHash(Long hash) {
         this.hash = hash;
+    }
+
+    public boolean isRematch() {
+        return rematch;
+    }
+
+    public void setRematch(boolean rematch) {
+        this.rematch = rematch;
     }
 }
