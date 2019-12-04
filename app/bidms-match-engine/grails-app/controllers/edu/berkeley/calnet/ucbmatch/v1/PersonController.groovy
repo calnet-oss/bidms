@@ -5,7 +5,9 @@ import edu.berkeley.calnet.ucbmatch.response.Response
 import grails.converters.JSON
 import org.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasAuthority('ucbMatch')"])
 class PersonController {
 
     static namespace = "v1"
