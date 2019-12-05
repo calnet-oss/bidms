@@ -3,7 +3,9 @@ package edu.berkeley.match
 import grails.converters.JSON
 
 import javax.servlet.http.HttpServletResponse
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasAuthority('registryMatchService')"])
 class TriggerMatchController {
     def newSORConsumerService
 

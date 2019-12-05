@@ -23,13 +23,13 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     def setup() {
         grailsApplication.config.rest = [matchEngine: [url: UCB_MATCH_URL]]
-        service.restClient = new RestBuilder()
+        service.matchEngineRestBuilder = new RestBuilder()
         createPeople()
     }
 
     void "test call to match engine where there is no match"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
@@ -47,7 +47,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where there is no match and matchOnly flag is set true"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","matchOnly":true,"names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
@@ -65,7 +65,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where there result is an exact match"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
@@ -83,7 +83,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where there result is a partial match"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
@@ -102,7 +102,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where the result is an existing record"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
@@ -120,7 +120,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where it returns a INTERNAL_SERVER_ERROR"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
@@ -136,7 +136,7 @@ class MatchClientServiceSpec extends Specification implements ServiceUnitTest<Ma
 
     void "test call to match engine where there match engine times out"() {
         setup:
-        final mockServer = MockRestServiceServer.createServer(service.restClient.restTemplate)
+        final mockServer = MockRestServiceServer.createServer(service.matchEngineRestBuilder.restTemplate)
         mockServer.expect(requestTo(UCB_MATCH_URL))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))

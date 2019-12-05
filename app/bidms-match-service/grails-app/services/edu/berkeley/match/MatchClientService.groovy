@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus
 
 @Transactional(readOnly = true)
 class MatchClientService {
-    def restClient
     def grailsApplication
+    def matchEngineRestBuilder
 
     /**
      * Call the match-engine to see if the database has a match on an existing record.
@@ -25,7 +25,7 @@ class MatchClientService {
     PersonMatch match(Map<String, Object> sorKeyData) {
         String matchUrl = grailsApplication.config.rest.matchEngine.url
         Map matchInputData = buildMatchInputData(sorKeyData)
-        RestResponse response = restClient.post(matchUrl) {
+        RestResponse response = matchEngineRestBuilder.post(matchUrl) {
             accept 'application/json'
             contentType "application/json"
             json matchInputData
