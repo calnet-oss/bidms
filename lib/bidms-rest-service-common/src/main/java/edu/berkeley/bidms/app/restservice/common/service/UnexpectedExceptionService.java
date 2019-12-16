@@ -49,7 +49,7 @@ public class UnexpectedExceptionService {
      * @param request   The request body.
      * @param exception The exception that was thrown by the bean method.
      */
-    public void respond(Object request, Exception exception) {
+    public <R> void respond(R request, Exception exception) throws RuntimeException {
         log.error("Unexpected server error", exception);
         throw new ServerErrorException("Unexpected server error", exception);
     }

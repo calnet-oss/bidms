@@ -28,7 +28,8 @@ package edu.berkeley.bidms.app.hello.controller;
 
 import edu.berkeley.bidms.app.hello.model.request.HelloWorldRequest;
 import edu.berkeley.bidms.app.hello.model.response.HelloWorldResponse;
-import edu.berkeley.bidms.app.hello.route.HelloWorldRoute;
+import edu.berkeley.bidms.app.hello.service.HelloWorldService;
+import edu.berkeley.bidms.app.restservice.common.service.RestRequestRouterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,40 +37,44 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Api(value = "Hello World")
+@RequestMapping(value = "/hello")
 @RestController
 public class HelloWorldController {
 
-    private HelloWorldRoute helloWorldRoute;
+    private RestRequestRouterService routerService;
+    private HelloWorldService helloWorldService;
 
-    public HelloWorldController(HelloWorldRoute helloWorldRoute) {
-        this.helloWorldRoute = helloWorldRoute;
+    public HelloWorldController(RestRequestRouterService routerService, HelloWorldService helloWorldService) {
+        this.routerService = routerService;
+        this.helloWorldService = helloWorldService;
     }
 
     // curl http://localhost:8080/hello/hello?name=me && echo
     @SuppressWarnings("unchecked")
     @ApiOperation(value = "View default hello world response")
-    @GetMapping(value = "/hello/hello", produces = "application/json")
+    @GetMapping(value = "/hello", produces = "application/json")
     public HelloWorldResponse helloGet(
             HttpServletRequest request,
             @ApiParam(value = "A HelloWorld request that contains a name")
             @ModelAttribute HelloWorldRequest cmd) {
-        return (HelloWorldResponse) helloWorldRoute.receive(cmd, request);
+        return routerService.toService(request, cmd, () -> helloWorldService.message(cmd));
     }
 
     // curl -X POST http://localhost:8080/hello/hello --header "Content-Type: application/json" -d '{"name": "me"}' && echo
     @SuppressWarnings("unchecked")
     @ApiOperation(value = "View an addressed hello world response")
-    @PostMapping(value = "/hello/hello", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/hello", consumes = "application/json", produces = "application/json")
     public HelloWorldResponse helloPost(
             HttpServletRequest request,
             @ApiParam(value = "A HelloWorld request that contains a name")
             @RequestBody HelloWorldRequest cmd
     ) {
-        return (HelloWorldResponse) helloWorldRoute.receive(cmd, request);
+        return routerService.toService(request, cmd, () -> helloWorldService.message(cmd));
     }
 }
