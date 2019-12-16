@@ -42,7 +42,4 @@ dependencies {
     }
     testImplementation 'org.spockframework:spock-spring'
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
-
-    // Camel
-    implementation 'org.apache.camel:camel-spring-boot-starter'
 }
