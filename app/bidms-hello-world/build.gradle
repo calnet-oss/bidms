@@ -37,9 +37,6 @@ dependencies {
     // Springfox for Swagger
     implementation 'io.springfox:springfox-swagger2'
 
-    // Camel
-    implementation 'org.apache.camel:camel-spring-boot-starter'
-
     implementation pdep(rootProject.bidmsRestServiceCommonDep)
 
     testRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
