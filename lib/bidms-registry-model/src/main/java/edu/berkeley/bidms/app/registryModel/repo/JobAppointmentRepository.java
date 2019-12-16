@@ -27,10 +27,11 @@
 package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.JobAppointment;
+import edu.berkeley.bidms.app.registryModel.model.compositeKey.PersonAppointmentCompositeKey;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
 /**
  * Repository for {@link JobAppointment} entities.
  */
-public interface JobAppointmentRepository extends ExtendedRepository<JobAppointment, Long> {
+public interface JobAppointmentRepository extends ExtendedRepository<JobAppointment, PersonAppointmentCompositeKey> {
 }

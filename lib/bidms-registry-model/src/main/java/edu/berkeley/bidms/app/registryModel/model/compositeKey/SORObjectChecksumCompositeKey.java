@@ -34,15 +34,17 @@ import java.io.Serializable;
 
 /**
  * Composite key for {@link SORObjectChecksum}.
+ * <p>
+ * The table composite key is (sorId, sorObjKey).
  */
-public class SORObjectChecksumId implements Serializable {
+public class SORObjectChecksumCompositeKey implements Serializable {
     private SOR sor;
     private String sorObjKey;
 
-    public SORObjectChecksumId() {
+    public SORObjectChecksumCompositeKey() {
     }
 
-    public SORObjectChecksumId(SOR sor, String sorObjKey) {
+    public SORObjectChecksumCompositeKey(SOR sor, String sorObjKey) {
         this.sor = sor;
         this.sorObjKey = sorObjKey;
     }
@@ -64,8 +66,8 @@ public class SORObjectChecksumId implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SORObjectChecksumId) {
-            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((SORObjectChecksumId) obj).getHashCodeObjects());
+        if (obj instanceof SORObjectChecksumCompositeKey) {
+            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((SORObjectChecksumCompositeKey) obj).getHashCodeObjects());
         }
         return false;
     }

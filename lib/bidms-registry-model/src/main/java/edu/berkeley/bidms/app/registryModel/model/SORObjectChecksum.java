@@ -27,7 +27,7 @@
 package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import edu.berkeley.bidms.app.registryModel.model.compositeKey.SORObjectChecksumId;
+import edu.berkeley.bidms.app.registryModel.model.compositeKey.SORObjectChecksumCompositeKey;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -44,7 +44,7 @@ import java.util.Date;
  * facilities related to querying and processing SOR data.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@IdClass(SORObjectChecksumId.class)
+@IdClass(SORObjectChecksumCompositeKey.class)
 @Entity
 public class SORObjectChecksum implements Serializable {
 

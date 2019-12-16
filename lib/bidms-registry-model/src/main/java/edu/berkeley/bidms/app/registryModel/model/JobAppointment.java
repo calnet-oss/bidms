@@ -43,8 +43,12 @@ import java.util.Objects;
 @JsonIgnoreProperties({"uid", "person", "sorObject"})
 @Entity
 public class JobAppointment extends PersonAppointment {
-    // TODO: We are going to have to rename 'apptId' to 'id' in the JobAppointment table.
-    // TODO: We also need to drop the uid column from the JobAppointment table.
+    protected JobAppointment() {
+    }
+
+    public JobAppointment(Person person) {
+        super(person);
+    }
 
     @Column(length = 64)
     private String jobCode;

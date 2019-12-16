@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import edu.berkeley.bidms.app.registryModel.model.compositeKey.PersonAppointmentCompositeKey;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -35,6 +36,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -55,6 +57,7 @@ import java.util.Objects;
  * are nullable.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@IdClass(PersonAppointmentCompositeKey.class)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "apptTypeId", "apptIdentifier"}))
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -73,11 +76,12 @@ public abstract class PersonAppointment implements Comparable<PersonAppointment>
     @Id
     private Long id;
 
-    @Column(length = 64, insertable = false, updatable = false)
+    @Column(length = 64, nullable = false)
     private String uid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uid", nullable = false)
+    @JoinColumn(name = "uid", nullable = false, insertable = false, updatable = false)
+    @Id
     private Person person;
 
     @ManyToOne(fetch = FetchType.EAGER)
