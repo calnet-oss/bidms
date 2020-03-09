@@ -39,6 +39,7 @@ dependencies {
 
     implementation pdep(rootProject.bidmsAppCommonDep)
     implementation pdep(rootProject.bidmsSpringSecurityApiDep)
+    implementation pdep(rootProject.bidmsCommonJsonDep)
 
     testImplementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)

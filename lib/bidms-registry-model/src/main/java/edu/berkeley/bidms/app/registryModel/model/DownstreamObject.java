@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-import edu.berkeley.bidms.registryModel.util.JsonUtil;
+import edu.berkeley.bidms.common.json.JsonUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;

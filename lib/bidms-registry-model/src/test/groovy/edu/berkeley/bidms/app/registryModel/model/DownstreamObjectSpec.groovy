@@ -34,7 +34,7 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.app.registryModel.model.type.DownstreamObjectOwnershipLevelEnum
 import edu.berkeley.bidms.app.registryModel.model.type.DownstreamSystemEnum
-import edu.berkeley.bidms.registryModel.util.JsonUtil
+import edu.berkeley.bidms.common.json.JsonUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
