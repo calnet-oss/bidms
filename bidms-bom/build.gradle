@@ -26,7 +26,7 @@
  */
 ext {
     versions = gradle.versions
-    
+
     dependencyManagementDependencies = [
         [group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servletApi],
         [group: 'org.apache.camel', name: 'camel-spring-boot-starter', version: versions.camelSpringBootStarter],
@@ -37,6 +37,9 @@ ext {
         [group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: versions.springCloudConfig],
         [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: versions.springCloudConfig],
         [group: 'org.spockframework', name: 'spock-spring', version: versions.spockSpring],
-        [group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang]
+        [group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang],
+        [group: 'org.postgresql', name: 'postgresql', version: versions.postgresql],
+        [group: 'org.json', name: 'json', version: versions.orgJson],
+        [group: 'software.apacheds.embedded', name: 'apacheds-embedded', version: versions.apacheDsEmbedded]
     ]
 }

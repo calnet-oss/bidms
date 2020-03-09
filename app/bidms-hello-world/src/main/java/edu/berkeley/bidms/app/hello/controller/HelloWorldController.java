@@ -33,6 +33,7 @@ import edu.berkeley.bidms.app.restservice.common.service.RestRequestRouterServic
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,7 +59,7 @@ public class HelloWorldController {
     // curl http://localhost:8080/hello/hello?name=me && echo
     @SuppressWarnings("unchecked")
     @ApiOperation(value = "View default hello world response")
-    @GetMapping(value = "/hello", produces = "application/json")
+    @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
     public HelloWorldResponse helloGet(
             HttpServletRequest request,
             @ApiParam(value = "A HelloWorld request that contains a name")
@@ -69,7 +70,7 @@ public class HelloWorldController {
     // curl -X POST http://localhost:8080/hello/hello --header "Content-Type: application/json" -d '{"name": "me"}' && echo
     @SuppressWarnings("unchecked")
     @ApiOperation(value = "View an addressed hello world response")
-    @PostMapping(value = "/hello", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/hello", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HelloWorldResponse helloPost(
             HttpServletRequest request,
             @ApiParam(value = "A HelloWorld request that contains a name")

@@ -92,6 +92,19 @@ allprojects {
         } else {
             jcenter()
         }
+	// Optional: At UCB, contains non-publically available things like
+	// the Oracle JDBC driver artifact.
+        if (project.hasProperty("calnetLibs_proxy_url")) {
+            maven {
+                url project.property("calnetLibs_proxy_url")
+                if (project.hasProperty("default_proxy_username")) {
+                    credentials {
+                        username project.property("default_proxy_username")
+                        password project.property("default_proxy_password")
+                    }
+                }
+            }
+        }
         // temporary for spring boot release candidates
         maven { url 'https://repo.spring.io/milestone' }
         // temporary for springfox snapshots

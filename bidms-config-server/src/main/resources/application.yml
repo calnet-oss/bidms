@@ -1,0 +1,11 @@
+# Default settings.  Can be overridden by creating
+# ${user.home}/bidms-cloudconfig/application.yml or overriding the
+# bidms.cloudconfig.config.location property (see bootstrap.yml).
+server:
+  port: 8888
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri:  file:${user.home}/bidms-config-repo
