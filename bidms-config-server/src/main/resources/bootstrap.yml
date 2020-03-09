@@ -1,0 +1,19 @@
+bidms:
+  cloudconfig:
+    config:
+      location: file:${user.home}/bidms-cloudconfig/
+
+spring:
+  config:
+    # https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config-application-property-files
+    # This adds a BIDMS Cloud Config Server specific custom config location
+    # to the default list of Spring Boot config locations.  The custom
+    # location takes precedence over defaults.  Defaults are specified in
+    # link above.  The location is specified in config property
+    # bidms.cloudconfig.config.location, which defaults to
+    # file:${user.home}/bidms-cloudconfig/.  The
+    # bidms.cloudconfig.config.location default value can be changed by
+    # specifying it as a Java system property (e.g., using the -D command
+    # line option when invoking Java) or by overriding the location of this
+    # bootstrap.yml using standard Spring Boot configuration mechanisms.
+    location: classpath:/,classpath:/config/,file:./,file:./config/,${bidms.cloudconfig.config.location}

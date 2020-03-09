@@ -29,6 +29,7 @@ package edu.berkeley.bidms.app.restservice.common.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerErrorException;
 
 /**
@@ -37,20 +38,44 @@ import org.springframework.web.server.ServerErrorException;
  */
 @Service
 public class UnexpectedExceptionService {
-    private Logger log = LoggerFactory.getLogger(UnexpectedExceptionService.class);
+    private final Logger log = LoggerFactory.getLogger(UnexpectedExceptionService.class);
 
     /**
-     * Handles an uncaught exception that resulted from synchronously routing
-     * to a bean method. This default implementation simply logs the error
-     * and wraps the exception in {@link ServerErrorException} that is
-     * thrown.  In the context of a web controller, Spring will respond with
-     * http code 500.
+     * Handles a runtime exception that resulted from synchronously routing
+     * to a bean method.
+     * <p>
+     * There are two types of runtime exceptions that may be thrown by the
+     * bean method: expected and unexpected.
+     * <p>
+     * It's considered an expected exception when the exception is already an
+     * instance of {@link ResponseStatusException}.  By throwing that, the
+     * programmer has already handled the error and decided what the HTTP
+     * response should be.  In this case, the exception is not logged and the
+     * {@link ResponseStatusException} is rethrown as-is.
+     * <p>
+     * Otherwise, it's considered an unexpected exception and it's logged as
+     * an error then wrapped in a {@link ServerErrorException} which is then
+     * thrown.
+     * <p>
+     * In the context of a web controller, Spring will respond with the http
+     * code associated with the {@link ResponseStatusException}.
      *
-     * @param request   The request body.
+     * @param request   Optionally, the request body.
      * @param exception The exception that was thrown by the bean method.
+     * @param <R>       The class type for the request body.
+     * @throws ResponseStatusException In the context of a web controller,
+     *                                 Spring will respond with the http code
+     *                                 associated with the {@link
+     *                                 ResponseStatusException}
      */
-    public <R> void respond(R request, Exception exception) throws RuntimeException {
-        log.error("Unexpected server error", exception);
-        throw new ServerErrorException("Unexpected server error", exception);
+    public <R> void respond(R request, Exception exception) throws ResponseStatusException {
+        if (exception instanceof ResponseStatusException) {
+            // expected exception - rethrow as-is without extra logging
+            throw (ResponseStatusException) exception;
+        } else {
+            // unexpected exception - log and wrap as a ServerErrorException (http code 500)
+            log.error("Unexpected server error", exception);
+            throw new ServerErrorException("Unexpected server error", exception);
+        }
     }
 }
