@@ -1,0 +1,84 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;INIT=create domain if not exists jsonb as json
+    username: sa
+    password: sa
+
+bidms:
+  sgs:
+    sql-template-directory: file://${catalina.home}
+    hash-executors:
+      jdbcHashExecutor:
+        bean-name: jdbcHashExecutor
+      ldapHashExecutor:
+        bean-name: ldapHashExecutor
+    query-executors:
+      jdbcQueryExecutor:
+        bean-name: jdbcQueryExecutor
+      ldapQueryExecutor:
+        bean-name: ldapQueryExecutor
+    query-entry-extractors:
+      clobColumnExtractor:
+        bean-name: clobColumnExtractor
+      dirContextHashExtractor:
+        bean-name: dirContextHashExtractor
+      dirContextQueryExtractor:
+        bean-name: dirContextQueryExtractor
+    connections:
+      jdbc:
+        EMBEDDEDDB:
+          driver-class-name: org.h2.Driver
+          url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000
+          username: sa
+          password: sa
+      ldap:
+        LDAP:
+          dialect: APACHEDS
+          url: ldap://localhost:10389
+          baseDn: dc=example,dc=edu
+          bindDn: uid=admin,ou=system
+          bindPassword: secret
+          metadata-set-name: LDAP
+    sors:
+      ALUMNI:
+        hash-executor-name: jdbcHashExecutor
+        hash-query-timestamp-supported: true
+        query-timestamp-supported: true
+        query-executor-name: jdbcQueryExecutor
+        connection-name: EMBEDDEDDB
+        jdbc:
+          hash-executor-sql-template: sql${file.separator}alumni-hash.sql
+          query-executor-sql-template: sql${file.separator}alumni-query.sql
+      LDAP:
+        connection-name: LDAP
+        hash-executor-name: ldapHashExecutor
+        hash-query-timestamp-supported: true
+        query-timestamp-supported: true
+        query-executor-name: ldapQueryExecutor
+        ldap:
+          searchBase: ou=People
+    directory-attribute-metadata:
+      LDAP:
+        attributes:
+          # Pseudo-attributes added by the SGS
+          dn:
+            quant: single
+          uidFromDN:
+            quant: single
+          definitiveUid:
+            quant: single
+          # Operational attributes
+          createTimestamp:
+            quant: single
+          modifyTimestamp:
+            quant: single
+          # Schema attributes used by tests (you'll want to use a more complete list in production that is fully representative of your real LDAP schema)
+          cn:
+            quant: multiple
+          givenName:
+            quant: multiple
+          sn:
+            quant: multiple
+          uid:
+            quant: multiple
