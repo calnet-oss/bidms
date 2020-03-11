@@ -1,27 +1,96 @@
-package edu.berkeley.registry.model
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model;
 
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
-import edu.berkeley.util.domain.transform.ConverterConfig
+import com.fasterxml.jackson.annotation.JsonInclude;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
-@ConverterConfig
-@LogicalEqualsAndHashCode(excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version"])
-class NameType implements Comparable {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
-    Integer id
-    String typeName
+/**
+ * A type for {@link PersonName}.
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Entity
+public class NameType implements Comparable<NameType> {
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NameType_seqgen")
+    @SequenceGenerator(name = "NameType_seqgen", sequenceName = "NameType_seq", allocationSize = 1)
+    @Id
+    private Integer id;
 
-    static constraints = {
-        typeName unique: true
+    @Column(nullable = false, unique = true, length = 64)
+    private String typeName;
+
+    private static final int HCB_INIT_ODDRAND = 1668225119;
+    private static final int HCB_MULT_ODDRAND = 979404205;
+
+    private Object[] getHashCodeObjects() {
+        return new Object[]{typeName};
     }
 
-    static mapping = {
-        table name: "NameType"
-        version false
-        id column: 'id', sqlType: 'SMALLINT'
-        typeName column: 'typeName', sqlType: 'VARCHAR(64)'
+    @Override
+    public int hashCode() {
+        return EntityUtil.genHashCode(
+                HCB_INIT_ODDRAND, HCB_MULT_ODDRAND,
+                getHashCodeObjects()
+        );
     }
 
-    int compareTo(obj) {
-        return hashCode() <=> obj?.hashCode()
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NameType) {
+            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((NameType) obj).getHashCodeObjects());
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(NameType obj) {
+        return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((NameType) obj).getHashCodeObjects());
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 }

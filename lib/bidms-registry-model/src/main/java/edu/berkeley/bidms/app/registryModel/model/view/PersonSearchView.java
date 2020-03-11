@@ -1,56 +1,186 @@
-package edu.berkeley.registry.model.view
-/**
- * This is a read-only view of a person, build on top of NEW_MATCH_VIEW
+/*
+ * Copyright (c) 2016, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-class PersonSearchView {
-    String id
-    String personNameType
-    String fullName
-    String givenName
-    String middleName
-    String surName
-    String dateOfBirthString
-    Date dateOfBirth
-    String identifierType
-    String identifier
-    String emailType
-    String emailAddress
+package edu.berkeley.bidms.app.registryModel.model.view;
 
-    static constraints = {
-    }
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
+import java.util.Date;
 
-    def beforeInsert() {
-        throw new IllegalStateException("Object cannot be inserted")
-    }
+/**
+ * This is a read-only view of person match data, built on top of
+ * NewMatchView.
+ */
+@Entity
+public class PersonSearchView {
+    @Column(name = "uid", length = 64, insertable = false, updatable = false)
+    @Id
+    private String id; // uid
 
-    def beforeUpdate() {
-        throw new IllegalStateException("Object cannot be updated")
-    }
+    @Column(length = 64, insertable = false, updatable = false)
+    private String personNameType;
 
-    def beforeDelete() {
-        throw new IllegalStateException("Object cannot be deleted")
-    }
+    @Column(length = 255, insertable = false, updatable = false)
+    private String fullName;
 
-    static mapping = {
-        table "PersonSearchView"
+    @Column(length = 127, insertable = false, updatable = false)
+    private String givenName;
 
-        id column: 'uid', sqlType: 'varchar(64)'
-        version false
+    @Column(length = 127, insertable = false, updatable = false)
+    private String middleName;
 
-        personNameType column: 'personNameType', sqlType: 'VARCHAR(64)'
-        fullName column: 'fullName', sqlType: 'VARCHAR(255)'
-        givenName column: 'givenName', sqlType: 'VARCHAR(127)'
-        middleName column: 'middleName', sqlType: 'VARCHAR(127)'
-        surName column: 'surName', sqlType: 'VARCHAR(127)'
-        dateOfBirthString column: 'dateOfBirthText', sqlType: 'TEXT'
-        dateOfBirth column: 'dateOfBirth', sqlType: 'DATE'
-        identifierType column: 'identifierType', sqlType: 'VARCHAR(64)'
-        identifier column: 'identifier', sqlType: 'VARCHAR(64)'
-        emailType column: 'emailType', sqlType: 'VARCHAR(64)'
-        emailAddress column: 'emailAddress', sqlType: 'VARCHAR(255)'
+    @Column(length = 127, insertable = false, updatable = false)
+    private String surName;
+
+    @Column(length = 10, insertable = false, updatable = false)
+    private String dateOfBirthString;
+
+    @Column(insertable = false, updatable = false)
+    private Date dateOfBirth;
+
+    @Column(length = 64, insertable = false, updatable = false)
+    private String identifierType;
+
+    @Column(length = 64, insertable = false, updatable = false)
+    private String identifier;
+
+    @Column(length = 64, insertable = false, updatable = false)
+    private String emailType;
+
+    @Column(length = 255, insertable = false, updatable = false)
+    private String emailAddress;
+
+    @PrePersist
+    @PreUpdate
+    @PreRemove
+    protected void beforePersist() {
+        throw new RuntimeException("PersonSearchView is read-only");
     }
 
     public String getUid() {
-        return id
+        return id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPersonNameType() {
+        return personNameType;
+    }
+
+    public void setPersonNameType(String personNameType) {
+        this.personNameType = personNameType;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getSurName() {
+        return surName;
+    }
+
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public String getDateOfBirthString() {
+        return dateOfBirthString;
+    }
+
+    public void setDateOfBirthString(String dateOfBirthString) {
+        this.dateOfBirthString = dateOfBirthString;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getIdentifierType() {
+        return identifierType;
+    }
+
+    public void setIdentifierType(String identifierType) {
+        this.identifierType = identifierType;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getEmailType() {
+        return emailType;
+    }
+
+    public void setEmailType(String emailType) {
+        this.emailType = emailType;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }

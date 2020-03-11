@@ -1,77 +1,59 @@
-package edu.berkeley.registry.model.types
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model.type;
 
-import edu.berkeley.registry.model.NameType
+import edu.berkeley.bidms.app.registryModel.model.NameType;
+import edu.berkeley.bidms.app.registryModel.repo.NameTypeRepository;
 
 /**
  * The different types of names from SOR JSON that translate into a
  * NameType.
  */
-enum NameTypeEnum implements TypeEnum<NameType>, PrioritizedEnum {
+public enum NameTypeEnum implements TypeEnum<NameType, NameTypeRepository> {
     sorPrimaryName,
-    sorPreferredName,
-    directoryDisplayName,
-    ldapBerkeleyEduName
+    sorPreferredName;
 
-    /**
-     * The first listed is highest priority.
-     */
-    static NameTypeEnum[] priorityList = [
-            ldapBerkeleyEduName,
-            directoryDisplayName,
-            sorPreferredName,
-            sorPrimaryName
-    ]
-
-    /**
-     * Lower value is higher priority.
-     */
-    static Map<NameTypeEnum, Integer> priorityMap = [:]
-    static {
-        for (int i = 0; i < priorityList.length; i++) {
-            priorityMap[priorityList[i]] = i
+    public NameType get(NameTypeRepository repo) {
+        NameType nameType = repo.findByTypeName(name());
+        if (nameType == null) {
+            throw new RuntimeException("NameType " + name() + " could not be found");
         }
+        return nameType;
     }
 
-    NameType get() {
-        NameType nameType = NameType.findByTypeName(name())
-        if (nameType == null)
-            throw new RuntimeException("NameType ${name()} could not be found")
-        return nameType
+    public String getName() {
+        return name();
     }
 
-    String getName() {
-        return name()
+    public Integer getId(NameTypeRepository repo) {
+        return get(repo).getId();
     }
 
-    Integer getId() {
-        return get().id
-    }
-
-    Integer getPriority() {
-        Integer pri = priorityMap[this]
-        return (pri != null ? pri : Integer.MAX_VALUE)
-    }
-
-    static NameTypeEnum getEnum(NameType t) {
-        return valueOf(NameTypeEnum, t?.typeName)
-    }
-
-    /**
-     * Get the NameType priority, for purposes of provisioning, by passing
-     * in a NameType.
-     *
-     * @param sor The NameType to get the priority for.
-     * @return The priority rank, starting with 0.  Priority 0 is highest
-     *         priority.  Returns Integer.MAX_VALUE if the NameType isn't
-     *         prioritized.
-     */
-    static int getPriority(NameType nameType) {
-        if (!nameType) throw new RuntimeException("nameType cannot be null")
-        NameTypeEnum e = getEnum(nameType)
-        if (!e) {
-            return Integer.MAX_VALUE
-        } else {
-            return e.priority
-        }
+    public static NameTypeEnum getEnum(NameType t) {
+        return valueOf(NameTypeEnum.class, t.getTypeName());
     }
 }
