@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -28,41 +28,15 @@ plugins {
     id 'groovy'
 }
 
+version = versions.bidmsAppCommonConf
+
 dependencies {
-    implementation('org.springframework.boot:spring-boot-starter-web') {
+    /*implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compileOnly 'javax.servlet:javax.servlet-api'
-    implementation 'org.springframework.boot:spring-boot-starter-logging'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'javax.servlet:javax.servlet-api'*/
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
-    // Springfox for Swagger
-    implementation 'io.springfox:springfox-swagger2'
-
-    implementation "org.postgresql:postgresql"
-    // not available from mavencentral/jcenter so you need to either add
-    // this artifact to your maven proxy or install it locally.
-    implementation 'com.oracle:ojdbc10:19.3'
-
-    // Freemarker for SQL templating
-    implementation 'org.freemarker:freemarker'
-
-    // for XML to JSON conversion
-    implementation 'org.json:json'
-
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsAppCommonConfDep)
-    implementation pdep(rootProject.bidmsRestServiceCommonDep)
-    //implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-
-    testImplementation 'com.h2database:h2'
-    testImplementation 'software.apacheds.embedded:apacheds-embedded'
-
-    testRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

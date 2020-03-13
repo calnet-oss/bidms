@@ -32,11 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -49,9 +46,6 @@ public class SgsConfiguration {
     private final Logger log = LoggerFactory.getLogger(SgsConfiguration.class);
 
     private SgsConfigProperties sorGatewayServiceConfigProperties;
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String dsDriverClassName;
 
     @Value("${spring.datasource.url}")
     private String dsUrl;
@@ -77,23 +71,6 @@ public class SgsConfiguration {
         return configuration;
     }
 
-    @Bean
-    public DataSource getDataSource() {
-        DataSourceBuilder<? extends DataSource> dataSourceBuilder = DataSourceBuilder.create();
-        DataSource dataSource = dataSourceBuilder
-                .driverClassName(dsDriverClassName)
-                .url(dsUrl)
-                .username(dsUsername)
-                .password(dsPassword)
-                .build();
-        log.debug("Using dataSource of type " + dataSource.getClass().getName());
-        if (dataSource.getClass().isAssignableFrom(com.zaxxer.hikari.HikariDataSource.class)) {
-            com.zaxxer.hikari.HikariDataSource ds = (com.zaxxer.hikari.HikariDataSource) dataSource;
-            log.debug("dataSource configured with autoCommit=" + ds.isAutoCommit() + ", transactionIsolation=" + ds.getTransactionIsolation() + ", connectionTimeout=" + ds.getConnectionTimeout() + ", idleTimeout=" + ds.getIdleTimeout() + ", initializationFailTimeout=" + ds.getInitializationFailTimeout() + ", leakDetectionThreshold=" + ds.getLeakDetectionThreshold() + ", maximumPoolSize=" + ds.getMaximumPoolSize() + ", maxLifetime=" + ds.getMaxLifetime() + ", minimumIdle=" + ds.getMinimumIdle() + ", validationTimeout=" + ds.getValidationTimeout() + ", isIsolateInternalQueries=" + ds.isIsolateInternalQueries() + ", connectionInitSql=" + ds.getConnectionInitSql() + ", connectionTestQuery=" + ds.getConnectionTestQuery());
-        }
-        return dataSource;
-    }
-
     public String getJdbcUrl() {
         return dsUrl;
     }
@@ -103,10 +80,5 @@ public class SgsConfiguration {
         props.put("user", dsUsername);
         props.put("password", dsPassword);
         return props;
-    }
-
-    @Bean
-    public JdbcTemplate getRegistryJdbcTemplate() {
-        return new JdbcTemplate(getDataSource());
     }
 }
