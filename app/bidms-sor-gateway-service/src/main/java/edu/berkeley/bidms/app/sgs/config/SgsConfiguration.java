@@ -41,8 +41,6 @@ import java.util.Properties;
 
 @SpringBootConfiguration
 public class SgsConfiguration {
-    private SgsConfigProperties sorGatewayServiceConfigProperties;
-
     private final Logger log = LoggerFactory.getLogger(SgsConfiguration.class);
 
     private SgsConfigProperties sorGatewayServiceConfigProperties;
