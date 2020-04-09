@@ -24,12 +24,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'java-library'
-}
+package edu.berkeley.bidms.logging;
 
-version = versions.bidmsCommonJson
+public class LoggingRuntimeException extends RuntimeException {
+    public LoggingRuntimeException() {
+    }
 
-dependencies {
-    api 'com.fasterxml.jackson.core:jackson-databind'
+    public LoggingRuntimeException(String message) {
+        super(message);
+    }
+
+    public LoggingRuntimeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public LoggingRuntimeException(Throwable cause) {
+        super(cause);
+    }
 }
