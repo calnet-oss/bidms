@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Regents of the University of California and
+ * Copyright (c) 2017, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,12 +24,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'java-library'
-}
+package edu.berkeley.bidms.logging;
 
-version = versions.bidmsCommonJson
+public class AuditFailEvent extends AuditEvent {
+    /* (optional) A string describing the error */
+    private String errorMsg;
 
-dependencies {
-    api 'com.fasterxml.jackson.core:jackson-databind'
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
 }

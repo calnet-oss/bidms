@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+}
+
+version = versions.bidmsLogging
+
+dependencies {
+    compileOnly 'javax.servlet:javax.servlet-api'
+    api 'org.springframework.boot:spring-boot-starter-logging'
+
+    api pdep(rootProject.bidmsCommonJsonDep)
+}
