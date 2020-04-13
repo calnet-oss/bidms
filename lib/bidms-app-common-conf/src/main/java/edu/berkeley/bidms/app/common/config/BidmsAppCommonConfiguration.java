@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.common.config;
 
+import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +52,12 @@ public class BidmsAppCommonConfiguration {
 
     @Value("${spring.datasource.password}")
     private String dsPassword;
+
+    private BidmsConfigProperties bidmsConfigProperties;
+
+    public BidmsAppCommonConfiguration(BidmsConfigProperties bidmsConfigProperties) {
+        this.bidmsConfigProperties = bidmsConfigProperties;
+    }
 
     @Bean
     public DataSource getDataSource() {
