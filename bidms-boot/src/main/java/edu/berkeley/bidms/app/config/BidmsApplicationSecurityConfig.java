@@ -68,11 +68,10 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/hello/**").permitAll()
-                .antMatchers("/sgs/*").hasRole("sorGateway")
-                .antMatchers("/match-engine/*").hasRole("ucbMatch")
-                .antMatchers("/match-service/*").hasRole("registryMatchService")
+                .antMatchers("/sgs/*").hasAuthority("sorGateway")
+                .antMatchers("/match-engine/*").hasAuthority("ucbMatch")
+                .antMatchers("/match-service/*").hasAuthority("registryMatchService")
                 /*.antMatchers("/**").denyAll()*/
-                .anyRequest().denyAll()
                 .and().httpBasic();
     }
 
