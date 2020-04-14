@@ -26,44 +26,17 @@
  */
 package edu.berkeley.bidms.app.common.config.properties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import java.net.URI;
 
-import java.util.Map;
+public class RestEndpointConfigProperties {
 
-@Configuration
-@ConfigurationProperties(prefix = "bidms")
-public class BidmsConfigProperties {
-    public static final String REST_CLIENT_KEY = "bidms.rest-client";
-    private RestClientConfigProperties restClient;
+    private URI url;
 
-    public static final String REST_KEY = "bidms.rest";
-    private Map<String, Map<String, RestEndpointConfigProperties>> rest;
-
-    public static final String JMS_CONNECTIONS_KEY = "bidms.jms-connections";
-    private Map<String, JmsConnectionConfigProperties> jmsConnections;
-
-    public RestClientConfigProperties getRestClient() {
-        return restClient;
+    public URI getUrl() {
+        return url;
     }
 
-    public void setRestClient(RestClientConfigProperties restClient) {
-        this.restClient = restClient;
-    }
-
-    public Map<String, Map<String, RestEndpointConfigProperties>> getRest() {
-        return rest;
-    }
-
-    public void setRest(Map<String, Map<String, RestEndpointConfigProperties>> rest) {
-        this.rest = rest;
-    }
-
-    public Map<String, JmsConnectionConfigProperties> getJmsConnections() {
-        return jmsConnections;
-    }
-
-    public void setJmsConnections(Map<String, JmsConnectionConfigProperties> jmsConnections) {
-        this.jmsConnections = jmsConnections;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 }

@@ -26,44 +26,24 @@
  */
 package edu.berkeley.bidms.app.common.config.properties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+public class RestClientConfigProperties {
 
-import java.util.Map;
+    private String trustStore;
+    private String trustStorePassword;
 
-@Configuration
-@ConfigurationProperties(prefix = "bidms")
-public class BidmsConfigProperties {
-    public static final String REST_CLIENT_KEY = "bidms.rest-client";
-    private RestClientConfigProperties restClient;
-
-    public static final String REST_KEY = "bidms.rest";
-    private Map<String, Map<String, RestEndpointConfigProperties>> rest;
-
-    public static final String JMS_CONNECTIONS_KEY = "bidms.jms-connections";
-    private Map<String, JmsConnectionConfigProperties> jmsConnections;
-
-    public RestClientConfigProperties getRestClient() {
-        return restClient;
+    public String getTrustStore() {
+        return trustStore;
     }
 
-    public void setRestClient(RestClientConfigProperties restClient) {
-        this.restClient = restClient;
+    public void setTrustStore(String trustStore) {
+        this.trustStore = trustStore;
     }
 
-    public Map<String, Map<String, RestEndpointConfigProperties>> getRest() {
-        return rest;
+    public String getTrustStorePassword() {
+        return trustStorePassword;
     }
 
-    public void setRest(Map<String, Map<String, RestEndpointConfigProperties>> rest) {
-        this.rest = rest;
-    }
-
-    public Map<String, JmsConnectionConfigProperties> getJmsConnections() {
-        return jmsConnections;
-    }
-
-    public void setJmsConnections(Map<String, JmsConnectionConfigProperties> jmsConnections) {
-        this.jmsConnections = jmsConnections;
+    public void setTrustStorePassword(String trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
     }
 }
