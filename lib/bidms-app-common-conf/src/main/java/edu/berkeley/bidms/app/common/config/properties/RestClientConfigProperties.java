@@ -26,16 +26,18 @@
  */
 package edu.berkeley.bidms.app.common.config.properties;
 
+import org.springframework.core.io.Resource;
+
 public class RestClientConfigProperties {
 
-    private String trustStore;
+    private Resource trustStore;
     private String trustStorePassword;
 
-    public String getTrustStore() {
+    public Resource getTrustStore() {
         return trustStore;
     }
 
-    public void setTrustStore(String trustStore) {
+    public void setTrustStore(Resource trustStore) {
         this.trustStore = trustStore;
     }
 
