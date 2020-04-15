@@ -33,6 +33,7 @@ import edu.berkeley.bidms.app.sgs.executor.ldap.LdapTemplateExt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -60,6 +61,9 @@ class LdapIntegrationSpec extends Specification {
 
     @Autowired
     JdbcTemplate registryJdbcTemplate
+
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder
 
     @Shared
     EmbeddedLdapServer embeddedLdapServer = new EmbeddedLdapServer() {
@@ -144,7 +148,7 @@ class LdapIntegrationSpec extends Specification {
 
     def "test LDAP hashing and querying via controllers"() {
         given: "a REST template"
-        TestRestTemplate restTemplate = new TestRestTemplate()
+        TestRestTemplate restTemplate = new TestRestTemplate(restTemplateBuilder)
 
         when: "hash performed on the directory via REST"
         def response = restTemplate.exchange(

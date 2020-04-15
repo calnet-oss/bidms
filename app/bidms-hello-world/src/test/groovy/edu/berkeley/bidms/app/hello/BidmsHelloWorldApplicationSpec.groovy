@@ -26,8 +26,10 @@
  */
 package edu.berkeley.bidms.app.hello
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -40,7 +42,14 @@ class BidmsHelloWorldApplicationSpec extends Specification {
     @LocalServerPort
     int port
 
-    TestRestTemplate restTemplate = new TestRestTemplate()
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder
+
+    TestRestTemplate restTemplate
+
+    void setup() {
+        this.restTemplate = new TestRestTemplate(restTemplateBuilder)
+    }
 
     void "test port is present"() {
         expect:

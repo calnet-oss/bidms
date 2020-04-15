@@ -30,14 +30,12 @@ import edu.berkeley.bidms.app.sgs.config.properties.SgsConfigProperties
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.jdbc.core.JdbcTemplate
 import spock.lang.Specification
-
-import java.nio.file.Files
-import java.nio.file.Path
 
 import static IntegrationTestUtil.SqlStmt
 
@@ -52,6 +50,9 @@ class JdbcIntegrationSpec extends Specification {
 
     @Autowired
     JdbcTemplate registryJdbcTemplate
+
+    @Autowired
+    RestTemplateBuilder restTemplateBuilder
 
     void setup() {
         IntegrationTestUtil.setupRegistryDatabase(registryJdbcTemplate)
@@ -101,7 +102,7 @@ class JdbcIntegrationSpec extends Specification {
 
     def "test JDBC hashing and querying via controllers"() {
         given: "a REST template"
-        TestRestTemplate restTemplate = new TestRestTemplate()
+        TestRestTemplate restTemplate = new TestRestTemplate(restTemplateBuilder)
 
         when: "hash performed on the Alumni table via REST"
         def response = restTemplate.exchange(
@@ -132,16 +133,5 @@ class JdbcIntegrationSpec extends Specification {
             queryMode == "FULL"
             successfulQueryCount == 2
         }
-    }
-
-    def foo() {
-        when:
-        //println("!!! " + sgsConfig.getSqlTemplateDirectory())
-        System.properties.each { k,v ->
-            println("$k = $v")
-        }
-
-        then:
-        true
     }
 }
