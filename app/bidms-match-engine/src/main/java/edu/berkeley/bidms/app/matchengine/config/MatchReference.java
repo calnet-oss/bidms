@@ -24,20 +24,53 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchengine;
+package edu.berkeley.bidms.app.matchengine.config;
 
-public enum ConfidenceType {
-    SUPERCANONICAL(true),
-    CANONICAL(true),
-    POTENTIAL(false);
+public class MatchReference {
+    private String responseType;
+    private String column;
+    private String systemOfRecordAttribute; // Would normally be 'sor'
+    private String identifierAttribute;  // Would normally be 'sorid'
 
-    private boolean exactMatch;
-
-    ConfidenceType(boolean exactMatch) {
-        this.exactMatch = exactMatch;
+    public String getResponseType() {
+        return responseType;
     }
 
-    public boolean isExactMatch() {
-        return exactMatch;
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public void setColumn(String column) {
+        this.column = column;
+    }
+
+    public String getSystemOfRecordAttribute() {
+        return systemOfRecordAttribute;
+    }
+
+    public void setSystemOfRecordAttribute(String systemOfRecordAttribute) {
+        this.systemOfRecordAttribute = systemOfRecordAttribute;
+    }
+
+    public String getIdentifierAttribute() {
+        return identifierAttribute;
+    }
+
+    public void setIdentifierAttribute(String identifierAttribute) {
+        this.identifierAttribute = identifierAttribute;
+    }
+
+    @Override
+    public String toString() {
+        return "MatchReference{" +
+                "responseType='" + responseType + '\'' +
+                ", column='" + column + '\'' +
+                ", systemOfRecordAttribute='" + systemOfRecordAttribute + '\'' +
+                ", identifierAttribute='" + identifierAttribute + '\'' +
+                '}';
     }
 }

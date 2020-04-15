@@ -1,13 +1,13 @@
-package edu.berkeley.calnet.ucbmatch.util
+package edu.berkeley.bidms.app.matchengine.util
 
-import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
+import edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.FIXED_VALUE
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.FIXED_VALUE
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.SUBSTRING
 
 class SqlWhereResolverSpec extends Specification {
 
@@ -74,10 +74,7 @@ class SqlWhereResolverSpec extends Specification {
         EXACT       | 'kryf'       | [dateFormat: 'yyyy-MM-dd']                                          | 'SOR=?'                                                 | null
     }
 
-
     private static MatchAttributeConfig createSearchMatchConfig(Map searchSettings = [:]) {
         new MatchAttributeConfig(name: 'sor', column: 'SOR', search: new MatchAttributeConfig.SearchSettings(searchSettings))
     }
-
-
 }

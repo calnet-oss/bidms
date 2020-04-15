@@ -1,9 +1,10 @@
-package edu.berkeley.calnet.ucbmatch.util
+package edu.berkeley.bidms.app.matchengine.util
 
-import edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig
 
 class AttributeValueResolverSpec extends Specification {
 

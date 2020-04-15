@@ -1,15 +1,44 @@
-package edu.berkeley.calnet.ucbmatch
+/*
+ * Copyright (c) 2014, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.matchengine
 
-import edu.berkeley.calnet.ucbmatch.config.MatchConfidence
+
+import edu.berkeley.bidms.app.matchengine.config.MatchConfidence
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static edu.berkeley.calnet.ucbmatch.config.MatchAttributeConfig.create
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.DISTANCE
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.EXACT
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.FIXED_VALUE
-import static edu.berkeley.calnet.ucbmatch.config.MatchConfig.MatchType.SUBSTRING
+import static edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig.InputSettings
+import static edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig.SearchSettings
+import static edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfigCreator.create
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.DISTANCE
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.EXACT
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.FIXED_VALUE
+import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType.SUBSTRING
 
 class SearchSetSpec extends Specification {
 
@@ -107,8 +136,8 @@ class SearchSetSpec extends Specification {
     def "test rule execution when input.fixedValue is part of the rule config: #description"() {
         setup:
         def matchAttributeConfigs = [
-                create(name: 'identifier', column: 'identifier', attribute: 'identifier', group: 'sor', outputPath: 'identifiers', search: [caseSensitive: true]),
-                create(name: 'sisSor', column: 'identifiersor', attribute: 'systemOfRecord', input: [fixedValue: matchOnInputSor], search: [caseSensitive: true, fixedValue: 'OTHER_SOR'])
+                create(name: 'identifier', column: 'identifier', attribute: 'identifier', group: 'sor', outputPath: 'identifiers', search: new SearchSettings(caseSensitive: true)),
+                create(name: 'sisSor', column: 'identifiersor', attribute: 'systemOfRecord', input: new InputSettings(fixedValue: matchOnInputSor), search: new SearchSettings(caseSensitive: true, fixedValue: 'OTHER_SOR'))
         ]
         def confidences = [sisSor: FIXED_VALUE, identifier: EXACT]
         def sut = new SearchSet(matchAttributeConfigs: matchAttributeConfigs, matchConfidence: new MatchConfidence(confidence: confidences, ruleName: 'name'))

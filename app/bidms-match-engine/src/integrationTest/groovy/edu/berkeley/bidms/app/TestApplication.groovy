@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,9 +24,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchengine.exceptions
+package edu.berkeley.bidms.app
 
-import groovy.transform.InheritConstructors
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@InheritConstructors
-class RecordExistsException extends RuntimeException { }
+@SpringBootApplication(scanBasePackages = "edu.berkeley.bidms.app")
+class TestApplication {
+    static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args)
+    }
+}

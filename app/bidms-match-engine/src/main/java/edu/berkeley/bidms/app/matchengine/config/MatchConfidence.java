@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Regents of the University of California and
+ * Copyright (c) 2016, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,9 +24,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchengine.exceptions
+package edu.berkeley.bidms.app.matchengine.config;
 
-import groovy.transform.InheritConstructors
+import java.util.Map;
 
-@InheritConstructors
-class RecordExistsException extends RuntimeException { }
+public class MatchConfidence {
+    private String ruleName;
+
+    private Map<String, MatchConfig.MatchType> confidence;
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
+    }
+
+    public Map<String, MatchConfig.MatchType> getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(Map<String, MatchConfig.MatchType> confidence) {
+        this.confidence = confidence;
+    }
+
+    @Override
+    public String toString() {
+        return "MatchConfidence{" +
+                "ruleName='" + ruleName + '\'' +
+                ", confidence=" + confidence +
+                '}';
+    }
+}
