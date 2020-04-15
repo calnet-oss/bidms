@@ -1,67 +1,234 @@
-package edu.berkeley.registry.model
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model;
 
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
-import edu.berkeley.util.domain.DomainUtil
-import edu.berkeley.util.domain.transform.ConverterConfig
-import org.hibernate.FetchMode
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
-@ConverterConfig(excludes = ["person", "sorObject"])
-@LogicalEqualsAndHashCode(
-        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person"],
-        changeCallbackClass = IdentifierHashCodeChangeCallback
-)
-class Identifier implements Comparable {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import java.util.Objects;
 
-    static class IdentifierHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<Identifier> {
-        IdentifierHashCodeChangeCallback() {
-            super("identifiers")
-        }
+/**
+ * An identifier for a person.
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties({"uid", "person", "sorObject"})
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "identifierTypeId"}))
+@Entity
+public class Identifier implements Comparable<Identifier> {
+
+    protected Identifier() {
     }
 
-    Long id
-    IdentifierType identifierType
-    SORObject sorObject
-    String identifier
+    public Identifier(Person person) {
+        this.person = person;
+        this.uid = person != null ? person.getUid() : null;
+    }
+
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IdentifierType_seqgen")
+    @SequenceGenerator(name = "IdentifierType_seqgen", sequenceName = "IdentifierType_seq", allocationSize = 1)
+    @Id
+    private Long id;
+
+    @Column(length = 64, insertable = false, updatable = false)
+    private String uid;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    private Person person;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "identifierTypeId", nullable = false)
+    private IdentifierType identifierType;
+
+    @Column(insertable = false, updatable = false)
+    private Long sorObjectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sorObjectId", nullable = false)
+    private SORObject sorObject;
+
+    @Column(nullable = false, length = 64)
+    private String identifier;
+
     // indicates if this an active id in the SOR
-    Boolean isActive
+    @Column
+    private Boolean isActive;
+
     // If the identifier is primary for the identifier type
-    boolean isPrimary
+    @Column
+    private boolean isPrimary;
+
     /**
      * weight: lowest number (0) is highest priority identifier of the same
      * type.  Used by PrimaryIdentifierExecutor to aid in determining
      * isPrimary.  HrmsIdentifierBuilder is an example where the weight is
      * set to something non-zero.  Defaults to 0.
      */
-    int weight
+    @Column
+    private int weight = 0;
 
-    static belongsTo = [person: Person]
+    private static final int HCB_INIT_ODDRAND = -22774971;
+    private static final int HCB_MULT_ODDRAND = -259960891;
 
-    static constraints = {
-        person unique: ['sorObject', 'identifierType']
-        isActive nullable: true
+    private Object[] getHashCodeObjects() {
+        return new Object[]{
+                uid, identifierType, sorObjectId, identifier, isActive,
+                isPrimary
+        };
     }
 
-    static mapping = {
-        table name: "Identifier"
-        version false
-        id column: 'id', generator: 'sequence', params: [sequence: 'Identifier_seq'], sqlType: 'BIGINT'
-        person column: Identifier.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        identifierType column: 'identifierTypeId', sqlType: 'SMALLINT', fetch: FetchMode.JOIN
-        sorObject column: 'sorObjectId', sqlType: 'BIGINT'
-        identifier column: 'identifier', sqlType: 'VARCHAR(64)'
-        isActive column: 'isActive', sqlType: 'BOOLEAN'
-        isPrimary column: 'isPrimary', sqlType: 'BOOLEAN'
-        weight column: 'weight', sqlType: 'INTEGER', defaultValue: 0
+    @Override
+    public int hashCode() {
+        return EntityUtil.genHashCode(
+                HCB_INIT_ODDRAND, HCB_MULT_ODDRAND,
+                getHashCodeObjects()
+        );
     }
 
-    // Makes the column name unique in test mode to avoid GRAILS-11600
-    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
-    // comments in DomainUtil.
-    static String getUidColumnName() {
-        return DomainUtil.testSafeColumnName("Identifier", "uid")
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Identifier) {
+            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((Identifier) obj).getHashCodeObjects());
+        }
+        return false;
     }
 
-    int compareTo(obj) {
-        return hashCode() <=> obj?.hashCode()
+    @Override
+    public int compareTo(Identifier obj) {
+        return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((Identifier) obj).getHashCodeObjects());
+    }
+
+    private void notifyPerson() {
+        if (person != null) {
+            person.notifyChange(person.getIdentifiers());
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Person getPerson() {
+        return person;
+    }
+
+    void setPerson(Person person) {
+        boolean changed = !Objects.equals(person, this.person) || (person != null && !Objects.equals(person.getUid(), uid));
+        Person originalPerson = this.person;
+        this.person = person;
+        this.uid = person != null ? person.getUid() : null;
+        if (changed) {
+            notifyPerson();
+            if (originalPerson != null) {
+                originalPerson.notifyChange(originalPerson.getIdentifiers());
+            }
+        }
+    }
+
+    public IdentifierType getIdentifierType() {
+        return identifierType;
+    }
+
+    public void setIdentifierType(IdentifierType identifierType) {
+        boolean changed = !Objects.equals(identifierType, this.identifierType);
+        this.identifierType = identifierType;
+        if (changed) notifyPerson();
+    }
+
+    @Transient
+    public Long getSorObjectId() {
+        return sorObjectId;
+    }
+
+    public SORObject getSorObject() {
+        return sorObject;
+    }
+
+    public void setSorObject(SORObject sorObject) {
+        boolean changed = !Objects.equals(sorObject, this.sorObject) || (sorObject != null && !Objects.equals(sorObject.getId(), sorObjectId));
+        this.sorObject = sorObject;
+        this.sorObjectId = sorObject != null ? sorObject.getId() : null;
+        if (changed) notifyPerson();
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        boolean changed = !Objects.equals(identifier, this.identifier);
+        this.identifier = identifier;
+        if (changed) notifyPerson();
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean active) {
+        boolean changed = !Objects.equals(active, this.isActive);
+        isActive = active;
+        if (changed) notifyPerson();
+    }
+
+    public boolean getIsPrimary() {
+        return isPrimary;
+    }
+
+    public void setIsPrimary(boolean primary) {
+        boolean changed = !Objects.equals(primary, this.isPrimary);
+        isPrimary = primary;
+        if (changed) notifyPerson();
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        boolean changed = !Objects.equals(weight, this.weight);
+        this.weight = weight;
+        if (changed) notifyPerson();
     }
 }

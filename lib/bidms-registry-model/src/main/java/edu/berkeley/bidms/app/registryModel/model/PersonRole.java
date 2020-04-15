@@ -1,67 +1,185 @@
-package edu.berkeley.registry.model
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model;
 
-import edu.berkeley.calnet.groovy.transform.LogicalEqualsAndHashCode
-import edu.berkeley.util.domain.DomainUtil
-import edu.berkeley.util.domain.transform.ConverterConfig
-import org.hibernate.FetchMode
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
-// roleCategory and roleAsgnUniquePerCat are part of AssignableRole and are
-// used here in this class as a foreign key reference for indexing purposes
-@ConverterConfig(excludes = ["person", "roleCategory", "roleAsgnUniquePerCat"])
-@LogicalEqualsAndHashCode(
-        excludes = ["id", "belongsTo", "constraints", "mapping", "transients", "version", "person", "roleCategory", "roleAsgnUniquePerCat"],
-        changeCallbackClass = PersonRoleHashCodeChangeCallback
-)
-class PersonRole implements Comparable {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.Objects;
 
-    static class PersonRoleHashCodeChangeCallback extends PersonCollectionHashCodeChangeHandler<PersonRole> {
-        PersonRoleHashCodeChangeCallback() {
-            super("assignedRoles")
+/**
+ * An active role assigned to a person.  I.e., an {@link AssignableRole} assigned to
+ * a person.  For an inactive role, see {@link PersonRoleArchive}.
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties({"uid", "person", "roleCategory", "roleAsgnUniquePerCat"})
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "roleId"}))
+@Entity
+public class PersonRole implements Comparable<PersonRole> {
+
+    protected PersonRole() {
+    }
+
+    public PersonRole(Person person) {
+        this.person = person;
+        this.uid = person != null ? person.getUid() : null;
+    }
+
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonRole_seqgen")
+    @SequenceGenerator(name = "PersonRole_seqgen", sequenceName = "PersonRole_seq", allocationSize = 1)
+    @Id
+    private Long id;
+
+    @Column(length = 64, insertable = false, updatable = false)
+    private String uid;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uid", nullable = false)
+    private Person person;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "roleCategoryId", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY(roleCategoryId, roleAsgnUniquePerCat) REFERENCES AssignableRoleCategory(id, roleAsgnUniquePerCat)"))
+    private AssignableRoleCategory roleCategory;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "roleId", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY(roleId, roleCategoryId) REFERENCES AssignableRole(id, roleCategoryId)"))
+    private AssignableRole role;
+
+    @Column(length = 255)
+    private String roleValue;
+
+    @Column
+    private boolean roleAsgnUniquePerCat;
+
+    private static final int HCB_INIT_ODDRAND = 1139919653;
+    private static final int HCB_MULT_ODDRAND = 645001011;
+
+    private Object[] getHashCodeObjects() {
+        return new Object[]{uid, role, roleValue};
+    }
+
+    @Override
+    public int hashCode() {
+        return EntityUtil.genHashCode(
+                HCB_INIT_ODDRAND, HCB_MULT_ODDRAND,
+                getHashCodeObjects()
+        );
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PersonRole) {
+            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((PersonRole) obj).getHashCodeObjects());
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(PersonRole obj) {
+        return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((PersonRole) obj).getHashCodeObjects());
+    }
+
+    private void notifyPerson() {
+        if (person != null) {
+            person.notifyChange(person.getAssignedRoles());
         }
     }
 
-    Long id
-    AssignableRole role
-    String roleValue
-    boolean roleAsgnUniquePerCat
-
-    /**
-     * Note that roleCategory+roleAsgnUniquePerCat is a composite foreign
-     * key reference to AssignableRoleCategory.  I don't know how to model
-     * that composite foreign key reference in GORM, so we make do with a
-     * single key foreign key reference for roleCategory.
-     */
-    static belongsTo = [person: Person, roleCategory: AssignableRoleCategory]
-
-    static constraints = {
-        person unique: ['role']
-        /**
-         * There is also a unique constraint in the DB using a partial index
-         * "ON PersonRole(uid, roleCategoryId) WHERE roleAsgnUniquePerCat =
-         * true".  I don't know how to model partial indexes in GORM.
-         */
-        roleValue nullable: true, size: 1..255
+    public Long getId() {
+        return id;
     }
 
-    static mapping = {
-        table name: "PersonRole"
-        version false
-        id column: 'id', generator: 'sequence', params: [sequence: 'PersonRole_seq'], sqlType: 'BIGINT'
-        role column: 'roleId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
-        person column: PersonRole.getUidColumnName(), sqlType: 'VARCHAR(64)'
-        roleValue column: 'roleValue', sqlType: 'VARCHAR(255)'
-        roleCategory column: 'roleCategoryId', sqlType: 'INTEGER', fetch: FetchMode.JOIN
-        roleAsgnUniquePerCat column: 'roleAsgnUniquePerCat', sqlType: 'BOOLEAN'
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    // Makes the column name unique in test mode to avoid GRAILS-11600
-    // 'unique' bug.  See https://jira.grails.org/browse/GRAILS-11600 and
-    // comments in DomainUtil.
-    static String getUidColumnName() {
-        return DomainUtil.testSafeColumnName("PersonRole", "uid")
+    public Person getPerson() {
+        return person;
     }
 
-    int compareTo(obj) {
-        return hashCode() <=> obj?.hashCode()
+    void setPerson(Person person) {
+        boolean changed = !Objects.equals(person, this.person) || (person != null && !Objects.equals(person.getUid(), uid));
+        Person originalPerson = this.person;
+        this.person = person;
+        this.uid = person != null ? person.getUid() : null;
+        if (changed) {
+            notifyPerson();
+            if (originalPerson != null) {
+                originalPerson.notifyChange(originalPerson.getAssignedRoles());
+            }
+        }
+    }
+
+    public AssignableRole getRole() {
+        return role;
+    }
+
+    public void setRole(AssignableRole role) {
+        boolean changed = !Objects.equals(role, this.role);
+        this.role = role;
+        if (changed) notifyPerson();
+    }
+
+    public String getRoleValue() {
+        return roleValue;
+    }
+
+    public void setRoleValue(String roleValue) {
+        boolean changed = !Objects.equals(roleValue, this.roleValue);
+        this.roleValue = roleValue;
+        if (changed) notifyPerson();
+    }
+
+    public boolean isRoleAsgnUniquePerCat() {
+        return roleAsgnUniquePerCat;
+    }
+
+    public void setRoleAsgnUniquePerCat(boolean roleAsgnUniquePerCat) {
+        this.roleAsgnUniquePerCat = roleAsgnUniquePerCat;
+    }
+
+    public AssignableRoleCategory getRoleCategory() {
+        return roleCategory;
+    }
+
+    public void setRoleCategory(AssignableRoleCategory roleCategory) {
+        this.roleCategory = roleCategory;
     }
 }

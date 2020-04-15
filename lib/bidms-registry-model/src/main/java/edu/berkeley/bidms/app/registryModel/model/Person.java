@@ -1,225 +1,485 @@
-package edu.berkeley.registry.model
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model;
 
-import edu.berkeley.hibernate.usertype.RegistrySortedSetType
-import org.grails.core.exceptions.GrailsRuntimeException
+import com.fasterxml.jackson.annotation.JsonInclude;
+import edu.berkeley.bidms.app.registryModel.model.validator.PersonValidator;
+import edu.berkeley.bidms.registryModel.hibernate.usertype.RegistrySortedSetType;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 
-class Person {
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.SortedSet;
 
-    String uid
-    Date timeCreated
-    Date timeUpdated
-    boolean isLocked
+/**
+ * This is the top-level entity for an identity in the registry.  The
+ * registry primary key is {@link #uid} and the uids in other tables are
+ * foreign key references to this table.
+ * <p>
+ * A person has various collections that represent the one to many
+ * relationships to person data in other tables.
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Entity
+public class Person {
+    @Id
+    private String uid;
 
-    // We use sorted sets so the sets are ordered the same way each time a
-    // person is queried.  This is particularly relevant for JSON
-    // generation.  We want the JSON output to look the same each time.
-    // Instantiating the set is necessary when using RegistrySortedSetType.
-    SortedSet<Address> addresses = RegistrySortedSetType.newSet(Address)
-    SortedSet<PersonName> names = RegistrySortedSetType.newSet(PersonName)
-    SortedSet<DateOfBirth> datesOfBirth = RegistrySortedSetType.newSet(DateOfBirth)
-    SortedSet<Identifier> identifiers = RegistrySortedSetType.newSet(Identifier)
-    SortedSet<Email> emails = RegistrySortedSetType.newSet(Email)
-    SortedSet<Telephone> telephones = RegistrySortedSetType.newSet(Telephone)
-    SortedSet<PersonRole> assignedRoles = RegistrySortedSetType.newSet(PersonRole)
-    SortedSet<TrackStatus> trackStatuses = RegistrySortedSetType.newSet(TrackStatus)
-    SortedSet<DelegateProxy> delegations = RegistrySortedSetType.newSet(DelegateProxy)
-    SortedSet<DownstreamObject> downstreamObjects = RegistrySortedSetType.newSet(DownstreamObject)
-    SortedSet<JobAppointment> jobAppointments = RegistrySortedSetType.newSet(JobAppointment)
-    SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive)
-    SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive)
+    @Column(insertable = false, updatable = false)
+    private Date timeCreated;
 
-    Person safeAddToAddresses(Address obj) { return safeAddTo("addresses", obj) }
+    @Column(insertable = false, updatable = false)
+    private Date timeUpdated;
 
-    Person safeRemoveFromAddresses(Address obj) { return safeRemoveFrom("addresses", obj) }
+    @Column
+    private boolean isLocked;
 
-    Person safeAddToNames(PersonName obj) { return safeAddTo("names", obj) }
+    /**
+     * We use sorted sets so the sets are ordered the same way each time a
+     * person is queried.  This is particularly relevant for JSON generation.
+     * We want the JSON output to look the same each time. Instantiating the
+     * set is necessary when using RegistrySortedSetType.
+     * <p>
+     * JPA requires the use of @OrderBy for sorted collection one-to-many
+     * joins but this does not determine the ordering in the
+     * RegistrySortedSetType collection.  Instead, the JPA entities implement
+     * Comparable.compareTo() and this is what will determine the iteration
+     * order.  This gets tricky if attribute values change (because the hash
+     * code changes) and this is why you see notifyChange() being called from
+     * the child entity setters.  When a child setter is called, the person's
+     * collection is rebuilt to preserve ordering in the collection after a
+     * possible hash code change of the collection element.
+     */
 
-    Person safeRemoveFromNames(PersonName obj) { return safeRemoveFrom("names", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<Address> addresses = RegistrySortedSetType.newSet(Address.class);
 
-    Person safeAddToDatesOfBirth(DateOfBirth obj) { return safeAddTo("datesOfBirth", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<PersonName> names = RegistrySortedSetType.newSet(PersonName.class);
 
-    Person safeRemoveFromDatesOfBirth(DateOfBirth obj) { return safeRemoveFrom("datesOfBirth", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<DateOfBirth> datesOfBirth = RegistrySortedSetType.newSet(DateOfBirth.class);
 
-    Person safeAddToIdentifiers(Identifier obj) { return safeAddTo("identifiers", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<Identifier> identifiers = RegistrySortedSetType.newSet(Identifier.class);
 
-    Person safeRemoveFromIdentifiers(Identifier obj) { return safeRemoveFrom("identifiers", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<Email> emails = RegistrySortedSetType.newSet(Email.class);
 
-    Person safeAddToEmails(Email obj) { return safeAddTo("emails", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<Telephone> telephones = RegistrySortedSetType.newSet(Telephone.class);
 
-    Person safeRemoveFromEmails(Email obj) { return safeRemoveFrom("emails", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<PersonRole> assignedRoles = RegistrySortedSetType.newSet(PersonRole.class);
 
-    Person safeAddToTelephones(Telephone obj) { return safeAddTo("telephones", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<TrackStatus> trackStatuses = RegistrySortedSetType.newSet(TrackStatus.class);
 
-    Person safeRemoveFromTelephones(Telephone obj) { return safeRemoveFrom("telephones", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<DelegateProxy> delegations = RegistrySortedSetType.newSet(DelegateProxy.class);
 
-    Person safeAddToAssignedRoles(PersonRole obj) { return safeAddTo("assignedRoles", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<DownstreamObject> downstreamObjects = RegistrySortedSetType.newSet(DownstreamObject.class);
 
-    Person safeRemoveFromAssignedRoles(PersonRole obj) { return safeRemoveFrom("assignedRoles", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<JobAppointment> jobAppointments = RegistrySortedSetType.newSet(JobAppointment.class);
 
-    Person safeAddToTrackStatuses(TrackStatus obj) { return safeAddTo("trackStatuses", obj) }
+    // archivedIdentifiers is read-only
+    @OneToMany(mappedBy = "person")
+    @OrderBy("originalIdentifierId")
+    private SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive.class);
 
-    Person safeRemoveFromTrackStatuses(TrackStatus obj) { return safeRemoveFrom("trackStatuses", obj) }
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    private SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive.class);
 
-    Person safeAddToDelegations(DelegateProxy obj) { return safeAddTo("delegations", obj) }
-
-    Person safeRemoveFromDelegations(DelegateProxy obj) { return safeRemoveFrom("delegations", obj) }
-
-    Person safeAddToDownstreamObjects(DownstreamObject obj) { return safeAddTo("downstreamObjects", obj) }
-
-    Person safeRemoveFromDownstreamObjects(DownstreamObject obj) { return safeRemoveFrom("downstreamObjects", obj) }
-
-    Person safeAddToJobAppointments(JobAppointment obj) { return safeAddTo("jobAppointments", obj) }
-
-    Person safeRemoveFromJobAppointments(JobAppointment obj) { return safeRemoveFrom("jobAppointments", obj) }
-
-    Person safeAddToArchivedIdentifiers(IdentifierArchive obj) { return safeAddTo("archivedIdentifiers", obj) }
-
-    Person safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) { return safeRemoveFrom("archivedIdentifiers", obj) }
-
-    Person safeAddToArchivedRoles(PersonRoleArchive obj) { return safeAddTo("archivedRoles", obj) }
-
-    Person safeRemoveFromArchivedRoles(PersonRoleArchive obj) { return safeRemoveFrom("archivedRoles", obj) }
-
-    private void rebuildCollectionSetIfNecessary(String collectionPropertyName) {
-        // This will cause the sorted collection to be re-sorted if any of
-        // the hash codes have changed.  Relevant because SortedSet.add() and
-        // SortedSet.remove() is dependent on proper ordering to find the object.
-        SortedSet collection = (SortedSet) getProperty(collectionPropertyName)
-        Collection cloned = (collection ? new ArrayList(collection) : null)
-        cloned?.each { it.hashCode() }
+    public Person addToAddresses(Address obj) {
+        obj.setPerson(this);
+        addresses.add(obj);
+        return this;
     }
 
-    Person safeAddTo(String collectionPropertyName, Object obj) {
-        rebuildCollectionSetIfNecessary(collectionPropertyName)
-        return addTo(collectionPropertyName, obj)
-    }
-
-    Person safeRemoveFrom(String collectionPropertyName, Object obj) {
-        rebuildCollectionSetIfNecessary(collectionPropertyName)
-        return removeFrom(collectionPropertyName, obj)
-    }
-
-    static hasMany = [
-            addresses          : Address,
-            names              : PersonName,
-            datesOfBirth       : DateOfBirth,
-            identifiers        : Identifier,
-            emails             : Email,
-            telephones         : Telephone,
-            assignedRoles      : PersonRole,
-            trackStatuses      : TrackStatus,
-            delegations        : DelegateProxy,
-            downstreamObjects  : DownstreamObject,
-            jobAppointments    : JobAppointment,
-            archivedIdentifiers: IdentifierArchive,
-            archivedRoles      : PersonRoleArchive
-    ]
-
-    static constraints = {
-        timeCreated nullable: true // assigned automatically by db trigger
-        timeUpdated nullable: true // assigned automatically by db trigger
-    }
-
-    static mapping = {
-        table name: "Person"
-        version false
-        id column: 'uid', name: 'uid', generator: 'assigned', sqlType: 'VARCHAR(64)'
-        timeCreated column: 'timeCreated', insertable: false, updateable: false
-        timeUpdated column: 'timeUpdated', insertable: false, updateable: false
-        isLocked column: 'isLocked', sqlType: 'BOOLEAN'
-        names cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        telephones cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        addresses cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        emails cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        datesOfBirth cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        identifiers cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        assignedRoles cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        trackStatuses cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        delegations cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        downstreamObjects cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        jobAppointments cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-        // archivedIdentifiers is read-only
-        archivedIdentifiers batchSize: 25, type: RegistrySortedSetType
-        archivedRoles cascade: "all-delete-orphan", batchSize: 25, type: RegistrySortedSetType
-    }
-
-    protected void validatedAssignedRoles() {
-        assignedRoles?.each { role ->
-            if (archivedRoles?.any { it.roleAsgnUniquePerCat && it.roleCategoryId == role.roleCategoryId }) {
-                throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an assignedRole because a role with the same roleCategory exists as an archivedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from archiveRoles first, using removeFromArchivedRoles().")
-            }
+    public Person removeFromAddresses(Address obj) {
+        if (addresses.remove(obj)) {
+            obj.setPerson(null);
         }
-
-        // the second iteration on the same collection is on purpose so that
-        // we consistently fail on any unique-only categories before we fail
-        // on any roleIds
-        assignedRoles?.each { role ->
-            if (archivedRoles?.any { it.roleId == role.roleId }) {
-                throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an assignedRole because a role with the same roleId exists as an archivedRole.  Remove the role with roleId=${role.roleId} from archiveRoles first, using removeFromArchivedRoles().")
-            }
-        }
+        return this;
     }
 
-    protected void validatedArchivedRoles() {
-        Date currentTime = new Date()
-        archivedRoles?.each { role ->
-            if (assignedRoles?.any { it.roleAsgnUniquePerCat && it.roleCategoryId == role.roleCategoryId }) {
-                throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=${role.roleCategoryId} from assignedRoles first, using removeFromAssignedRoles().")
-            }
+    public Person addToNames(PersonName obj) {
+        obj.setPerson(this);
+        names.add(obj);
+        return this;
+    }
 
-            // Flip the in-grace/post-grace booleans, if need be. 
-            // Necessary, otherwise validation errors could happen when
-            // saving the person.
-            resetArchivedRoleFlags(currentTime, role)
+    public Person removeFromNames(PersonName obj) {
+        if (names.remove(obj)) {
+            obj.setPerson(null);
         }
+        return this;
+    }
 
-        // the second iteration on the same collection is on purpose so that
-        // we consistently fail on any unique-only categories before we fail
-        // on any roleIds
-        archivedRoles?.each { role ->
-            if (assignedRoles?.any { it.roleId == role.roleId }) {
-                throw new GrailsRuntimeException("Uid $uid can't have role ${role.role.roleName} as an archivedRole because a role with the same roleId exists as an assignedRole.  Remove the role with roleId=${role.roleId} from assignedRoles first, using removeFromAssignedRoles().")
-            }
+    public Person addToDatesOfBirth(DateOfBirth obj) {
+        obj.setPerson(this);
+        datesOfBirth.add(obj);
+        return this;
+    }
+
+    public Person removeFromDatesOfBirth(DateOfBirth obj) {
+        if (datesOfBirth.remove(obj)) {
+            obj.setPerson(null);
         }
+        return this;
+    }
+
+    public Person addToIdentifiers(Identifier obj) {
+        obj.setPerson(this);
+        identifiers.add(obj);
+        return this;
+    }
+
+    public Person removeFromIdentifiers(Identifier obj) {
+        if (identifiers.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToEmails(Email obj) {
+        obj.setPerson(this);
+        emails.add(obj);
+        return this;
+    }
+
+    public Person removeFromEmails(Email obj) {
+        if (emails.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToTelephones(Telephone obj) {
+        obj.setPerson(this);
+        telephones.add(obj);
+        return this;
+    }
+
+    public Person removeFromTelephones(Telephone obj) {
+        if (telephones.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToAssignedRoles(PersonRole obj) {
+        obj.setPerson(this);
+        assignedRoles.add(obj);
+        doValidation();
+        return this;
+    }
+
+    public Person removeFromAssignedRoles(PersonRole obj) {
+        if (assignedRoles.remove(obj)) {
+            obj.setPerson(null);
+        }
+        doValidation();
+        return this;
+    }
+
+    public Person addToTrackStatuses(TrackStatus obj) {
+        obj.setPerson(this);
+        trackStatuses.add(obj);
+        return this;
+    }
+
+    public Person removeFromTrackStatuses(TrackStatus obj) {
+        if (trackStatuses.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToDelegations(DelegateProxy obj) {
+        obj.setPerson(this);
+        delegations.add(obj);
+        return this;
+    }
+
+    public Person removeFromDelegations(DelegateProxy obj) {
+        if (delegations.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToDownstreamObjects(DownstreamObject obj) {
+        obj.setPerson(this);
+        downstreamObjects.add(obj);
+        return this;
+    }
+
+    public Person removeFromDownstreamObjects(DownstreamObject obj) {
+        if (downstreamObjects.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToJobAppointments(JobAppointment obj) {
+        obj.setPerson(this);
+        jobAppointments.add(obj);
+        return this;
+    }
+
+    public Person removeFromJobAppointments(JobAppointment obj) {
+        if (jobAppointments.remove(obj)) {
+            obj.setPerson(null);
+        }
+        return this;
+    }
+
+    public Person addToArchivedRoles(PersonRoleArchive obj) {
+        obj.setPerson(this);
+        archivedRoles.add(obj);
+        doValidation();
+        return this;
+    }
+
+    public Person removeFromArchivedRoles(PersonRoleArchive obj) {
+        if (archivedRoles.remove(obj)) {
+            obj.setPerson(null);
+        }
+        doValidation();
+        return this;
     }
 
     /**
-     * It's possible that a role is in the archive and it has switched
-     * from in-grace to post-grace based on the end grace date, but the
-     * quartz job hasn't had a chance yet to flip this row to
-     * isPostGrace=true.  So we do the check here and do that flipping
-     * here, otherwise we will encounter a validation error when the
-     * person is saved.
+     * It's possible that a role is in the archive and it has switched from
+     * in-grace to post-grace based on the end grace date, but the quartz job
+     * hasn't had a chance yet to flip this row to isPostGrace=true.  So we
+     * do the check here and do that flipping here, otherwise we will
+     * encounter a validation error when the person is saved.
      */
-    static void resetArchivedRoleFlags(Date currentTime, PersonRoleArchive archivedRole) {
-        archivedRole.roleInGrace = (archivedRole.endOfRoleGraceTimeUseOverrideIfLater ? currentTime >= archivedRole.startOfRoleGraceTime && currentTime < archivedRole.endOfRoleGraceTimeUseOverrideIfLater : true)
-        archivedRole.rolePostGrace = (archivedRole.endOfRoleGraceTimeUseOverrideIfLater ? currentTime >= archivedRole.endOfRoleGraceTimeUseOverrideIfLater : false)
-    }
+    @PostLoad
+    @PreUpdate
+    @PrePersist
+    protected void doValidation() {
+        DataBinder binder = new DataBinder(this);
+        binder.setValidator(new PersonValidator());
+        binder.validate();
+        BindingResult result = binder.getBindingResult();
+        if (result.hasErrors()) {
+            throw new RuntimeException("person " + getUid() + " did not validate: " + result.getAllErrors().get(0).toString());
+        }
 
-    def beforeValidate() {
-        validatedArchivedRoles()
-        validatedAssignedRoles()
-
-        // Recalculate the hash codes because changing grace flags changes
-        // the hash code and the hashCodeChangeCallback needs to be invoked
-        // here before Hibernate does its save.
-        archivedRoles?.each { it.hashCode() }
-        assignedRoles?.each { it.hashCode() }
-    }
-
-    void setId(String uid) {
-        this.uid = uid
-    }
-
-    String getId() {
-        return uid
+        // Hash codes may have changed due to grace flag changes.
+        // (TODO: I don't think this is necessary anymore - notify done in the flag setters.)
+        //notifyChange(archivedRoles);
+        //notifyChange(assignedRoles);
     }
 
     /**
-     * @deprecated Use findByUid() or get() instead.
+     * Rebuild the collection because the sort order may have changed due to
+     * changed attributes of a collection element.
+     *
+     * @param collection A collection of entities that belongs to this
+     *                   person.
      */
-    @Deprecated
-    static Person findById(String id) {
-        return findByUid(id)
+    <T extends Comparable> void notifyChange(SortedSet<T> collection) {
+        // Rebuild the collection because the sort order may have changed
+        // due to changed attributes of a collection element.
+        Collection<T> cloned = new ArrayList<>(collection);
+        collection.clear();
+        collection.addAll(cloned);
+    }
+
+    public void setId(String uid) {
+        this.uid = uid;
+    }
+
+    public String getId() {
+        return uid;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Date timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public Date getTimeUpdated() {
+        return timeUpdated;
+    }
+
+    public void setTimeUpdated(Date timeUpdated) {
+        this.timeUpdated = timeUpdated;
+    }
+
+    public boolean getIsLocked() {
+        return isLocked;
+    }
+
+    public void setIsLocked(boolean locked) {
+        this.isLocked = locked;
+    }
+
+    public SortedSet<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(SortedSet<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public SortedSet<DateOfBirth> getDatesOfBirth() {
+        return datesOfBirth;
+    }
+
+    public void setDatesOfBirth(SortedSet<DateOfBirth> datesOfBirth) {
+        this.datesOfBirth = datesOfBirth;
+    }
+
+    public SortedSet<PersonName> getNames() {
+        return names;
+    }
+
+    public void setNames(SortedSet<PersonName> names) {
+        this.names = names;
+    }
+
+    public SortedSet<Identifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(SortedSet<Identifier> identifiers) {
+        this.identifiers = identifiers;
+    }
+
+    public SortedSet<Email> getEmails() {
+        return emails;
+    }
+
+    public void setEmails(SortedSet<Email> emails) {
+        this.emails = emails;
+    }
+
+    public SortedSet<Telephone> getTelephones() {
+        return telephones;
+    }
+
+    public void setTelephones(SortedSet<Telephone> telephones) {
+        this.telephones = telephones;
+    }
+
+    public SortedSet<PersonRole> getAssignedRoles() {
+        return assignedRoles;
+    }
+
+    public void setAssignedRoles(SortedSet<PersonRole> assignedRoles) {
+        this.assignedRoles = assignedRoles;
+    }
+
+    public SortedSet<TrackStatus> getTrackStatuses() {
+        return trackStatuses;
+    }
+
+    public void setTrackStatuses(SortedSet<TrackStatus> trackStatuses) {
+        this.trackStatuses = trackStatuses;
+    }
+
+    public SortedSet<DelegateProxy> getDelegations() {
+        return delegations;
+    }
+
+    public void setDelegations(SortedSet<DelegateProxy> delegations) {
+        this.delegations = delegations;
+    }
+
+    public SortedSet<DownstreamObject> getDownstreamObjects() {
+        return downstreamObjects;
+    }
+
+    public void setDownstreamObjects(SortedSet<DownstreamObject> downstreamObjects) {
+        this.downstreamObjects = downstreamObjects;
+    }
+
+    public SortedSet<JobAppointment> getJobAppointments() {
+        return jobAppointments;
+    }
+
+    public void setJobAppointments(SortedSet<JobAppointment> jobAppointments) {
+        this.jobAppointments = jobAppointments;
+    }
+
+    public SortedSet<IdentifierArchive> getArchivedIdentifiers() {
+        return archivedIdentifiers;
+    }
+
+    public void setArchivedIdentifiers(SortedSet<IdentifierArchive> archivedIdentifiers) {
+        this.archivedIdentifiers = archivedIdentifiers;
+    }
+
+    public SortedSet<PersonRoleArchive> getArchivedRoles() {
+        return archivedRoles;
+    }
+
+    public void setArchivedRoles(SortedSet<PersonRoleArchive> archivedRoles) {
+        this.archivedRoles = archivedRoles;
     }
 }

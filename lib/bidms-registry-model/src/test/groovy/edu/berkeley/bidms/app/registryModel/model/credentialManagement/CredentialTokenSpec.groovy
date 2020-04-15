@@ -1,31 +1,126 @@
-package edu.berkeley.registry.model.credentialManagement
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model.credentialManagement
 
-import edu.berkeley.registry.model.Identifier
-import edu.berkeley.registry.model.IdentifierType
-import edu.berkeley.registry.model.Person
-import edu.berkeley.registry.model.SOR
-import edu.berkeley.registry.model.SORObject
-import grails.testing.gorm.DataTest
+import edu.berkeley.bidms.app.registryModel.model.Identifier
+import edu.berkeley.bidms.app.registryModel.model.IdentifierType
+import edu.berkeley.bidms.app.registryModel.model.Person
+import edu.berkeley.bidms.app.registryModel.model.PersonSpec
+import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.model.SORObjectSpec
+import edu.berkeley.bidms.app.registryModel.model.SORSpec
+import edu.berkeley.bidms.app.registryModel.model.TestUtil
+import edu.berkeley.bidms.app.registryModel.repo.IdentifierRepository
+import edu.berkeley.bidms.app.registryModel.repo.IdentifierTypeRepository
+import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.CredentialTokenRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
 
-class CredentialTokenSpec extends Specification implements DataTest {
-    void setupSpec() {
-        mockDomains CredentialToken, Person, IdentifierType, Identifier, SORObject
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+class CredentialTokenSpec extends Specification {
+    @Autowired
+    PersonRepository personRepository
+
+    @Autowired
+    SORRepository sorRepository
+
+    @Autowired
+    SORObjectRepository sorObjectRepository
+
+    @Autowired
+    IdentifierTypeRepository identifierTypeRepository
+
+    @Autowired
+    IdentifierRepository identifierRepository
+
+    @Autowired
+    CredentialTokenRepository credentialTokenRepository
+
+    Class<?> getDomainClass() { return CredentialToken }
+
+    void "confirm CredentialToken is comparable"() {
+        expect:
+        Comparable.isAssignableFrom(getDomainClass())
     }
 
-    def "test that object validates because beforeValidate assigns token"() {
-        given:
-        def identifierType = new IdentifierType(idName: 'sisStudentId').save(failOnError: true, flush: true)
-        def person = new Person(uid: '123').save(failOnError: true, flush: true)
-        def sor = new SOR(sorName: "TEST_SOR").save(validate: false, flush: true)
-        def sorObject = new SORObject(person: person, sor: sor, sorPrimaryKey: "test", queryTime: new Date(), objJson: "{}", jsonVersion: 1, hash: "{}".hashCode()).save(validate: false, flush: true)
-        def identifier = new Identifier(person: person, sorObject: sorObject, identifier: '567', identifierType: identifierType).save(validate: false, flush: true)
+    static CredentialToken[] getTestCredentialTokens(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, IdentifierRepository identifierRepository) {
+        return [
+                new CredentialToken(
+                        token: "foobar",
+                        person: personRepository.get("1"),
+                        expiryDate: new Date(),
+                        identifier: identifierRepository.findByPersonAndSorObjectAndIdentifier(
+                                personRepository.get("1"),
+                                TestUtil.findSORObject(sorRepository, sorObjectRepository, "HR_PERSON", "hr123"),
+                                "hr123"
+                        )
+                )
+        ]
+    }
 
+    def setup() {
+        // make sure dependency objects are added
+        PersonSpec.insertPeople(personRepository)
+        SORSpec.insertSorNames(sorRepository)
+        SORObjectSpec.insertSorObjects(personRepository, sorRepository, sorObjectRepository)
+    }
+
+    static synchronized void insertCredentialTokens(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, IdentifierTypeRepository identifierTypeRepository, IdentifierRepository identifierRepository, CredentialTokenRepository credentialTokenRepository) {
+        IdentifierType identifierType = identifierTypeRepository.save(new IdentifierType(idName: "hr"))
+        SORObject sorObject = TestUtil.findSORObject(sorRepository, sorObjectRepository, "HR_PERSON", "hr123")
+        Person person = personRepository.get("1")
+        sorObject.person = person
+        sorObjectRepository.save(sorObject)
+        identifierRepository.save(new Identifier(
+                sorObject: sorObject,
+                identifier: "hr123",
+                identifierType: identifierType,
+                person: person
+        ))
+        getTestCredentialTokens(personRepository, sorRepository, sorObjectRepository, identifierRepository).each {
+            credentialTokenRepository.saveAndFlush(it)
+        }
+    }
+
+    void "save test"() {
         when:
-        def credentialToken = new CredentialToken(person: person, identifier: identifier, expiryDate: new Date() + 1)
+        insertCredentialTokens(personRepository, sorRepository, sorObjectRepository, identifierTypeRepository, identifierRepository, credentialTokenRepository)
+        CredentialToken token = credentialTokenRepository.findByPersonAndToken(personRepository.get("1"), "foobar")
 
         then:
-        credentialToken.validate()
-        credentialToken.token != null
+        token
+        token.person.uid == "1"
+        // confirm random token generated
+        token.token
     }
 }

@@ -1,96 +1,168 @@
-package edu.berkeley.registry.model
+/*
+ * Copyright (c) 2016, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.registryModel.model
 
-import edu.berkeley.registry.model.types.DownstreamObjectOwnershipLevelEnum
-import edu.berkeley.registry.model.types.DownstreamSystemEnum
-import grails.testing.gorm.DataTest
-import groovy.json.JsonBuilder
 
-class DownstreamObjectSpec extends AbstractDomainObjectSpec implements DataTest {
-    DownstreamSystem testDownstreamSystem
-    Person testPerson
+import edu.berkeley.bidms.app.registryModel.repo.DownstreamObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.DownstreamSystemRepository
+import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.app.registryModel.model.type.DownstreamObjectOwnershipLevelEnum
+import edu.berkeley.bidms.app.registryModel.model.type.DownstreamSystemEnum
+import edu.berkeley.bidms.common.json.JsonUtil
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import spock.lang.Specification
 
-    void setupSpec() {
-        mockDomains DownstreamObject, DownstreamSystem, Person
-    }
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+class DownstreamObjectSpec extends Specification {
 
-    def setup() {
-        testDownstreamSystem = new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name())
-        testDownstreamSystem.save(flush: true, failOnError: true)
+    @Autowired
+    SORRepository sorRepository
 
-        testPerson = new Person(uid: "person1")
-        testPerson.save(flush: true, failOnError: true)
-    }
+    @Autowired
+    PersonRepository personRepository
+
+    @Autowired
+    SORObjectRepository sorObjectRepository
+
+    @Autowired
+    DownstreamSystemRepository downstreamSystemRepository
+
+    @Autowired
+    DownstreamObjectRepository downstreamObjectRepository
 
     Class<?> getDomainClass() { return DownstreamObject }
 
-    void "confirm DownstreamObject using LogicalEqualsAndHashCode annotation"() {
+    void "confirm DownstreamObject is comparable"() {
         expect:
-        testIsLogicalEqualsAndHashCode()
-    }
-
-    void "confirm DownstreamObject LogicalEqualsAndHashCode excludes"() {
-        expect:
-        testExcludes(["person", "json"])
-    }
-
-    void "confirm DownstreamObject logicalHashCodeProperties"() {
-        expect:
-        testHashCodeProperties(["systemPrimaryKey", "objJson", "hash", "ownershipLevel", "globUniqId", "forceProvision", "system"])
+        Comparable.isAssignableFrom(getDomainClass())
     }
 
     def "test that a DownstreamObject can be found when exists"() {
-        given:
-        assert DownstreamSystem.get(testDownstreamSystem.id) != null
-        def obj = new DownstreamObject(
-                person: Person.get("person1"),
-                system: DownstreamSystem.findById(testDownstreamSystem.id),
+        when:
+        DownstreamSystem testDownstreamSystem = downstreamSystemRepository.save(new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name()))
+        Person testPerson = personRepository.save(new Person(uid: "person1"))
+
+        and:
+        def obj = downstreamObjectRepository.saveAndFlush(new DownstreamObject(
+                person: testPerson,
+                system: testDownstreamSystem,
                 systemPrimaryKey: '123',
                 objJson: '{}',
                 ownershipLevel: DownstreamObjectOwnershipLevelEnum.OWNED.value
-        ).save(flush: true, failOnError: true)
+        ))
 
-        expect:
+        then:
         obj.id
 
         and:
-        DownstreamObject.findBySystemAndSystemPrimaryKey(DownstreamSystem.findByName(DownstreamSystemEnum.LDAP.name()), '123')
+        downstreamObjectRepository.findBySystemAndSystemPrimaryKey(downstreamSystemRepository.findByName(DownstreamSystemEnum.LDAP.name()), '123')
     }
 
     def "test that finding a DownstreamObject with unknown system or key returns null"() {
-        given:
-        def obj = new DownstreamObject(
-                person: Person.get("person1"),
-                system: DownstreamSystem.findByName(DownstreamSystemEnum.LDAP.name()),
+        when:
+        DownstreamSystem testDownstreamSystem = downstreamSystemRepository.save(new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name()))
+        Person testPerson = personRepository.save(new Person(uid: "person1"))
+
+        and:
+        def obj = downstreamObjectRepository.saveAndFlush(new DownstreamObject(
+                person: testPerson,
+                system: testDownstreamSystem,
                 systemPrimaryKey: '123',
                 objJson: '{}',
                 ownershipLevel: DownstreamObjectOwnershipLevelEnum.OWNED.value
-        ).save(flush: true, failOnError: true)
+        ))
 
-        expect:
+        then:
         obj.id
 
         and:
-        !DownstreamObject.findBySystemAndSystemPrimaryKey(null, '123')
+        !downstreamObjectRepository.findBySystemAndSystemPrimaryKey(null, '123')
     }
 
     def "test parsing json"() {
-        given:
-        def json = new JsonBuilder([name: 'archer', middleName: null]).toString()
-        def obj = new DownstreamObject(
-                person: Person.get("person1"),
-                system: DownstreamSystem.findByName(DownstreamSystemEnum.LDAP.name()),
+        when:
+        DownstreamSystem testDownstreamSystem = downstreamSystemRepository.save(new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name()))
+        Person testPerson = personRepository.save(new Person(uid: "person1"))
+
+        and:
+        def json = JsonUtil.convertMapToJson([name: 'archer', middleName: null])
+        def obj = downstreamObjectRepository.saveAndFlush(new DownstreamObject(
+                person: testPerson,
+                system: testDownstreamSystem,
                 systemPrimaryKey: '123',
                 objJson: json,
                 ownershipLevel: DownstreamObjectOwnershipLevelEnum.OWNED.value
-        ).save(flush: true, failOnError: true)
+        ))
 
-        expect:
+        then:
         obj.json.name == 'archer'
         obj.json.containsKey("middleName")
     }
 
-    void "confirm has hash code change callback"() {
-        expect:
-        testHasHashCodeChangeCallback()
+    static DownstreamObject[] getTestDownstreamObjects(PersonRepository personRepository, DownstreamSystemRepository downstreamSystemRepository) {
+        Person person = personRepository.get("1")
+        return [
+                [systemPrimaryKey: "uid1", system: "LDAP"],
+                [systemPrimaryKey: "uid2", system: "LDAP"]
+        ].collect {
+            new DownstreamObject(
+                    systemPrimaryKey: it.systemPrimaryKey,
+                    system: downstreamSystemRepository.findByName(it.system),
+                    person: person,
+                    objJson: "{}",
+                    ownershipLevel: DownstreamObjectOwnershipLevelEnum.OWNED.value
+            )
+        }
+    }
+
+    static synchronized void insertDownstreamObjects(PersonRepository personRepository, DownstreamSystemRepository downstreamSystemRepository, DownstreamObjectRepository downstreamObjectRepository) {
+        getTestDownstreamObjects(personRepository, downstreamSystemRepository).each { downstreamObject ->
+            downstreamObjectRepository.saveAndFlush(downstreamObject)
+        }
+    }
+
+    void "save test"() {
+        when:
+        DownstreamSystemSpec.insertSystemNames(downstreamSystemRepository)
+        PersonSpec.insertPeople(personRepository)
+        insertDownstreamObjects(personRepository, downstreamSystemRepository, downstreamObjectRepository)
+
+        then:
+        downstreamObjectRepository.findAll().size() > 0
+        getTestDownstreamObjects(personRepository, downstreamSystemRepository).each { downstreamObject ->
+            downstreamObjectRepository.findBySystemAndSystemPrimaryKey(downstreamObject.system, downstreamObject.systemPrimaryKey).each {
+                assert it.systemPrimaryKey == downstreamObject.systemPrimaryKey
+                assert it.system.id == downstreamObject.system.id
+            }
+        }
     }
 }
