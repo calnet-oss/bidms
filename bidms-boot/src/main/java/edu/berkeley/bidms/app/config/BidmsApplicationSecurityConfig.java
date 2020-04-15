@@ -72,6 +72,7 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/match-engine/*").hasAuthority("ucbMatch")
                 .antMatchers("/match-service/*").hasAuthority("registryMatchService")
                 /*.antMatchers("/**").denyAll()*/
+                .anyRequest().denyAll()
                 .and().httpBasic();
     }
 
