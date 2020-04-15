@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,20 +24,35 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.testutils
+package edu.berkeley.bidms.app.matchservice.config.properties;
 
-import org.springframework.http.client.ClientHttpRequest
-import org.springframework.http.client.ClientHttpResponse
-import org.springframework.test.web.client.ResponseCreator
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-class TimeoutResponseCreator implements ResponseCreator {
+import java.util.Map;
 
-    @Override
-    public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
-        throw new SocketTimeoutException('Testing timeout exception')
+@Configuration
+@ConfigurationProperties(prefix = "bidms.matchservice")
+public class MatchServiceConfigProperties {
+    public static final String JMS_KEY = "bidms.matchservice.jms";
+    private Map<String, JmsEndpointConfigProperties> jms;
+
+    public static final String REST_KEY = "bidms.matchservice.rest";
+    private Map<String, RestEndpointConfigProperties> rest;
+
+    public Map<String, JmsEndpointConfigProperties> getJms() {
+        return jms;
     }
 
-    public static TimeoutResponseCreator withTimeout() {
-        new TimeoutResponseCreator()
+    public void setJms(Map<String, JmsEndpointConfigProperties> jms) {
+        this.jms = jms;
+    }
+
+    public Map<String, RestEndpointConfigProperties> getRest() {
+        return rest;
+    }
+
+    public void setRest(Map<String, RestEndpointConfigProperties> rest) {
+        this.rest = rest;
     }
 }

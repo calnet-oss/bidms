@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,20 +24,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.testutils
+package edu.berkeley.bidms.app.matchservice.config.properties;
 
-import org.springframework.http.client.ClientHttpRequest
-import org.springframework.http.client.ClientHttpResponse
-import org.springframework.test.web.client.ResponseCreator
+public class JmsEndpointConfigProperties {
+    private String connectionName;
+    private String queueName;
 
-class TimeoutResponseCreator implements ResponseCreator {
-
-    @Override
-    public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
-        throw new SocketTimeoutException('Testing timeout exception')
+    public String getConnectionName() {
+        return connectionName;
     }
 
-    public static TimeoutResponseCreator withTimeout() {
-        new TimeoutResponseCreator()
+    public void setConnectionName(String connectionName) {
+        this.connectionName = connectionName;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
     }
 }

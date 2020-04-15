@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,20 +24,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.testutils
+package edu.berkeley.bidms.app.matchservice.jms;
 
-import org.springframework.http.client.ClientHttpRequest
-import org.springframework.http.client.ClientHttpResponse
-import org.springframework.test.web.client.ResponseCreator
+import org.springframework.jms.core.JmsTemplate;
 
-class TimeoutResponseCreator implements ResponseCreator {
+import javax.jms.ConnectionFactory;
 
-    @Override
-    public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
-        throw new SocketTimeoutException('Testing timeout exception')
-    }
-
-    public static TimeoutResponseCreator withTimeout() {
-        new TimeoutResponseCreator()
+public class ProvisionJmsTemplate extends JmsTemplate {
+    public ProvisionJmsTemplate(ConnectionFactory connectionFactory) {
+        super(connectionFactory);
     }
 }

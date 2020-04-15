@@ -1,18 +1,54 @@
-package edu.berkeley.match
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.matchservice.service
 
-import edu.berkeley.registry.model.SORObject
-import grails.gorm.transactions.Transactional
-import org.apache.camel.Exchange
-import org.apache.camel.Handler
-import org.apache.camel.Message
-import org.apache.camel.component.jms.JmsMessage
+import edu.berkeley.bidms.app.matchservice.PersonExactMatch
+import edu.berkeley.bidms.app.matchservice.PersonExistingMatch
+import edu.berkeley.bidms.app.matchservice.PersonMatch
+import edu.berkeley.bidms.app.matchservice.PersonNoMatch
+import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
+import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import groovy.transform.PackageScope
+import groovy.util.logging.Slf4j
 import org.hibernate.ObjectNotFoundException
-import org.hibernate.SessionFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jms.annotation.JmsListener
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 import javax.jms.MapMessage
+import javax.jms.Message
+import javax.persistence.EntityManager
 
-@Transactional(rollbackFor = Exception, readOnly = true)
+@Slf4j
+@Service
 class NewSORConsumerService {
 
     // these correspond to properties in SorKeyData from the
@@ -20,32 +56,65 @@ class NewSORConsumerService {
     static MATCH_STRING_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
     static MATCH_BOOLEAN_FIELDS = ['matchOnly']
 
+    @Autowired
     MatchClientService matchClientService
+
+    @Autowired
     UidClientService uidClientService
+
+    @Autowired
     DatabaseService databaseService
-    SessionFactory sessionFactory
 
-    @Handler
-    void process(Exchange exchange) {
-        Map<String, String> result = onMessage(exchange.in)
-        if (exchange.pattern.outCapable) {
-            exchange.out.body = result
-        }
+    @Autowired
+    EntityManager entityManager
+
+    @Autowired
+    SORRepository sorRepository
+
+    @Autowired
+    SORObjectRepository sorObjectRepository
+
+    NewSORConsumerService() {
     }
 
-    Map<String, String> onMessage(Message camelMsg) {
-        try {
-            return onMessage(camelMsg.getBody())
-        }
-        catch (Exception e) {
-            log.error("onMessage() failed", e)
-            throw e
-        }
+    NewSORConsumerService(MatchClientService matchClientService, UidClientService uidClientService, DatabaseService databaseService, EntityManager entityManager, SORRepository sorRepository, SORObjectRepository sorObjectRepository) {
+        this.matchClientService = matchClientService
+        this.uidClientService = uidClientService
+        this.databaseService = databaseService
+        this.entityManager = entityManager
+        this.sorRepository = sorRepository
+        this.sorObjectRepository = sorObjectRepository
     }
 
-    Map<String, String> onMessage(JmsMessage camelJmsMsg) {
+    /**
+     * Receives a message on the newSORObjectQueue and processes it according to
+     * the rules
+     */
+    @Transactional(propagation = Propagation.NEVER)
+    @JmsListener(destination = '${bidms.matchservice.jms.new-sorobject.queue-name}')
+    void onMessage(Message msg) {
+        handleMessage(msg)
+    }
+
+    @PackageScope
+    @Transactional(propagation = Propagation.NEVER)
+    Map<String, String> handleMessage(Message msg) {
         try {
-            return onMessage(camelJmsMsg.getJmsMessage())
+            if (!(msg instanceof MapMessage)) {
+                throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
+            }
+            MapMessage message = (MapMessage) msg
+
+            SORObject sorObject
+            try {
+                sorObject = getSorObjectFromMessage(message)
+            }
+            catch (ObjectNotFoundException e) {
+                log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
+                return null
+            }
+
+            return matchPerson(sorObject, getAttributesFromMessage(message))
         }
         catch (Exception e) {
             log.error("onMessage() failed", e)
@@ -54,7 +123,7 @@ class NewSORConsumerService {
         finally {
             // avoid hibernate cache growth
             try {
-                sessionFactory?.currentSession?.clear()
+                entityManager?.clear()
             }
             catch (Exception e) {
                 log.error("failed to clear hibernate session at the end of onMessage()", e)
@@ -62,28 +131,7 @@ class NewSORConsumerService {
         }
     }
 
-    /**
-     * Receives a message on the newSORQueue and processes it according to
-     * the rules
-     */
-    Map<String, String> onMessage(javax.jms.Message msg) {
-        if (!(msg instanceof MapMessage)) {
-            throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
-        }
-        MapMessage message = (MapMessage) msg
-
-        SORObject sorObject
-        try {
-            sorObject = getSorObjectFromMessage(message)
-        }
-        catch (ObjectNotFoundException e) {
-            log.error("SORObject no longer exists.  Consuming message to get it off the queue.", e)
-            return null
-        }
-
-        return matchPerson(sorObject, getAttributesFromMessage(message))
-    }
-
+    @Transactional(propagation = Propagation.NEVER)
     Map<String, String> matchPerson(SORObject sorObject, Map<String, Object> sorAttributes, boolean synchronousDownstream = true) {
         // done in a new transaction
         PersonMatch personMatch = doMatch(sorObject, sorAttributes)
@@ -143,7 +191,7 @@ class NewSORConsumerService {
         finally {
             // avoid hibernate cache growth
             try {
-                sessionFactory?.currentSession?.clear()
+                entityManager?.clear()
             }
             catch (Exception e) {
                 log.error("failed to clear hibernate session at the end of doMatch()", e)
@@ -154,6 +202,7 @@ class NewSORConsumerService {
     /**
      * @return If a new uid was generated for the SORObject, the uid is returned, otherwise null is returned.
      */
+    @Transactional(propagation = Propagation.NEVER)
     String doProvisionIfNecessary(PersonMatch match, SORObject sorObject, boolean synchronousDownstream) {
         // if it is an exact match, provision
         if (match instanceof PersonExactMatch) {
@@ -192,12 +241,12 @@ class NewSORConsumerService {
     private SORObject getSorObjectFromMessage(MapMessage message) {
         def systemOfRecord = message.getString('systemOfRecord')
         def sorPrimaryKey = message.getString('sorPrimaryKey')
-        def sorObject = SORObject.getBySorAndObjectKey(systemOfRecord, sorPrimaryKey)
+        def sorObject = sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName(systemOfRecord), sorPrimaryKey)
         if (!sorObject) {
             log.error("SORObject sorName=$systemOfRecord, sorPrimaryKey=$sorPrimaryKey could not be found in the DB while processing message ${message.getJMSMessageID()} from the New SORObject Queue")
             throw new ObjectNotFoundException("$systemOfRecord/$sorPrimaryKey", "SORObject")
         }
-        log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.ident()}")
+        log.debug("Read $systemOfRecord/$sorPrimaryKey from db: ${sorObject.sor}/${sorObject.sorPrimaryKey} (ID: ${sorObject.id})")
         sorObject
     }
 

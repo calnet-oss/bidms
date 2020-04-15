@@ -1,36 +1,78 @@
-package edu.berkeley.match
+/*
+ * Copyright (c) 2015, Regents of the University of California and
+ * contributors.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package edu.berkeley.bidms.app.matchservice.service
 
-import edu.berkeley.registry.model.Identifier
-import edu.berkeley.registry.model.IdentifierType
-import edu.berkeley.registry.model.PartialMatch
-import edu.berkeley.registry.model.Person
-import edu.berkeley.registry.model.SOR
-import edu.berkeley.registry.model.SORObject
-import edu.berkeley.registry.model.types.IdentifierTypeEnum
-import edu.berkeley.registry.model.types.SOREnum
+import edu.berkeley.bidms.app.matchservice.PersonExactMatch
+import edu.berkeley.bidms.app.matchservice.PersonExistingMatch
+import edu.berkeley.bidms.app.matchservice.PersonNoMatch
+import edu.berkeley.bidms.app.matchservice.PersonPartialMatch
+import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
+import edu.berkeley.bidms.app.registryModel.model.Identifier
+import edu.berkeley.bidms.app.registryModel.model.IdentifierType
+import edu.berkeley.bidms.app.registryModel.model.Person
+import edu.berkeley.bidms.app.registryModel.model.SOR
+import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.repo.IdentifierRepository
+import edu.berkeley.bidms.app.registryModel.repo.IdentifierTypeRepository
+import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
-import grails.testing.gorm.DataTest
-import grails.testing.services.ServiceUnitTest
 
 import javax.jms.MapMessage
+import javax.persistence.EntityManager
 
-@SuppressWarnings("GroovyAssignabilityCheck")
-class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest<NewSORConsumerService>, DataTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+class NewSORConsumerServiceSpec extends Specification {
+    NewSORConsumerService service
+    @Autowired
+    PersonRepository personRepository
+    @Autowired
+    SORRepository sorRepository
+    @Autowired
+    SORObjectRepository sorObjectRepository
+    @Autowired
+    IdentifierTypeRepository identifierTypeRepository
+    @Autowired
+    IdentifierRepository identifierRepository
+
     SORObject sorObject
     Person person1
     Person person2
     Person person3
     List<PersonPartialMatch> personPartialMatches
 
-    void setupSpec() {
-        mockDomains SOR, SORObject, Person, Identifier, IdentifierType, PartialMatch
-    }
-
     def setup() {
+        this.service = new NewSORConsumerService(Mock(MatchClientService), Mock(UidClientService), Mock(DatabaseService), Mock(EntityManager), sorRepository, sorObjectRepository)
         setupModel()
-        service.matchClientService = Mock(MatchClientService)
-        service.uidClientService = Mock(UidClientService)
-        service.databaseService = Mock(DatabaseService)
     }
 
     void cleanup() {
@@ -58,7 +100,6 @@ class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest
         mockMatchOnlyAsString(message, true)
 
         when:
-        def sorAttributes = [systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00001', givenName: 'givenName', surName: 'surName', dateOfBirth: 'DOB', socialSecurityNumber: 'SSN', matchOnly: true, otherIds: [employeeId: '123']]
         service.onMessage(message)
 
         then:
@@ -108,7 +149,7 @@ class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest
         service.onMessage(message)
 
         then:
-        1 * service.matchClientService.match([systemOfRecord: 'SIS_STUDENT', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
+        1 * service.matchClientService.match([systemOfRecord: 'SIS', sorPrimaryKey: 'SIS00002']) >> new PersonExistingMatch(person: person3)
         0 * service.databaseService.assignUidToSOR(sorObject, person1)
         0 * service.uidClientService.provisionUid(person3, _)
         0 * service.uidClientService.provisionNewUid(_, _)
@@ -155,7 +196,7 @@ class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest
 
     private MapMessage mockMessageExisting() {
         def message = Mock(MapMessage)
-        message.getString("systemOfRecord") >> SOREnum.SIS_STUDENT.name()
+        message.getString("systemOfRecord") >> "SIS"
         message.getString("sorPrimaryKey") >> 'SIS00002'
         return message
     }
@@ -171,38 +212,44 @@ class NewSORConsumerServiceSpec extends Specification implements ServiceUnitTest
     }
 
     private void setupModel() {
-        SOR.withTransaction {
-            def sor = new SOR(name: 'SIS').save(failOnError: true)
-            sorObject = new SORObject(sor: sor, sorPrimaryKey: 'SIS00001').save(validate: false)
-            person1 = new Person(uid: '1').save(validate: false)
-            person2 = new Person(uid: '2').save(validate: false)
+        def sor = sorRepository.save(new SOR(name: 'SIS'))
+        this.sorObject = sorObjectRepository.save(new SORObject(
+                sor: sor,
+                sorPrimaryKey: 'SIS00001',
+                objJson: '{}',
+                jsonVersion: 1,
+                queryTime: new Date()
+        ))
+        this.person1 = personRepository.save(new Person(uid: '1'))
+        this.person2 = personRepository.save(new Person(uid: '2'))
 
-            IdentifierType sisStudentIdType = new IdentifierType(idName: IdentifierTypeEnum.sisStudentId.name()).save(validate: false)
-            person3 = new Person(uid: '3')
-            person3.addToIdentifiers(new Identifier(
-                    identifierType: sisStudentIdType,
-                    identifier: "SIS00002",
-                    isActive: true,
-                    isPrimary: true,
-                    person: person3
-            ))
-            person3.save(validate: false)
-
-            def sisStudentSor = new SOR(name: SOREnum.SIS_STUDENT.name()).save(failOnError: true)
-            new SORObject(sor: sisStudentSor, sorPrimaryKey: 'SIS00002', uid: person3.uid).save(validate: false)
-            personPartialMatches = [createPersonPartialMatch("Potential #1", person1), createPersonPartialMatch("Potential #2", person2)]
+        IdentifierType studentIdType = identifierTypeRepository.save(new IdentifierType(idName: "studentId"))
+        person3 = new Person(uid: '3')
+        def id = new Identifier(person3)
+        id.with {
+            identifierType = studentIdType
+            identifier = "SIS00002"
+            isActive = true
+            isPrimary = true
         }
+        this.person3 = personRepository.save(person3)
+
+        sorObjectRepository.save(new SORObject(
+                sor: sor,
+                sorPrimaryKey: 'SIS00002',
+                person: person3,
+                objJson: '{}',
+                jsonVersion: 1,
+                queryTime: new Date()
+        ))
+        this.personPartialMatches = [createPersonPartialMatch("Potential #1", person1), createPersonPartialMatch("Potential #2", person2)]
     }
 
     private void cleanupModel() {
-        SOR.withTransaction {
-            def opts = [failOnError: true]
-            PartialMatch.list().each { it.delete(opts) }
-            Identifier.list().each { it.delete(opts) }
-            SORObject.list().each { it.delete(opts) }
-            Person.list().each { it.delete(opts) }
-            SOR.list().each { it.delete(opts) }
-        }
+        identifierRepository.deleteAll()
+        sorObjectRepository.deleteAll()
+        personRepository.deleteAll()
+        sorRepository.deleteAll()
     }
 
     private static createPersonPartialMatch(String name, Person person) {
