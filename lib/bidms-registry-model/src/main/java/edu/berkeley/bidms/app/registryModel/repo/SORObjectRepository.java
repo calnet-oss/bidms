@@ -26,13 +26,18 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.SOR;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link SORObject} entities.
  */
 public interface SORObjectRepository extends ExtendedRepository<SORObject, Long> {
     SORObject findBySorAndSorPrimaryKey(SOR sor, String sorPrimaryKey);
+    SORObject findByPersonAndSorAndSorPrimaryKey(Person person, SOR sor, String sorPrimaryKey);
+    List<SORObject> findAllByPerson(Person person);
 }
