@@ -65,8 +65,8 @@ public class PersonName implements Comparable<PersonName> {
         this.uid = person != null ? person.getUid() : null;
     }
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Address_seqgen")
-    @SequenceGenerator(name = "Address_seqgen", sequenceName = "Address_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonName_seqgen")
+    @SequenceGenerator(name = "PersonName_seqgen", sequenceName = "PersonName_seq", allocationSize = 1)
     @Id
     private Long id;
 
