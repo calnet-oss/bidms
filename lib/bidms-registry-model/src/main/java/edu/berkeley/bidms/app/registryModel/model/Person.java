@@ -299,6 +299,134 @@ public class Person {
         return this;
     }
 
+    public Person safeAddToAddresses(Address obj) {
+        return safeAddTo(getAddresses(), obj);
+    }
+
+    public Person safeRemoveFromAddresses(Address obj) {
+        return safeRemoveFrom(getAddresses(), obj);
+    }
+
+    public Person safeAddToNames(PersonName obj) {
+        return safeAddTo(getNames(), obj);
+    }
+
+    public Person safeRemoveFromNames(PersonName obj) {
+        return safeRemoveFrom(getNames(), obj);
+    }
+
+    public Person safeAddToDatesOfBirth(DateOfBirth obj) {
+        return safeAddTo(getDatesOfBirth(), obj);
+    }
+
+    public Person safeRemoveFromDatesOfBirth(DateOfBirth obj) {
+        return safeRemoveFrom(getDatesOfBirth(), obj);
+    }
+
+    public Person safeAddToIdentifiers(Identifier obj) {
+        return safeAddTo(getIdentifiers(), obj);
+    }
+
+    public Person safeRemoveFromIdentifiers(Identifier obj) {
+        return safeRemoveFrom(getIdentifiers(), obj);
+    }
+
+    public Person safeAddToEmails(Email obj) {
+        return safeAddTo(getEmails(), obj);
+    }
+
+    public Person safeRemoveFromEmails(Email obj) {
+        return safeRemoveFrom(getEmails(), obj);
+    }
+
+    public Person safeAddToTelephones(Telephone obj) {
+        return safeAddTo(getTelephones(), obj);
+    }
+
+    public Person safeRemoveFromTelephones(Telephone obj) {
+        return safeRemoveFrom(getTelephones(), obj);
+    }
+
+    public Person safeAddToAssignedRoles(PersonRole obj) {
+        return safeAddTo(getAssignedRoles(), obj);
+    }
+
+    public Person safeRemoveFromAssignedRoles(PersonRole obj) {
+        return safeRemoveFrom(getAssignedRoles(), obj);
+    }
+
+    public Person safeAddToTrackStatuses(TrackStatus obj) {
+        return safeAddTo(getTrackStatuses(), obj);
+    }
+
+    public Person safeRemoveFromTrackStatuses(TrackStatus obj) {
+        return safeRemoveFrom(getTrackStatuses(), obj);
+    }
+
+    public Person safeAddToDelegations(DelegateProxy obj) {
+        return safeAddTo(getDelegations(), obj);
+    }
+
+    public Person safeRemoveFromDelegations(DelegateProxy obj) {
+        return safeRemoveFrom(getDelegations(), obj);
+    }
+
+    public Person safeAddToDownstreamObjects(DownstreamObject obj) {
+        return safeAddTo(getDownstreamObjects(), obj);
+    }
+
+    public Person safeRemoveFromDownstreamObjects(DownstreamObject obj) {
+        return safeRemoveFrom(getDownstreamObjects(), obj);
+    }
+
+    public Person safeAddToJobAppointments(JobAppointment obj) {
+        return safeAddTo(getJobAppointments(), obj);
+    }
+
+    public Person safeRemoveFromJobAppointments(JobAppointment obj) {
+        return safeRemoveFrom(getJobAppointments(), obj);
+    }
+
+    public Person safeAddToArchivedIdentifiers(IdentifierArchive obj) {
+        return safeAddTo(getArchivedIdentifiers(), obj);
+    }
+
+    public Person safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) {
+        return safeRemoveFrom(getArchivedIdentifiers(), obj);
+    }
+
+    public Person safeAddToArchivedRoles(PersonRoleArchive obj) {
+        return safeAddTo(getArchivedRoles(), obj);
+    }
+
+    public Person safeRemoveFromArchivedRoles(PersonRoleArchive obj) {
+        return safeRemoveFrom(getArchivedRoles(), obj);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void rebuildCollectionSetIfNecessary(SortedSet collection) {
+        // This will cause the sorted collection to be re-sorted if any of
+        // the hash codes have changed.  Relevant because SortedSet.add() and
+        // SortedSet.remove() is dependent on proper ordering to find the object.
+        Collection cloned = new ArrayList(collection);
+        collection.clear();
+        collection.addAll(cloned);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Person safeAddTo(SortedSet collection, Object obj) {
+        rebuildCollectionSetIfNecessary(collection);
+        collection.add(obj);
+        return this;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Person safeRemoveFrom(SortedSet collection, Object obj) {
+        rebuildCollectionSetIfNecessary(collection);
+        collection.remove(obj);
+        return this;
+    }
+
     /**
      * It's possible that a role is in the archive and it has switched from
      * in-grace to post-grace based on the end grace date, but the quartz job
