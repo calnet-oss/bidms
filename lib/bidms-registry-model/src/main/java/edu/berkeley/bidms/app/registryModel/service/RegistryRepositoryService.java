@@ -63,11 +63,16 @@ import edu.berkeley.bidms.app.registryModel.repo.view.PersonSearchViewRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+
 /**
  * A convenience service to retrieve repositories for JPA entity types.
  */
 @Service
 public class RegistryRepositoryService {
+    @Autowired(required = false)
+    private EntityManager entityManager;
+
     @Autowired
     private AddressRepository addressRepository;
 
@@ -176,147 +181,151 @@ public class RegistryRepositoryService {
     @Autowired
     private PersonSearchViewRepository personSearchViewRepository;
 
-    public AddressRepository getForAddress() {
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public AddressRepository getAddressRepository() {
         return addressRepository;
     }
 
-    public AddressTypeRepository getForAddressType() {
+    public AddressTypeRepository getAddressTypeRepository() {
         return addressTypeRepository;
     }
 
-    public AppointmentTypeRepository getForAppointmentType() {
+    public AppointmentTypeRepository getAppointmentTypeRepository() {
         return appointmentTypeRepository;
     }
 
-    public AssignableRoleCategoryRepository getForAssignableRoleCategory() {
+    public AssignableRoleCategoryRepository getAssignableRoleCategoryRepository() {
         return assignableRoleCategoryRepository;
     }
 
-    public AssignableRoleCategoryRepository getForAssignableRole() {
+    public AssignableRoleCategoryRepository getAssignableRoleRepository() {
         return assignableRoleRepository;
     }
 
-    public AssignableRoleCategoryRepository getForRegistryRole() {
+    public AssignableRoleCategoryRepository getRegistryRoleRepository() {
         return registryRoleRepository;
     }
 
-    public RegistryUserRepository getForRegistryUser() {
+    public RegistryUserRepository getRegistryUserRepository() {
         return registryUserRepository;
     }
 
-    public ChangeEmailTokenRepository getForChangeEmailToken() {
+    public ChangeEmailTokenRepository getChangeEmailTokenRepository() {
         return changeEmailTokenRepository;
     }
 
-    public CredentialTokenRepository getForCredentialToken() {
+    public CredentialTokenRepository getCredentialTokenRepository() {
         return credentialTokenRepository;
     }
 
-    public ResetPassphraseTokenRepository getForResetPassphraseToken() {
+    public ResetPassphraseTokenRepository getResetPassphraseTokenRepository() {
         return resetPassphraseTokenRepository;
     }
 
-    public DateOfBirthRepository getForDateOfBirth() {
+    public DateOfBirthRepository getDateOfBirthRepository() {
         return dateOfBirthRepository;
     }
 
-    public DelegateProxyRepository getForDelegateProxy() {
+    public DelegateProxyRepository getDelegateProxyRepository() {
         return delegateProxyRepository;
     }
 
-    public DelegateProxyTypeRepository getForDelegateProxyType() {
+    public DelegateProxyTypeRepository getDelegateProxyTypeRepository() {
         return delegateProxyTypeRepository;
     }
 
-    public DownstreamObjectRepository getForDownstreamObject() {
+    public DownstreamObjectRepository getDownstreamObjectRepository() {
         return downstreamObjectRepository;
     }
 
-    public DownstreamSystemRepository getForDownstreamSystem() {
+    public DownstreamSystemRepository getDownstreamSystemRepository() {
         return downstreamSystemRepository;
     }
 
-    public EmailRepository getForEmail() {
+    public EmailRepository getEmailRepository() {
         return emailRepository;
     }
 
-    public EmailTypeRepository getForEmailType() {
+    public EmailTypeRepository getEmailTypeRepository() {
         return emailTypeRepository;
     }
 
-    public IdentifierArchiveRepository getForIdentifierArchive() {
+    public IdentifierArchiveRepository getIdentifierArchiveRepository() {
         return identifierArchiveRepository;
     }
 
-    public IdentifierRepository getForIdentifier() {
+    public IdentifierRepository getIdentifierRepository() {
         return identifierRepository;
     }
 
-    public IdentifierTypeRepository getForIdentifierType() {
+    public IdentifierTypeRepository getIdentifierTypeRepository() {
         return identifierTypeRepository;
     }
 
-    public JobAppointmentRepository getForJobAppointment() {
+    public JobAppointmentRepository getJobAppointmentRepository() {
         return jobAppointmentRepository;
     }
 
-    public NameTypeRepository getForNameType() {
+    public NameTypeRepository getNameTypeRepository() {
         return nameTypeRepository;
     }
 
-    public PartialMatchRepository getForPartialMatch() {
+    public PartialMatchRepository getPartialMatchRepository() {
         return partialMatchRepository;
     }
 
-    public PersonNameRepository getForPersonName() {
+    public PersonNameRepository getPersonNameRepository() {
         return personNameRepository;
     }
 
-    public PersonRepository getForPerson() {
+    public PersonRepository getPersonRepository() {
         return personRepository;
     }
 
-    public PersonRoleArchiveRepository getForPersonRoleArchive() {
+    public PersonRoleArchiveRepository getPersonRoleArchiveRepository() {
         return personRoleArchiveRepository;
     }
 
-    public PersonRoleRepository getForPersonRole() {
+    public PersonRoleRepository getPersonRoleRepository() {
         return personRoleRepository;
     }
 
-    public PersonSorObjectsJsonRepository getForPersonSorObjectsJson() {
+    public PersonSorObjectsJsonRepository getPersonSorObjectsJsonRepository() {
         return personSorObjectsJsonRepository;
     }
 
-    public PersonSorObjectsSyncKeyRepository getForPersonSorObjectsSyncKey() {
+    public PersonSorObjectsSyncKeyRepository getPersonSorObjectsSyncKeyRepository() {
         return personSorObjectsSyncKeyRepository;
     }
 
-    public SORObjectChecksumRepository getForSorObjectChecksum() {
+    public SORObjectChecksumRepository getSorObjectChecksumRepository() {
         return sorObjectChecksumRepository;
     }
 
-    public SORObjectRepository getForSorObject() {
+    public SORObjectRepository getSorObjectRepository() {
         return sorObjectRepository;
     }
 
-    public SORRepository getForSor() {
+    public SORRepository getSorRepository() {
         return sorRepository;
     }
 
-    public TelephoneRepository getForTelephone() {
+    public TelephoneRepository getTelephoneRepository() {
         return telephoneRepository;
     }
 
-    public TelephoneTypeRepository getForTelephoneType() {
+    public TelephoneTypeRepository getTelephoneTypeRepository() {
         return telephoneTypeRepository;
     }
 
-    public TrackStatusRepository getForTrackStatus() {
+    public TrackStatusRepository getTrackStatusRepository() {
         return trackStatusRepository;
     }
 
-    public PersonSearchViewRepository getForPersonSearchView() {
+    public PersonSearchViewRepository getPersonSearchViewRepository() {
         return personSearchViewRepository;
     }
 }
