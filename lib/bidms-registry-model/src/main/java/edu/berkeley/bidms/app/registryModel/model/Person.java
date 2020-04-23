@@ -299,108 +299,264 @@ public class Person {
         return this;
     }
 
-    public Person safeAddToAddresses(Address obj) {
-        return safeAddTo(getAddresses(), obj);
+    public boolean safeAddToAddresses(Address obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getAddresses(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromAddresses(Address obj) {
-        return safeRemoveFrom(getAddresses(), obj);
+    public boolean safeRemoveFromAddresses(Address obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getAddresses(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToNames(PersonName obj) {
-        return safeAddTo(getNames(), obj);
+    public boolean safeAddToNames(PersonName obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getNames(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromNames(PersonName obj) {
-        return safeRemoveFrom(getNames(), obj);
+    public boolean safeRemoveFromNames(PersonName obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getNames(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToDatesOfBirth(DateOfBirth obj) {
-        return safeAddTo(getDatesOfBirth(), obj);
+    public boolean safeAddToDatesOfBirth(DateOfBirth obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getDatesOfBirth(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromDatesOfBirth(DateOfBirth obj) {
-        return safeRemoveFrom(getDatesOfBirth(), obj);
+    public boolean safeRemoveFromDatesOfBirth(DateOfBirth obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getDatesOfBirth(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToIdentifiers(Identifier obj) {
-        return safeAddTo(getIdentifiers(), obj);
+    public boolean safeAddToIdentifiers(Identifier obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getIdentifiers(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromIdentifiers(Identifier obj) {
-        return safeRemoveFrom(getIdentifiers(), obj);
+    public boolean safeRemoveFromIdentifiers(Identifier obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getIdentifiers(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToEmails(Email obj) {
-        return safeAddTo(getEmails(), obj);
+    public boolean safeAddToEmails(Email obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getEmails(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromEmails(Email obj) {
-        return safeRemoveFrom(getEmails(), obj);
+    public boolean safeRemoveFromEmails(Email obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getEmails(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToTelephones(Telephone obj) {
-        return safeAddTo(getTelephones(), obj);
+    public boolean safeAddToTelephones(Telephone obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getTelephones(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromTelephones(Telephone obj) {
-        return safeRemoveFrom(getTelephones(), obj);
+    public boolean safeRemoveFromTelephones(Telephone obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getTelephones(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToAssignedRoles(PersonRole obj) {
-        return safeAddTo(getAssignedRoles(), obj);
+    public boolean safeAddToAssignedRoles(PersonRole obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getAssignedRoles(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromAssignedRoles(PersonRole obj) {
-        return safeRemoveFrom(getAssignedRoles(), obj);
+    public boolean safeRemoveFromAssignedRoles(PersonRole obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getAssignedRoles(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToTrackStatuses(TrackStatus obj) {
-        return safeAddTo(getTrackStatuses(), obj);
+    public boolean safeAddToTrackStatuses(TrackStatus obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getTrackStatuses(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromTrackStatuses(TrackStatus obj) {
-        return safeRemoveFrom(getTrackStatuses(), obj);
+    public boolean safeRemoveFromTrackStatuses(TrackStatus obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getTrackStatuses(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToDelegations(DelegateProxy obj) {
-        return safeAddTo(getDelegations(), obj);
+    public boolean safeAddToDelegations(DelegateProxy obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getDelegations(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromDelegations(DelegateProxy obj) {
-        return safeRemoveFrom(getDelegations(), obj);
+    public boolean safeRemoveFromDelegations(DelegateProxy obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getDelegations(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToDownstreamObjects(DownstreamObject obj) {
-        return safeAddTo(getDownstreamObjects(), obj);
+    public boolean safeAddToDownstreamObjects(DownstreamObject obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getDownstreamObjects(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromDownstreamObjects(DownstreamObject obj) {
-        return safeRemoveFrom(getDownstreamObjects(), obj);
+    public boolean safeRemoveFromDownstreamObjects(DownstreamObject obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getDownstreamObjects(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToJobAppointments(JobAppointment obj) {
-        return safeAddTo(getJobAppointments(), obj);
+    public boolean safeAddToJobAppointments(JobAppointment obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getJobAppointments(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromJobAppointments(JobAppointment obj) {
-        return safeRemoveFrom(getJobAppointments(), obj);
+    public boolean safeRemoveFromJobAppointments(JobAppointment obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getJobAppointments(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToArchivedIdentifiers(IdentifierArchive obj) {
-        return safeAddTo(getArchivedIdentifiers(), obj);
+    public boolean safeAddToArchivedIdentifiers(IdentifierArchive obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getArchivedIdentifiers(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) {
-        return safeRemoveFrom(getArchivedIdentifiers(), obj);
+    public boolean safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getArchivedIdentifiers(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeAddToArchivedRoles(PersonRoleArchive obj) {
-        return safeAddTo(getArchivedRoles(), obj);
+    public boolean safeAddToArchivedRoles(PersonRoleArchive obj) {
+        obj.setPerson(this);
+        if (safeAddTo(getArchivedRoles(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Person safeRemoveFromArchivedRoles(PersonRoleArchive obj) {
-        return safeRemoveFrom(getArchivedRoles(), obj);
+    public boolean safeRemoveFromArchivedRoles(PersonRoleArchive obj) {
+        obj.setPerson(null);
+        if (safeRemoveFrom(getArchivedRoles(), obj)) {
+            doValidation();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -414,17 +570,15 @@ public class Person {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Person safeAddTo(SortedSet collection, Object obj) {
+    private boolean safeAddTo(SortedSet collection, Object obj) {
         rebuildCollectionSetIfNecessary(collection);
-        collection.add(obj);
-        return this;
+        return collection.add(obj);
     }
 
     @SuppressWarnings("rawtypes")
-    private Person safeRemoveFrom(SortedSet collection, Object obj) {
+    private boolean safeRemoveFrom(SortedSet collection, Object obj) {
         rebuildCollectionSetIfNecessary(collection);
-        collection.remove(obj);
-        return this;
+        return collection.remove(obj);
     }
 
     /**
