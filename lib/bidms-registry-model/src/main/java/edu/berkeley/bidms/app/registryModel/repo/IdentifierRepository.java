@@ -37,5 +37,6 @@ import edu.berkeley.bidms.app.registryModel.model.SORObject;
  */
 public interface IdentifierRepository extends ExtendedRepository<Identifier, Long> {
     Identifier findByIdentifierTypeAndIdentifier(IdentifierType identifierType, String identifier);
+    Identifier findByIdentifierTypeAndIdentifierAndIsPrimary(IdentifierType identifierType, String identifier, boolean isPrimary);
     Identifier findByPersonAndSorObjectAndIdentifier(Person person, SORObject sorObject, String identifier);
 }
