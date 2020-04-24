@@ -30,6 +30,7 @@ import edu.berkeley.bidms.app.registryModel.repo.AddressRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AddressTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AppointmentTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleCategoryRepository;
+import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleRepository;
 import edu.berkeley.bidms.app.registryModel.repo.DateOfBirthRepository;
 import edu.berkeley.bidms.app.registryModel.repo.DelegateProxyRepository;
 import edu.berkeley.bidms.app.registryModel.repo.DelegateProxyTypeRepository;
@@ -55,6 +56,7 @@ import edu.berkeley.bidms.app.registryModel.repo.SORRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TrackStatusRepository;
+import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryRoleRepository;
 import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryUserRepository;
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.ChangeEmailTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.CredentialTokenRepository;
@@ -86,10 +88,10 @@ public class RegistryRepositoryService {
     private AssignableRoleCategoryRepository assignableRoleCategoryRepository;
 
     @Autowired
-    private AssignableRoleCategoryRepository assignableRoleRepository;
+    private AssignableRoleRepository assignableRoleRepository;
 
     @Autowired
-    private AssignableRoleCategoryRepository registryRoleRepository;
+    private RegistryRoleRepository registryRoleRepository;
 
     @Autowired
     private RegistryUserRepository registryUserRepository;
@@ -221,19 +223,19 @@ public class RegistryRepositoryService {
         this.assignableRoleCategoryRepository = assignableRoleCategoryRepository;
     }
 
-    public AssignableRoleCategoryRepository getAssignableRoleRepository() {
+    public AssignableRoleRepository getAssignableRoleRepository() {
         return assignableRoleRepository;
     }
 
-    public void setAssignableRoleRepository(AssignableRoleCategoryRepository assignableRoleRepository) {
+    public void setAssignableRoleRepository(AssignableRoleRepository assignableRoleRepository) {
         this.assignableRoleRepository = assignableRoleRepository;
     }
 
-    public AssignableRoleCategoryRepository getRegistryRoleRepository() {
+    public RegistryRoleRepository getRegistryRoleRepository() {
         return registryRoleRepository;
     }
 
-    public void setRegistryRoleRepository(AssignableRoleCategoryRepository registryRoleRepository) {
+    public void setRegistryRoleRepository(RegistryRoleRepository registryRoleRepository) {
         this.registryRoleRepository = registryRoleRepository;
     }
 
