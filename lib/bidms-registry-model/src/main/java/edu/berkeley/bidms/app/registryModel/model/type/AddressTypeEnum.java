@@ -35,7 +35,7 @@ import edu.berkeley.bidms.app.registryModel.repo.AddressTypeRepository;
  */
 public enum AddressTypeEnum implements TypeEnum<AddressType, AddressTypeRepository> {
     directoryPrimaryAddress,
-    directorySecondaryAddresss;
+    directorySecondaryAddress;
 
     public AddressType get(AddressTypeRepository repo) {
         AddressType addressType = repo.findByAddressTypeName(name());

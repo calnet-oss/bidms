@@ -48,7 +48,7 @@ class AddressTypeSpec extends AbstractTypeSpec<AddressType, AddressTypeEnum, Int
 
     static final String[] addressTypeNames = [
             AddressTypeEnum.directoryPrimaryAddress.name,
-            AddressTypeEnum.directorySecondaryAddresss.name
+            AddressTypeEnum.directorySecondaryAddress.name
     ]
 
     String[] getTypeNames() {
