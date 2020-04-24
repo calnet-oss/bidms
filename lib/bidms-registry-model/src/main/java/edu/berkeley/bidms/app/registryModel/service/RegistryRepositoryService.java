@@ -185,147 +185,295 @@ public class RegistryRepositoryService {
         return entityManager;
     }
 
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
     public AddressRepository getAddressRepository() {
         return addressRepository;
+    }
+
+    public void setAddressRepository(AddressRepository addressRepository) {
+        this.addressRepository = addressRepository;
     }
 
     public AddressTypeRepository getAddressTypeRepository() {
         return addressTypeRepository;
     }
 
+    public void setAddressTypeRepository(AddressTypeRepository addressTypeRepository) {
+        this.addressTypeRepository = addressTypeRepository;
+    }
+
     public AppointmentTypeRepository getAppointmentTypeRepository() {
         return appointmentTypeRepository;
+    }
+
+    public void setAppointmentTypeRepository(AppointmentTypeRepository appointmentTypeRepository) {
+        this.appointmentTypeRepository = appointmentTypeRepository;
     }
 
     public AssignableRoleCategoryRepository getAssignableRoleCategoryRepository() {
         return assignableRoleCategoryRepository;
     }
 
+    public void setAssignableRoleCategoryRepository(AssignableRoleCategoryRepository assignableRoleCategoryRepository) {
+        this.assignableRoleCategoryRepository = assignableRoleCategoryRepository;
+    }
+
     public AssignableRoleCategoryRepository getAssignableRoleRepository() {
         return assignableRoleRepository;
+    }
+
+    public void setAssignableRoleRepository(AssignableRoleCategoryRepository assignableRoleRepository) {
+        this.assignableRoleRepository = assignableRoleRepository;
     }
 
     public AssignableRoleCategoryRepository getRegistryRoleRepository() {
         return registryRoleRepository;
     }
 
+    public void setRegistryRoleRepository(AssignableRoleCategoryRepository registryRoleRepository) {
+        this.registryRoleRepository = registryRoleRepository;
+    }
+
     public RegistryUserRepository getRegistryUserRepository() {
         return registryUserRepository;
+    }
+
+    public void setRegistryUserRepository(RegistryUserRepository registryUserRepository) {
+        this.registryUserRepository = registryUserRepository;
     }
 
     public ChangeEmailTokenRepository getChangeEmailTokenRepository() {
         return changeEmailTokenRepository;
     }
 
+    public void setChangeEmailTokenRepository(ChangeEmailTokenRepository changeEmailTokenRepository) {
+        this.changeEmailTokenRepository = changeEmailTokenRepository;
+    }
+
     public CredentialTokenRepository getCredentialTokenRepository() {
         return credentialTokenRepository;
+    }
+
+    public void setCredentialTokenRepository(CredentialTokenRepository credentialTokenRepository) {
+        this.credentialTokenRepository = credentialTokenRepository;
     }
 
     public ResetPassphraseTokenRepository getResetPassphraseTokenRepository() {
         return resetPassphraseTokenRepository;
     }
 
+    public void setResetPassphraseTokenRepository(ResetPassphraseTokenRepository resetPassphraseTokenRepository) {
+        this.resetPassphraseTokenRepository = resetPassphraseTokenRepository;
+    }
+
     public DateOfBirthRepository getDateOfBirthRepository() {
         return dateOfBirthRepository;
+    }
+
+    public void setDateOfBirthRepository(DateOfBirthRepository dateOfBirthRepository) {
+        this.dateOfBirthRepository = dateOfBirthRepository;
     }
 
     public DelegateProxyRepository getDelegateProxyRepository() {
         return delegateProxyRepository;
     }
 
+    public void setDelegateProxyRepository(DelegateProxyRepository delegateProxyRepository) {
+        this.delegateProxyRepository = delegateProxyRepository;
+    }
+
     public DelegateProxyTypeRepository getDelegateProxyTypeRepository() {
         return delegateProxyTypeRepository;
+    }
+
+    public void setDelegateProxyTypeRepository(DelegateProxyTypeRepository delegateProxyTypeRepository) {
+        this.delegateProxyTypeRepository = delegateProxyTypeRepository;
     }
 
     public DownstreamObjectRepository getDownstreamObjectRepository() {
         return downstreamObjectRepository;
     }
 
+    public void setDownstreamObjectRepository(DownstreamObjectRepository downstreamObjectRepository) {
+        this.downstreamObjectRepository = downstreamObjectRepository;
+    }
+
     public DownstreamSystemRepository getDownstreamSystemRepository() {
         return downstreamSystemRepository;
+    }
+
+    public void setDownstreamSystemRepository(DownstreamSystemRepository downstreamSystemRepository) {
+        this.downstreamSystemRepository = downstreamSystemRepository;
     }
 
     public EmailRepository getEmailRepository() {
         return emailRepository;
     }
 
+    public void setEmailRepository(EmailRepository emailRepository) {
+        this.emailRepository = emailRepository;
+    }
+
     public EmailTypeRepository getEmailTypeRepository() {
         return emailTypeRepository;
+    }
+
+    public void setEmailTypeRepository(EmailTypeRepository emailTypeRepository) {
+        this.emailTypeRepository = emailTypeRepository;
     }
 
     public IdentifierArchiveRepository getIdentifierArchiveRepository() {
         return identifierArchiveRepository;
     }
 
+    public void setIdentifierArchiveRepository(IdentifierArchiveRepository identifierArchiveRepository) {
+        this.identifierArchiveRepository = identifierArchiveRepository;
+    }
+
     public IdentifierRepository getIdentifierRepository() {
         return identifierRepository;
+    }
+
+    public void setIdentifierRepository(IdentifierRepository identifierRepository) {
+        this.identifierRepository = identifierRepository;
     }
 
     public IdentifierTypeRepository getIdentifierTypeRepository() {
         return identifierTypeRepository;
     }
 
+    public void setIdentifierTypeRepository(IdentifierTypeRepository identifierTypeRepository) {
+        this.identifierTypeRepository = identifierTypeRepository;
+    }
+
     public JobAppointmentRepository getJobAppointmentRepository() {
         return jobAppointmentRepository;
+    }
+
+    public void setJobAppointmentRepository(JobAppointmentRepository jobAppointmentRepository) {
+        this.jobAppointmentRepository = jobAppointmentRepository;
     }
 
     public NameTypeRepository getNameTypeRepository() {
         return nameTypeRepository;
     }
 
+    public void setNameTypeRepository(NameTypeRepository nameTypeRepository) {
+        this.nameTypeRepository = nameTypeRepository;
+    }
+
     public PartialMatchRepository getPartialMatchRepository() {
         return partialMatchRepository;
+    }
+
+    public void setPartialMatchRepository(PartialMatchRepository partialMatchRepository) {
+        this.partialMatchRepository = partialMatchRepository;
     }
 
     public PersonNameRepository getPersonNameRepository() {
         return personNameRepository;
     }
 
+    public void setPersonNameRepository(PersonNameRepository personNameRepository) {
+        this.personNameRepository = personNameRepository;
+    }
+
     public PersonRepository getPersonRepository() {
         return personRepository;
+    }
+
+    public void setPersonRepository(PersonRepository personRepository) {
+        this.personRepository = personRepository;
     }
 
     public PersonRoleArchiveRepository getPersonRoleArchiveRepository() {
         return personRoleArchiveRepository;
     }
 
+    public void setPersonRoleArchiveRepository(PersonRoleArchiveRepository personRoleArchiveRepository) {
+        this.personRoleArchiveRepository = personRoleArchiveRepository;
+    }
+
     public PersonRoleRepository getPersonRoleRepository() {
         return personRoleRepository;
+    }
+
+    public void setPersonRoleRepository(PersonRoleRepository personRoleRepository) {
+        this.personRoleRepository = personRoleRepository;
     }
 
     public PersonSorObjectsJsonRepository getPersonSorObjectsJsonRepository() {
         return personSorObjectsJsonRepository;
     }
 
+    public void setPersonSorObjectsJsonRepository(PersonSorObjectsJsonRepository personSorObjectsJsonRepository) {
+        this.personSorObjectsJsonRepository = personSorObjectsJsonRepository;
+    }
+
     public PersonSorObjectsSyncKeyRepository getPersonSorObjectsSyncKeyRepository() {
         return personSorObjectsSyncKeyRepository;
+    }
+
+    public void setPersonSorObjectsSyncKeyRepository(PersonSorObjectsSyncKeyRepository personSorObjectsSyncKeyRepository) {
+        this.personSorObjectsSyncKeyRepository = personSorObjectsSyncKeyRepository;
     }
 
     public SORObjectChecksumRepository getSorObjectChecksumRepository() {
         return sorObjectChecksumRepository;
     }
 
+    public void setSorObjectChecksumRepository(SORObjectChecksumRepository sorObjectChecksumRepository) {
+        this.sorObjectChecksumRepository = sorObjectChecksumRepository;
+    }
+
     public SORObjectRepository getSorObjectRepository() {
         return sorObjectRepository;
+    }
+
+    public void setSorObjectRepository(SORObjectRepository sorObjectRepository) {
+        this.sorObjectRepository = sorObjectRepository;
     }
 
     public SORRepository getSorRepository() {
         return sorRepository;
     }
 
+    public void setSorRepository(SORRepository sorRepository) {
+        this.sorRepository = sorRepository;
+    }
+
     public TelephoneRepository getTelephoneRepository() {
         return telephoneRepository;
+    }
+
+    public void setTelephoneRepository(TelephoneRepository telephoneRepository) {
+        this.telephoneRepository = telephoneRepository;
     }
 
     public TelephoneTypeRepository getTelephoneTypeRepository() {
         return telephoneTypeRepository;
     }
 
+    public void setTelephoneTypeRepository(TelephoneTypeRepository telephoneTypeRepository) {
+        this.telephoneTypeRepository = telephoneTypeRepository;
+    }
+
     public TrackStatusRepository getTrackStatusRepository() {
         return trackStatusRepository;
     }
 
+    public void setTrackStatusRepository(TrackStatusRepository trackStatusRepository) {
+        this.trackStatusRepository = trackStatusRepository;
+    }
+
     public PersonSearchViewRepository getPersonSearchViewRepository() {
         return personSearchViewRepository;
+    }
+
+    public void setPersonSearchViewRepository(PersonSearchViewRepository personSearchViewRepository) {
+        this.personSearchViewRepository = personSearchViewRepository;
     }
 }
