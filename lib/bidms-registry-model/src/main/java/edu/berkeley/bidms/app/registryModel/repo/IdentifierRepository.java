@@ -28,15 +28,21 @@ package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.Identifier;
 import edu.berkeley.bidms.app.registryModel.model.IdentifierType;
-import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link Identifier} entities.
  */
 public interface IdentifierRepository extends ExtendedRepository<Identifier, Long> {
     Identifier findByIdentifierTypeAndIdentifier(IdentifierType identifierType, String identifier);
+
     Identifier findByIdentifierTypeAndIdentifierAndIsPrimary(IdentifierType identifierType, String identifier, boolean isPrimary);
+
     Identifier findByPersonAndSorObjectAndIdentifier(Person person, SORObject sorObject, String identifier);
+
+    List<Identifier> findAllBySorObject(SORObject sorObject);
 }
