@@ -29,16 +29,22 @@ package edu.berkeley.bidms.common.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Static utility methods for JSON operations.
  */
 public class JsonUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
+    static {
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"));
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     /**
      * Convert a map to a JSON string.  <i>{}</i> will be returned if the map
