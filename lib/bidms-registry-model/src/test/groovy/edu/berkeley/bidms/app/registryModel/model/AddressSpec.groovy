@@ -106,7 +106,7 @@ class AddressSpec extends Specification {
     }
 
     static synchronized void insertAddresses(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, AddressTypeRepository addressTypeRepository, AddressRepository addressRepository) {
-        addressTypeRepository.save(new AddressType(addressTypeName: "testName"))
+        addressTypeRepository.saveAndFlush(new AddressType(addressTypeName: "testName"))
         // assign right uid to the SORObjects
         ["LDAP_PEOPLE", "LDAP_GUEST", "LDAP_ADVCON"].eachWithIndex { String entry, int i ->
             SORObject sorObject = TestUtil.findSORObject(sorRepository, sorObjectRepository, entry, "uid123")

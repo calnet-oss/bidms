@@ -115,7 +115,7 @@ class PersonNameSpec extends Specification {
     }
 
     static synchronized void insertNames(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, NameTypeRepository nameTypeRepository, PersonNameRepository personNameRepository) {
-        nameTypeRepository.save(new NameType(typeName: "testName"))
+        nameTypeRepository.saveAndFlush(new NameType(typeName: "testName"))
         // assign right uid to the SORObjects
         [["HR_PERSON", "hr123"], ["SIS_STUDENT", "sisStudent123"], ["ALUMNI", "alumni123"]].eachWithIndex { List<String> entry, int i ->
             SORObject sorObject = TestUtil.findSORObject(sorRepository, sorObjectRepository, entry[0], entry[1])
@@ -139,7 +139,7 @@ class PersonNameSpec extends Specification {
 
     void "honorifics test"() {
         when:
-        nameTypeRepository.save(new NameType(typeName: "testHonor"))
+        nameTypeRepository.saveAndFlush(new NameType(typeName: "testHonor"))
         Person person1 = personRepository.get("1")
         PersonName name = new PersonName(
                 nameType: nameTypeRepository.findByTypeName("testHonor"),

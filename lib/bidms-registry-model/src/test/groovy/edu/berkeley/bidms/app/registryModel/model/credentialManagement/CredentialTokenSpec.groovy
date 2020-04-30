@@ -96,17 +96,18 @@ class CredentialTokenSpec extends Specification {
     }
 
     static synchronized void insertCredentialTokens(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, IdentifierTypeRepository identifierTypeRepository, IdentifierRepository identifierRepository, CredentialTokenRepository credentialTokenRepository) {
-        IdentifierType identifierType = identifierTypeRepository.save(new IdentifierType(idName: "hr"))
+        IdentifierType identifierType = identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "hr"))
         SORObject sorObject = TestUtil.findSORObject(sorRepository, sorObjectRepository, "HR_PERSON", "hr123")
         Person person = personRepository.get("1")
         sorObject.person = person
-        sorObjectRepository.save(sorObject)
-        identifierRepository.save(new Identifier(
-                sorObject: sorObject,
-                identifier: "hr123",
-                identifierType: identifierType,
-                person: person
-        ))
+        sorObjectRepository.saveAndFlush(sorObject)
+        Identifier ident = new Identifier(person)
+        ident.with {
+            it.sorObject = sorObject
+            it.identifier = "hr123"
+            it.identifierType = identifierType
+        }
+        identifierRepository.saveAndFlush(ident)
         getTestCredentialTokens(personRepository, sorRepository, sorObjectRepository, identifierRepository).each {
             credentialTokenRepository.saveAndFlush(it)
         }

@@ -94,7 +94,7 @@ class TelephoneSpec extends Specification {
     }
 
     static synchronized void insertTelephones(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, TelephoneTypeRepository telephoneTypeRepository, TelephoneRepository telephoneRepository) {
-        telephoneTypeRepository.save(new TelephoneType(telephoneTypeName: "testName"))
+        telephoneTypeRepository.saveAndFlush(new TelephoneType(telephoneTypeName: "testName"))
         getTestTelephones(personRepository, sorRepository, sorObjectRepository, telephoneTypeRepository).each {
             telephoneRepository.saveAndFlush(it)
         }

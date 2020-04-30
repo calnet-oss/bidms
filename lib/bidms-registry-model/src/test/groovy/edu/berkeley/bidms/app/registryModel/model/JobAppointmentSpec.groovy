@@ -112,7 +112,7 @@ class JobAppointmentSpec extends Specification {
     }
 
     static synchronized void insertJobAppointments(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, AppointmentTypeRepository appointmentTypeRepository, JobAppointmentRepository jobAppointmentRepository) {
-        appointmentTypeRepository.save(new AppointmentType(apptTypeName: "payrollJob"))
+        appointmentTypeRepository.saveAndFlush(new AppointmentType(apptTypeName: "payrollJob"))
 
         // assign right uid to the SORObjects
         [["HR_PERSON", "hr123"], ["HR_PERSON", "hr124"], ["HR_PERSON", "hr125"]].eachWithIndex { List<String> entry, int i ->

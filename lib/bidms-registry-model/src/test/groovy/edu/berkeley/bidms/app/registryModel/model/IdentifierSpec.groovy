@@ -94,9 +94,9 @@ class IdentifierSpec extends Specification {
     }
 
     static synchronized void insertIdentifiers(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, IdentifierTypeRepository identifierTypeRepository, IdentifierRepository identifierRepository) {
-        identifierTypeRepository.save(new IdentifierType(idName: "hrId"))
-        identifierTypeRepository.save(new IdentifierType(idName: "sisStudentId"))
-        identifierTypeRepository.save(new IdentifierType(idName: "alumniId"))
+        identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "hrId"))
+        identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "sisStudentId"))
+        identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "alumniId"))
 
         // assign right uid to the SORObjects
         [["HR_PERSON", "hr123"], ["SIS_STUDENT", "sisStudent123"], ["ALUMNI", "alumni123"]].eachWithIndex { List<String> entry, int i ->

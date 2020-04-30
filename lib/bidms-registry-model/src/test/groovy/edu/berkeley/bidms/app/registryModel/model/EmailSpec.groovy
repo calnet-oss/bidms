@@ -95,7 +95,7 @@ class EmailSpec extends Specification {
     }
 
     static synchronized void insertEmails(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository, EmailTypeRepository emailTypeRepository, EmailRepository emailRepository) {
-        emailTypeRepository.save(new EmailType(emailTypeName: "testName"))
+        emailTypeRepository.saveAndFlush(new EmailType(emailTypeName: "testName"))
         // assign right uid to the SORObjects
         ["LDAP_PEOPLE", "LDAP_GUEST", "LDAP_ADVCON"].eachWithIndex { String entry, int i ->
             SORObject sorObject = TestUtil.findSORObject(sorRepository, sorObjectRepository, entry, "uid123")

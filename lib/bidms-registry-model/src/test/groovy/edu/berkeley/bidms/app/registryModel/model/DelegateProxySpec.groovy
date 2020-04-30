@@ -88,10 +88,10 @@ class DelegateProxySpec extends Specification {
         PersonSpec.insertPeople(personRepository)
         SORSpec.insertSorNames(sorRepository)
         SORObjectSpec.insertSorObjects(personRepository, sorRepository, sorObjectRepository)
-        IdentifierType identifierType = identifierTypeRepository.save(new IdentifierType(idName: "sisStudentId"))
+        IdentifierType identifierType = identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "sisStudentId"))
         identifierRepository.save(new Identifier(person: personRepository.get('1'), identifier: 'EMPLID123', sorObject: TestUtil.findSORObject(sorRepository, sorObjectRepository, "SIS_DELEGATE", 'sisDelegate123'), identifierType: identifierType))
 
-        DelegateProxyType delegateProxyType = delegateProxyTypeRepository.save(new DelegateProxyType(delegateProxyTypeName: "sisDelegateProxy"))
+        DelegateProxyType delegateProxyType = delegateProxyTypeRepository.saveAndFlush(new DelegateProxyType(delegateProxyTypeName: "sisDelegateProxy"))
         assert delegateProxyType
     }
 

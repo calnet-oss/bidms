@@ -102,7 +102,7 @@ class JsonRenderingSpec extends Specification {
   } ],
   "datesOfBirth" : [ {
     "dateOfBirthMMDD" : "0301",
-    "dateOfBirth" : 915350400000
+    "dateOfBirth" : "1999-01-03T08:00:00Z"
   } ],
   "identifiers" : [ {
     "identifierType" : {
