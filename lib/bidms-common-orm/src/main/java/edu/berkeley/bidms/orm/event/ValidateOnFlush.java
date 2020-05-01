@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,23 +24,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.hibernate.dialect;
+package edu.berkeley.bidms.orm.event;
 
-import org.hibernate.dialect.PostgreSQL10Dialect;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
-import java.sql.Types;
+public interface ValidateOnFlush extends ValidateProvider {
+    Validator getValidatorForFlush();
 
-/**
- * Fixes the issue where the dialect expects int2 but the database returns
- * smallint etc...
- */
-public class PostgreSQLFixDialect extends PostgreSQL10Dialect {
-    public PostgreSQLFixDialect() {
-        super();
-        // defaults are in org.hibernate.dialect.PostgreSQL81Dialect
-        registerColumnType(Types.BIGINT, "bigint");
-        registerColumnType(Types.INTEGER, "integer");
-        registerColumnType(Types.SMALLINT, "smallint");
-        registerColumnType(Types.TINYINT, "smallint");
+    @SuppressWarnings("UnusedReturnValue")
+    default Errors validateOnFlush() throws EventValidationException {
+        return validate(getValidatorForFlush());
     }
 }

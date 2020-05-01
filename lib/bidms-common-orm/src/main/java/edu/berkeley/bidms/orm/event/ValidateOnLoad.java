@@ -24,45 +24,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.collection;
+package edu.berkeley.bidms.orm.event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
-/**
- * Extends {@link TreeSet} to implement {@link RebuildableSortedSet}, which
- * provides the ability to rebuild the sorted set.  It's useful to rebuild
- * the sorted set when values of set elements change such that it changes the
- * ordering of the set.
- */
-public class RebuildableTreeSet<E> extends TreeSet<E> implements RebuildableSortedSet<E> {
+public interface ValidateOnLoad extends ValidateProvider {
+    Validator getValidatorForLoad();
 
-    public RebuildableTreeSet() {
-    }
-
-    public RebuildableTreeSet(Comparator<? super E> comparator) {
-        super(comparator);
-    }
-
-    public RebuildableTreeSet(Collection<? extends E> c) {
-        super(c);
-    }
-
-    public RebuildableTreeSet(SortedSet<E> s) {
-        super(s);
-    }
-
-    /**
-     * Re-sort the underlying sorted set.  Intended to be called when the
-     * ordering of the set may have changed due to element value changes.
-     */
-    @Override
-    public void rebuild() {
-        Collection<E> cloned = new ArrayList<>(this);
-        clear();
-        addAll(cloned);
+    @SuppressWarnings("UnusedReturnValue")
+    default Errors validateOnLoad() throws EventValidationException {
+        return validate(getValidatorForLoad());
     }
 }

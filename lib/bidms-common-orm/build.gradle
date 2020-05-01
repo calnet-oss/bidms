@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -25,30 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 plugins {
-    id 'groovy'
+    id 'java-library'
 }
 
-version = versions.bidmsRegistryModel
+version = versions.bidmsCommonOrm
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-    implementation pdep(rootProject.bidmsCommonOrmDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-    testImplementation 'com.h2database:h2'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }

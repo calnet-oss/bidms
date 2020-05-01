@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2015, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,31 +24,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.orm.hibernate.dialect;
 
-version = versions.bidmsRegistryModel
+import org.hibernate.dialect.PostgreSQL10Dialect;
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+import java.sql.Types;
 
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-    implementation pdep(rootProject.bidmsCommonOrmDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-    testImplementation 'com.h2database:h2'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+/**
+ * Fixes the issue where the dialect expects int2 but the database returns
+ * smallint etc...
+ */
+public class PostgreSQLFixDialect extends PostgreSQL10Dialect {
+    public PostgreSQLFixDialect() {
+        super();
+        // defaults are in org.hibernate.dialect.PostgreSQL81Dialect
+        registerColumnType(Types.BIGINT, "bigint");
+        registerColumnType(Types.INTEGER, "integer");
+        registerColumnType(Types.SMALLINT, "smallint");
+        registerColumnType(Types.TINYINT, "smallint");
     }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }

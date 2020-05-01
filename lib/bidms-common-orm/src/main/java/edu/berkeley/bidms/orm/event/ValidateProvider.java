@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,31 +24,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.orm.event;
 
-version = versions.bidmsRegistryModel
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-    implementation pdep(rootProject.bidmsCommonOrmDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-    testImplementation 'com.h2database:h2'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+public interface ValidateProvider {
+    default Errors validate(Validator validator) throws EventValidationException {
+        DataBinder binder = new DataBinder(this);
+        binder.setValidator(validator);
+        binder.validate();
+        BindingResult result = binder.getBindingResult();
+        if (result.hasErrors()) {
+            throw new EventValidationException(this + " did not validate: " + result.getAllErrors().get(0).toString(), result);
+        }
+        return result;
     }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }

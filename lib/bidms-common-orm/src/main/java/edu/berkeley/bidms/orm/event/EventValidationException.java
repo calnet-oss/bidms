@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,31 +24,54 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.orm.event;
 
-version = versions.bidmsRegistryModel
+import org.springframework.validation.Errors;
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+public class EventValidationException extends RuntimeException {
+    private Errors errors;
 
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-    implementation pdep(rootProject.bidmsCommonOrmDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-    testImplementation 'com.h2database:h2'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    public EventValidationException() {
+        super();
     }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+
+    public EventValidationException(Errors errors) {
+        super();
+        this.errors = errors;
+    }
+
+    public EventValidationException(String message) {
+        super(message);
+    }
+
+    public EventValidationException(String message, Errors errors) {
+        super(message);
+        this.errors = errors;
+    }
+
+    public EventValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public EventValidationException(String message, Throwable cause, Errors errors) {
+        super(message, cause);
+        this.errors = errors;
+    }
+
+    public EventValidationException(Throwable cause) {
+        super(cause);
+    }
+
+    public EventValidationException(Throwable cause, Errors errors) {
+        super(cause);
+        this.errors = errors;
+    }
+
+    public Errors getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Errors errors) {
+        this.errors = errors;
+    }
 }

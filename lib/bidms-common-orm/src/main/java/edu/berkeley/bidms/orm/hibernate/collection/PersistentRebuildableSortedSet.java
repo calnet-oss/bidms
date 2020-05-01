@@ -24,19 +24,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.collection;
+package edu.berkeley.bidms.orm.hibernate.collection;
+
+import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
+import org.hibernate.collection.internal.PersistentSortedSet;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
 import java.util.SortedSet;
 
 /**
- * Extends {@link SortedSet} to provide the ability to rebuild the sorted
- * set.  It's useful to rebuild the sorted set when values of set elements
- * change such that it changes the ordering of the set.
+ * Extends Hibernate's {@link PersistentSortedSet} by adding an
+ * implementation of {@link RebuildableSortedSet} which provides the ability
+ * to rebuild the underlying sorted set.  It's useful to rebuild the sorted
+ * set when values of set elements change such that it changes the ordering
+ * of the set.
  */
-public interface RebuildableSortedSet<E> extends SortedSet<E> {
+@SuppressWarnings("rawtypes")
+public class PersistentRebuildableSortedSet extends PersistentSortedSet implements RebuildableSortedSet {
+    public PersistentRebuildableSortedSet() {
+        super();
+    }
+
+    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session) {
+        super(session);
+    }
+
+    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, SortedSet set) {
+        super(session, set);
+    }
+
     /**
      * Re-sort the underlying sorted set.  Intended to be called when the
      * ordering of the set may have changed due to element value changes.
      */
-    void rebuild();
+    public void rebuild() {
+        if (set != null) {
+            if (!(set instanceof RebuildableSortedSet)) {
+                throw new RuntimeException("The underlying set does not implement the RebuildableSortedSet interface.  The underlying set type is " + set.getClass().getName());
+            } else {
+                ((RebuildableSortedSet) set).rebuild();
+            }
+        }
+    }
 }

@@ -24,10 +24,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.hibernate.usertype;
+package edu.berkeley.bidms.orm.hibernate.usertype;
 
-import edu.berkeley.bidms.registryModel.collection.RebuildableTreeSet;
-import edu.berkeley.bidms.registryModel.hibernate.collection.PersistentRebuildableSortedSet;
+import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
+import edu.berkeley.bidms.orm.hibernate.collection.PersistentRebuildableSortedSet;
 import org.hibernate.HibernateException;
 import org.hibernate.collection.internal.PersistentSortedSet;
 import org.hibernate.collection.spi.PersistentCollection;

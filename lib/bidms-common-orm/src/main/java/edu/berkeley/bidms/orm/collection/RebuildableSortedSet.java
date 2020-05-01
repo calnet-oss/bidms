@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,31 +24,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.orm.collection;
 
-version = versions.bidmsRegistryModel
+import java.util.SortedSet;
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    implementation pdep(rootProject.bidmsAppCommonDep)
-    implementation pdep(rootProject.bidmsSpringSecurityApiDep)
-    implementation pdep(rootProject.bidmsCommonJsonDep)
-    implementation pdep(rootProject.bidmsCommonOrmDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-    testImplementation 'com.h2database:h2'
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+/**
+ * Extends {@link SortedSet} to provide the ability to rebuild the sorted
+ * set.  It's useful to rebuild the sorted set when values of set elements
+ * change such that it changes the ordering of the set.
+ */
+public interface RebuildableSortedSet<E> extends SortedSet<E> {
+    /**
+     * Re-sort the underlying sorted set.  Intended to be called when the
+     * ordering of the set may have changed due to element value changes.
+     */
+    void rebuild();
 }

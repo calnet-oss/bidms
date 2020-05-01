@@ -24,44 +24,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.hibernate.collection;
+package edu.berkeley.bidms.orm.collection;
 
-import edu.berkeley.bidms.registryModel.collection.RebuildableSortedSet;
-import org.hibernate.collection.internal.PersistentSortedSet;
-import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
- * Extends Hibernate's {@link PersistentSortedSet} by adding an
- * implementation of {@link RebuildableSortedSet} which provides the ability
- * to rebuild the underlying sorted set.  It's useful to rebuild the sorted
- * set when values of set elements change such that it changes the ordering
- * of the set.
+ * Extends {@link TreeSet} to implement {@link RebuildableSortedSet}, which
+ * provides the ability to rebuild the sorted set.  It's useful to rebuild
+ * the sorted set when values of set elements change such that it changes the
+ * ordering of the set.
  */
-@SuppressWarnings("rawtypes")
-public class PersistentRebuildableSortedSet extends PersistentSortedSet implements RebuildableSortedSet {
-    public PersistentRebuildableSortedSet() {
-        super();
+public class RebuildableTreeSet<E> extends TreeSet<E> implements RebuildableSortedSet<E> {
+
+    public RebuildableTreeSet() {
     }
 
-    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session) {
-        super(session);
+    public RebuildableTreeSet(Comparator<? super E> comparator) {
+        super(comparator);
     }
 
-    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, SortedSet set) {
-        super(session, set);
+    public RebuildableTreeSet(Collection<? extends E> c) {
+        super(c);
+    }
+
+    public RebuildableTreeSet(SortedSet<E> s) {
+        super(s);
     }
 
     /**
      * Re-sort the underlying sorted set.  Intended to be called when the
      * ordering of the set may have changed due to element value changes.
      */
+    @Override
     public void rebuild() {
-        if (!(set instanceof RebuildableSortedSet)) {
-            throw new RuntimeException("The underlying set does not implement the RebuildableSortedSet interface");
-        } else {
-            ((RebuildableSortedSet) set).rebuild();
-        }
+        Collection<E> cloned = new ArrayList<>(this);
+        clear();
+        addAll(cloned);
     }
 }
