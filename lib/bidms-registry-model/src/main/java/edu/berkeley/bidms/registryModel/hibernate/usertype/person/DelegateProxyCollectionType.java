@@ -27,7 +27,7 @@
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
-import edu.berkeley.bidms.registryModel.hibernate.usertype.RebuildableSortedSetType;
+import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
 public class DelegateProxyCollectionType extends RebuildableSortedSetType {
 

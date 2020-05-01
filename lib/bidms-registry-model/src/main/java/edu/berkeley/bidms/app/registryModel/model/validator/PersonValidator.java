@@ -27,12 +27,10 @@
 package edu.berkeley.bidms.app.registryModel.model.validator;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
-import edu.berkeley.bidms.app.registryModel.model.PersonRoleArchive;
 import edu.berkeley.bidms.registryModel.util.DateUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.validation.ValidationException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -57,7 +55,7 @@ public class PersonValidator implements Validator {
             if (person.getArchivedRoles().stream().anyMatch(archivedRole ->
                     archivedRole.isRoleAsgnUniquePerCat() && Objects.equals(archivedRole.getRoleCategory(), role.getRoleCategory())
             )) {
-                throw new ValidationException("Uid " + person.getUid() + " can't have role " + role.getRole().getRoleName() + " as an assignedRole because a role with the same roleCategory exists as an archivedRole.  Remove the role with roleCategoryId=" + role.getRoleCategory().getId() + " from archiveRoles first, using removeFromArchivedRoles().");
+                errors.rejectValue("assignedRoles", "Uid " + person.getUid() + " can't have role " + role.getRole().getRoleName() + " as an assignedRole because a role with the same roleCategory exists as an archivedRole.  Remove the role with roleCategoryId=" + role.getRoleCategory().getId() + " from archiveRoles first, using removeFromArchivedRoles().");
             }
         });
 
@@ -68,7 +66,7 @@ public class PersonValidator implements Validator {
             if (person.getArchivedRoles().stream().anyMatch(archivedRole ->
                     Objects.equals(archivedRole.getRole(), role.getRole())
             )) {
-                throw new ValidationException("Uid " + person.getUid() + " can't have role " + role.getRole().getRoleName() + " as an assignedRole because a role with the same roleId exists as an archivedRole.  Remove the role with roleId=" + role.getRole().getId() + " from archiveRoles first, using removeFromArchivedRoles().");
+                errors.rejectValue("assignedRoles", "Uid " + person.getUid() + " can't have role " + role.getRole().getRoleName() + " as an assignedRole because a role with the same roleId exists as an archivedRole.  Remove the role with roleId=" + role.getRole().getId() + " from archiveRoles first, using removeFromArchivedRoles().");
             }
         });
     }
@@ -79,13 +77,14 @@ public class PersonValidator implements Validator {
             if (person.getAssignedRoles().stream().anyMatch(role ->
                     role.isRoleAsgnUniquePerCat() && Objects.equals(archivedRole.getRoleCategory(), role.getRoleCategory())
             )) {
-                throw new ValidationException("Uid " + person.getUid() + " can't have role " + archivedRole.getRole().getRoleName() + " as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=" + archivedRole.getRoleCategory().getId() + " from assignedRoles first, using removeFromAssignedRoles().");
+                errors.rejectValue("archivedRoles", "Uid " + person.getUid() + " can't have role " + archivedRole.getRole().getRoleName() + " as an archivedRole because a role with the same roleCategory exists as an assignedRole.  Remove the role with roleCategoryId=" + archivedRole.getRoleCategory().getId() + " from assignedRoles first, using removeFromAssignedRoles().");
             }
 
             // Flip the in-grace/post-grace booleans, if need be.
             // Necessary, otherwise validation errors could happen when
             // saving the person.
-            resetArchivedRoleFlags(currentTime, archivedRole);
+            archivedRole.setRoleInGraceWithoutNotification(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() == null || DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getStartOfRoleGraceTime()) && DateUtil.lessThan(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
+            archivedRole.setRolePostGraceWithoutNotification(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() != null && DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
         });
 
         // the second iteration on the same collection is on purpose so that
@@ -95,13 +94,8 @@ public class PersonValidator implements Validator {
             if (person.getAssignedRoles().stream().anyMatch(role ->
                     Objects.equals(role.getRole(), archivedRole.getRole())
             )) {
-                throw new ValidationException("Uid " + person.getUid() + " can't have role " + archivedRole.getRole().getRoleName() + " as an archivedRole because a role with the same roleId exists as an assignedRole.  Remove the role with roleId=" + archivedRole.getRole().getId() + " from assignedRoles first, using removeFromAssignedRoles().");
+                errors.rejectValue("archivedRoles", "Uid " + person.getUid() + " can't have role " + archivedRole.getRole().getRoleName() + " as an archivedRole because a role with the same roleId exists as an assignedRole.  Remove the role with roleId=" + archivedRole.getRole().getId() + " from assignedRoles first, using removeFromAssignedRoles().");
             }
         });
-    }
-
-    private void resetArchivedRoleFlags(Date currentTime, PersonRoleArchive archivedRole) {
-        archivedRole.setRoleInGrace(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() == null || DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getStartOfRoleGraceTime()) && DateUtil.lessThan(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
-        archivedRole.setRolePostGrace(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() != null && DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
     }
 }

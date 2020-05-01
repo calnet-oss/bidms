@@ -36,9 +36,9 @@ import java.time.ZoneId;
 import java.util.Date;
 
 /**
- * Validator for {@link PersonRoleArchive}.
+ * Validator for {@link PersonRoleArchive} when saved.
  */
-public class PersonRoleArchiveValidator implements Validator {
+public class PersonRoleArchiveOnFlushValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -48,6 +48,10 @@ public class PersonRoleArchiveValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         PersonRoleArchive pra = (PersonRoleArchive) target;
+        // The in-grace/post-grace flags should be correct because they
+        // should have been corrected if necessary by the
+        // PersonRoleArchiveOnLoadValidator (which should have executed
+        // upon load of the PersonRoleArchive entity).
         validateStartOfRoleGraceTime(pra, errors);
         validateEndOfRoleGraceTime(pra, errors);
         validateEndOfRoleGraceTimeOverride(pra, errors);
@@ -58,7 +62,6 @@ public class PersonRoleArchiveValidator implements Validator {
     private Date dateAddDays(Date date, int days) {
         LocalDateTime ldt = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         return Date.from(ldt.plusDays(days).atZone(ZoneId.systemDefault()).toInstant());
-
     }
 
     protected void validateStartOfRoleGraceTime(PersonRoleArchive pra, Errors errors) {

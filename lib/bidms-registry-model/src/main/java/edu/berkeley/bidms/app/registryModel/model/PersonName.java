@@ -106,7 +106,7 @@ public class PersonName implements Comparable<PersonName> {
     @Column(length = 1023)
     private String fullName;
 
-    @Type(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.JSONBType")
+    @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(columnDefinition = "JSONB")
     private String honorifics; // This is a JSON array of strings.  Stored in PostGreSQL as JSONB.
 

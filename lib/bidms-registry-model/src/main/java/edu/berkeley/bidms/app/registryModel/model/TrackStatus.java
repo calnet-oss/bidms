@@ -102,7 +102,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Column(length = 256)
     private String description;
 
-    @Type(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.JSONBType")
+    @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(columnDefinition = "JSONB")
     private String metaDataJson = "{}";
 

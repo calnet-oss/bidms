@@ -24,17 +24,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
+package edu.berkeley.bidms.app.registryModel.model.validator;
 
-import edu.berkeley.bidms.app.registryModel.model.Person;
-import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
+import edu.berkeley.bidms.app.registryModel.model.PersonRoleArchive;
+import edu.berkeley.bidms.registryModel.util.DateUtil;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 
-public class DateOfBirthCollectionType extends RebuildableSortedSetType {
+import java.util.Date;
 
-    private static final String PERSON_FIELD = "datesOfBirth";
-    private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;
+/**
+ * Validator for {@link PersonRoleArchive} when loaded.
+ */
+public class PersonRoleArchiveOnLoadValidator implements Validator {
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return PersonRoleArchive.class.isAssignableFrom(clazz);
+    }
 
-    public DateOfBirthCollectionType() {
-        super(ROLE, null, null);
+    @Override
+    public void validate(Object target, Errors errors) {
+        resetArchivedRoleFlags(new Date(), (PersonRoleArchive) target);
+    }
+
+    static void resetArchivedRoleFlags(Date currentTime, PersonRoleArchive archivedRole) {
+        archivedRole.setRoleInGrace(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() == null || DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getStartOfRoleGraceTime()) && DateUtil.lessThan(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
+        archivedRole.setRolePostGrace(archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater() != null && DateUtil.greaterThanEqualsTo(currentTime, archivedRole.getEndOfRoleGraceTimeUseOverrideIfLater()));
     }
 }

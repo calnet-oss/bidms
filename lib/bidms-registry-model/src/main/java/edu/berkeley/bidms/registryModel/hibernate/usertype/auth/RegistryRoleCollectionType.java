@@ -27,7 +27,7 @@
 package edu.berkeley.bidms.registryModel.hibernate.usertype.auth;
 
 import edu.berkeley.bidms.app.registryModel.model.auth.RegistryUser;
-import edu.berkeley.bidms.registryModel.hibernate.usertype.RebuildableSortedSetType;
+import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
 public class RegistryRoleCollectionType extends RebuildableSortedSetType {
 

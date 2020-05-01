@@ -90,7 +90,7 @@ public class DownstreamObject implements Comparable<DownstreamObject> {
     @Column(name = "sysObjKey", nullable = false, length = 255)
     private String systemPrimaryKey;
 
-    @Type(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.JSONBType")
+    @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(nullable = false, columnDefinition = "JSONB NOT NULL")
     private String objJson;
 

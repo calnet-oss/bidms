@@ -33,14 +33,13 @@ import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.PersonRoleArchiveRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.orm.event.EventValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import javax.validation.ValidationException
 
 import static edu.berkeley.bidms.app.registryModel.model.type.AssignableRoleEnum.masterAccountActive
 import static edu.berkeley.bidms.app.registryModel.model.type.AssignableRoleEnum.ouExpired
@@ -117,17 +116,18 @@ class PersonRoleArchiveSpec extends Specification {
         when:
         Person person = personRepository.get("1")
         assignableRoleRepository.findAll().each { AssignableRole assignableRole ->
-            person.addToArchivedRoles(new PersonRoleArchive(
-                    person: person,
-                    role: assignableRole,
-                    roleCategory: assignableRole.roleCategory,
-                    roleAsgnUniquePerCat: assignableRole.roleCategory.roleAsgnUniquePerCat,
-                    originalTimeCreated: now,
-                    originalTimeUpdated: now,
-                    rolePostGrace: true,
-                    roleInGrace: false,
-                    startOfRoleGraceTime: now
-            ))
+            def pra = new PersonRoleArchive(person)
+            pra.with {
+                role = assignableRole
+                roleCategory = assignableRole.roleCategory
+                roleAsgnUniquePerCat = assignableRole.roleCategory.roleAsgnUniquePerCat
+                originalTimeCreated = now
+                originalTimeUpdated = now
+                rolePostGrace = true
+                roleInGrace = false
+                startOfRoleGraceTime = now
+            }
+            person.addToArchivedRoles(pra)
         }
         personRepository.saveAndFlush(person)
 
@@ -143,35 +143,39 @@ class PersonRoleArchiveSpec extends Specification {
         Person person = personRepository.get("1")
 
         when:
-        RuntimeException exception = null
-        try {
-            assignedRoles?.each { AssignableRoleEnum roleEnum ->
-                AssignableRole role = assignableRoleRepository.findByRoleName(roleEnum.name)
-                assert role
-                person.addToAssignedRoles(new PersonRole(
-                        role: role,
-                        roleCategory: role.roleCategory,
-                        roleAsgnUniquePerCat: role.roleCategory.roleAsgnUniquePerCat
-                ))
-            }
-            archivedRoles?.each { AssignableRoleEnum roleEnum ->
-                AssignableRole role = assignableRoleRepository.findByRoleName(roleEnum.name)
-                assert role
-                person.addToArchivedRoles(new PersonRoleArchive(
-                        role: role,
-                        roleCategory: role.roleCategory,
-                        roleAsgnUniquePerCat: role.roleCategory.roleAsgnUniquePerCat,
-                        originalTimeCreated: now,
-                        originalTimeUpdated: now,
-                        rolePostGrace: true,
-                        roleInGrace: false,
-                        startOfRoleGraceTime: now
-                ))
-            }
+        EventValidationException exception = null
 
+        assignedRoles?.each { AssignableRoleEnum roleEnum ->
+            AssignableRole role = assignableRoleRepository.findByRoleName(roleEnum.name)
+            assert role
+            def pr = new PersonRole(person)
+            pr.with {
+                it.role = role
+                it.roleCategory = role.roleCategory
+                it.roleAsgnUniquePerCat = role.roleCategory.roleAsgnUniquePerCat
+            }
+            person.addToAssignedRoles(pr)
+        }
+        archivedRoles?.each { AssignableRoleEnum roleEnum ->
+            AssignableRole role = assignableRoleRepository.findByRoleName(roleEnum.name)
+            assert role
+            def pra = new PersonRoleArchive(person)
+            pra.with {
+                it.role = role
+                it.roleCategory = role.roleCategory
+                it.roleAsgnUniquePerCat = role.roleCategory.roleAsgnUniquePerCat
+                it.originalTimeCreated = now
+                it.originalTimeUpdated = now
+                it.rolePostGrace = true
+                it.roleInGrace = false
+                it.startOfRoleGraceTime = now
+            }
+            person.addToArchivedRoles(pra)
+        }
+        try {
             personRepository.saveAndFlush(person)
         }
-        catch (RuntimeException e) {
+        catch (EventValidationException e) {
             exception = e
         }
         boolean isArchivedRolesCategoryException = exception?.message?.contains("as an archivedRole because a role with the same roleCategory exists as an assignedRole")
@@ -208,23 +212,25 @@ class PersonRoleArchiveSpec extends Specification {
         Person person = personRepository.get("1")
         Exception exception = null
         assignableRoleRepository.findAll().each { AssignableRole assignableRole ->
-            person.addToArchivedRoles(new PersonRoleArchive(
-                    role: assignableRole,
-                    roleCategory: assignableRole.roleCategory,
-                    roleAsgnUniquePerCat: assignableRole.roleCategory.roleAsgnUniquePerCat,
-                    originalTimeCreated: now,
-                    originalTimeUpdated: now,
-                    startOfRoleGraceTime: startOfGrace,
-                    endOfRoleGraceTime: endOfGrace,
-                    roleInGrace: isInGrace,
-                    rolePostGrace: isPostGrace,
-            ))
-            try {
-                personRepository.saveAndFlush(person)
+            PersonRoleArchive pra = new PersonRoleArchive(person)
+            pra.with {
+                role = assignableRole
+                roleCategory = assignableRole.roleCategory
+                roleAsgnUniquePerCat = assignableRole.roleCategory.roleAsgnUniquePerCat
+                originalTimeCreated = now
+                originalTimeUpdated = now
+                startOfRoleGraceTime = startOfGrace
+                endOfRoleGraceTime = endOfGrace
+                roleInGrace = isInGrace
+                rolePostGrace = isPostGrace
             }
-            catch (ValidationException e) {
-                exception = e
-            }
+            person.addToArchivedRoles(pra)
+        }
+        try {
+            personRepository.saveAndFlush(person)
+        }
+        catch (EventValidationException e) {
+            exception = e
         }
 
         then:
@@ -246,21 +252,22 @@ class PersonRoleArchiveSpec extends Specification {
         when:
         Person person = personRepository.get("1")
         assignableRoleRepository.findAll().each { AssignableRole assignableRole ->
-            PersonRoleArchive pra = new PersonRoleArchive(
-                    role: assignableRole,
-                    roleCategory: assignableRole.roleCategory,
-                    roleAsgnUniquePerCat: assignableRole.roleCategory.roleAsgnUniquePerCat,
-                    originalTimeCreated: now,
-                    originalTimeUpdated: now,
-                    startOfRoleGraceTime: startOfGrace,
-                    endOfRoleGraceTime: endOfGrace,
-                    endOfRoleGraceTimeOverride: endOfGraceOverride,
-                    roleInGrace: isInGrace,
-                    rolePostGrace: isPostGrace,
-            )
+            PersonRoleArchive pra = new PersonRoleArchive(person)
+            pra.with {
+                role = assignableRole
+                roleCategory = assignableRole.roleCategory
+                roleAsgnUniquePerCat = assignableRole.roleCategory.roleAsgnUniquePerCat
+                originalTimeCreated = now
+                originalTimeUpdated = now
+                startOfRoleGraceTime = startOfGrace
+                endOfRoleGraceTime = endOfGrace
+                endOfRoleGraceTimeOverride = endOfGraceOverride
+                roleInGrace = isInGrace
+                rolePostGrace = isPostGrace
+            }
             person.addToArchivedRoles(pra)
-            personRepository.saveAndFlush(person)
         }
+        personRepository.saveAndFlush(person)
 
         then:
         !addedArchivedRoles.any { it.roleInGrace != expectedInGrace || it.rolePostGrace != expectedPostGrace }

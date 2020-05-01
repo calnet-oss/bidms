@@ -29,6 +29,7 @@ package edu.berkeley.bidms.app.registryModel.model.auth
 import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryRoleRepository
 import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryUserRepository
 import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialService
+import edu.berkeley.bidms.orm.collection.RebuildableTreeSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -51,7 +52,7 @@ class RegistryUserSpec extends Specification {
         given:
         RegistryUser user = new RegistryUser("test")
         registryUserCredentialService.setPassword(user, "mypassword")
-        user.roles = [] as SortedSet<RegistryRole>
+        user.roles = [] as RebuildableTreeSet<RegistryRole>
         RegistryRole role = new RegistryRole("testRole")
         user.roles << role
 

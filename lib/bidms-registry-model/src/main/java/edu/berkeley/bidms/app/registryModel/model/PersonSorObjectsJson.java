@@ -54,7 +54,7 @@ public class PersonSorObjectsJson {
     @Column(nullable = false)
     private Date lastUpdated;
 
-    @Type(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.JSONBType")
+    @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(nullable = false, columnDefinition = "JSONB NOT NULL")
     private String aggregateJson;
 

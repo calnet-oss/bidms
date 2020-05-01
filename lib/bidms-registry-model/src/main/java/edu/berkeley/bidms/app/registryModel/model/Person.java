@@ -28,9 +28,11 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonValidator;
-import edu.berkeley.bidms.registryModel.hibernate.usertype.RegistrySortedSetType;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
+import edu.berkeley.bidms.orm.event.ValidateOnFlush;
+import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
+import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
+import org.hibernate.annotations.CollectionType;
+import org.springframework.validation.Validator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,13 +40,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.SortedSet;
 
 /**
  * This is the top-level entity for an identity in the registry.  The
@@ -56,7 +52,7 @@ import java.util.SortedSet;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
-public class Person {
+public class Person implements ValidateOnFlush {
     @Id
     private String uid;
 
@@ -72,72 +68,97 @@ public class Person {
     /**
      * We use sorted sets so the sets are ordered the same way each time a
      * person is queried.  This is particularly relevant for JSON generation.
-     * We want the JSON output to look the same each time. Instantiating the
-     * set is necessary when using RegistrySortedSetType.
+     * We want the JSON output to look the same each time.
      * <p>
      * JPA requires the use of @OrderBy for sorted collection one-to-many
-     * joins but this does not determine the ordering in the
-     * RegistrySortedSetType collection.  Instead, the JPA entities implement
-     * Comparable.compareTo() and this is what will determine the iteration
-     * order.  This gets tricky if attribute values change (because the hash
-     * code changes) and this is why you see notifyChange() being called from
-     * the child entity setters.  When a child setter is called, the person's
-     * collection is rebuilt to preserve ordering in the collection after a
-     * possible hash code change of the collection element.
+     * joins but this does not determine the ordering in the collection.
+     * Instead, the JPA entities implement Comparable.compareTo() and this is
+     * what will determine the iteration order.  This gets tricky if
+     * attribute values change (because the hash code changes) and this is
+     * why you see notifyChange() being called from the child entity setters.
+     * When a child setter is called, the person's collection is rebuilt to
+     * preserve ordering in the collection after a possible hash code change
+     * of the collection element.
      */
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<Address> addresses = RegistrySortedSetType.newSet(Address.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.AddressCollectionType")
+    private RebuildableSortedSet<Address> addresses = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<PersonName> names = RegistrySortedSetType.newSet(PersonName.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonNameCollectionType")
+    private RebuildableSortedSet<PersonName> names = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<DateOfBirth> datesOfBirth = RegistrySortedSetType.newSet(DateOfBirth.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DateOfBirthCollectionType")
+    private RebuildableSortedSet<DateOfBirth> datesOfBirth = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<Identifier> identifiers = RegistrySortedSetType.newSet(Identifier.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierCollectionType")
+    private RebuildableSortedSet<Identifier> identifiers = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<Email> emails = RegistrySortedSetType.newSet(Email.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.EmailCollectionType")
+    private RebuildableSortedSet<Email> emails = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<Telephone> telephones = RegistrySortedSetType.newSet(Telephone.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.TelephoneCollectionType")
+    private RebuildableSortedSet<Telephone> telephones = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<PersonRole> assignedRoles = RegistrySortedSetType.newSet(PersonRole.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleCollectionType")
+    private RebuildableSortedSet<PersonRole> assignedRoles = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<TrackStatus> trackStatuses = RegistrySortedSetType.newSet(TrackStatus.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.TrackStatusCollectionType")
+    private RebuildableSortedSet<TrackStatus> trackStatuses = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<DelegateProxy> delegations = RegistrySortedSetType.newSet(DelegateProxy.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DelegateProxyCollectionType")
+    private RebuildableSortedSet<DelegateProxy> delegations = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<DownstreamObject> downstreamObjects = RegistrySortedSetType.newSet(DownstreamObject.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DownstreamObjectCollectionType")
+    private RebuildableSortedSet<DownstreamObject> downstreamObjects = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<JobAppointment> jobAppointments = RegistrySortedSetType.newSet(JobAppointment.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.JobAppointmentCollectionType")
+    private RebuildableSortedSet<JobAppointment> jobAppointments = new RebuildableTreeSet<>();
 
     // archivedIdentifiers is read-only
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person")
     @OrderBy("originalIdentifierId")
-    private SortedSet<IdentifierArchive> archivedIdentifiers = RegistrySortedSetType.newSet(IdentifierArchive.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierArchiveCollectionType")
+    private RebuildableSortedSet<IdentifierArchive> archivedIdentifiers = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
-    private SortedSet<PersonRoleArchive> archivedRoles = RegistrySortedSetType.newSet(PersonRoleArchive.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleArchiveCollectionType")
+    private RebuildableSortedSet<PersonRoleArchive> archivedRoles = new RebuildableTreeSet<>();
 
     public Person addToAddresses(Address obj) {
         obj.setPerson(this);
@@ -146,9 +167,8 @@ public class Person {
     }
 
     public Person removeFromAddresses(Address obj) {
-        if (addresses.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        addresses.remove(obj);
         return this;
     }
 
@@ -159,9 +179,8 @@ public class Person {
     }
 
     public Person removeFromNames(PersonName obj) {
-        if (names.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        names.remove(obj);
         return this;
     }
 
@@ -172,9 +191,8 @@ public class Person {
     }
 
     public Person removeFromDatesOfBirth(DateOfBirth obj) {
-        if (datesOfBirth.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        datesOfBirth.remove(obj);
         return this;
     }
 
@@ -185,9 +203,8 @@ public class Person {
     }
 
     public Person removeFromIdentifiers(Identifier obj) {
-        if (identifiers.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        identifiers.remove(obj);
         return this;
     }
 
@@ -198,9 +215,8 @@ public class Person {
     }
 
     public Person removeFromEmails(Email obj) {
-        if (emails.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        emails.remove(obj);
         return this;
     }
 
@@ -211,24 +227,20 @@ public class Person {
     }
 
     public Person removeFromTelephones(Telephone obj) {
-        if (telephones.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        telephones.remove(obj);
         return this;
     }
 
     public Person addToAssignedRoles(PersonRole obj) {
         obj.setPerson(this);
         assignedRoles.add(obj);
-        doValidation();
         return this;
     }
 
     public Person removeFromAssignedRoles(PersonRole obj) {
-        if (assignedRoles.remove(obj)) {
-            obj.setPerson(null);
-        }
-        doValidation();
+        obj.setPerson(null);
+        assignedRoles.remove(obj);
         return this;
     }
 
@@ -239,9 +251,8 @@ public class Person {
     }
 
     public Person removeFromTrackStatuses(TrackStatus obj) {
-        if (trackStatuses.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        trackStatuses.remove(obj);
         return this;
     }
 
@@ -252,9 +263,8 @@ public class Person {
     }
 
     public Person removeFromDelegations(DelegateProxy obj) {
-        if (delegations.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        delegations.remove(obj);
         return this;
     }
 
@@ -265,9 +275,8 @@ public class Person {
     }
 
     public Person removeFromDownstreamObjects(DownstreamObject obj) {
-        if (downstreamObjects.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        downstreamObjects.remove(obj);
         return this;
     }
 
@@ -278,332 +287,176 @@ public class Person {
     }
 
     public Person removeFromJobAppointments(JobAppointment obj) {
-        if (jobAppointments.remove(obj)) {
-            obj.setPerson(null);
-        }
+        obj.setPerson(null);
+        jobAppointments.remove(obj);
         return this;
     }
 
     public Person addToArchivedRoles(PersonRoleArchive obj) {
         obj.setPerson(this);
         archivedRoles.add(obj);
-        doValidation();
         return this;
     }
 
     public Person removeFromArchivedRoles(PersonRoleArchive obj) {
-        if (archivedRoles.remove(obj)) {
-            obj.setPerson(null);
-        }
-        doValidation();
+        obj.setPerson(null);
+        archivedRoles.remove(obj);
         return this;
     }
 
     public boolean safeAddToAddresses(Address obj) {
         obj.setPerson(this);
-        if (safeAddTo(getAddresses(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getAddresses(), obj);
     }
 
     public boolean safeRemoveFromAddresses(Address obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getAddresses(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getAddresses(), obj);
     }
 
     public boolean safeAddToNames(PersonName obj) {
         obj.setPerson(this);
-        if (safeAddTo(getNames(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getNames(), obj);
     }
 
     public boolean safeRemoveFromNames(PersonName obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getNames(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getNames(), obj);
     }
 
     public boolean safeAddToDatesOfBirth(DateOfBirth obj) {
         obj.setPerson(this);
-        if (safeAddTo(getDatesOfBirth(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getDatesOfBirth(), obj);
     }
 
     public boolean safeRemoveFromDatesOfBirth(DateOfBirth obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getDatesOfBirth(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getDatesOfBirth(), obj);
     }
 
     public boolean safeAddToIdentifiers(Identifier obj) {
         obj.setPerson(this);
-        if (safeAddTo(getIdentifiers(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getIdentifiers(), obj);
     }
 
     public boolean safeRemoveFromIdentifiers(Identifier obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getIdentifiers(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getIdentifiers(), obj);
     }
 
     public boolean safeAddToEmails(Email obj) {
         obj.setPerson(this);
-        if (safeAddTo(getEmails(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getEmails(), obj);
     }
 
     public boolean safeRemoveFromEmails(Email obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getEmails(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getEmails(), obj);
     }
 
     public boolean safeAddToTelephones(Telephone obj) {
         obj.setPerson(this);
-        if (safeAddTo(getTelephones(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getTelephones(), obj);
     }
 
     public boolean safeRemoveFromTelephones(Telephone obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getTelephones(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getTelephones(), obj);
     }
 
     public boolean safeAddToAssignedRoles(PersonRole obj) {
         obj.setPerson(this);
-        if (safeAddTo(getAssignedRoles(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getAssignedRoles(), obj);
     }
 
     public boolean safeRemoveFromAssignedRoles(PersonRole obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getAssignedRoles(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getAssignedRoles(), obj);
     }
 
     public boolean safeAddToTrackStatuses(TrackStatus obj) {
         obj.setPerson(this);
-        if (safeAddTo(getTrackStatuses(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getTrackStatuses(), obj);
     }
 
     public boolean safeRemoveFromTrackStatuses(TrackStatus obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getTrackStatuses(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getTrackStatuses(), obj);
     }
 
     public boolean safeAddToDelegations(DelegateProxy obj) {
         obj.setPerson(this);
-        if (safeAddTo(getDelegations(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getDelegations(), obj);
     }
 
     public boolean safeRemoveFromDelegations(DelegateProxy obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getDelegations(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getDelegations(), obj);
     }
 
     public boolean safeAddToDownstreamObjects(DownstreamObject obj) {
         obj.setPerson(this);
-        if (safeAddTo(getDownstreamObjects(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getDownstreamObjects(), obj);
     }
 
     public boolean safeRemoveFromDownstreamObjects(DownstreamObject obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getDownstreamObjects(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getDownstreamObjects(), obj);
     }
 
     public boolean safeAddToJobAppointments(JobAppointment obj) {
         obj.setPerson(this);
-        if (safeAddTo(getJobAppointments(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getJobAppointments(), obj);
     }
 
     public boolean safeRemoveFromJobAppointments(JobAppointment obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getJobAppointments(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getJobAppointments(), obj);
     }
 
     public boolean safeAddToArchivedIdentifiers(IdentifierArchive obj) {
         obj.setPerson(this);
-        if (safeAddTo(getArchivedIdentifiers(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getArchivedIdentifiers(), obj);
     }
 
     public boolean safeRemoveFromArchivedIdentifiers(IdentifierArchive obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getArchivedIdentifiers(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getArchivedIdentifiers(), obj);
     }
 
     public boolean safeAddToArchivedRoles(PersonRoleArchive obj) {
         obj.setPerson(this);
-        if (safeAddTo(getArchivedRoles(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeAddTo(getArchivedRoles(), obj);
     }
 
     public boolean safeRemoveFromArchivedRoles(PersonRoleArchive obj) {
         obj.setPerson(null);
-        if (safeRemoveFrom(getArchivedRoles(), obj)) {
-            doValidation();
-            return true;
-        } else {
-            return false;
-        }
+        return safeRemoveFrom(getArchivedRoles(), obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void rebuildCollectionSetIfNecessary(SortedSet collection) {
-        // This will cause the sorted collection to be re-sorted if any of
-        // the hash codes have changed.  Relevant because SortedSet.add() and
-        // SortedSet.remove() is dependent on proper ordering to find the object.
-        Collection cloned = new ArrayList(collection);
-        collection.clear();
-        collection.addAll(cloned);
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private boolean safeAddTo(SortedSet collection, Object obj) {
-        rebuildCollectionSetIfNecessary(collection);
+    private boolean safeAddTo(RebuildableSortedSet collection, Object obj) {
+        //rebuildCollectionSetIfNecessary(collection);
         return collection.add(obj);
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean safeRemoveFrom(SortedSet collection, Object obj) {
-        rebuildCollectionSetIfNecessary(collection);
+    private boolean safeRemoveFrom(RebuildableSortedSet collection, Object obj) {
+        //rebuildCollectionSetIfNecessary(collection);
         return collection.remove(obj);
     }
 
-    /**
-     * It's possible that a role is in the archive and it has switched from
-     * in-grace to post-grace based on the end grace date, but the quartz job
-     * hasn't had a chance yet to flip this row to isPostGrace=true.  So we
-     * do the check here and do that flipping here, otherwise we will
-     * encounter a validation error when the person is saved.
-     */
-    @PostLoad
-    @PreUpdate
-    @PrePersist
-    protected void doValidation() {
-        DataBinder binder = new DataBinder(this);
-        binder.setValidator(new PersonValidator());
-        binder.validate();
-        BindingResult result = binder.getBindingResult();
-        if (result.hasErrors()) {
-            throw new RuntimeException("person " + getUid() + " did not validate: " + result.getAllErrors().get(0).toString());
-        }
+    @SuppressWarnings("rawtypes")
+    private void rebuildCollectionSetIfNecessary(RebuildableSortedSet collection) {
+        // This will cause the sorted collection to be re-sorted if any of
+        // the hash codes have changed.  Relevant because SortedSet.add() and
+        // SortedSet.remove() is dependent on proper ordering to find the object.
+        collection.rebuild();
+    }
 
-        // Hash codes may have changed due to grace flag changes.
-        // (TODO: I don't think this is necessary anymore - notify done in the flag setters.)
-        //notifyChange(archivedRoles);
-        //notifyChange(assignedRoles);
+    @Override
+    public Validator getValidatorForFlush() {
+        return new PersonValidator();
     }
 
     /**
@@ -613,12 +466,10 @@ public class Person {
      * @param collection A collection of entities that belongs to this
      *                   person.
      */
-    <T extends Comparable> void notifyChange(SortedSet<T> collection) {
+    <T extends Comparable> void notifyChange(RebuildableSortedSet<T> collection) {
         // Rebuild the collection because the sort order may have changed
         // due to changed attributes of a collection element.
-        Collection<T> cloned = new ArrayList<>(collection);
-        collection.clear();
-        collection.addAll(cloned);
+        collection.rebuild();
     }
 
     public void setId(String uid) {
@@ -661,107 +512,107 @@ public class Person {
         this.isLocked = locked;
     }
 
-    public SortedSet<Address> getAddresses() {
+    public RebuildableSortedSet<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(SortedSet<Address> addresses) {
+    public void setAddresses(RebuildableSortedSet<Address> addresses) {
         this.addresses = addresses;
     }
 
-    public SortedSet<DateOfBirth> getDatesOfBirth() {
+    public RebuildableSortedSet<DateOfBirth> getDatesOfBirth() {
         return datesOfBirth;
     }
 
-    public void setDatesOfBirth(SortedSet<DateOfBirth> datesOfBirth) {
+    public void setDatesOfBirth(RebuildableSortedSet<DateOfBirth> datesOfBirth) {
         this.datesOfBirth = datesOfBirth;
     }
 
-    public SortedSet<PersonName> getNames() {
+    public RebuildableSortedSet<PersonName> getNames() {
         return names;
     }
 
-    public void setNames(SortedSet<PersonName> names) {
+    public void setNames(RebuildableSortedSet<PersonName> names) {
         this.names = names;
     }
 
-    public SortedSet<Identifier> getIdentifiers() {
+    public RebuildableSortedSet<Identifier> getIdentifiers() {
         return identifiers;
     }
 
-    public void setIdentifiers(SortedSet<Identifier> identifiers) {
+    public void setIdentifiers(RebuildableSortedSet<Identifier> identifiers) {
         this.identifiers = identifiers;
     }
 
-    public SortedSet<Email> getEmails() {
+    public RebuildableSortedSet<Email> getEmails() {
         return emails;
     }
 
-    public void setEmails(SortedSet<Email> emails) {
+    public void setEmails(RebuildableSortedSet<Email> emails) {
         this.emails = emails;
     }
 
-    public SortedSet<Telephone> getTelephones() {
+    public RebuildableSortedSet<Telephone> getTelephones() {
         return telephones;
     }
 
-    public void setTelephones(SortedSet<Telephone> telephones) {
+    public void setTelephones(RebuildableSortedSet<Telephone> telephones) {
         this.telephones = telephones;
     }
 
-    public SortedSet<PersonRole> getAssignedRoles() {
+    public RebuildableSortedSet<PersonRole> getAssignedRoles() {
         return assignedRoles;
     }
 
-    public void setAssignedRoles(SortedSet<PersonRole> assignedRoles) {
+    public void setAssignedRoles(RebuildableSortedSet<PersonRole> assignedRoles) {
         this.assignedRoles = assignedRoles;
     }
 
-    public SortedSet<TrackStatus> getTrackStatuses() {
+    public RebuildableSortedSet<TrackStatus> getTrackStatuses() {
         return trackStatuses;
     }
 
-    public void setTrackStatuses(SortedSet<TrackStatus> trackStatuses) {
+    public void setTrackStatuses(RebuildableSortedSet<TrackStatus> trackStatuses) {
         this.trackStatuses = trackStatuses;
     }
 
-    public SortedSet<DelegateProxy> getDelegations() {
+    public RebuildableSortedSet<DelegateProxy> getDelegations() {
         return delegations;
     }
 
-    public void setDelegations(SortedSet<DelegateProxy> delegations) {
+    public void setDelegations(RebuildableSortedSet<DelegateProxy> delegations) {
         this.delegations = delegations;
     }
 
-    public SortedSet<DownstreamObject> getDownstreamObjects() {
+    public RebuildableSortedSet<DownstreamObject> getDownstreamObjects() {
         return downstreamObjects;
     }
 
-    public void setDownstreamObjects(SortedSet<DownstreamObject> downstreamObjects) {
+    public void setDownstreamObjects(RebuildableSortedSet<DownstreamObject> downstreamObjects) {
         this.downstreamObjects = downstreamObjects;
     }
 
-    public SortedSet<JobAppointment> getJobAppointments() {
+    public RebuildableSortedSet<JobAppointment> getJobAppointments() {
         return jobAppointments;
     }
 
-    public void setJobAppointments(SortedSet<JobAppointment> jobAppointments) {
+    public void setJobAppointments(RebuildableSortedSet<JobAppointment> jobAppointments) {
         this.jobAppointments = jobAppointments;
     }
 
-    public SortedSet<IdentifierArchive> getArchivedIdentifiers() {
+    public RebuildableSortedSet<IdentifierArchive> getArchivedIdentifiers() {
         return archivedIdentifiers;
     }
 
-    public void setArchivedIdentifiers(SortedSet<IdentifierArchive> archivedIdentifiers) {
+    public void setArchivedIdentifiers(RebuildableSortedSet<IdentifierArchive> archivedIdentifiers) {
         this.archivedIdentifiers = archivedIdentifiers;
     }
 
-    public SortedSet<PersonRoleArchive> getArchivedRoles() {
+    public RebuildableSortedSet<PersonRoleArchive> getArchivedRoles() {
         return archivedRoles;
     }
 
-    public void setArchivedRoles(SortedSet<PersonRoleArchive> archivedRoles) {
+    public void setArchivedRoles(RebuildableSortedSet<PersonRoleArchive> archivedRoles) {
         this.archivedRoles = archivedRoles;
     }
 }

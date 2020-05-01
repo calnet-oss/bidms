@@ -89,7 +89,7 @@ public class ValidateableEventListenerConfigurer {
         @Override
         public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
             if (event.getEntity() instanceof ValidateOnFlush) {
-                log.debug("calling validator due to flush event on entity " + event.getEntity());
+                log.trace("calling validator due to flush event on entity " + event.getEntity());
                 ((ValidateOnFlush) event.getEntity()).validateOnFlush();
             }
         }
@@ -101,7 +101,7 @@ public class ValidateableEventListenerConfigurer {
         @Override
         public void onPostLoad(PostLoadEvent event) {
             if (event.getEntity() instanceof ValidateOnLoad) {
-                log.debug("calling validator due to load event on entity " + event.getEntity());
+                log.trace("calling validator due to load event on entity " + event.getEntity());
                 ((ValidateOnLoad) event.getEntity()).validateOnLoad();
             }
         }

@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app
 
+import edu.berkeley.bidms.app.orm.component.ValidateableEventListenerConfigurer
 import edu.berkeley.bidms.app.springsecurity.encoder.DigestAuthPasswordEncoder
 import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialService
 import org.springframework.boot.SpringBootConfiguration
@@ -33,6 +34,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurationPackage
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
+
+import javax.persistence.EntityManagerFactory
 
 @AutoConfigurationPackage
 @SpringBootConfiguration
@@ -48,5 +51,15 @@ class RegistryModelTestConfiguration {
                         "bcrypt", ["bcrypt": new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH)]
                 )
         )
+    }
+
+    /*@Bean
+    EntityMangerBuilderConfigurer getEntityManagerBuilderConfigurer(EntityManagerFactory entityManagerFactory) {
+        return new EntityMangerBuilderConfigurer(entityManagerFactory);
+    }*/
+
+    @Bean
+    ValidateableEventListenerConfigurer getValidateableEventConfigurer(EntityManagerFactory entityManagerFactory) {
+        return new ValidateableEventListenerConfigurer(entityManagerFactory);
     }
 }

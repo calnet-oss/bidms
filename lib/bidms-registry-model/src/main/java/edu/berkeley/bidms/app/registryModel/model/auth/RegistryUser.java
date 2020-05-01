@@ -26,9 +26,11 @@
  */
 package edu.berkeley.bidms.app.registryModel.model.auth;
 
-import edu.berkeley.bidms.registryModel.hibernate.usertype.RegistrySortedSetType;
+import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
+import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.springsecurity.api.user.CredentialsAwareUser;
+import org.hibernate.annotations.CollectionType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,7 +43,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import java.io.Serializable;
-import java.util.SortedSet;
 
 /**
  * A {@link RegistryUser} is a service account stored internally in the
@@ -91,6 +92,7 @@ public class RegistryUser implements Serializable, Comparable<RegistryUser>, Cre
 
     // TODO: deprecated salt column needs to be removed from RegistryUser table
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToMany
     @JoinTable(
             name = "RegistryUserRole",
@@ -98,7 +100,8 @@ public class RegistryUser implements Serializable, Comparable<RegistryUser>, Cre
             inverseJoinColumns = @JoinColumn(name = "registryRoleId")
     )
     @OrderBy("authority")
-    private SortedSet<RegistryRole> roles = RegistrySortedSetType.newSet(RegistryRole.class);
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.auth.RegistryRoleCollectionType")
+    private RebuildableSortedSet<RegistryRole> roles = new RebuildableTreeSet<>();
 
     @Override
     public String toString() {
@@ -204,11 +207,11 @@ public class RegistryUser implements Serializable, Comparable<RegistryUser>, Cre
         this.passwordExpired = passwordExpired;
     }
 
-    public SortedSet<RegistryRole> getRoles() {
+    public RebuildableSortedSet<RegistryRole> getRoles() {
         return roles;
     }
 
-    public void setRoles(SortedSet<RegistryRole> roles) {
+    public void setRoles(RebuildableSortedSet<RegistryRole> roles) {
         this.roles = roles;
     }
 

@@ -28,11 +28,13 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import edu.berkeley.bidms.app.registryModel.model.validator.PersonRoleArchiveValidator;
+import edu.berkeley.bidms.app.registryModel.model.validator.PersonRoleArchiveOnFlushValidator;
+import edu.berkeley.bidms.app.registryModel.model.validator.PersonRoleArchiveOnLoadValidator;
+import edu.berkeley.bidms.orm.event.ValidateOnFlush;
+import edu.berkeley.bidms.orm.event.ValidateOnLoad;
 import edu.berkeley.bidms.registryModel.util.DateUtil;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
+import org.springframework.validation.Validator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,14 +44,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.ValidationException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -62,7 +60,7 @@ import java.util.Objects;
 @JsonIgnoreProperties({"uid", "person", "roleCategory", "roleAsgnUniquePerCat", "endOfRoleGraceTimeUseOverrideIfLater"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "roleid"}))
 @Entity
-public class PersonRoleArchive implements Comparable<PersonRoleArchive> {
+public class PersonRoleArchive implements Comparable<PersonRoleArchive>, ValidateOnLoad, ValidateOnFlush {
 
     protected PersonRoleArchive() {
     }
@@ -131,17 +129,15 @@ public class PersonRoleArchive implements Comparable<PersonRoleArchive> {
     // "ON PersonRoleArchive(uid, roleCategoryId) WHERE
     // roleAsgnUniquePerCat = true".
 
-    @PostLoad
-    @PreUpdate
-    @PrePersist
-    protected void doValidation() {
-        DataBinder binder = new DataBinder(this);
-        binder.setValidator(new PersonRoleArchiveValidator());
-        binder.validate();
-        BindingResult result = binder.getBindingResult();
-        if (result.hasErrors()) {
-            throw new ValidationException("personRoleArchive " + getId() + " did not validate: " + result.getAllErrors().get(0).toString());
-        }
+    @Override
+    public Validator getValidatorForLoad() {
+        // will flip the in-grace/post-grace flags if necessary upon load
+        return new PersonRoleArchiveOnLoadValidator();
+    }
+
+    @Override
+    public Validator getValidatorForFlush() {
+        return new PersonRoleArchiveOnFlushValidator();
     }
 
     /**
@@ -312,6 +308,10 @@ public class PersonRoleArchive implements Comparable<PersonRoleArchive> {
         if (changed) notifyPerson();
     }
 
+    public void setRoleInGraceWithoutNotification(boolean roleInGrace) {
+        this.roleInGrace = roleInGrace;
+    }
+
     public boolean isRolePostGrace() {
         return rolePostGrace;
     }
@@ -320,6 +320,10 @@ public class PersonRoleArchive implements Comparable<PersonRoleArchive> {
         boolean changed = !Objects.equals(rolePostGrace, this.rolePostGrace);
         this.rolePostGrace = rolePostGrace;
         if (changed) notifyPerson();
+    }
+
+    public void setRolePostGraceWithoutNotification(boolean rolePostGrace) {
+        this.rolePostGrace = rolePostGrace;
     }
 
     public Date getTimeCreated() {
