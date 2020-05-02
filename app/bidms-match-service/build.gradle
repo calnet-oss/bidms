@@ -62,6 +62,7 @@ dependencies {
     //implementation pdep(rootProject.bidmsSpringSecurityApiDep)
     implementation pdep(rootProject.bidmsRegistryModelDep)
     implementation pdep(rootProject.bidmsCommonJsonDep)
+    implementation pdep(rootProject.bidmsCommonOrmDep)
 
     testImplementation 'com.h2database:h2'
 
