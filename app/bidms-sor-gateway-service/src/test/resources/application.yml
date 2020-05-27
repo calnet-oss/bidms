@@ -6,6 +6,15 @@ spring:
     password: sa
 
 bidms:
+  rest:
+    matchengine:
+      person:
+        url: http://notneeded
+    provision:
+      uid:
+        url: http://notneeded
+      new-uid:
+        url: http://notneeded
   sgs:
     sql-template-directory: file://${catalina.home}
     hash-executors:
