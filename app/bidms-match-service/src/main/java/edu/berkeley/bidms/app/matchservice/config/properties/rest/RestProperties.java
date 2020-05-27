@@ -24,26 +24,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.config.properties;
+package edu.berkeley.bidms.app.matchservice.config.properties.rest;
 
-public class RestEndpointConfigProperties {
+import javax.validation.constraints.NotNull;
 
-    private String username;
-    private String password;
+public class RestProperties {
+    @NotNull
+    private RestEndpointConfigProperties matchengine;
+    @NotNull
+    private RestEndpointConfigProperties provision;
 
-    public String getUsername() {
-        return username;
+    public RestEndpointConfigProperties getMatchengine() {
+        return matchengine;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setMatchengine(RestEndpointConfigProperties matchengine) {
+        this.matchengine = matchengine;
     }
 
-    public String getPassword() {
-        return password;
+    public RestEndpointConfigProperties getProvision() {
+        return provision;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setProvision(RestEndpointConfigProperties provision) {
+        this.provision = provision;
     }
 }

@@ -24,42 +24,30 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.config.properties;
+package edu.berkeley.bidms.app.matchservice.config.properties.rest;
 
-import edu.berkeley.bidms.app.matchservice.config.properties.rest.RestProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
-@Validated
-@Configuration
-@ConfigurationProperties(prefix = "bidms.matchservice")
-public class MatchServiceConfigProperties {
-    public static final String JMS_KEY = "bidms.matchservice.jms";
-    private Map<String, JmsEndpointConfigProperties> jms;
+public class RestEndpointConfigProperties {
 
-    public static final String REST_KEY = "bidms.matchservice.rest";
     @NotNull
-    private RestProperties rest;
+    private String username;
+    @NotNull
+    private String password;
 
-    public Map<String, JmsEndpointConfigProperties> getJms() {
-        return jms;
+    public String getUsername() {
+        return username;
     }
 
-    public void setJms(Map<String, JmsEndpointConfigProperties> jms) {
-        this.jms = jms;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    @Valid
-    public RestProperties getRest() {
-        return rest;
+    public String getPassword() {
+        return password;
     }
 
-    public void setRest(@Valid RestProperties rest) {
-        this.rest = rest;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
