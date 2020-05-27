@@ -24,23 +24,21 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
-version = versions.bidmsAppCommonConf
+import javax.validation.constraints.NotNull;
+import java.net.URI;
 
-dependencies {
-    /*implementation('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+public class RestEndpointConfigProperties {
+
+    @NotNull
+    private URI url;
+
+    public URI getUrl() {
+        return url;
     }
-    compileOnly 'javax.servlet:javax.servlet-api'*/
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    public void setUrl(URI url) {
+        this.url = url;
     }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }

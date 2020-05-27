@@ -24,19 +24,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.common.config.properties;
+package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
-import java.net.URI;
+import javax.validation.constraints.NotNull;
 
-public class RestEndpointConfigProperties {
+public class RestMatchEngineProperties {
+    @NotNull
+    private RestEndpointConfigProperties person;
 
-    private URI url;
-
-    public URI getUrl() {
-        return url;
+    public RestEndpointConfigProperties getPerson() {
+        return person;
     }
 
-    public void setUrl(URI url) {
-        this.url = url;
+    public void setPerson(RestEndpointConfigProperties person) {
+        this.person = person;
     }
 }

@@ -24,23 +24,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.app.common.config.properties.rest;
 
-version = versions.bidmsAppCommonConf
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties;
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties;
 
-dependencies {
-    /*implementation('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+import javax.validation.constraints.NotNull;
+
+public class RestProperties {
+
+    @NotNull
+    private RestMatchEngineProperties matchengine;
+    @NotNull
+    private RestProvisionProperties provision;
+
+    public RestMatchEngineProperties getMatchengine() {
+        return matchengine;
     }
-    compileOnly 'javax.servlet:javax.servlet-api'*/
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    public void setMatchengine(RestMatchEngineProperties matchengine) {
+        this.matchengine = matchengine;
     }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+
+    public RestProvisionProperties getProvision() {
+        return provision;
+    }
+
+    public void setProvision(RestProvisionProperties provision) {
+        this.provision = provision;
+    }
 }
