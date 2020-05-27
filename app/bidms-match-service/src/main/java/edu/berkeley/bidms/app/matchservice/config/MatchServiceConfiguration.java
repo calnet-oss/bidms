@@ -32,46 +32,16 @@ import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigP
 import edu.berkeley.bidms.app.matchservice.jms.ProvisionJmsTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate;
+import edu.berkeley.bidms.common.rest.RestClientUtil;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.auth.DigestScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.DigestUtils;
-import org.springframework.web.client.DefaultResponseErrorHandler;
 
 import javax.jms.ConnectionFactory;
-import javax.net.ssl.SSLContext;
-import java.io.IOException;
 import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.time.Duration;
-import java.util.Date;
 
 @SpringBootConfiguration
 public class MatchServiceConfiguration {
@@ -114,11 +84,7 @@ public class MatchServiceConfiguration {
 
     @Bean
     public MatchEngineRestTemplate getMatchEngineRestTemplate(RestTemplateBuilder builder) {
-        URI matchEngineRestUrl = getMatchEngineRestUrl();
-        HttpHost target = new HttpHost(matchEngineRestUrl.getHost(), matchEngineRestUrl.getPort(), matchEngineRestUrl.getScheme());
-        return getRestTemplateBuilder(builder, getHttpCredentialsProvider(target, getMatchEngineRestUsername(), getMatchEngineRestPassword()), getBasicAuthCache(target))
-                .basicAuthentication(getMatchEngineRestUsername(), getMatchEngineRestPassword())
-                .configure(new MatchEngineRestTemplate());
+        return RestClientUtil.configureSslBasicAuthRestTemplate(builder, getMatchEngineRestUrl(), getMatchEngineRestUsername(), getMatchEngineRestPassword(), new MatchEngineRestTemplate());
     }
 
     public URI getProvisionUidRestUrl() {
@@ -162,11 +128,7 @@ public class MatchServiceConfiguration {
 
     @Bean
     public ProvisionRestTemplate getProvisionRestTemplate(RestTemplateBuilder builder) {
-        URI provisionRestUrl = getProvisionUidRestUrl();
-        HttpHost target = new HttpHost(provisionRestUrl.getHost(), provisionRestUrl.getPort(), provisionRestUrl.getScheme());
-        AuthCache authCache = getDigestAuthCache(target, "Registry Realm", getProvisionRestPassword());
-        return getRestTemplateBuilder(builder, getHttpCredentialsProvider(target, getProvisonRestUsername(), getProvisionRestPassword()), authCache)
-                .configure(new ProvisionRestTemplate());
+        return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getProvisionUidRestUrl(), getProvisonRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
     }
 
     @Bean
@@ -205,82 +167,5 @@ public class MatchServiceConfiguration {
     @Bean
     public ProvisionJmsTemplate getProvisionJmsTemplate(ConnectionFactory jmsConnectionFactory) {
         return new ProvisionJmsTemplate(jmsConnectionFactory);
-    }
-
-    private ClientHttpRequestFactory getSslClientHttpRequestFactory(CredentialsProvider credentialsProvider, AuthCache authCache) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-        if (bidmsConfigProperties.getRestClient() != null && bidmsConfigProperties.getRestClient().getTrustStore() != null) {
-            sslContextBuilder = sslContextBuilder.loadTrustMaterial(
-                    bidmsConfigProperties.getRestClient().getTrustStore().getURL(),
-                    bidmsConfigProperties.getRestClient().getTrustStorePassword().toCharArray()
-            );
-        }
-        SSLContext sslContext = sslContextBuilder.build();
-        SSLConnectionSocketFactory socketFactory =
-                new SSLConnectionSocketFactory(sslContext);
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLSocketFactory(socketFactory)
-                .setDefaultCredentialsProvider(credentialsProvider)
-                .build();
-        return new HttpComponentsClientHttpRequestFactory(httpClient) {
-            @Override
-            protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-                HttpClientContext context = HttpClientContext.create();
-                context.setAuthCache(authCache);
-                context.setCredentialsProvider(credentialsProvider);
-                return context;
-            }
-        };
-    }
-
-    private CredentialsProvider getHttpCredentialsProvider(HttpHost targetHost, String username, String password) {
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials(username, password));
-        return credsProvider;
-    }
-
-    private AuthCache getBasicAuthCache(HttpHost target) {
-        AuthCache authCache = new BasicAuthCache();
-        BasicScheme basicScheme = new BasicScheme();
-        authCache.put(target, basicScheme);
-        return authCache;
-    }
-
-    private AuthCache getDigestAuthCache(HttpHost target, String realm, String password) {
-        AuthCache authCache = new BasicAuthCache();
-        DigestScheme digestAuth = new DigestScheme();
-        digestAuth.overrideParamter("realm", realm);
-        digestAuth.overrideParamter("nonce", createNonce(password));
-        authCache.put(target, digestAuth);
-        return authCache;
-    }
-
-    private static String createNonce(String password) {
-        // format of nonce is:
-        // base64(expirationTime + ":" + md5Hex(expirationTime + ":" + key))
-        Long expirationTime = new Date().getTime() + (60 * 1000); // 1 minute
-        byte[] digest = DigestUtils.md5Digest((expirationTime + ":" + password).getBytes());
-        return Base64.encodeBase64String((expirationTime + ":" + Hex.encodeHexString(digest)).getBytes());
-    }
-
-    private RestTemplateBuilder getRestTemplateBuilder(RestTemplateBuilder builder, CredentialsProvider credentialsProvider, AuthCache authCache) {
-        return builder
-                .requestFactory(() -> {
-                    try {
-                        return getSslClientHttpRequestFactory(credentialsProvider, authCache);
-                    } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .setConnectTimeout(Duration.ofSeconds(10))
-                .setReadTimeout(Duration.ofSeconds(10))
-                .errorHandler(new DefaultResponseErrorHandler() {
-                    @Override
-                    public void handleError(ClientHttpResponse response) throws IOException {
-                        // no-op: caller of restTemplate methods checks for http response error codes
-                    }
-                });
     }
 }
