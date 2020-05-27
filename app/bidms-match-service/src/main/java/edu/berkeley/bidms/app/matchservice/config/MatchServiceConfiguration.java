@@ -55,31 +55,15 @@ public class MatchServiceConfiguration {
     }
 
     public URI getMatchEngineRestUrl() {
-        if (bidmsConfigProperties.getRest() == null
-                || !bidmsConfigProperties.getRest().containsKey("matchengine")
-                || !bidmsConfigProperties.getRest().get("matchengine").containsKey("person")
-                || bidmsConfigProperties.getRest().get("matchengine").get("person").getUrl() == null) {
-            throw new RuntimeException(BidmsConfigProperties.REST_KEY + ".matchengine.person.url is not configured");
-        }
-        return bidmsConfigProperties.getRest().get("matchengine").get("person").getUrl();
+        return bidmsConfigProperties.getMatchEngineRestUrl();
     }
 
     private String getMatchEngineRestUsername() {
-        if (matchServiceConfigProperties.getRest() == null ||
-                !matchServiceConfigProperties.getRest().containsKey("matchengine") ||
-                matchServiceConfigProperties.getRest().get("matchengine").getUsername() == null) {
-            throw new RuntimeException(MatchServiceConfigProperties.REST_KEY + ".matchengine.username is not configured");
-        }
-        return matchServiceConfigProperties.getRest().get("matchengine").getUsername();
+        return matchServiceConfigProperties.getRest().getMatchengine().getUsername();
     }
 
     private String getMatchEngineRestPassword() {
-        if (matchServiceConfigProperties.getRest() == null ||
-                !matchServiceConfigProperties.getRest().containsKey("matchengine") ||
-                matchServiceConfigProperties.getRest().get("matchengine").getPassword() == null) {
-            throw new RuntimeException(MatchServiceConfigProperties.REST_KEY + ".matchengine.password is not configured");
-        }
-        return matchServiceConfigProperties.getRest().get("matchengine").getPassword();
+        return matchServiceConfigProperties.getRest().getMatchengine().getPassword();
     }
 
     @Bean
@@ -88,42 +72,19 @@ public class MatchServiceConfiguration {
     }
 
     public URI getProvisionUidRestUrl() {
-        if (bidmsConfigProperties.getRest() == null
-                || !bidmsConfigProperties.getRest().containsKey("provision")
-                || !bidmsConfigProperties.getRest().get("provision").containsKey("uid")
-                || bidmsConfigProperties.getRest().get("provision").get("uid").getUrl() == null) {
-            throw new RuntimeException(BidmsConfigProperties.REST_KEY + ".provision.uid.url is not configured");
-        }
-        return bidmsConfigProperties.getRest().get("provision").get("uid").getUrl();
+        return bidmsConfigProperties.getProvisionUidRestUrl();
     }
 
     public URI getProvisionNewUidRestUrl() {
-        if (bidmsConfigProperties.getRest() == null
-                || !bidmsConfigProperties.getRest().containsKey("provision")
-                || !bidmsConfigProperties.getRest().get("provision").containsKey("new-uid")
-                || bidmsConfigProperties.getRest().get("provision").get("new-uid").getUrl() == null) {
-            throw new RuntimeException(BidmsConfigProperties.REST_KEY + ".provision.new-uid.url is not configured");
-        }
-        return bidmsConfigProperties.getRest().get("provision").get("new-uid").getUrl();
+        return bidmsConfigProperties.getProvisionNewUidRestUrl();
     }
 
-
     private String getProvisonRestUsername() {
-        if (matchServiceConfigProperties.getRest() == null ||
-                !matchServiceConfigProperties.getRest().containsKey("provision") ||
-                matchServiceConfigProperties.getRest().get("provision").getUsername() == null) {
-            throw new RuntimeException(MatchServiceConfigProperties.REST_KEY + ".provision.username is not configured");
-        }
-        return matchServiceConfigProperties.getRest().get("provision").getUsername();
+        return matchServiceConfigProperties.getRest().getProvision().getUsername();
     }
 
     private String getProvisionRestPassword() {
-        if (matchServiceConfigProperties.getRest() == null ||
-                !matchServiceConfigProperties.getRest().containsKey("provision") ||
-                matchServiceConfigProperties.getRest().get("provision").getPassword() == null) {
-            throw new RuntimeException(MatchServiceConfigProperties.REST_KEY + ".provision.password is not configured");
-        }
-        return matchServiceConfigProperties.getRest().get("provision").getPassword();
+        return matchServiceConfigProperties.getRest().getProvision().getPassword();
     }
 
     @Bean

@@ -26,11 +26,18 @@
  */
 package edu.berkeley.bidms.app.common.config.properties;
 
+import edu.berkeley.bidms.app.common.config.properties.rest.RestClientConfigProperties;
+import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.Map;
 
+@Validated
 @Configuration
 @ConfigurationProperties(prefix = "bidms")
 public class BidmsConfigProperties {
@@ -38,25 +45,35 @@ public class BidmsConfigProperties {
     private RestClientConfigProperties restClient;
 
     public static final String REST_KEY = "bidms.rest";
-    private Map<String, Map<String, RestEndpointConfigProperties>> rest;
+    @NotNull
+    private RestProperties rest;
 
     public static final String JMS_CONNECTIONS_KEY = "bidms.jms-connections";
     private Map<String, JmsConnectionConfigProperties> jmsConnections;
-
-    public RestClientConfigProperties getRestClient() {
-        return restClient;
-    }
 
     public void setRestClient(RestClientConfigProperties restClient) {
         this.restClient = restClient;
     }
 
-    public Map<String, Map<String, RestEndpointConfigProperties>> getRest() {
+    @Valid
+    public RestProperties getRest() {
         return rest;
     }
 
-    public void setRest(Map<String, Map<String, RestEndpointConfigProperties>> rest) {
+    public void setRest(@Valid RestProperties rest) {
         this.rest = rest;
+    }
+
+    public URI getMatchEngineRestUrl() {
+        return getRest().getMatchengine().getPerson().getUrl();
+    }
+
+    public URI getProvisionUidRestUrl() {
+        return getRest().getProvision().getUid().getUrl();
+    }
+
+    public URI getProvisionNewUidRestUrl() {
+        return getRest().getProvision().getNewUid().getUrl();
     }
 
     public Map<String, JmsConnectionConfigProperties> getJmsConnections() {

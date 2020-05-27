@@ -8,5 +8,14 @@ logging:
   level:
     edu.berkeley.bidms: TRACE
 bidms:
+  rest:
+    matchengine:
+      person:
+        url: http://notneeded
+    provision:
+      uid:
+        url: http://notneeded
+      new-uid:
+        url: http://notneeded
   matchengine:
     match-config: classpath:/TestMatchConfig.groovy

@@ -26,11 +26,16 @@
  */
 package edu.berkeley.bidms.app.matchservice.config.properties;
 
+import edu.berkeley.bidms.app.matchservice.config.properties.rest.RestProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
+@Validated
 @Configuration
 @ConfigurationProperties(prefix = "bidms.matchservice")
 public class MatchServiceConfigProperties {
@@ -38,7 +43,8 @@ public class MatchServiceConfigProperties {
     private Map<String, JmsEndpointConfigProperties> jms;
 
     public static final String REST_KEY = "bidms.matchservice.rest";
-    private Map<String, RestEndpointConfigProperties> rest;
+    @NotNull
+    private RestProperties rest;
 
     public Map<String, JmsEndpointConfigProperties> getJms() {
         return jms;
@@ -48,11 +54,12 @@ public class MatchServiceConfigProperties {
         this.jms = jms;
     }
 
-    public Map<String, RestEndpointConfigProperties> getRest() {
+    @Valid
+    public RestProperties getRest() {
         return rest;
     }
 
-    public void setRest(Map<String, RestEndpointConfigProperties> rest) {
+    public void setRest(@Valid RestProperties rest) {
         this.rest = rest;
     }
 }

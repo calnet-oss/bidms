@@ -27,7 +27,10 @@
 package edu.berkeley.bidms.app
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties
-import edu.berkeley.bidms.app.common.config.properties.RestEndpointConfigProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestEndpointConfigProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties
 import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigProperties
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate
@@ -35,6 +38,7 @@ import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage
 import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.DefaultResponseErrorHandler
@@ -46,19 +50,20 @@ import java.time.Duration
 class MatchServiceTestConfiguration {
 
     @Bean
-    MatchServiceConfiguration getMatchServiceConfiguration() {
-        return new MatchServiceConfiguration(
-                new BidmsConfigProperties(rest: [
-                        matchengine: [
-                                person: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-engine/person"))
-                        ],
-                        provision  : [
-                                uid      : new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/provision/save")),
-                                "new-uid": new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/newUid/save"))
-                        ]
-                ]),
-                new MatchServiceConfigProperties()
-        )
+    MatchServiceConfiguration getMatchServiceConfiguration(ApplicationContext applicationContext) {
+        BidmsConfigProperties bidmsConfigProperties = new BidmsConfigProperties(rest: new RestProperties(
+                matchengine: new RestMatchEngineProperties(
+                        person: new RestEndpointConfigProperties(
+                                url: new URI("http://localhost:8080/match-engine/person")
+                        )
+                ),
+                provision: new RestProvisionProperties(
+
+                        uid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/provision/save")),
+                        newUid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/newUid/save"))
+                )
+        ))
+        return new MatchServiceConfiguration(bidmsConfigProperties, new MatchServiceConfigProperties())
     }
 
     @Bean

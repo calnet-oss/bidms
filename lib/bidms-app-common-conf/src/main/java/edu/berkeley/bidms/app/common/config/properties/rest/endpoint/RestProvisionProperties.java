@@ -24,28 +24,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.common.config.properties;
+package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
-import org.springframework.core.io.Resource;
+import javax.validation.constraints.NotNull;
 
-public class RestClientConfigProperties {
+public class RestProvisionProperties {
+    @NotNull
+    private RestEndpointConfigProperties newUid;
+    @NotNull
+    private RestEndpointConfigProperties uid;
 
-    private Resource trustStore;
-    private String trustStorePassword;
-
-    public Resource getTrustStore() {
-        return trustStore;
+    public RestEndpointConfigProperties getNewUid() {
+        return newUid;
     }
 
-    public void setTrustStore(Resource trustStore) {
-        this.trustStore = trustStore;
+    public void setNewUid(RestEndpointConfigProperties newUid) {
+        this.newUid = newUid;
     }
 
-    public String getTrustStorePassword() {
-        return trustStorePassword;
+    public RestEndpointConfigProperties getUid() {
+        return uid;
     }
 
-    public void setTrustStorePassword(String trustStorePassword) {
-        this.trustStorePassword = trustStorePassword;
+    public void setUid(RestEndpointConfigProperties uid) {
+        this.uid = uid;
     }
 }

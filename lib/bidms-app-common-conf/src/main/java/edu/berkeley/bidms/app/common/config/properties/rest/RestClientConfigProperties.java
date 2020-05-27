@@ -24,26 +24,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.config.properties;
+package edu.berkeley.bidms.app.common.config.properties.rest;
 
-public class RestEndpointConfigProperties {
+import org.springframework.core.io.Resource;
 
-    private String username;
-    private String password;
+public class RestClientConfigProperties {
 
-    public String getUsername() {
-        return username;
+    private Resource trustStore;
+    private String trustStorePassword;
+
+    public Resource getTrustStore() {
+        return trustStore;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setTrustStore(Resource trustStore) {
+        this.trustStore = trustStore;
     }
 
-    public String getPassword() {
-        return password;
+    public String getTrustStorePassword() {
+        return trustStorePassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setTrustStorePassword(String trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
     }
 }
