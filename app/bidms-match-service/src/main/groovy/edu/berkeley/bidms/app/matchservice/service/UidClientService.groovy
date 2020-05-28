@@ -26,14 +26,14 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
-import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestOperations
 import edu.berkeley.bidms.app.registryModel.model.Person
+import edu.berkeley.bidms.app.registryModel.model.PersonSorObjectsJson
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository
+import edu.berkeley.bidms.app.restclient.service.ProvisionRestClientService
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -43,58 +43,66 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = Exception)
 class UidClientService {
 
-    MatchServiceConfiguration matchServiceConfiguration
     ProvisionRestOperations restTemplate
+    ProvisionRestClientService provisionRestClientService
+    PersonSorObjectsJsonRepository personSorObjectsJsonRepository
 
-    UidClientService(MatchServiceConfiguration matchServiceConfiguration, ProvisionRestOperations restTemplate) {
-        this.matchServiceConfiguration = matchServiceConfiguration
+    UidClientService(ProvisionRestOperations restTemplate, ProvisionRestClientService provisionRestClientService, PersonSorObjectsJsonRepository personSorObjectsJsonRepository) {
         this.restTemplate = restTemplate
+        this.provisionRestClientService = provisionRestClientService
+        this.personSorObjectsJsonRepository = personSorObjectsJsonRepository
     }
 
     /**
      * Makes a REST call to the Registry Provisioning to provision the given person
+     *
      * @param Person to provision
-     * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
     void provisionUid(Person person, boolean synchronousDownstream = true) {
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        String url = "${matchServiceConfiguration.restProvisionUidUrl.toString()}?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
-        ResponseEntity<Map> response = restTemplate.exchange(
-                RequestEntity
-                        .post(new URI(url))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(""),
-                Map
-        )
+        ResponseEntity<Map> response = provisionRestClientService.provisionUid(restTemplate, person.uid, synchronousDownstream)
         if (response.statusCode != HttpStatus.OK) {
             log.error("Error provisioning existing person ${person.uid}, response code: ${response.statusCode}:${response.body}")
+            // Since the reprovision REST call failed, we need to mark the forceProvision flag directly in the database so the uid is reprovisioned later.
+            try {
+                markForReprovision(person.uid)
+            }
+            catch (Exception e) {
+                log.error("Couldn't set the forceProvision flag to true for uid ${person.uid} because an exception occurred: ${e.message}")
+            }
+        } else {
+            log.debug "Successfully provisioned exising person ${person.uid}"
         }
-        log.debug "Successfully provisioned exising person ${person.uid}"
     }
 
     /**
      * Makes a REST call to the Registry Provisioning to assign new UID to person and provision
+     *
      * @param sorObject the SORObject to pass to Registry Provisioning
-     * @throws RuntimeException if response status is not {@link HttpStatus#OK}
      */
     String provisionNewUid(SORObject sorObject, boolean synchronousDownstream = true) {
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        String url = "${matchServiceConfiguration.restProvisionNewUidUrl.toString()}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
-        ResponseEntity<Map> response = restTemplate.exchange(
-                RequestEntity
-                        .post(new URI(url))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(""),
-                Map
-        )
+        if (sorObject?.id == null) {
+            throw new IllegalArgumentException("sorObject.id cannot be null")
+        }
+        ResponseEntity<Map> response = provisionRestClientService.provisionNewUid(restTemplate, sorObject.id, synchronousDownstream)
         if (response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
             return null
         } else if (!response.body?.provisioningSuccessful) {
             if (response.body?.provisioningErrorMessage) {
-                log.warn "Error provisioning new sorObject $sorObject.id for person ${response.body.uid}: ${response.body.provisioningErrorMessage}"
+                String uid = response.body.uid
+                log.warn "Error provisioning new sorObject $sorObject.id for person $uid: ${response.body.provisioningErrorMessage}"
+                if (uid) {
+                    // Since the reprovision REST call failed, we need to mark the forceProvision flag directly in the database so the uid is reprovisioned later.
+                    try {
+                        markForReprovision(uid)
+                    }
+                    catch (Exception e) {
+                        log.error("Couldn't set the forceProvision flag to true for uid $uid because an exception occurred: ${e.message}")
+
+                    }
+                }
             } else {
                 log.warn "Error provisioning new sorObject $sorObject.id: ${response.body}"
             }
@@ -102,6 +110,25 @@ class UidClientService {
         } else {
             log.debug "Successfully provisioned new sorObject sorObjectId=$response.body.sorObjectId, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} for person with new uid ${response.body.uid}"
             return response.body.uid
+        }
+    }
+
+    private static enum MarkForReprovisionResult {
+        MARKED, MISSING, ALREADY_MARKED
+    }
+
+    private MarkForReprovisionResult markForReprovision(String uid) {
+        PersonSorObjectsJson personSorObjectsJson = personSorObjectsJsonRepository.get(uid);
+        if (!personSorObjectsJson) {
+            log.error("Couldn't set the forceProvision flag to true for uid $uid because there is no PersonSorObjectsJson row for this uid.")
+            return MarkForReprovisionResult.MISSING
+        }
+        if (!personSorObjectsJson.forceProvision) {
+            personSorObjectsJson.forceProvision = true;
+            personSorObjectsJsonRepository.saveAndFlush(personSorObjectsJson)
+            return MarkForReprovisionResult.MARKED
+        } else {
+            return MarkForReprovisionResult.ALREADY_MARKED
         }
     }
 }

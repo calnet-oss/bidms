@@ -51,8 +51,8 @@ import java.time.Duration
 class MatchServiceTestConfiguration {
 
     @Bean
-    MatchServiceConfiguration getMatchServiceConfiguration(ApplicationContext applicationContext) {
-        BidmsConfigProperties bidmsConfigProperties = new BidmsConfigProperties(rest: new RestProperties(
+    BidmsConfigProperties getBidmsConfigProperties() {
+        return new BidmsConfigProperties(rest: new RestProperties(
                 matchengine: new RestMatchEngineProperties(
                         baseUrl: new URI("http://localhost:8080/match-engine"),
                         person: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-engine/person"))
@@ -68,6 +68,10 @@ class MatchServiceTestConfiguration {
 
                 )
         ))
+    }
+
+    @Bean
+    MatchServiceConfiguration getMatchServiceConfiguration(BidmsConfigProperties bidmsConfigProperties) {
         return new MatchServiceConfiguration(bidmsConfigProperties, new MatchServiceConfigProperties())
     }
 

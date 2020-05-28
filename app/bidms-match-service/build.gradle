@@ -61,6 +61,7 @@ dependencies {
     implementation pdep(rootProject.bidmsRegistryModelDep)
     implementation pdep(rootProject.bidmsCommonJsonDep)
     implementation pdep(rootProject.bidmsCommonOrmDep)
+    implementation pdep(rootProject.bidmsRestClientDep)
 
     testImplementation 'com.h2database:h2'
 

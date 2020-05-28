@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
-
+import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties
 import edu.berkeley.bidms.app.matchservice.PersonExactMatch
 import edu.berkeley.bidms.app.matchservice.PersonExistingMatch
 import edu.berkeley.bidms.app.matchservice.PersonNoMatch
@@ -36,6 +36,7 @@ import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate
 import edu.berkeley.bidms.app.matchservice.testutils.TimeoutResponseCreator
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.restclient.service.MatchEngineRestClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -57,8 +58,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<MatchClientService>, DomainUnitTest<Person>*/ {
+class MatchClientServiceSpec extends Specification {
 
+    @Autowired
+    BidmsConfigProperties bidmsConfigProperties
     @Autowired
     MatchServiceConfiguration matchServiceConfiguration
     @Autowired
@@ -66,10 +69,12 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     @Autowired
     PersonRepository personRepository
 
+    MatchEngineRestClientService matchEngineRestClientService
     MatchClientService service
 
     def setup() {
-        this.service = new MatchClientService(matchServiceConfiguration, restTemplate, personRepository)
+        this.matchEngineRestClientService = new MatchEngineRestClientService(bidmsConfigProperties)
+        this.service = new MatchClientService(restTemplate, matchEngineRestClientService, personRepository)
         createPeople()
     }
 

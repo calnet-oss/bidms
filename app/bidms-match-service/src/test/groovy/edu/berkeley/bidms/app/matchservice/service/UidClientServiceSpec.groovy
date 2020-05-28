@@ -26,11 +26,14 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
+import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties
 import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate
 import edu.berkeley.bidms.app.matchservice.testutils.TimeoutResponseCreator
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository
+import edu.berkeley.bidms.app.restclient.service.ProvisionRestClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -52,21 +55,28 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @DataJpaTest
 class UidClientServiceSpec extends Specification {
 
-    UidClientService service
+    @Autowired
+    BidmsConfigProperties bidmsConfigProperties
     @Autowired
     MatchServiceConfiguration matchServiceConfiguration
     @Autowired
     ProvisionRestTemplate restTemplate
+    @Autowired
+    PersonSorObjectsJsonRepository personSorObjectsJsonRepository
+
+    ProvisionRestClientService provisionRestClientService
+    UidClientService service
 
     def setup() {
-        this.service = new UidClientService(matchServiceConfiguration, restTemplate)
+        this.provisionRestClientService = new ProvisionRestClientService(bidmsConfigProperties)
+        this.service = new UidClientService(restTemplate, provisionRestClientService, personSorObjectsJsonRepository)
     }
 
     @Unroll
     void "provision a new uid and #description and return a success"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        SORObject sorObject = new SORObject()
+        SORObject sorObject = new SORObject(id: 1)
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
@@ -88,7 +98,7 @@ class UidClientServiceSpec extends Specification {
     void "provisioning a new uid server times out and exception is thrown"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        SORObject sorObject = new SORObject()
+        SORObject sorObject = new SORObject(id: 1)
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))

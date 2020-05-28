@@ -32,14 +32,12 @@ import edu.berkeley.bidms.app.matchservice.PersonMatch
 import edu.berkeley.bidms.app.matchservice.PersonNoMatch
 import edu.berkeley.bidms.app.matchservice.PersonPartialMatch
 import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
-import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestOperations
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.restclient.service.MatchEngineRestClientService
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -49,13 +47,13 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class MatchClientService {
 
-    MatchServiceConfiguration matchServiceConfiguration
     MatchEngineRestOperations restTemplate
+    MatchEngineRestClientService matchEngineRestClientService
     PersonRepository personRepository
 
-    MatchClientService(MatchServiceConfiguration matchServiceConfiguration, MatchEngineRestOperations restTemplate, PersonRepository personRepository) {
-        this.matchServiceConfiguration = matchServiceConfiguration
+    MatchClientService(MatchEngineRestOperations restTemplate, MatchEngineRestClientService matchEngineRestClientService, PersonRepository personRepository) {
         this.restTemplate = restTemplate
+        this.matchEngineRestClientService = matchEngineRestClientService
         this.personRepository = personRepository
     }
 
@@ -73,14 +71,7 @@ class MatchClientService {
      */
     PersonMatch match(Map<String, Object> sorKeyData) {
         Map matchInputData = buildMatchInputData(sorKeyData)
-        ResponseEntity<Map> response = restTemplate.exchange(
-                RequestEntity
-                        .post(matchServiceConfiguration.getRestMatchEnginePersonUrl())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(matchInputData),
-                Map
-        )
+        ResponseEntity<Map> response = matchEngineRestClientService.match(restTemplate, matchInputData)
         // The difference between OK and FOUND (I think) is that OK
         // indicates the SORObject matches up to an existing uid, where
         // as FOUND indicates the SORObject is already matched.  See
