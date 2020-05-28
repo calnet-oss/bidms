@@ -8,12 +8,18 @@ spring:
 bidms:
   rest:
     matchengine:
+      baseUrl: http://notneeded
       person:
         url: http://notneeded
     provision:
+      baseUrl: http://notneeded
       uid:
         url: http://notneeded
       new-uid:
+        url: http://notneeded
+    registry-service:
+      baseUrl: http://notneeded
+      identifiers:
         url: http://notneeded
   sgs:
     sql-template-directory: file://${catalina.home}
