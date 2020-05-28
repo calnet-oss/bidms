@@ -37,9 +37,6 @@ dependencies {
     compileOnly 'javax.servlet:javax.servlet-api'
     compileOnly 'javax.xml.bind:jaxb-api'
 
-    // Apache HTTP client to be used for building RestTemplates
-    implementation "org.apache.httpcomponents:httpclient"
-
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

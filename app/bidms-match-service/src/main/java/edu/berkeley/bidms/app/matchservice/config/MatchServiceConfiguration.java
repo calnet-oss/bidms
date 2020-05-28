@@ -32,7 +32,7 @@ import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigP
 import edu.berkeley.bidms.app.matchservice.jms.ProvisionJmsTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate;
-import edu.berkeley.bidms.common.rest.RestClientUtil;
+import edu.berkeley.bidms.restclient.util.RestClientUtil;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
