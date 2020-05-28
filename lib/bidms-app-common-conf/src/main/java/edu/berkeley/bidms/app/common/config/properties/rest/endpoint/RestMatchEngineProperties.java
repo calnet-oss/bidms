@@ -27,8 +27,9 @@
 package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
-public class RestMatchEngineProperties {
+public class RestMatchEngineProperties extends AbstractRestServiceProviderProperties {
     @NotNull
     private RestEndpointConfigProperties person;
 

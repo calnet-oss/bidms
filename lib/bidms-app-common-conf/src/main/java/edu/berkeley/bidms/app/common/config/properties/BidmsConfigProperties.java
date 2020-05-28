@@ -64,16 +64,16 @@ public class BidmsConfigProperties {
         this.rest = rest;
     }
 
-    public URI getMatchEngineRestUrl() {
-        return getRest().getMatchengine().getPerson().getUrl();
+    public URI getRestMatchEngineBaseUrl() {
+        return getRest().getMatchengine().getBaseUrl();
     }
 
-    public URI getProvisionUidRestUrl() {
-        return getRest().getProvision().getUid().getUrl();
+    public URI getRestProvisionBaseUrl() {
+        return getRest().getProvision().getBaseUrl();
     }
 
-    public URI getProvisionNewUidRestUrl() {
-        return getRest().getProvision().getNewUid().getUrl();
+    public URI getRestRegistryServiceBaseUrl() {
+        return getRest().getRegistryService().getBaseUrl();
     }
 
     public Map<String, JmsConnectionConfigProperties> getJmsConnections() {

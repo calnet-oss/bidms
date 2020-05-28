@@ -24,44 +24,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.common.config.properties.rest;
-
-import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties;
-import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties;
-import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestRegistryServiceProperties;
+package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
-public class RestProperties {
-
+public abstract class AbstractRestServiceProviderProperties {
     @NotNull
-    private RestMatchEngineProperties matchengine;
-    @NotNull
-    private RestProvisionProperties provision;
-    @NotNull
-    private RestRegistryServiceProperties registryService;
+    private URI baseUrl;
 
-    public RestMatchEngineProperties getMatchengine() {
-        return matchengine;
+    public URI getBaseUrl() {
+        return baseUrl;
     }
 
-    public void setMatchengine(RestMatchEngineProperties matchengine) {
-        this.matchengine = matchengine;
-    }
-
-    public RestProvisionProperties getProvision() {
-        return provision;
-    }
-
-    public void setProvision(RestProvisionProperties provision) {
-        this.provision = provision;
-    }
-
-    public RestRegistryServiceProperties getRegistryService() {
-        return registryService;
-    }
-
-    public void setRegistryService(RestRegistryServiceProperties registryService) {
-        this.registryService = registryService;
+    public void setBaseUrl(URI baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

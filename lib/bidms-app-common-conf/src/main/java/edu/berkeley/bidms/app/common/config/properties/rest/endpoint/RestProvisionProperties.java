@@ -28,7 +28,7 @@ package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
 import javax.validation.constraints.NotNull;
 
-public class RestProvisionProperties {
+public class RestProvisionProperties extends AbstractRestServiceProviderProperties {
     @NotNull
     private RestEndpointConfigProperties newUid;
     @NotNull
