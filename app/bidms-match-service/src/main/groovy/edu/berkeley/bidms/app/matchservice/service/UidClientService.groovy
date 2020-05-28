@@ -58,7 +58,7 @@ class UidClientService {
      */
     void provisionUid(Person person, boolean synchronousDownstream = true) {
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        String url = "${matchServiceConfiguration.provisionUidRestUrl.toString()}?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
+        String url = "${matchServiceConfiguration.restProvisionUidUrl.toString()}?uid=${person.uid}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
         ResponseEntity<Map> response = restTemplate.exchange(
                 RequestEntity
                         .post(new URI(url))
@@ -80,7 +80,7 @@ class UidClientService {
      */
     String provisionNewUid(SORObject sorObject, boolean synchronousDownstream = true) {
         // synchronousDownstream=true means synchronous downstream directory provisioning
-        String url = "${matchServiceConfiguration.provisionNewUidRestUrl.toString()}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
+        String url = "${matchServiceConfiguration.restProvisionNewUidUrl.toString()}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")
         ResponseEntity<Map> response = restTemplate.exchange(
                 RequestEntity
                         .post(new URI(url))

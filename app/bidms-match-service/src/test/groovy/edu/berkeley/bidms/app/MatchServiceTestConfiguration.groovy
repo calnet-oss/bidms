@@ -31,6 +31,7 @@ import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestEndpointConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestRegistryServiceProperties
 import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigProperties
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate
@@ -53,14 +54,18 @@ class MatchServiceTestConfiguration {
     MatchServiceConfiguration getMatchServiceConfiguration(ApplicationContext applicationContext) {
         BidmsConfigProperties bidmsConfigProperties = new BidmsConfigProperties(rest: new RestProperties(
                 matchengine: new RestMatchEngineProperties(
-                        person: new RestEndpointConfigProperties(
-                                url: new URI("http://localhost:8080/match-engine/person")
-                        )
+                        baseUrl: new URI("http://localhost:8080/match-engine"),
+                        person: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-engine/person"))
                 ),
                 provision: new RestProvisionProperties(
-
+                        baseUrl: new URI("http://localhost:8080/provisioning"),
                         uid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/provision/save")),
                         newUid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/newUid/save"))
+                ),
+                registryService: new RestRegistryServiceProperties(
+                        baseUrl: new URI("http://localhost:8080/registry-service"),
+                        identifiers: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/registry-service/identifiers"))
+
                 )
         ))
         return new MatchServiceConfiguration(bidmsConfigProperties, new MatchServiceConfigProperties())

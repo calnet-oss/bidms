@@ -122,7 +122,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         and: "match engine expectation"
         final mockMatchEngineServer = MockRestServiceServer.createServer((RestTemplate) matchClientService.restTemplate)
         mockMatchEngineServer
-                .expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+                .expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(JsonUtil.convertMapToJson([
                         systemOfRecord: "HR",
@@ -136,7 +136,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         and: "provisioning expectation"
         final mockProvisionServer = MockRestServiceServer.createServer((RestTemplate) uidClientService.restTemplate)
         mockProvisionServer
-                .expect(requestTo("${matchServiceConfiguration.provisionNewUidRestUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
+                .expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -164,7 +164,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
 
         and: "match engine expectation"
         final mockMatchEngineServer = MockRestServiceServer.createServer((RestTemplate) matchClientService.restTemplate)
-        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(JsonUtil.convertMapToJson([
                         systemOfRecord: "HR",
@@ -178,7 +178,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         and: "provision expectation"
         final mockProvisionServer = MockRestServiceServer.createServer((RestTemplate) uidClientService.restTemplate)
         mockProvisionServer
-                .expect(requestTo("${matchServiceConfiguration.provisionUidRestUrl}?uid=${person.uid}&synchronousDownstream=true"))
+                .expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -200,7 +200,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
 
         and: "match engine expectation"
         final mockMatchEngineServer = MockRestServiceServer.createServer((RestTemplate) matchClientService.restTemplate)
-        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(JsonUtil.convertMapToJson([
                         systemOfRecord: "HR",
@@ -248,7 +248,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
 
         and: "match engine expectation"
         final mockMatchEngineServer = MockRestServiceServer.createServer((RestTemplate) matchClientService.restTemplate)
-        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockMatchEngineServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(JsonUtil.convertMapToJson([
                         systemOfRecord: "HR",
@@ -262,7 +262,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         and: "provision expectation"
         final mockProvisionServer = MockRestServiceServer.createServer((RestTemplate) uidClientService.restTemplate)
         mockProvisionServer
-                .expect(requestTo("${matchServiceConfiguration.provisionUidRestUrl}?uid=002&synchronousDownstream=true"))
+                .expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=002&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))

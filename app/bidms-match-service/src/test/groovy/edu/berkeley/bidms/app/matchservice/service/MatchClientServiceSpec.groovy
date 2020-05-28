@@ -76,7 +76,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where there is no match"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -95,7 +95,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where there is no match and matchOnly flag is set true"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","matchOnly":true,"names":[{"givenName":"Pat","surName":"Stone","type":"official"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -113,7 +113,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where there result is an exact match"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -131,7 +131,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where there result is a partial match"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -150,7 +150,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where the result is an existing record"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -168,7 +168,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where it returns a INTERNAL_SERVER_ERROR"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -184,7 +184,7 @@ class MatchClientServiceSpec extends Specification /*implements ServiceUnitTest<
     void "test call to match engine where there match engine times out"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        mockServer.expect(requestTo(matchServiceConfiguration.matchEngineRestUrl))
+        mockServer.expect(requestTo(matchServiceConfiguration.restMatchEnginePersonUrl))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))

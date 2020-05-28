@@ -54,8 +54,8 @@ public class MatchServiceConfiguration {
         this.matchServiceConfigProperties = matchServiceConfigProperties;
     }
 
-    public URI getMatchEngineRestUrl() {
-        return bidmsConfigProperties.getMatchEngineRestUrl();
+    private URI getRestMatchEngineBaseUrl() {
+        return bidmsConfigProperties.getRestMatchEngineBaseUrl();
     }
 
     private String getMatchEngineRestUsername() {
@@ -66,20 +66,20 @@ public class MatchServiceConfiguration {
         return matchServiceConfigProperties.getRest().getMatchengine().getPassword();
     }
 
+    public URI getRestMatchEnginePersonUrl() {
+        return bidmsConfigProperties.getRest().getMatchengine().getPerson().getUrl();
+    }
+
     @Bean
     public MatchEngineRestTemplate getMatchEngineRestTemplate(RestTemplateBuilder builder) {
-        return RestClientUtil.configureSslBasicAuthRestTemplate(builder, getMatchEngineRestUrl(), getMatchEngineRestUsername(), getMatchEngineRestPassword(), new MatchEngineRestTemplate());
+        return RestClientUtil.configureSslBasicAuthRestTemplate(builder, getRestMatchEngineBaseUrl(), getMatchEngineRestUsername(), getMatchEngineRestPassword(), new MatchEngineRestTemplate());
     }
 
-    public URI getProvisionUidRestUrl() {
-        return bidmsConfigProperties.getProvisionUidRestUrl();
+    private URI getRestProvisionBaseUrl() {
+        return bidmsConfigProperties.getRestProvisionBaseUrl();
     }
 
-    public URI getProvisionNewUidRestUrl() {
-        return bidmsConfigProperties.getProvisionNewUidRestUrl();
-    }
-
-    private String getProvisonRestUsername() {
+    private String getProvisionRestUsername() {
         return matchServiceConfigProperties.getRest().getProvision().getUsername();
     }
 
@@ -87,9 +87,17 @@ public class MatchServiceConfiguration {
         return matchServiceConfigProperties.getRest().getProvision().getPassword();
     }
 
+    public URI getRestProvisionUidUrl() {
+        return bidmsConfigProperties.getRest().getProvision().getUid().getUrl();
+    }
+
+    public URI getRestProvisionNewUidUrl() {
+        return bidmsConfigProperties.getRest().getProvision().getNewUid().getUrl();
+    }
+
     @Bean
     public ProvisionRestTemplate getProvisionRestTemplate(RestTemplateBuilder builder) {
-        return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getProvisionUidRestUrl(), getProvisonRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
+        return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getRestProvisionBaseUrl(), getProvisionRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
     }
 
     @Bean

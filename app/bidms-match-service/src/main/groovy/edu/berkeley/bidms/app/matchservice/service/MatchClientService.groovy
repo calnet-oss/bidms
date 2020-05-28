@@ -75,7 +75,7 @@ class MatchClientService {
         Map matchInputData = buildMatchInputData(sorKeyData)
         ResponseEntity<Map> response = restTemplate.exchange(
                 RequestEntity
-                        .post(matchServiceConfiguration.getMatchEngineRestUrl())
+                        .post(matchServiceConfiguration.getRestMatchEnginePersonUrl())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(matchInputData),

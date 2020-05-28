@@ -67,7 +67,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
         SORObject sorObject = new SORObject()
-        mockServer.expect(requestTo("${matchServiceConfiguration.provisionNewUidRestUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
+        mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -89,7 +89,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
         SORObject sorObject = new SORObject()
-        mockServer.expect(requestTo("${matchServiceConfiguration.provisionNewUidRestUrl}?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
+        mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -106,7 +106,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
         Person person = new Person(uid: "1")
-        mockServer.expect(requestTo("${matchServiceConfiguration.provisionUidRestUrl}?uid=${person.uid}&synchronousDownstream=true"))
+        mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
@@ -123,7 +123,7 @@ class UidClientServiceSpec extends Specification {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
         Person person = new Person(uid: "1")
-        mockServer.expect(requestTo("${matchServiceConfiguration.provisionUidRestUrl}?uid=${person.uid}&synchronousDownstream=true"))
+        mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
