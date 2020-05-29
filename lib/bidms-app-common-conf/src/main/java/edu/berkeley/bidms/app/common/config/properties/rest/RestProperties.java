@@ -28,7 +28,6 @@ package edu.berkeley.bidms.app.common.config.properties.rest;
 
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties;
-import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestRegistryServiceProperties;
 
 import javax.validation.constraints.NotNull;
 
@@ -38,8 +37,6 @@ public class RestProperties {
     private RestMatchEngineProperties matchengine;
     @NotNull
     private RestProvisionProperties provision;
-    @NotNull
-    private RestRegistryServiceProperties registryService;
 
     public RestMatchEngineProperties getMatchengine() {
         return matchengine;
@@ -55,13 +52,5 @@ public class RestProperties {
 
     public void setProvision(RestProvisionProperties provision) {
         this.provision = provision;
-    }
-
-    public RestRegistryServiceProperties getRegistryService() {
-        return registryService;
-    }
-
-    public void setRegistryService(RestRegistryServiceProperties registryService) {
-        this.registryService = registryService;
     }
 }

@@ -20,9 +20,5 @@ bidms:
       new-uid:
         baseUrl: http://notneeded
         url: http://notneeded
-    registry-service:
-      baseUrl: http://notneeded
-      identifiers:
-        url: http://notneeded
   matchengine:
     match-config: classpath:/TestMatchConfig.groovy

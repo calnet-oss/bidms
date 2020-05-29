@@ -72,10 +72,6 @@ public class BidmsConfigProperties {
         return getRest().getProvision().getBaseUrl();
     }
 
-    public URI getRestRegistryServiceBaseUrl() {
-        return getRest().getRegistryService().getBaseUrl();
-    }
-
     public Map<String, JmsConnectionConfigProperties> getJmsConnections() {
         return jmsConnections;
     }
