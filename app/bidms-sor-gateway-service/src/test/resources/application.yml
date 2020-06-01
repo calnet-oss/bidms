@@ -17,6 +17,13 @@ bidms:
         url: http://notneeded
       new-uid:
         url: http://notneeded
+  jms:
+    downstream:
+      provision-uid:
+        queue-name: notneeded
+    match-service:
+      new-sor-object:
+        queue-name: test.newSORObjectQueue
   sgs:
     sql-template-directory: file://${catalina.home}
     hash-executors:
