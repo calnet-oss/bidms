@@ -37,6 +37,40 @@ public class SmarterURIBuilder extends URIBuilder {
     }
 
     /**
+     * Use {@link #fromUrl(String)}.
+     */
+    public SmarterURIBuilder(String string) throws URISyntaxException {
+        super(string);
+    }
+
+    /**
+     * Construct a builder from a URL string.
+     *
+     * @param url URL string.
+     * @return An instance of {@link SmarterURIBuilder}.
+     */
+    public static SmarterURIBuilder fromUrl(String url) {
+        try {
+            return new SmarterURIBuilder(url);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Construct a builder from a base URI and append a suffix onto the end
+     * to construct a full URI.
+     *
+     * @param base   The base URI.
+     * @param suffix The string to append to the base URI to make a full
+     *               URI.
+     * @return An instance of {@link SmarterURIBuilder}.
+     */
+    public static SmarterURIBuilder from(URI base, String suffix) {
+        return fromUrl(base.toString() + suffix);
+    }
+
+    /**
      * see {@link URIBuilder#addParameter(String, String)}
      */
     @Override
