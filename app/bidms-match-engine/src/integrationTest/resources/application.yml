@@ -20,5 +20,12 @@ bidms:
       new-uid:
         baseUrl: http://notneeded
         url: http://notneeded
+  jms:
+    downstream:
+      provision-uid:
+        queue-name: notneeded
+    match-service:
+      new-sor-object:
+        queue-name: notneeded
   matchengine:
     match-config: classpath:/TestMatchConfig.groovy
