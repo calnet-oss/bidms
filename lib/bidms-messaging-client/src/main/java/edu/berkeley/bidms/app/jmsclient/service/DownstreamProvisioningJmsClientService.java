@@ -29,11 +29,16 @@ package edu.berkeley.bidms.app.jmsclient.service;
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointConfigProperties;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class DownstreamProvisioningJmsClientService {
@@ -48,8 +53,22 @@ public class DownstreamProvisioningJmsClientService {
      * Notify that a Person is ready to reprovision to downstream systems.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void provisionUid(JmsTemplate jmsTemplate, String uid) {
+    public void provisionUid(final JmsTemplate jmsTemplate, final String downstreamSystemName, final String uid, final Map<String, ?> headers) {
         JmsEndpointConfigProperties jmsEndpointConfigProperties = bidmsConfigProperties.getJms().getDownstream().getProvisionUid();
-        jmsTemplate.convertAndSend(jmsEndpointConfigProperties.getQueueName(), Map.of("uid", uid));
+        jmsTemplate.send(jmsEndpointConfigProperties.getQueueName(), new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                Message message = Objects.requireNonNull(jmsTemplate.getMessageConverter()).toMessage(
+                        Map.of("downstreamSystemName", downstreamSystemName, "uid", uid),
+                        session
+                );
+                if (headers != null) {
+                    for (Map.Entry<String, ?> entry : headers.entrySet()) {
+                        message.setObjectProperty(entry.getKey(), entry.getValue());
+                    }
+                }
+                return message;
+            }
+        });
     }
 }
