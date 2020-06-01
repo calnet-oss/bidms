@@ -24,19 +24,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
+package edu.berkeley.bidms.app.common.config.properties.jms;
+
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstreamProvisioningProperties;
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties;
 
 import javax.validation.constraints.NotNull;
 
-public class RestMatchEngineProperties extends AbstractRestServiceProviderProperties {
-    @NotNull
-    private RestEndpointConfigProperties person;
+public class JmsProperties {
 
-    public RestEndpointConfigProperties getPerson() {
-        return person;
+    @NotNull
+    private JmsDownstreamProvisioningProperties downstream;
+    @NotNull
+    private JmsMatchServiceProperties matchService;
+
+    public JmsDownstreamProvisioningProperties getDownstream() {
+        return downstream;
     }
 
-    public void setPerson(RestEndpointConfigProperties person) {
-        this.person = person;
+    public void setDownstream(JmsDownstreamProvisioningProperties downstream) {
+        this.downstream = downstream;
+    }
+
+    public JmsMatchServiceProperties getMatchService() {
+        return matchService;
+    }
+
+    public void setMatchService(JmsMatchServiceProperties matchService) {
+        this.matchService = matchService;
     }
 }

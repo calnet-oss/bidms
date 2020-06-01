@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.common.config.properties;
 
+import edu.berkeley.bidms.app.common.config.properties.jms.JmsProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.RestClientConfigProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -50,6 +51,9 @@ public class BidmsConfigProperties {
 
     public static final String JMS_CONNECTIONS_KEY = "bidms.jms-connections";
     private Map<String, JmsConnectionConfigProperties> jmsConnections;
+
+    @NotNull
+    private JmsProperties jms;
 
     public void setRestClient(RestClientConfigProperties restClient) {
         this.restClient = restClient;
@@ -78,5 +82,14 @@ public class BidmsConfigProperties {
 
     public void setJmsConnections(Map<String, JmsConnectionConfigProperties> jmsConnections) {
         this.jmsConnections = jmsConnections;
+    }
+
+    @Valid
+    public JmsProperties getJms() {
+        return jms;
+    }
+
+    public void setJms(@Valid JmsProperties jms) {
+        this.jms = jms;
     }
 }
