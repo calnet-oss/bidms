@@ -91,7 +91,7 @@ class NewSORConsumerService {
      * the rules
      */
     @Transactional(propagation = Propagation.NEVER)
-    @JmsListener(destination = '${bidms.matchservice.jms.new-sorobject.queue-name}')
+    @JmsListener(destination = '${bidms.jms.match-service.new-sor-object.queue-name}')
     void onMessage(Message msg) {
         handleMessage(msg)
     }

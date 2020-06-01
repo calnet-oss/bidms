@@ -26,9 +26,8 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
-import edu.berkeley.bidms.app.matchservice.config.properties.JmsEndpointConfigProperties
-import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigProperties
-import edu.berkeley.bidms.app.matchservice.jms.ProvisionJmsTemplate
+import edu.berkeley.bidms.app.jmsclient.service.DownstreamProvisioningJmsClientService
+import edu.berkeley.bidms.app.matchservice.jms.DownstreamProvisionJmsTemplate
 import edu.berkeley.bidms.app.registryModel.model.Person
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,25 +36,18 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class DownstreamJMSService {
 
-    MatchServiceConfigProperties matchServiceConfigProperties
-    ProvisionJmsTemplate jmsTemplate
+    DownstreamProvisionJmsTemplate jmsTemplate
+    DownstreamProvisioningJmsClientService downstreamProvisioningJmsClientService
 
-    DownstreamJMSService(MatchServiceConfigProperties matchServiceConfigProperties, ProvisionJmsTemplate jmsTemplate) {
-        this.matchServiceConfigProperties = matchServiceConfigProperties;
+    DownstreamJMSService(DownstreamProvisionJmsTemplate jmsTemplate, DownstreamProvisioningJmsClientService downstreamProvisioningJmsClientService) {
         this.jmsTemplate = jmsTemplate
+        this.downstreamProvisioningJmsClientService = downstreamProvisioningJmsClientService;
     }
 
     /**
      * Notify downstream systems (The registry) that a Person is ready to (re)provision
      */
-    def provision(Person person) {
-        if (matchServiceConfigProperties.getJms() == null || !matchServiceConfigProperties.getJms().containsKey("provision-uid")) {
-            throw new RuntimeException(MatchServiceConfigProperties.JMS_KEY + ".provision-uid is not configured");
-        }
-        JmsEndpointConfigProperties jmsEndpointConfigProperties = matchServiceConfigProperties.getJms().get("provision-uid")
-        if (!jmsEndpointConfigProperties.getQueueName()) {
-            throw new RuntimeException(MatchServiceConfigProperties.JMS_KEY + ".provision-uid.queue-name is not configured")
-        }
-        jmsTemplate.convertAndSend(jmsEndpointConfigProperties.getQueueName(), [uid: person.uid])
+    void provision(Person person) {
+        downstreamProvisioningJmsClientService.provisionUid(jmsTemplate, person.uid)
     }
 }

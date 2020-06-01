@@ -24,42 +24,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.config.properties;
+package edu.berkeley.bidms.app.matchservice.config.properties.jms;
 
-import edu.berkeley.bidms.app.matchservice.config.properties.jms.JmsProperties;
-import edu.berkeley.bidms.app.matchservice.config.properties.rest.RestProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@Validated
-@Configuration
-@ConfigurationProperties(prefix = "bidms.matchservice")
-public class MatchServiceConfigProperties {
-    @NotNull
-    private RestProperties rest;
+public class JmsProperties {
 
     @NotNull
-    private JmsProperties jms;
+    private JmsEndpointConfigProperties downstream;
 
-    @Valid
-    public RestProperties getRest() {
-        return rest;
+    public JmsEndpointConfigProperties getDownstream() {
+        return downstream;
     }
 
-    public void setRest(@Valid RestProperties rest) {
-        this.rest = rest;
-    }
-
-    @Valid
-    public JmsProperties getJms() {
-        return jms;
-    }
-
-    public void setJms(@Valid JmsProperties jms) {
-        this.jms = jms;
+    public void setDownstream(JmsEndpointConfigProperties downstream) {
+        this.downstream = downstream;
     }
 }

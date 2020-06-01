@@ -31,6 +31,13 @@ bidms:
       broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
       username: test
       password: test
+  jms:
+    downstream:
+      provision-uid:
+        queue-name: test.downstreamProvisionUid
+    match-service:
+      new-sor-object:
+        queue-name: test.newSORObjectQueue
   matchservice:
     rest:
       matchengine:
@@ -40,5 +47,5 @@ bidms:
         username: test
         password: test
     jms:
-      new-sorobject:
-        queue-name: test.newSORObjectQueue
+      downstream:
+        jms-connection-factory-bean-name: amqJmsConnectionFactory

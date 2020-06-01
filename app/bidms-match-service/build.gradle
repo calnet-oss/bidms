@@ -62,6 +62,7 @@ dependencies {
     implementation pdep(rootProject.bidmsCommonJsonDep)
     implementation pdep(rootProject.bidmsCommonOrmDep)
     implementation pdep(rootProject.bidmsRestClientDep)
+    implementation pdep(rootProject.bidmsMessagingClientDep)
 
     testImplementation 'com.h2database:h2'
 

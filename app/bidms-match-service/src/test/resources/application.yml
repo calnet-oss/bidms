@@ -11,4 +11,3 @@ spring:
     properties:
       hibernate:
         show_sql: false
-

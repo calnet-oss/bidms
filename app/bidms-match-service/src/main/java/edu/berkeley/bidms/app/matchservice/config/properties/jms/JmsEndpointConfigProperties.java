@@ -24,14 +24,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchservice.jms;
+package edu.berkeley.bidms.app.matchservice.config.properties.jms;
 
-import org.springframework.jms.core.JmsTemplate;
+import javax.validation.constraints.NotNull;
 
-import javax.jms.ConnectionFactory;
+public class JmsEndpointConfigProperties {
+    @NotNull
+    private String jmsConnectionFactoryBeanName;
 
-public class ProvisionJmsTemplate extends JmsTemplate {
-    public ProvisionJmsTemplate(ConnectionFactory connectionFactory) {
-        super(connectionFactory);
+    public String getJmsConnectionFactoryBeanName() {
+        return jmsConnectionFactoryBeanName;
+    }
+
+    public void setJmsConnectionFactoryBeanName(String jmsConnectionFactoryBeanName) {
+        this.jmsConnectionFactoryBeanName = jmsConnectionFactoryBeanName;
     }
 }

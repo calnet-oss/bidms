@@ -27,6 +27,10 @@
 package edu.berkeley.bidms.app
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties
+import edu.berkeley.bidms.app.common.config.properties.jms.JmsProperties
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstreamProvisioningProperties
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointConfigProperties
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestEndpointConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties
@@ -50,17 +54,31 @@ class MatchServiceTestConfiguration {
 
     @Bean
     BidmsConfigProperties getBidmsConfigProperties() {
-        return new BidmsConfigProperties(rest: new RestProperties(
-                matchengine: new RestMatchEngineProperties(
-                        baseUrl: new URI("http://localhost:8080/match-engine"),
-                        person: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-engine/person"))
+        return new BidmsConfigProperties(
+                rest: new RestProperties(
+                        matchengine: new RestMatchEngineProperties(
+                                baseUrl: new URI("http://localhost:8080/match-engine"),
+                                person: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-engine/person"))
+                        ),
+                        provision: new RestProvisionProperties(
+                                baseUrl: new URI("http://localhost:8080/provisioning"),
+                                uid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/provision/save")),
+                                newUid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/newUid/save"))
+                        )
                 ),
-                provision: new RestProvisionProperties(
-                        baseUrl: new URI("http://localhost:8080/provisioning"),
-                        uid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/provision/save")),
-                        newUid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/provisioning/newUid/save"))
+                jms: new JmsProperties(
+                        downstream: new JmsDownstreamProvisioningProperties(
+                                provisionUid: new JmsEndpointConfigProperties(
+                                        queueName: "test.downstreamProvisionUid"
+                                )
+                        ),
+                        matchService: new JmsMatchServiceProperties(
+                                newSorObject: new JmsEndpointConfigProperties(
+                                        queueName: "test.newSorObject"
+                                )
+                        )
                 )
-        ))
+        )
     }
 
     @Bean
