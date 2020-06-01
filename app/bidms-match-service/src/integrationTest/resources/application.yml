@@ -46,6 +46,3 @@ bidms:
       provision:
         username: test
         password: test
-    jms:
-      downstream:
-        jms-connection-factory-bean-name: amqJmsConnectionFactory

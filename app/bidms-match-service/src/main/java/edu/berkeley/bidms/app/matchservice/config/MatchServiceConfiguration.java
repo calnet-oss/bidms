@@ -27,19 +27,14 @@
 package edu.berkeley.bidms.app.matchservice.config;
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
-import edu.berkeley.bidms.app.common.config.properties.JmsConnectionConfigProperties;
 import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigProperties;
-import edu.berkeley.bidms.app.matchservice.jms.DownstreamProvisionJmsTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate;
-import edu.berkeley.bidms.jmsclient.util.JmsClientUtil;
 import edu.berkeley.bidms.restclient.util.RestClientUtil;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import javax.jms.ConnectionFactory;
 import java.net.URI;
 
 @SpringBootConfiguration
@@ -97,20 +92,5 @@ public class MatchServiceConfiguration {
     @Bean
     public ProvisionRestTemplate getProvisionRestTemplate(RestTemplateBuilder builder) {
         return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getRestProvisionBaseUrl(), getProvisionRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
-    }
-
-    @Bean(name = "amqJmsConnectionFactory")
-    public ConnectionFactory getJmsConnectionFactory() {
-        if (bidmsConfigProperties.getJmsConnections() == null || !bidmsConfigProperties.getJmsConnections().containsKey("AMQ")) {
-            throw new RuntimeException(BidmsConfigProperties.JMS_CONNECTIONS_KEY + ".AMQ is not configured");
-        }
-        JmsConnectionConfigProperties jmsConnectionConfig = bidmsConfigProperties.getJmsConnections().get("AMQ");
-        return JmsClientUtil.buildConnectionFactory(jmsConnectionConfig);
-    }
-
-    @Bean
-    public DownstreamProvisionJmsTemplate getDownstreamProvisionJmsTemplate(ApplicationContext applicationContext) {
-        ConnectionFactory jmsConnectionFactory = applicationContext.getBean(matchServiceConfigProperties.getJms().getDownstream().getJmsConnectionFactoryBeanName(), ConnectionFactory.class);
-        return new DownstreamProvisionJmsTemplate(jmsConnectionFactory);
     }
 }

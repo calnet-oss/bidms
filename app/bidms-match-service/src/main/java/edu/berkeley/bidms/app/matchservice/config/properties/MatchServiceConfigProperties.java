@@ -26,7 +26,6 @@
  */
 package edu.berkeley.bidms.app.matchservice.config.properties;
 
-import edu.berkeley.bidms.app.matchservice.config.properties.jms.JmsProperties;
 import edu.berkeley.bidms.app.matchservice.config.properties.rest.RestProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -42,9 +41,6 @@ public class MatchServiceConfigProperties {
     @NotNull
     private RestProperties rest;
 
-    @NotNull
-    private JmsProperties jms;
-
     @Valid
     public RestProperties getRest() {
         return rest;
@@ -52,14 +48,5 @@ public class MatchServiceConfigProperties {
 
     public void setRest(@Valid RestProperties rest) {
         this.rest = rest;
-    }
-
-    @Valid
-    public JmsProperties getJms() {
-        return jms;
-    }
-
-    public void setJms(@Valid JmsProperties jms) {
-        this.jms = jms;
     }
 }
