@@ -24,44 +24,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.common.config.properties.jms;
-
-import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstreamProvisioningProperties;
-import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties;
-import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsProvisioningProperties;
+package edu.berkeley.bidms.app.common.config.properties.jms.endpoint;
 
 import javax.validation.constraints.NotNull;
 
-public class JmsProperties {
-
+public class JmsProvisioningProperties extends AbstractJmsServiceProviderProperties {
     @NotNull
-    private JmsDownstreamProvisioningProperties downstream;
+    private JmsEndpointConfigProperties provisionUid;
     @NotNull
-    private JmsMatchServiceProperties matchService;
-    @NotNull
-    private JmsProvisioningProperties provision;
+    private JmsEndpointConfigProperties provisionUidBulk;
 
-    public JmsDownstreamProvisioningProperties getDownstream() {
-        return downstream;
+    public JmsEndpointConfigProperties getProvisionUid() {
+        return provisionUid;
     }
 
-    public void setDownstream(JmsDownstreamProvisioningProperties downstream) {
-        this.downstream = downstream;
+    public void setProvisionUid(JmsEndpointConfigProperties provisionUid) {
+        this.provisionUid = provisionUid;
     }
 
-    public JmsMatchServiceProperties getMatchService() {
-        return matchService;
+    public JmsEndpointConfigProperties getProvisionUidBulk() {
+        return provisionUidBulk;
     }
 
-    public void setMatchService(JmsMatchServiceProperties matchService) {
-        this.matchService = matchService;
-    }
-
-    public JmsProvisioningProperties getProvision() {
-        return provision;
-    }
-
-    public void setProvision(JmsProvisioningProperties provision) {
-        this.provision = provision;
+    public void setProvisionUidBulk(JmsEndpointConfigProperties provisionUidBulk) {
+        this.provisionUidBulk = provisionUidBulk;
     }
 }
