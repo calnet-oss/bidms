@@ -38,6 +38,7 @@ ext {
         [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: versions.springCloudConfig],
         [group: 'org.spockframework', name: 'spock-spring', version: versions.spockSpring],
         [group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang],
+        [group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections],
         [group: 'org.postgresql', name: 'postgresql', version: versions.postgresql],
         [group: 'org.json', name: 'json', version: versions.orgJson],
         [group: 'software.apacheds.embedded', name: 'apacheds-embedded', version: versions.apacheDsEmbedded]
