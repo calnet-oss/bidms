@@ -27,5 +27,10 @@ bidms:
     match-service:
       new-sor-object:
         queue-name: notneeded
+    provision:
+      provision-uid:
+        queue-name: notneeded
+      provision-uid-bulk:
+        queue-name: notneeded
   matchengine:
     match-config: classpath:/TestMatchConfig.groovy

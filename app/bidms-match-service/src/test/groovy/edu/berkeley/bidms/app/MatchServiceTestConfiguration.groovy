@@ -31,6 +31,7 @@ import edu.berkeley.bidms.app.common.config.properties.jms.JmsProperties
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstreamProvisioningProperties
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties
+import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsProvisioningProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestEndpointConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties
@@ -76,6 +77,10 @@ class MatchServiceTestConfiguration {
                                 newSorObject: new JmsEndpointConfigProperties(
                                         queueName: "test.newSorObject"
                                 )
+                        ),
+                        provision: new JmsProvisioningProperties(
+                                provisionUid: new JmsEndpointConfigProperties(queueName: "notneeded"),
+                                provisionUidBulk: new JmsEndpointConfigProperties(queueName: "notneeded")
                         )
                 )
         )

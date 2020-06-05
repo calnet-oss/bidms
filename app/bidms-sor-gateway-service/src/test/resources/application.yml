@@ -24,6 +24,11 @@ bidms:
     match-service:
       new-sor-object:
         queue-name: test.newSORObjectQueue
+    provision:
+      provision-uid:
+        queue-name: notneeded
+      provision-uid-bulk:
+        queue-name: notneeded
   sgs:
     sql-template-directory: file://${catalina.home}
     hash-executors:
