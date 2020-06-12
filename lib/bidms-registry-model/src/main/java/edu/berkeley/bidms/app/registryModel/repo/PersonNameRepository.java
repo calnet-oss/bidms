@@ -26,11 +26,15 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.PersonName;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link PersonName} entities.
  */
 public interface PersonNameRepository extends ExtendedRepository<PersonName, Long> {
+    List<PersonName> findAllByPerson(Person person);
 }

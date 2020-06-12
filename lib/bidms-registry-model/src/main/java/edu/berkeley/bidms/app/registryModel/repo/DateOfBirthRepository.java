@@ -27,10 +27,14 @@
 package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.DateOfBirth;
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link DateOfBirth} entities.
  */
 public interface DateOfBirthRepository extends ExtendedRepository<DateOfBirth, Long> {
+    List<DateOfBirth> findAllByPerson(Person person);
 }
