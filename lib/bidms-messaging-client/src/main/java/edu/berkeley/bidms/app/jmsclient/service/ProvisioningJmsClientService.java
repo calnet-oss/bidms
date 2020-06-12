@@ -29,9 +29,11 @@ package edu.berkeley.bidms.app.jmsclient.service;
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointConfigProperties;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Service
 public class ProvisioningJmsClientService {
 
     private BidmsConfigProperties bidmsConfigProperties;
