@@ -47,4 +47,6 @@ public interface IdentifierRepository extends ExtendedRepository<Identifier, Lon
     List<Identifier> findAllBySorObject(SORObject sorObject);
 
     List<Identifier> findAllByPerson(Person person);
+
+    List<Identifier> findAllByPersonAndIdentifierType(Person person, IdentifierType identifierType);
 }
