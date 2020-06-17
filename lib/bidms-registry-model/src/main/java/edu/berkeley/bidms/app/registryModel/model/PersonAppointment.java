@@ -60,8 +60,8 @@ import java.util.Objects;
 @IdClass(PersonAppointmentCompositeKey.class)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "apptTypeId", "apptIdentifier"}))
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class PersonAppointment implements Comparable<PersonAppointment> {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class PersonAppointment implements Comparable<PersonAppointment> {
 
     protected PersonAppointment() {
     }
@@ -138,9 +138,11 @@ public abstract class PersonAppointment implements Comparable<PersonAppointment>
         return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((PersonAppointment) obj).getHashCodeObjects());
     }
 
-    abstract protected void notifyPerson();
+    protected void notifyPerson() {
+    }
 
-    abstract protected void notifyOtherPerson(Person otherPerson);
+    protected void notifyOtherPerson(Person otherPerson) {
+    }
 
     public Long getId() {
         return id;

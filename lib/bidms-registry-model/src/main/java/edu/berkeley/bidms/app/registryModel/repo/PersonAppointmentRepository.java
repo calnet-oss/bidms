@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -26,10 +26,16 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.AppointmentType;
 import edu.berkeley.bidms.app.registryModel.model.JobAppointment;
+import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.PersonAppointment;
+import edu.berkeley.bidms.app.registryModel.model.compositeKey.PersonAppointmentCompositeKey;
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
 /**
- * Repository for {@link JobAppointment} entities.
+ * Repository for {@link PersonAppointment} entities.
  */
-public interface JobAppointmentRepository extends PersonAppointmentRepository<JobAppointment> {
+public interface PersonAppointmentRepository<T extends PersonAppointment> extends ExtendedRepository<T, PersonAppointmentCompositeKey> {
+    T findByPersonAndApptTypeAndApptIdentifier(Person person, AppointmentType apptType, String apptIdentifier);
 }
