@@ -33,6 +33,8 @@ public class JmsProvisioningProperties extends AbstractJmsServiceProviderPropert
     private JmsEndpointConfigProperties provisionUid;
     @NotNull
     private JmsEndpointConfigProperties provisionUidBulk;
+    @NotNull
+    private JmsEndpointConfigProperties newUid;
 
     public JmsEndpointConfigProperties getProvisionUid() {
         return provisionUid;
@@ -48,5 +50,13 @@ public class JmsProvisioningProperties extends AbstractJmsServiceProviderPropert
 
     public void setProvisionUidBulk(JmsEndpointConfigProperties provisionUidBulk) {
         this.provisionUidBulk = provisionUidBulk;
+    }
+
+    public JmsEndpointConfigProperties getNewUid() {
+        return newUid;
+    }
+
+    public void setNewUid(JmsEndpointConfigProperties newUid) {
+        this.newUid = newUid;
     }
 }
