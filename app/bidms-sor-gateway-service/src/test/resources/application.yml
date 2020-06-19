@@ -29,6 +29,8 @@ bidms:
         queue-name: notneeded
       provision-uid-bulk:
         queue-name: notneeded
+      new-uid:
+        queue-name: notneeded
   sgs:
     sql-template-directory: file://${catalina.home}
     hash-executors:

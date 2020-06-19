@@ -32,5 +32,7 @@ bidms:
         queue-name: notneeded
       provision-uid-bulk:
         queue-name: notneeded
+      new-uid:
+        queue-name: notneeded
   matchengine:
     match-config: classpath:/TestMatchConfig.groovy
