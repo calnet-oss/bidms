@@ -67,14 +67,16 @@ public class BidmsApplication {
                 );
     }
 
-    @Bean
-    RegistryUserCredentialService getRegistryUserBuilderService() {
-        var service = new RegistryUserCredentialService();
-        service.setHttpDigestPasswordEncoder(new DigestAuthPasswordEncoder("Registry Realm"));
-        service.setPasswordEncoder(new DelegatingPasswordEncoder(
+    @Bean(name = RegistryUserCredentialService.DIGEST_AUTH_PASSWORD_ENCODER_BEAN_NAME)
+    public DigestAuthPasswordEncoder getDigestAuthPasswordEncoder() {
+        return new DigestAuthPasswordEncoder("Registry Realm");
+    }
+
+    @Bean(name = RegistryUserCredentialService.PASSWORD_ENCODER_BEAN_NAME)
+    public DelegatingPasswordEncoder getPasswordEncoder() {
+        return new DelegatingPasswordEncoder(
                 "bcrypt",
                 Map.of("bcrypt", new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH))
-        ));
-        return service;
+        );
     }
 }
