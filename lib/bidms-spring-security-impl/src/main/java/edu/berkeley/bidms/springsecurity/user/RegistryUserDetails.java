@@ -30,115 +30,95 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * An implementation of Spring's {@link UserDetails} built from a BIDMS
  * RegistryUser object during authentication.
  */
 public class RegistryUserDetails implements UserDetails {
-    private String username;
-    private boolean useDigestAuth;
-    private String password;
-    private boolean enabled;
-    private boolean accountNonExpired;
-    private boolean credentialsNonExpired;
-    private boolean accountNonLocked;
-    private Collection<? extends GrantedAuthority> authorities;
-    private Long salt;
 
-    /**
-     * Construct by cloning data from an existing {@link UserDetails} object
-     * and by augmenting it using additional registry data.
-     *
-     * @param userDetails   An existing {@link UserDetails} object to clone
-     *                      data from.
-     * @param useDigestAuth True if using HTTP digest authentication.
-     * @param salt          The salt used for generating a password hash.
-     * @param password      The password hash.
-     */
-    public RegistryUserDetails(UserDetails userDetails, Boolean useDigestAuth, Long salt, String password) {
-        this.username = userDetails.getUsername();
-        this.useDigestAuth = useDigestAuth;
-        this.password = password; // httpDigestHash if useDigestAuth
-        this.enabled = userDetails.isEnabled();
-        this.accountNonExpired = userDetails.isAccountNonExpired();
-        this.credentialsNonExpired = userDetails.isCredentialsNonExpired();
-        this.accountNonLocked = userDetails.isAccountNonLocked();
-        this.authorities = userDetails.getAuthorities();
-        this.salt = salt;
+    private final Collection<RegistryUserDetailsGrantedAuthority> authorities = new LinkedList<>();
+    private final String username;
+    private final String password;
+    private final boolean accountNonExpired;
+    private final boolean accountNonLocked;
+    private final boolean credentialsNonExpired;
+    private final boolean enabled;
+
+    public RegistryUserDetails(String username, String password, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
+        this.username = username;
+        this.password = password;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.enabled = enabled;
     }
 
-    /**
-     * See {@link UserDetails#getUsername()}.
-     */
+    @Override
+    public String toString() {
+        return "RegistryUserDetails{" +
+                "username='" + username + '\'' +
+                ", accountNonExpired=" + accountNonExpired +
+                ", accountNonLocked=" + accountNonLocked +
+                ", credentialsNonExpired=" + credentialsNonExpired +
+                ", enabled=" + enabled +
+                ", authorities=" + authorities +
+                '}';
+    }
+
+    @Override
+    public Collection<RegistryUserDetailsGrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
     @Override
     public String getUsername() {
         return username;
     }
 
-    /**
-     * Using HTTP Digest authentication?
-     *
-     * @return True if using HTTP digest authentication.
-     */
-    public boolean isUseDigestAuth() {
-        return useDigestAuth;
-    }
-
-    /**
-     * See {@link UserDetails#getPassword()}.
-     */
     @Override
     public String getPassword() {
         return password;
     }
 
-    /**
-     * See {@link UserDetails#isEnabled()} ()}.
-     */
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
-     * See {@link UserDetails#isAccountNonExpired()}.
-     */
     @Override
     public boolean isAccountNonExpired() {
         return accountNonExpired;
     }
 
-    /**
-     * See {@link UserDetails#isCredentialsNonExpired()}.
-     */
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-
-    /**
-     * See {@link UserDetails#isAccountNonLocked()}.
-     */
     @Override
     public boolean isAccountNonLocked() {
         return accountNonLocked;
     }
 
-    /**
-     * See {@link UserDetails#getAuthorities()}.
-     */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
     }
 
-    /**
-     * Get the salt used for generating a password hash.
-     *
-     * @return The salt used for generating a password hash.
-     */
-    public Long getSalt() {
-        return salt;
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public static class RegistryUserDetailsGrantedAuthority implements GrantedAuthority {
+        private String authority;
+
+        public RegistryUserDetailsGrantedAuthority(String authority) {
+            this.authority = authority;
+        }
+
+        @Override
+        public String toString() {
+            return "SqlGrantedAuthority{" +
+                    "authority='" + authority + '\'' +
+                    '}';
+        }
+
+        @Override
+        public String getAuthority() {
+            return authority;
+        }
     }
 }

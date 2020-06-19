@@ -29,6 +29,7 @@ package edu.berkeley.bidms.app.springsecurity.service;
 import edu.berkeley.bidms.app.springsecurity.encoder.DigestAuthPasswordEncoder;
 import edu.berkeley.bidms.springsecurity.api.service.CredentialSetter;
 import edu.berkeley.bidms.springsecurity.api.user.CredentialsAwareUser;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +37,28 @@ import org.springframework.stereotype.Service;
  * A service to set credentials for objects that implement the {@link
  * CredentialsAwareUser} interface.
  */
-@Service
+@Service(RegistryUserCredentialService.USER_CREDENTIAL_SERVICE_BEAN_NAME)
 public class RegistryUserCredentialService implements CredentialSetter {
+    public static final String USER_CREDENTIAL_SERVICE_BEAN_NAME = "registryUserCredentialService";
+    public static final String PASSWORD_ENCODER_BEAN_NAME = "passwordEncoder";
+    public static final String DIGEST_AUTH_PASSWORD_ENCODER_BEAN_NAME = "digestAuthPasswordEncoder";
+
     private PasswordEncoder passwordEncoder;
     private DigestAuthPasswordEncoder httpDigestPasswordEncoder;
+
+    public RegistryUserCredentialService(
+            @Qualifier(PASSWORD_ENCODER_BEAN_NAME) PasswordEncoder passwordEncoder,
+            @Qualifier(DIGEST_AUTH_PASSWORD_ENCODER_BEAN_NAME) DigestAuthPasswordEncoder httpDigestPasswordEncoder
+    ) {
+        if (passwordEncoder == null) {
+            throw new RuntimeException("passwordEncoder cannot be null");
+        }
+        if (httpDigestPasswordEncoder == null) {
+            throw new RuntimeException("httpDigestPasswordEncoder cannot be null");
+        }
+        this.passwordEncoder = passwordEncoder;
+        this.httpDigestPasswordEncoder = httpDigestPasswordEncoder;
+    }
 
     /**
      * Get the {@link PasswordEncoder} instance being used by the service.
