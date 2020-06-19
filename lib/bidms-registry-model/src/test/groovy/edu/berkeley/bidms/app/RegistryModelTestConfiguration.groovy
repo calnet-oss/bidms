@@ -46,17 +46,11 @@ class RegistryModelTestConfiguration {
     @Bean
     RegistryUserCredentialService getRegistryUserBuilderService() {
         return new RegistryUserCredentialService(
-                httpDigestPasswordEncoder: new DigestAuthPasswordEncoder("Registry Realm"),
-                passwordEncoder: new DelegatingPasswordEncoder(
+                new DelegatingPasswordEncoder(
                         "bcrypt", ["bcrypt": new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH)]
-                )
+                ), new DigestAuthPasswordEncoder("Registry Realm")
         )
     }
-
-    /*@Bean
-    EntityMangerBuilderConfigurer getEntityManagerBuilderConfigurer(EntityManagerFactory entityManagerFactory) {
-        return new EntityMangerBuilderConfigurer(entityManagerFactory);
-    }*/
 
     @Bean
     ValidateableEventListenerConfigurer getValidateableEventConfigurer(EntityManagerFactory entityManagerFactory) {
