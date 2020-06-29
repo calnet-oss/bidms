@@ -27,14 +27,17 @@
 package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.DownstreamObject;
+import edu.berkeley.bidms.app.registryModel.model.DownstreamSystem;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
-import edu.berkeley.bidms.app.registryModel.model.DownstreamSystem;
+
+import java.util.List;
 
 /**
  * Repository for {@link DownstreamObject} entities.
  */
 public interface DownstreamObjectRepository extends ExtendedRepository<DownstreamObject, Long> {
+    List<DownstreamObject> findAllByPerson(Person person);
     DownstreamObject findBySystemAndSystemPrimaryKey(DownstreamSystem system, String systemPrimaryKey);
     DownstreamObject findByPersonAndSystemAndSystemPrimaryKey(Person person, DownstreamSystem system, String systemPrimaryKey);
 }
