@@ -44,6 +44,7 @@ import javax.persistence.SequenceGenerator;
 public class DownstreamSystem implements Comparable<DownstreamSystem> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DownstreamSystem_seqgen")
     @SequenceGenerator(name = "DownstreamSystem_seqgen", sequenceName = "DownstreamSystem_seq", allocationSize = 1)
+    @Column(name = "systemId")
     @Id
     private Integer id;
 
