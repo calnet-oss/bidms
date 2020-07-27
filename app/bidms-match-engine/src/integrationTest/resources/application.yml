@@ -4,6 +4,9 @@ spring:
     url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;INIT=create domain if not exists jsonb as json
     username: sa
     password: sa
+server:
+  error:
+    include-message: always
 logging:
   level:
     edu.berkeley.bidms: TRACE

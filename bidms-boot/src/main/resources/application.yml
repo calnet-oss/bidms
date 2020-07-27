@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         show_sql: false
+server:
+  error:
+    include-message: always
 
 bidms:
   sgs:
