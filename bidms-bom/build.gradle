@@ -29,7 +29,6 @@ ext {
 
     dependencyManagementDependencies = [
         [group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servletApi],
-        [group: 'org.apache.camel', name: 'camel-spring-boot-starter', version: versions.camelSpringBootStarter],
         [group: 'com.h2database', name: 'h2', version: versions.h2db],
         [group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfox],
         [group: 'io.springfox', name: 'springfox-spring-webmvc', version: versions.springfox],

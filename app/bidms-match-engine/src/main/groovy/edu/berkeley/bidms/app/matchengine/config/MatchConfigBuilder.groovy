@@ -40,7 +40,7 @@ class MatchConfigBuilder {
     }
 
     void referenceId(Closure closure) {
-        def matchReference = new MatchReference()
+        MatchReference matchReference = new MatchReference()
         closure.delegate = matchReference
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.call()
@@ -48,7 +48,7 @@ class MatchConfigBuilder {
     }
 
     void attributes(Closure closure) {
-        def builder = new MatchAttributesDelegate()
+        MatchAttributesDelegate builder = new MatchAttributesDelegate()
         closure.delegate = builder
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.call()
