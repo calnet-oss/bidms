@@ -26,14 +26,48 @@
  */
 package edu.berkeley.bidms.config.server;
 
+import com.jcraft.jsch.JSch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.config.server.EnableConfigServer;
+import org.springframework.web.context.WebApplicationContext;
 
+// https://cloud.spring.io/spring-cloud-config/multi/multi__embedding_the_config_server.html
 @SpringBootApplication
 @EnableConfigServer
-public class BidmsConfigServerApplication {
+public class BidmsConfigServerApplication extends SpringBootServletInitializer {
+
+    private static final Logger log = LoggerFactory.getLogger(BidmsConfigServerApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(BidmsConfigServerApplication.class, args);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(BidmsConfigServerApplication.class);
+    }
+
+    @Override
+    protected WebApplicationContext run(SpringApplication application) {
+        return super.run(application);
+    }
+
+    private void enableJSchDebugging() {
+        JSch.setLogger(new com.jcraft.jsch.Logger() {
+            @Override
+            public boolean isEnabled(int i) {
+                return true;
+            }
+
+            @Override
+            public void log(int i, String s) {
+                log.info("JSch " + i + ": " + s);
+            }
+        });
     }
 }
