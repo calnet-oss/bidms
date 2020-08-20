@@ -31,6 +31,7 @@ import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialServi
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -42,6 +43,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.Map;
 
+@EnableJms
 @EnableSwagger2WebMvc
 @SpringBootApplication(scanBasePackages = "edu.berkeley.bidms.app")
 public class BidmsApplication {
