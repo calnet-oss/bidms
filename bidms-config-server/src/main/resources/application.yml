@@ -2,10 +2,18 @@
 # ${user.home}/bidms-cloudconfig/application.yml or overriding the
 # bidms.cloudconfig.config.location property (see bootstrap.yml).
 server:
+  # only for when using embedded application server
   port: 8888
 spring:
+  application:
+    name: bidms-config
   cloud:
     config:
       server:
         git:
-          uri:  file:${user.home}/bidms-config-repo
+          uri: file:${user.home}/bidms-config-repo
+          timeout: 20
+  security:
+    user:
+      name: user
+      password: configureme

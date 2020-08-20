@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Regents of the University of California and
+ * Copyright (c) 2020, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,15 +24,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'java'
-    id 'war'
-}
+package edu.berkeley.bidms.app.config;
 
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.springframework.boot'
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-dependencies {
-    compile 'org.springframework.cloud:spring-cloud-config-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+@EnableWebSecurity
+public class BidmsConfigServerSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/bidms/default/**").fullyAuthenticated()
+                .anyRequest().denyAll()
+                .and().httpBasic();
+    }
 }

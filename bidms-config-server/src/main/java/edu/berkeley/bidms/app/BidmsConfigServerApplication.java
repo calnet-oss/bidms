@@ -24,7 +24,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.config.server;
+package edu.berkeley.bidms.app;
 
 import com.jcraft.jsch.JSch;
 import org.slf4j.Logger;
@@ -35,6 +35,25 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.web.context.WebApplicationContext;
+
+//
+// To test: curl https://host:port/bidms-config/APP/PROFILE/LABEL
+// (LABEL is optional.)
+// (There are other url possibilities.  The quck-start doc shows them.)
+//
+// The actual health check URL would be:
+// (as explained in https://cloud.spring.io/spring-cloud-config/reference/html/#_health_indicator)
+// curl https://host:port/bidms-config/app/default
+//
+// APP/PROFILE/LABEL is explained:
+// https://cloud.spring.io/spring-cloud-config/reference/html/#_quick_start
+// and
+// https://cloud.spring.io/spring-cloud-config/reference/html/#_environment_repository
+//
+// APP is client's application name.  PROFILE is the client's application
+// profile (development, production, etc).  For git backend, if specified,
+// LABEL is the git branch.  (If not specified, master is assumed.)
+//
 
 // https://cloud.spring.io/spring-cloud-config/multi/multi__embedding_the_config_server.html
 @SpringBootApplication
@@ -57,6 +76,7 @@ public class BidmsConfigServerApplication extends SpringBootServletInitializer {
         return super.run(application);
     }
 
+    // only useful to debug ssh problems if using ssh to connect to git server
     private void enableJSchDebugging() {
         JSch.setLogger(new com.jcraft.jsch.Logger() {
             @Override
