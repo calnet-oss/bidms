@@ -63,6 +63,7 @@ dependencies {
     implementation pdep(rootProject.bidmsCommonOrmDep)
     implementation pdep(rootProject.bidmsRestClientDep)
     implementation pdep(rootProject.bidmsMessagingClientDep)
+    implementation pdep(rootProject.bidmsMessagingListenerDep)
 
     testImplementation 'com.h2database:h2'
 
@@ -73,7 +74,6 @@ dependencies {
     testImplementation 'org.spockframework:spock-spring'
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }
-
 
 sourceSets {
     integrationTest {
