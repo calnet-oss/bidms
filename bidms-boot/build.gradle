@@ -55,7 +55,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
-    gradle.ext.bidmsSubprojects.each {
+    gradle.ext.allBidmsWarSubprojects.each {
         implementation project(it)
     }
 }
