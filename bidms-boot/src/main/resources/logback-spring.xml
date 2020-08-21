@@ -33,9 +33,9 @@
     <appender name="AUDITFILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <append>true</append>
-        <file>logs/audit.log</file>
+        <file>logs/bidms-audit.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/audit.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/bidms-audit.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
