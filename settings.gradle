@@ -77,7 +77,7 @@ def splitSpaceDelimitedPropertyClosure = { overridePropertyName, defaultList ->
     }
     subprojects as String[]
 }
-gradle.ext.bidmsSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubs", allBidmsSubs)
-gradle.ext.allBidmsWarSubprojects = gradle.ext.bidmsSubprojects
+gradle.ext.bidmsSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubLibs", allBidmsSubLibs) + splitSpaceDelimitedPropertyClosure("bidmsSubApps", allBidmsSubApps)
+gradle.ext.allBidmsWarSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubApps", allBidmsSubApps)
 gradle.ext.bidmsWebapps = splitSpaceDelimitedPropertyClosure("bidmsWebapps", allBidmsWebapps)
 include((gradle.ext.bidmsSubprojects + gradle.ext.bidmsWebapps + [bidmsBomDep, "bidms-aggregate-javadocs"]) as String[])
