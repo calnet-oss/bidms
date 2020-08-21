@@ -56,3 +56,6 @@ bidms:
       provision:
         username: test
         password: test
+    jms:
+      match-service:
+        jms-listener-container-factory-bean-name: amqJmsListenerContainerFactory
