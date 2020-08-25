@@ -61,8 +61,8 @@ public class Identifier implements Comparable<Identifier> {
         this.uid = person != null ? person.getUid() : null;
     }
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IdentifierType_seqgen")
-    @SequenceGenerator(name = "IdentifierType_seqgen", sequenceName = "IdentifierType_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Identifier_seqgen")
+    @SequenceGenerator(name = "Identifier_seqgen", sequenceName = "Identifier_seq", allocationSize = 1)
     @Id
     private Long id;
 
