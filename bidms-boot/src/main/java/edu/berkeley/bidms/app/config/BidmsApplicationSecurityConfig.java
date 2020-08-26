@@ -45,12 +45,12 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/hello/**").permitAll()
-                .antMatchers("/sgs/*").hasAuthority("sorGateway")
-                .antMatchers("/match-engine/*").hasAuthority("ucbMatch")
-                .antMatchers("/match-service/*").hasAuthority("registryMatchService")
-                .antMatchers("/registry-provisioning/*").hasAuthority("registryProvisioning")
-                .antMatchers("/bidms-downstream/changePassword/*").hasAuthority("bidmsDownstreamChangePassword")
-                .antMatchers("/bidms-downstream/*").hasAuthority("bidmsDownstream")
+                .antMatchers("/sgs/**").hasAuthority("sorGateway")
+                .antMatchers("/match-engine/**").hasAuthority("ucbMatch")
+                .antMatchers("/match-service/**").hasAuthority("registryMatchService")
+                .antMatchers("/registry-provisioning/**").hasAuthority("registryProvisioning")
+                .antMatchers("/bidms-downstream/changePassword/**").hasAuthority("bidmsDownstreamChangePassword")
+                .antMatchers("/bidms-downstream/**").hasAuthority("bidmsDownstream")
                 /*.antMatchers("/**").denyAll()*/
                 .anyRequest().denyAll()
                 .and().httpBasic();
