@@ -36,15 +36,19 @@ import groovy.util.logging.Slf4j
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import javax.persistence.EntityManager
+
 @Slf4j
 @Service("matchServiceDatabaseService")
 @Transactional(rollbackFor = Exception)
 class DatabaseService {
 
+    EntityManager entityManager
     SORObjectRepository sorObjectRepository
     PartialMatchRepository partialMatchRepository
 
-    DatabaseService(SORObjectRepository sorObjectRepository, PartialMatchRepository partialMatchRepository) {
+    DatabaseService(EntityManager entityManager, SORObjectRepository sorObjectRepository, PartialMatchRepository partialMatchRepository) {
+        this.entityManager = entityManager
         this.sorObjectRepository = sorObjectRepository
         this.partialMatchRepository = partialMatchRepository
     }
@@ -92,5 +96,6 @@ class DatabaseService {
         partialMatches.each {
             partialMatchRepository.delete(it)
         }
+        entityManager.flush()
     }
 }
