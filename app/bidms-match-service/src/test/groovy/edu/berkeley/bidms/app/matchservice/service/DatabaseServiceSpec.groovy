@@ -41,10 +41,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
 
+import javax.persistence.EntityManager
+
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 class DatabaseServiceSpec extends Specification {
 
+    @Autowired
+    EntityManager entityManager
     @Autowired
     SORRepository sorRepository
     @Autowired
@@ -61,7 +65,7 @@ class DatabaseServiceSpec extends Specification {
     Person person2
 
     def setup() {
-        this.service = new DatabaseService(sorObjectRepository, partialMatchRepository)
+        this.service = new DatabaseService(entityManager, sorObjectRepository, partialMatchRepository)
 
         SOR sor = sorRepository.save(new SOR(name: 'SIS'))
         this.sorObject = sorObjectRepository.save(new SORObject(
