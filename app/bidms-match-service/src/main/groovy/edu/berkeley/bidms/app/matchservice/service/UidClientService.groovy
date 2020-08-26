@@ -87,7 +87,7 @@ class UidClientService {
         }
         ResponseEntity<Map> response = provisionRestClientService.provisionNewUid(restTemplate, sorObject.id, synchronousDownstream)
         if (response.statusCode != HttpStatus.OK) {
-            log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.text}")
+            log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.body}")
             return null
         } else if (!response.body?.provisioningSuccessful) {
             if (response.body?.provisioningErrorMessage) {
