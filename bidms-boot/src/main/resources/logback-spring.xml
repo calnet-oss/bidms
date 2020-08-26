@@ -58,7 +58,7 @@
     <logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
     <logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
 
-    <logger name="Audit" level="INFO">
+    <logger name="Audit" level="INFO" additivity="false">
         <appender-ref ref="AUDITFILE" />
     </logger>
 </configuration>
