@@ -99,13 +99,13 @@ class NewSORConsumerService {
     @PackageScope
     @Transactional(propagation = Propagation.NEVER)
     Map<String, String> handleMessage(Message msg) {
+        SORObject sorObject = null
         try {
             if (!(msg instanceof MapMessage)) {
                 throw new RuntimeException("Received a message that was not of type MapMessage: $msg")
             }
             MapMessage message = (MapMessage) msg
 
-            SORObject sorObject
             try {
                 sorObject = getSorObjectFromMessage(message)
             }
@@ -117,8 +117,22 @@ class NewSORConsumerService {
             return matchPerson(sorObject, getAttributesFromMessage(message))
         }
         catch (Exception e) {
-            log.error("onMessage() failed", e)
-            throw e
+            String systemOfRecord = msg.getString('systemOfRecord')
+            String sorObjectKey = msg.getString('sorPrimaryKey')
+            log.error("There was a newSORObject consumer error for sor=$systemOfRecord, sorObjectKey=$sorObjectKey", e)
+            if (sorObject) {
+                try {
+                    sorObject.rematch = true
+                    sorObjectRepository.saveAndFlush(sorObject)
+                    log.info("Successfully set rematch flag to true for sor=$systemOfRecord, sorObjectKey=$sorObjectKey")
+                }
+                catch (Exception e2) {
+                    log.error("Could not set rematch flag to true for sor=$systemOfRecord, sorObjectKey=$sorObjectKey", e2)
+                }
+            } else {
+                log.error("Could not set rematch flag to true for sor=$systemOfRecord, sorObjectKey=$sorObjectKey because this SORObject could not be retrieved")
+            }
+            return null
         }
         finally {
             // avoid hibernate cache growth
