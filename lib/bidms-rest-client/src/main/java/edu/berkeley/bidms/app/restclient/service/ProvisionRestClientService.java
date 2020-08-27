@@ -96,7 +96,7 @@ public class ProvisionRestClientService {
                 .rbuild();
         return restTemplate.exchange(
                 RequestEntity
-                        .post(url)
+                        .put(url)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(""),
