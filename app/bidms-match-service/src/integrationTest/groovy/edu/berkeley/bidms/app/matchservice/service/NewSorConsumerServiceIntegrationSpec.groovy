@@ -137,7 +137,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         final mockProvisionServer = MockRestServiceServer.createServer((RestTemplate) uidClientService.restTemplate)
         mockProvisionServer
                 .expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
-                .andExpect(method(HttpMethod.POST))
+                .andExpect(method(HttpMethod.PUT))
                 .andExpect(content().string(""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess(JsonUtil.convertMapToJson([uid: '001', sorObjectId: '2', provisioningSuccessful: true]), MediaType.APPLICATION_JSON))
