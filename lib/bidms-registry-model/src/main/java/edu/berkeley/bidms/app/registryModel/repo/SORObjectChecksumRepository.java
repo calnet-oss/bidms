@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.SOR;
 import edu.berkeley.bidms.app.registryModel.model.SORObjectChecksum;
 import edu.berkeley.bidms.app.registryModel.model.compositeKey.SORObjectChecksumCompositeKey;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
@@ -34,4 +35,5 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
  * Repository for {@link SORObjectChecksum} entities.
  */
 public interface SORObjectChecksumRepository extends ExtendedRepository<SORObjectChecksum, SORObjectChecksumCompositeKey> {
+    SORObjectChecksum findBySorAndSorObjKey(SOR sor, String sorObjKey);
 }

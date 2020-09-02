@@ -26,15 +26,21 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.EmailType;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import edu.berkeley.bidms.app.registryModel.model.Email;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * Repository for {@link Email} entities.
  */
 public interface EmailRepository extends ExtendedRepository<Email, Long> {
+    // TODO: I think this can be simplified by using findBySorObjectAndEmailAddressIgnoreCase convention.
     @Query("SELECT em FROM Email em WHERE em.sorObject = ?1 AND LOWER(em.emailAddress) = ?2")
     Email findBySorObjectAndEmailAddressLowerCase(SORObject sorObject, String emailAddressLowerCase);
+
+    List<Email> findAllByEmailAddressIgnoreCaseAndEmailType(String emailAddress, EmailType emailType);
 }

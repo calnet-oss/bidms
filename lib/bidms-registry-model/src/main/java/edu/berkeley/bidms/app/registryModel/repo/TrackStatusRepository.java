@@ -30,9 +30,12 @@ import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.TrackStatus;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
+import java.util.List;
+
 /**
  * Repository for {@link TrackStatus} entities.
  */
 public interface TrackStatusRepository extends ExtendedRepository<TrackStatus, Long> {
     TrackStatus findByPersonAndTrackStatusType(Person person, String trackStatusType);
+    List<TrackStatus> findAllByTrackStatusType(String trackStatusType);
 }
