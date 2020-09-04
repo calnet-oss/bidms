@@ -26,7 +26,6 @@
  */
 package edu.berkeley.bidms.app.registryModel.model.compositeKey;
 
-import edu.berkeley.bidms.app.registryModel.model.SOR;
 import edu.berkeley.bidms.app.registryModel.model.SORObjectChecksum;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
@@ -38,14 +37,14 @@ import java.io.Serializable;
  * The table composite key is (sorId, sorObjKey).
  */
 public class SORObjectChecksumCompositeKey implements Serializable {
-    private SOR sor;
+    private int sorId;
     private String sorObjKey;
 
     public SORObjectChecksumCompositeKey() {
     }
 
-    public SORObjectChecksumCompositeKey(SOR sor, String sorObjKey) {
-        this.sor = sor;
+    public SORObjectChecksumCompositeKey(int sorId, String sorObjKey) {
+        this.sorId = sorId;
         this.sorObjKey = sorObjKey;
     }
 
@@ -53,7 +52,7 @@ public class SORObjectChecksumCompositeKey implements Serializable {
     private static final int HCB_MULT_ODDRAND = -175918775;
 
     private Object[] getHashCodeObjects() {
-        return new Object[]{sor.getId(), sorObjKey};
+        return new Object[]{sorId, sorObjKey};
     }
 
     @Override
@@ -72,12 +71,12 @@ public class SORObjectChecksumCompositeKey implements Serializable {
         return false;
     }
 
-    public SOR getSor() {
-        return sor;
+    public int getSorId() {
+        return sorId;
     }
 
-    public void setSor(SOR sor) {
-        this.sor = sor;
+    public void setSorId(int sorId) {
+        this.sorId = sorId;
     }
 
     public String getSorObjKey() {

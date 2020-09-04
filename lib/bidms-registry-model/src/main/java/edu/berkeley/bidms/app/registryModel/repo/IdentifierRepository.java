@@ -38,7 +38,7 @@ import java.util.List;
  * Repository for {@link Identifier} entities.
  */
 public interface IdentifierRepository extends ExtendedRepository<Identifier, Long> {
-    Identifier findByIdentifierTypeAndIdentifier(IdentifierType identifierType, String identifier);
+    List<Identifier> findAllByIdentifierTypeAndIdentifier(IdentifierType identifierType, String identifier);
 
     Identifier findByIdentifierTypeAndIdentifierAndIsPrimary(IdentifierType identifierType, String identifier, boolean isPrimary);
 

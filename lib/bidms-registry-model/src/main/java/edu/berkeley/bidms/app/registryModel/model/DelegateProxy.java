@@ -110,7 +110,7 @@ public class DelegateProxy implements Comparable<DelegateProxy> {
     public Identifier getProxyForIdentifier(IdentifierTypeRepository identifierTypeRepository, IdentifierRepository identifierRepository, String identifierTypeName) {
         // identifierTypeName can be retrieved using DelegateProxyTypeEnum.getEnum(delegateProxyType).getIdentifierTypeEnum().getName()
         IdentifierType identifierType = identifierTypeRepository.findByIdName(identifierTypeName);
-        return identifierRepository.findByIdentifierTypeAndIdentifier(identifierType, proxyForId);
+        return identifierRepository.findByIdentifierTypeAndIdentifierAndIsPrimary(identifierType, proxyForId, true);
     }
 
     /**

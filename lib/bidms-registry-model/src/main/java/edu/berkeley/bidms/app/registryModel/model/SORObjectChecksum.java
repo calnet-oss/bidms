@@ -34,7 +34,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -49,8 +48,7 @@ import java.util.Date;
 public class SORObjectChecksum implements Serializable {
 
     @Id
-    @JoinColumn(name = "sorId")
-    private SOR sor;
+    private int sorId;
 
     @Id
     @Column(length = 255)
@@ -72,7 +70,7 @@ public class SORObjectChecksum implements Serializable {
     private static final int HCB_MULT_ODDRAND = -160696885;
 
     private Object[] getHashCodeObjects() {
-        return new Object[]{sor.getId(), sorObjKey};
+        return new Object[]{sorId, sorObjKey};
     }
 
     @Override
@@ -91,12 +89,12 @@ public class SORObjectChecksum implements Serializable {
         return false;
     }
 
-    public SOR getSor() {
-        return sor;
+    public int getSorId() {
+        return sorId;
     }
 
-    public void setSor(SOR sor) {
-        this.sor = sor;
+    public void setSorId(int sorId) {
+        this.sorId = sorId;
     }
 
     public String getSorObjKey() {
