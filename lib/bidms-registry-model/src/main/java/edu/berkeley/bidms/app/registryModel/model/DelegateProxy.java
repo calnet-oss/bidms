@@ -44,6 +44,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -110,7 +111,8 @@ public class DelegateProxy implements Comparable<DelegateProxy> {
     public Identifier getProxyForIdentifier(IdentifierTypeRepository identifierTypeRepository, IdentifierRepository identifierRepository, String identifierTypeName) {
         // identifierTypeName can be retrieved using DelegateProxyTypeEnum.getEnum(delegateProxyType).getIdentifierTypeEnum().getName()
         IdentifierType identifierType = identifierTypeRepository.findByIdName(identifierTypeName);
-        return identifierRepository.findByIdentifierTypeAndIdentifierAndIsPrimary(identifierType, proxyForId, true);
+        List<Identifier> all = identifierRepository.findAllByIdentifierTypeAndIdentifier(identifierType, proxyForId);
+        return all.size() > 0 ? all.iterator().next() : null;
     }
 
     /**
