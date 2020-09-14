@@ -34,7 +34,8 @@ import java.util.Map;
 public class ConstraintsUtil {
 
     /**
-     * This adds a dynamic payload map to a constraint violation.  The map
+     * This adds a dynamic payload map to a constraint violation.  this is
+     * typically used by a property-level or method-level validator.  The map
      * contains two key/value pairs: <code>code</code> and
      * <code>message</code>.
      * <code>code</code> is the short form of the error and
@@ -65,6 +66,46 @@ public class ConstraintsUtil {
         ctx.disableDefaultConstraintViolation();
         ctx.withDynamicPayload(Map.of("code", code, "message", message))
                 .buildConstraintViolationWithTemplate(message)
+                .addConstraintViolation();
+        return false;
+    }
+
+    /**
+     * This adds a dynamic payload map to a constraint violation.  This is
+     * typically used by a class-level validator.  The map contains three
+     * key/value pairs: <code>field</code>, <code>code</code> and
+     * <code>message</code>.
+     * <code>field</code> is the property name.
+     * <code>code</code> is the short form of the error and
+     * <code>message</code>
+     * is the longer description of the error.
+     * <p>
+     * To access the map: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(Map.class)}
+     * where <code>violation</code> is an instance of {@link
+     * javax.validation.ConstraintViolation}.
+     * <p>
+     * See <a href="https://docs.jboss.org/hibernate/validator/6.0/reference/en-US/html_single/#section-dynamic-payload">Hibernate
+     * Validator reference documentation: Dynamic payload as part of
+     * ConstraintViolation</a>.
+     *
+     * @param context      An instance of {@link ConstraintValidatorContext}
+     *                     accessible from implementations of {@link
+     *                     javax.validation.ConstraintValidator#isValid(Object,
+     *                     ConstraintValidatorContext)}.
+     * @param propertyName Name of property that has failed validation.
+     * @param code         Short form of the error description.
+     * @param message      Long form of the error description.
+     * @return Always returns false as a convenience so that {@code return
+     * violation(...)} may be used within implementations of {@link
+     * javax.validation.ConstraintValidator#isValid(Object,
+     * ConstraintValidatorContext)}.
+     */
+    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message) {
+        HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
+        ctx.disableDefaultConstraintViolation();
+        ctx.withDynamicPayload(Map.of("field", propertyName, "code", code, "message", message))
+                .buildConstraintViolationWithTemplate(message)
+                .addPropertyNode(propertyName)
                 .addConstraintViolation();
         return false;
     }
