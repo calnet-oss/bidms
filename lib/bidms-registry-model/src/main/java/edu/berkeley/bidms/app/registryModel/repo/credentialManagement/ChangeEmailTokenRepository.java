@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo.credentialManagement;
 
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.credentialManagement.ChangeEmailToken;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
@@ -33,4 +34,5 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
  * Repository for {@link ChangeEmailToken} entities.
  */
 public interface ChangeEmailTokenRepository extends ExtendedRepository<ChangeEmailToken, Long> {
+    ChangeEmailToken findByTokenAndPerson(String token, Person person);
 }
