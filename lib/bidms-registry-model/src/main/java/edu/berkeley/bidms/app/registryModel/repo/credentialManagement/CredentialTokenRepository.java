@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo.credentialManagement;
 
+import edu.berkeley.bidms.app.registryModel.model.Identifier;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.credentialManagement.CredentialToken;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
@@ -35,4 +36,8 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
  */
 public interface CredentialTokenRepository extends ExtendedRepository<CredentialToken, Long>, TokenRepository<CredentialToken> {
     CredentialToken findByPersonAndToken(Person person, String token);
+
+    CredentialToken findByIdentifierAndPerson(Identifier identifier, Person person);
+
+    int countByToken(String token);
 }
