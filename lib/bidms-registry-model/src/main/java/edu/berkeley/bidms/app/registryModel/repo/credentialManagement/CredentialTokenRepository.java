@@ -33,6 +33,6 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 /**
  * Repository for {@link CredentialToken} entities.
  */
-public interface CredentialTokenRepository extends ExtendedRepository<CredentialToken, Long> {
+public interface CredentialTokenRepository extends ExtendedRepository<CredentialToken, Long>, TokenRepository<CredentialToken> {
     CredentialToken findByPersonAndToken(Person person, String token);
 }

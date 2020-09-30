@@ -33,6 +33,10 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 /**
  * Repository for {@link ChangeEmailToken} entities.
  */
-public interface ChangeEmailTokenRepository extends ExtendedRepository<ChangeEmailToken, Long> {
+public interface ChangeEmailTokenRepository extends ExtendedRepository<ChangeEmailToken, Long>, TokenRepository<ChangeEmailToken> {
     ChangeEmailToken findByTokenAndPerson(String token, Person person);
+
+    ChangeEmailToken findByPersonAndEmailAddress(Person person, String emailAddress);
+
+    int countByToken(String token);
 }
