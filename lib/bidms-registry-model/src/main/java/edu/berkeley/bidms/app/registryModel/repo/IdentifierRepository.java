@@ -49,4 +49,6 @@ public interface IdentifierRepository extends ExtendedRepository<Identifier, Lon
     List<Identifier> findAllByPerson(Person person);
 
     List<Identifier> findAllByPersonAndIdentifierType(Person person, IdentifierType identifierType);
+
+    List<Identifier> findAllByIdentifierAndIsActiveAndIdentifierTypeIn(String identifier, boolean isActive, List<IdentifierType> identifierTypes);
 }

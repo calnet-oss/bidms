@@ -29,9 +29,13 @@ package edu.berkeley.bidms.app.registryModel.repo;
 import edu.berkeley.bidms.app.registryModel.model.IdentifierType;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
+import java.util.List;
+
 /**
  * Repository for {@link IdentifierType} entities.
  */
 public interface IdentifierTypeRepository extends ExtendedRepository<IdentifierType, Integer> {
     IdentifierType findByIdName(String idName);
+
+    List<IdentifierType> findByIdNameIn(List<String> idNames);
 }

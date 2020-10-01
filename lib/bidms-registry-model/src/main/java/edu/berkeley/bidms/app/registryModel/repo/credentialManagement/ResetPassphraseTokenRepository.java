@@ -35,4 +35,6 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
  */
 public interface ResetPassphraseTokenRepository extends ExtendedRepository<ResetPassphraseToken, Long>, TokenRepository<ResetPassphraseToken> {
     ResetPassphraseToken findByTokenAndPerson(String token, Person person);
+
+    int countByToken(String token);
 }
