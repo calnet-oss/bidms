@@ -28,9 +28,16 @@ package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * Repository for {@link Person} entities.
  */
 public interface PersonRepository extends ExtendedRepository<Person, String> {
+    List<Person> findAllByUidIn(List<String> uid);
+    List<Person> findAllByIsLocked(boolean isLocked);
+    List<Person> findAllByIsLocked(boolean isLocked, Pageable pageable);
+    int countByIsLocked(boolean isLocked);
 }
