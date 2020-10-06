@@ -129,7 +129,7 @@ class EmailSpec extends Specification {
                 "uid123"
         )
         assert sorObject
-        Email email = emailRepository.findBySorObjectAndEmailAddressLowerCase(sorObject, "sarcher@berkeley.edu")
+        Email email = emailRepository.findBySorObjectAndEmailAddressIgnoreCase(sorObject, "sarcher@berkeley.edu")
 
         then:
         email
