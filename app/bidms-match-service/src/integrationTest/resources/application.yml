@@ -29,6 +29,10 @@ bidms:
         url: http://localhost:8080/provisioning/provision/save
       new-uid:
         url: http://localhost:8080/provisioning/newUid/save
+    match-service:
+      baseUrl: http://notneeded
+      trigger-match:
+        url: http://notneeded
   jms-connections:
     AMQ:
       broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
