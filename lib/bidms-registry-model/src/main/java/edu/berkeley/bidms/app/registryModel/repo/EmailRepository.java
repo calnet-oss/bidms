@@ -45,4 +45,6 @@ public interface EmailRepository extends ExtendedRepository<Email, Long> {
     Email findBySorObjectAndEmailAddressIgnoreCase(SORObject sorObject, String emailAddressLowerCase);
 
     List<Email> findAllByEmailAddressIgnoreCaseAndEmailType(String emailAddress, EmailType emailType);
+
+    List<Email> findAllBySorObject(SORObject sorObject);
 }

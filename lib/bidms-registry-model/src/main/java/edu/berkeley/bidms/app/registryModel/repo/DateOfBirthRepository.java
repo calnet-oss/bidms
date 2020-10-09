@@ -38,5 +38,8 @@ import java.util.List;
  */
 public interface DateOfBirthRepository extends ExtendedRepository<DateOfBirth, Long> {
     DateOfBirth findBySorObject(SORObject sorObject);
+
     List<DateOfBirth> findAllByPerson(Person person);
+
+    List<DateOfBirth> findAllBySorObject(SORObject sorObject);
 }

@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.PersonName;
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
 import java.util.List;
@@ -37,4 +38,6 @@ import java.util.List;
  */
 public interface PersonNameRepository extends ExtendedRepository<PersonName, Long> {
     List<PersonName> findAllByPerson(Person person);
+
+    List<PersonName> findAllBySorObject(SORObject sorObject);
 }

@@ -43,6 +43,8 @@ public interface PartialMatchRepository extends ExtendedRepository<PartialMatch,
 
     List<PartialMatch> findAllBySorObject(SORObject sorObject);
 
+    List<PartialMatch> findAllByPerson(Person person);
+
     long countBySorObject(SORObject sorObject);
 
     long countBySorObjectAndPerson(SORObject sorObject, Person person);

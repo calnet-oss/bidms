@@ -27,11 +27,15 @@
 package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.DelegateProxy;
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link DelegateProxy} entities.
  */
 public interface DelegateProxyRepository extends ExtendedRepository<DelegateProxy, Long> {
     DelegateProxy findBySourceProxyId(String id);
+    List<DelegateProxy> findAllByDelegateProxySorObject(SORObject sorObject);
 }

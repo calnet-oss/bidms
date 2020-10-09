@@ -26,11 +26,15 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.app.registryModel.model.Telephone;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link Telephone} entities.
  */
 public interface TelephoneRepository extends ExtendedRepository<Telephone, Long> {
+    List<Telephone> findAllBySorObject(SORObject sorObject);
 }

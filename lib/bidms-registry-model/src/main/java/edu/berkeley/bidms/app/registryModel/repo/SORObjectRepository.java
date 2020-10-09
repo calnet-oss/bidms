@@ -41,4 +41,6 @@ public interface SORObjectRepository extends ExtendedRepository<SORObject, Long>
     SORObject findByPersonAndSorAndSorPrimaryKey(Person person, SOR sor, String sorPrimaryKey);
     List<SORObject> findAllByPerson(Person person);
     List<SORObject> findAllByPersonAndSor(Person person, SOR sor);
+    List<SORObject> findAllBySorPrimaryKey(String sorPrimaryKey);
+    List<SORObject> findAllBySorPrimaryKeyIn(List<String> sorPrimaryKeys);
 }

@@ -27,9 +27,13 @@
 package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.JobAppointment;
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
+
+import java.util.List;
 
 /**
  * Repository for {@link JobAppointment} entities.
  */
 public interface JobAppointmentRepository extends PersonAppointmentRepository<JobAppointment> {
+    List<JobAppointment> findAllBySorObject(SORObject sorObject);
 }
