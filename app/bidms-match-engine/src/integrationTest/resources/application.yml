@@ -23,6 +23,10 @@ bidms:
       new-uid:
         baseUrl: http://notneeded
         url: http://notneeded
+    match-service:
+      baseUrl: http://notneeded
+      trigger-match:
+        url: http://notneeded
   jms:
     downstream:
       provision-uid:
