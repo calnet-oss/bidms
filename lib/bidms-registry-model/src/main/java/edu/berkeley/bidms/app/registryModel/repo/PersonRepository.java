@@ -40,4 +40,5 @@ public interface PersonRepository extends ExtendedRepository<Person, String> {
     List<Person> findAllByIsLocked(boolean isLocked);
     List<Person> findAllByIsLocked(boolean isLocked, Pageable pageable);
     int countByIsLocked(boolean isLocked);
+    List<Person> findAllByUidLike(String likeUid);
 }
