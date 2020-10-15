@@ -29,6 +29,7 @@ package edu.berkeley.bidms.common.constraints;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.validation.ConstraintValidatorContext;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ConstraintsUtil {
@@ -101,12 +102,30 @@ public class ConstraintsUtil {
      * ConstraintValidatorContext)}.
      */
     public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message) {
+        return violation(context, propertyName, code, message, null);
+    }
+
+    /**
+     * Same as {@link #violation(ConstraintValidatorContext, String, String,
+     * String)} but arbitrary key/value pairs can be added to the payload.
+     */
+    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, Map<String, Object> additionalPayload) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-        ctx.withDynamicPayload(Map.of("field", propertyName, "code", code, "message", message))
+
+        Map<String, Object> payloadMap = new LinkedHashMap<>();
+        payloadMap.put("field", propertyName);
+        payloadMap.put("code", code);
+        payloadMap.put("message", message);
+        if (additionalPayload != null) {
+            payloadMap.putAll(additionalPayload);
+        }
+
+        ctx.withDynamicPayload(payloadMap)
                 .buildConstraintViolationWithTemplate(message)
                 .addPropertyNode(propertyName)
                 .addConstraintViolation();
+
         return false;
     }
 }
