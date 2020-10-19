@@ -30,6 +30,7 @@ import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.SOR;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -38,9 +39,17 @@ import java.util.List;
  */
 public interface SORObjectRepository extends ExtendedRepository<SORObject, Long> {
     SORObject findBySorAndSorPrimaryKey(SOR sor, String sorPrimaryKey);
+
     SORObject findByPersonAndSorAndSorPrimaryKey(Person person, SOR sor, String sorPrimaryKey);
+
     List<SORObject> findAllByPerson(Person person);
+
     List<SORObject> findAllByPersonAndSor(Person person, SOR sor);
+
     List<SORObject> findAllBySorPrimaryKey(String sorPrimaryKey);
+
     List<SORObject> findAllBySorPrimaryKeyIn(List<String> sorPrimaryKeys);
+
+    @Query("SELECT obj.sorObject FROM PartialMatch obj WHERE obj.isReject=?1 GROUP BY obj.sorObject")
+    List<SORObject> findAllPartialMatchesByIsRejectGroupBySorObject(boolean isReject);
 }

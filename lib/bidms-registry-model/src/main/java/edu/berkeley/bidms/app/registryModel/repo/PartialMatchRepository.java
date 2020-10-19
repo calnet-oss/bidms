@@ -30,7 +30,7 @@ import edu.berkeley.bidms.app.registryModel.model.PartialMatch;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -49,8 +49,5 @@ public interface PartialMatchRepository extends ExtendedRepository<PartialMatch,
 
     long countBySorObjectAndPerson(SORObject sorObject, Person person);
 
-    @Query("SELECT obj.sorObject FROM PartialMatch obj WHERE obj.isReject=?1 GROUP BY obj.sorObject")
-    List<PartialMatch> findAllByIsRejectGroupBySorObject(boolean isReject);
-
-    List<PartialMatch> findAllByIsReject(boolean isReject);
+    List<PartialMatch> findAllByIsReject(boolean isReject, Pageable pageable);
 }
