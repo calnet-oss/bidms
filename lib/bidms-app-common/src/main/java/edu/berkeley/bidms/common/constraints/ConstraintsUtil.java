@@ -35,15 +35,14 @@ import java.util.List;
 public class ConstraintsUtil {
 
     /**
-     * This adds a dynamic payload map to a constraint violation.  this is
+     * This adds a dynamic payload map to a constraint violation.  This is
      * typically used by a property-level or method-level validator.
      * <p>
      * The dynamic payload (see {@link BidmsConstraintViolationDynamicPayload})
      * contains the following properties: <code>code</code> and
      * <code>message</code>.
      * <code>code</code> is the short form of the error and
-     * <code>message</code>
-     * is the longer description of the error.
+     * <code>message</code> is the longer description of the error.
      * <p>
      * To access the payload: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(BidmsConstraintViolationDynamicPayload.class)}
      * where <code>violation</code> is an instance of {@link
@@ -96,13 +95,13 @@ public class ConstraintsUtil {
 
     /**
      * Same as {@link #violation(ConstraintValidatorContext, String, String,
-     * String)} but a list of additional attributes can be added to the
+     * String)} but a list of additional arguments can be added to the
      * payload.
      */
-    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, List<Object> additionalPayloadAttributes) {
+    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, List<Object> additionalPayloadArguments) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message, additionalPayloadAttributes))
+        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message, additionalPayloadArguments))
                 .buildConstraintViolationWithTemplate(message)
                 .addPropertyNode(propertyName)
                 .addConstraintViolation();

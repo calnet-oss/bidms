@@ -76,8 +76,8 @@ public class DynamicPayloadAwareValidator extends SpringValidatorAdapter {
          * the rest  all actual constraint annotation attributes (i.e.
          *           excluding "message", "groups" and "payload") in
          *           alphabetical order of their attribute names PLUS
-         *           elements from
-         *           {@link BidmsConstraintViolationDynamicPayload#getAttributes()}.
+         *           additional arguments from
+         *           {@link BidmsConstraintViolationDynamicPayload#getArguments()}.
          * </pre>
          */
         LinkedList<Object> newArguments = new LinkedList<>();
@@ -94,16 +94,16 @@ public class DynamicPayloadAwareValidator extends SpringValidatorAdapter {
         // The super arguments (after the first element, the field name, was popped off the list).
         newArguments.addAll(superArguments);
 
-        // If there is a dynamic payload with attributes, add the attributes.
-        if (dynamicPayload != null && dynamicPayload.getAttributes() != null) {
-            List<?> transformedAttributes = dynamicPayload.getAttributes().stream().map(element -> {
+        // If there is a dynamic payload with additional arguments, add them.
+        if (dynamicPayload != null && dynamicPayload.getArguments() != null) {
+            List<?> transformedArguments = dynamicPayload.getArguments().stream().map(element -> {
                 if (element instanceof String) {
                     return new ResolvableAttribute(element.toString());
                 } else {
                     return element;
                 }
             }).collect(Collectors.toList());
-            newArguments.addAll(transformedAttributes);
+            newArguments.addAll(transformedArguments);
         }
 
         return newArguments.toArray();

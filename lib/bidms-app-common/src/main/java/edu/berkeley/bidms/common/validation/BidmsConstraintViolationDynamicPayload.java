@@ -7,17 +7,17 @@ import java.util.Map;
 public class BidmsConstraintViolationDynamicPayload {
     private final String code;
     private final String message;
-    private List<?> attributes;
+    private List<?> arguments;
 
     public BidmsConstraintViolationDynamicPayload(String code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public BidmsConstraintViolationDynamicPayload(String code, String message, List<?> attributes) {
+    public BidmsConstraintViolationDynamicPayload(String code, String message, List<?> arguments) {
         this.code = code;
         this.message = message;
-        this.attributes = attributes;
+        this.arguments = arguments;
     }
 
     public String getCode() {
@@ -28,12 +28,12 @@ public class BidmsConstraintViolationDynamicPayload {
         return message;
     }
 
-    public List<?> getAttributes() {
-        return attributes;
+    public List<?> getArguments() {
+        return arguments;
     }
 
-    public void setAttributes(List<?> attributes) {
-        this.attributes = attributes;
+    public void setArguments(List<?> arguments) {
+        this.arguments = arguments;
     }
 
     public Map<String, ?> asMap() {
@@ -44,8 +44,8 @@ public class BidmsConstraintViolationDynamicPayload {
         if (message != null) {
             map.put("message", message);
         }
-        if (attributes != null) {
-            map.put("attributes", attributes);
+        if (arguments != null) {
+            map.put("arguments", arguments);
         }
         return map;
     }
