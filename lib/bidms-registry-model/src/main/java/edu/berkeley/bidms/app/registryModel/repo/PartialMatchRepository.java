@@ -50,4 +50,6 @@ public interface PartialMatchRepository extends ExtendedRepository<PartialMatch,
     long countBySorObjectAndPerson(SORObject sorObject, Person person);
 
     List<PartialMatch> findAllByIsReject(boolean isReject, Pageable pageable);
+
+    List<PartialMatch> findAllByIsReject(boolean isReject);
 }
