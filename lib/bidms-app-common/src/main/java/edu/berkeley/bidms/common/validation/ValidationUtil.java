@@ -26,17 +26,31 @@
  */
 package edu.berkeley.bidms.common.validation;
 
+import org.springframework.lang.Nullable;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Errors;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
 
 public class ValidationUtil {
     public static <T> void validate(Validator validator, T bean) throws ValidationException {
+        validate(validator, null, bean);
+    }
+
+    public static <T> void validate(Validator validator, @Nullable MessageCodesResolver messageCodesResolver, T bean) throws ValidationException {
         // A Spring Validator instance can be injected into your beans by
         // injecting an instance of SpringValidatorAdapter, which implements
         // Validator.  Or, inject the ValidationService service into your
         // code and use that.
-        DataBinder db = new DataBinder(bean);
+        //
+        // Also note, in controllers, you probably don't want to use this,
+        // but instead use an @InitBinder annotation on a method to
+        // initialize the controller's DataBinder with the validator you
+        // want.  In controller methods, you can then add a BindingResult
+        // parameter to check the result of validation on any @Valid marked
+        // method parameters.
+        DataBinder db = new DataBinder(bean, bean.getClass().getName());
+        db.setMessageCodesResolver(messageCodesResolver);
         db.addValidators(validator);
         db.validate();
         Errors errors = db.getBindingResult();

@@ -26,24 +26,26 @@
  */
 package edu.berkeley.bidms.common.constraints;
 
+import edu.berkeley.bidms.common.validation.BidmsConstraintViolationDynamicPayload;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.validation.ConstraintValidatorContext;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 public class ConstraintsUtil {
 
     /**
      * This adds a dynamic payload map to a constraint violation.  this is
-     * typically used by a property-level or method-level validator.  The map
-     * contains two key/value pairs: <code>code</code> and
+     * typically used by a property-level or method-level validator.
+     * <p>
+     * The dynamic payload (see {@link BidmsConstraintViolationDynamicPayload})
+     * contains the following properties: <code>code</code> and
      * <code>message</code>.
      * <code>code</code> is the short form of the error and
      * <code>message</code>
      * is the longer description of the error.
      * <p>
-     * To access the map: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(Map.class)}
+     * To access the payload: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(BidmsConstraintViolationDynamicPayload.class)}
      * where <code>violation</code> is an instance of {@link
      * javax.validation.ConstraintViolation}.
      * <p>
@@ -65,29 +67,16 @@ public class ConstraintsUtil {
     public static boolean violation(ConstraintValidatorContext context, String code, String message) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-        ctx.withDynamicPayload(Map.of("code", code, "message", message))
+        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message))
                 .buildConstraintViolationWithTemplate(message)
                 .addConstraintViolation();
         return false;
     }
 
     /**
-     * This adds a dynamic payload map to a constraint violation.  This is
-     * typically used by a class-level validator.  The map contains three
-     * key/value pairs: <code>field</code>, <code>code</code> and
-     * <code>message</code>.
-     * <code>field</code> is the property name.
-     * <code>code</code> is the short form of the error and
-     * <code>message</code>
-     * is the longer description of the error.
-     * <p>
-     * To access the map: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(Map.class)}
-     * where <code>violation</code> is an instance of {@link
-     * javax.validation.ConstraintViolation}.
-     * <p>
-     * See <a href="https://docs.jboss.org/hibernate/validator/6.0/reference/en-US/html_single/#section-dynamic-payload">Hibernate
-     * Validator reference documentation: Dynamic payload as part of
-     * ConstraintViolation</a>.
+     * Same as {@link #violation(ConstraintValidatorContext, String, String)}
+     * but additionally sets the <code>field</code> property in the dynamic
+     * payload.
      *
      * @param context      An instance of {@link ConstraintValidatorContext}
      *                     accessible from implementations of {@link
@@ -107,21 +96,13 @@ public class ConstraintsUtil {
 
     /**
      * Same as {@link #violation(ConstraintValidatorContext, String, String,
-     * String)} but arbitrary key/value pairs can be added to the payload.
+     * String)} but a list of additional attributes can be added to the
+     * payload.
      */
-    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, Map<String, Object> additionalPayload) {
+    public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, List<Object> additionalPayloadAttributes) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-
-        Map<String, Object> payloadMap = new LinkedHashMap<>();
-        payloadMap.put("field", propertyName);
-        payloadMap.put("code", code);
-        payloadMap.put("message", message);
-        if (additionalPayload != null) {
-            payloadMap.putAll(additionalPayload);
-        }
-
-        ctx.withDynamicPayload(payloadMap)
+        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message, additionalPayloadAttributes))
                 .buildConstraintViolationWithTemplate(message)
                 .addPropertyNode(propertyName)
                 .addConstraintViolation();
