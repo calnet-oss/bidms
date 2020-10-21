@@ -4,17 +4,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BidmsConstraintViolationDynamicPayload {
+public class ConstraintViolationDynamicPayload {
     private final String code;
     private final String message;
     private List<?> arguments;
 
-    public BidmsConstraintViolationDynamicPayload(String code, String message) {
+    public ConstraintViolationDynamicPayload(String code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public BidmsConstraintViolationDynamicPayload(String code, String message, List<?> arguments) {
+    public ConstraintViolationDynamicPayload(String code, String message, List<?> arguments) {
         this.code = code;
         this.message = message;
         this.arguments = arguments;

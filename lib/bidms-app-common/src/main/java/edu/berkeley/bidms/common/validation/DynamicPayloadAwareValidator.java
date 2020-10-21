@@ -42,7 +42,7 @@ public class DynamicPayloadAwareValidator extends SpringValidatorAdapter {
     @Override
     protected String determineErrorCode(ConstraintDescriptor<?> descriptor) {
         WrappedConstraintDescriptor<?, ?> wrappedConstraintDescriptor = (WrappedConstraintDescriptor<?, ?>) descriptor;
-        BidmsConstraintViolationDynamicPayload dynamicPayload = wrappedConstraintDescriptor.getHibernateConstraintViolationBidmsDynamicPayload();
+        ConstraintViolationDynamicPayload dynamicPayload = wrappedConstraintDescriptor.getHibernateConstraintViolationBidmsDynamicPayload();
         if (dynamicPayload != null && dynamicPayload.getCode() != null) {
             return dynamicPayload.getCode();
         } else {
@@ -55,7 +55,7 @@ public class DynamicPayloadAwareValidator extends SpringValidatorAdapter {
         LinkedList<Object> superArguments = Arrays.stream(super.getArgumentsForConstraint(objectName, field, descriptor)).collect(Collectors.toCollection(LinkedList::new));
 
         WrappedConstraintDescriptor<?, ?> wrappedConstraintDescriptor = (WrappedConstraintDescriptor<?, ?>) descriptor;
-        BidmsConstraintViolationDynamicPayload dynamicPayload = wrappedConstraintDescriptor.getHibernateConstraintViolationBidmsDynamicPayload();
+        ConstraintViolationDynamicPayload dynamicPayload = wrappedConstraintDescriptor.getHibernateConstraintViolationBidmsDynamicPayload();
 
         /*
          * The documentation for this method in the super class states:
@@ -261,8 +261,8 @@ public class DynamicPayloadAwareValidator extends SpringValidatorAdapter {
             return getHibernateConstraintViolation().getDynamicPayload(payloadType);
         }
 
-        public BidmsConstraintViolationDynamicPayload getHibernateConstraintViolationBidmsDynamicPayload() {
-            return getHibernateConstraintViolation().getDynamicPayload(BidmsConstraintViolationDynamicPayload.class);
+        public ConstraintViolationDynamicPayload getHibernateConstraintViolationBidmsDynamicPayload() {
+            return getHibernateConstraintViolation().getDynamicPayload(ConstraintViolationDynamicPayload.class);
         }
     }
 

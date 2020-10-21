@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.common.constraints;
 
-import edu.berkeley.bidms.common.validation.BidmsConstraintViolationDynamicPayload;
+import edu.berkeley.bidms.common.validation.ConstraintViolationDynamicPayload;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.validation.ConstraintValidatorContext;
@@ -38,7 +38,7 @@ public class ConstraintsUtil {
      * This adds a dynamic payload map to a constraint violation.  This is
      * typically used by a property-level or method-level validator.
      * <p>
-     * The dynamic payload (see {@link BidmsConstraintViolationDynamicPayload})
+     * The dynamic payload (see {@link ConstraintViolationDynamicPayload})
      * contains the following properties: <code>code</code> and
      * <code>message</code>.
      * <code>code</code> is the short form of the error and
@@ -66,7 +66,7 @@ public class ConstraintsUtil {
     public static boolean violation(ConstraintValidatorContext context, String code, String message) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message))
+        ctx.withDynamicPayload(new ConstraintViolationDynamicPayload(code, message))
                 .buildConstraintViolationWithTemplate(message)
                 .addConstraintViolation();
         return false;
@@ -101,7 +101,7 @@ public class ConstraintsUtil {
     public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message, List<Object> additionalPayloadArguments) {
         HibernateConstraintValidatorContext ctx = context.unwrap(HibernateConstraintValidatorContext.class);
         ctx.disableDefaultConstraintViolation();
-        ctx.withDynamicPayload(new BidmsConstraintViolationDynamicPayload(code, message, additionalPayloadArguments))
+        ctx.withDynamicPayload(new ConstraintViolationDynamicPayload(code, message, additionalPayloadArguments))
                 .buildConstraintViolationWithTemplate(message)
                 .addPropertyNode(propertyName)
                 .addConstraintViolation();
