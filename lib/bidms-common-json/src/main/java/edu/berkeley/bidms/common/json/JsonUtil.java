@@ -41,6 +41,7 @@ import java.util.TimeZone;
  */
 public class JsonUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
+
     static {
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"));
         objectMapper.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -191,7 +192,37 @@ public class JsonUtil {
         if (obj == null) {
             return null;
         }
-        // Not sure this is the most efficient way
+        // Not sure this is the most efficient way: TODO perhaps convertValue(obj, Map) instead?
         return convertJsonToMap(convertObjectToJson(obj));
+    }
+
+    /**
+     * Convert JSON to an object.
+     *
+     * @param json  The JSON string to convert to an object.
+     * @param clazz The class of the object.
+     * @param <T>   The class type of the object
+     * @return The object converted from JSON.
+     * @throws JsonProcessingException If an error occurs converting the JSON
+     *                                 to an object.
+     */
+    public static <T> T convertJsonToObject(String json, Class<T> clazz) throws JsonProcessingException {
+        return json != null ? objectMapper.readValue(json, clazz) : null;
+    }
+
+    /**
+     * Convert a map to an object.
+     *
+     * @param map   The map to convert to an object.
+     * @param clazz The class of the object.
+     * @param <T>   The class type of the object.
+     * @return The cbject converted from a map.
+     * @throws IllegalArgumentException If conversion fails due to
+     *                                  incompatible type.  See {@link
+     *                                  ObjectMapper#convertValue(Object,
+     *                                  Class)}.
+     */
+    public static <T> T convertMapToObject(Map<?, ?> map, Class<T> clazz) throws IllegalArgumentException {
+        return map != null ? objectMapper.convertValue(map, clazz) : null;
     }
 }
