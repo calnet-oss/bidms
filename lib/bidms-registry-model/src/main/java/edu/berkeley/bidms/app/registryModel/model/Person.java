@@ -27,10 +27,11 @@
 package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonValidator;
-import edu.berkeley.bidms.orm.event.ValidateOnFlush;
 import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
 import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
+import edu.berkeley.bidms.orm.event.ValidateOnFlush;
 import org.hibernate.annotations.CollectionType;
 import org.springframework.validation.Validator;
 
@@ -85,66 +86,77 @@ public class Person implements ValidateOnFlush {
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.AddressCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Address> addresses = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonNameCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonName> names = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DateOfBirthCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DateOfBirth> datesOfBirth = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Identifier> identifiers = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.EmailCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Email> emails = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.TelephoneCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Telephone> telephones = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonRole> assignedRoles = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.TrackStatusCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<TrackStatus> trackStatuses = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DelegateProxyCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DelegateProxy> delegations = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.DownstreamObjectCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DownstreamObject> downstreamObjects = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.JobAppointmentCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<JobAppointment> jobAppointments = new RebuildableTreeSet<>();
 
     // archivedIdentifiers is read-only
@@ -152,12 +164,14 @@ public class Person implements ValidateOnFlush {
     @OneToMany(mappedBy = "person")
     @OrderBy("originalIdentifierId")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierArchiveCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<IdentifierArchive> archivedIdentifiers = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleArchiveCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonRoleArchive> archivedRoles = new RebuildableTreeSet<>();
 
     public Person addToAddresses(Address obj) {
