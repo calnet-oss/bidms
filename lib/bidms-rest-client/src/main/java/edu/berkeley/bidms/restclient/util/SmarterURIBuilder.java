@@ -27,9 +27,13 @@
 package edu.berkeley.bidms.restclient.util;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SmarterURIBuilder extends URIBuilder {
     public SmarterURIBuilder(URI uri) {
@@ -89,6 +93,19 @@ public class SmarterURIBuilder extends URIBuilder {
      */
     public SmarterURIBuilder addParameter(final String param, final Object value) {
         return addParameter(param, value.toString());
+    }
+
+    /**
+     * Same as {@link URIBuilder#addParameters(List)} except the parameters
+     * are specified as a flat map.
+     *
+     * @param parameters Map containing query parameters.
+     * @return Returns self.
+     */
+    public SmarterURIBuilder addParameters(Map<String, String> parameters) {
+        return (SmarterURIBuilder) super.addParameters(parameters.entrySet().stream().map(
+                it -> new BasicNameValuePair(it.getKey(), it.getValue())
+        ).collect(Collectors.toList()));
     }
 
     /**
