@@ -26,11 +26,11 @@
  */
 package edu.berkeley.bidms.app.registryModel.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.common.json.JsonUtil;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -48,6 +48,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,7 +69,6 @@ import java.util.Objects;
  * as a role.  For that, see {@link AssignableRole} and {@link PersonRole}.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonIgnoreProperties({"id", "trackStatusType", "timeCreated", "description", "metaData"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "trackStatusType"}))
 @Entity
 public class TrackStatus implements Comparable<TrackStatus> {
@@ -86,14 +86,18 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Id
     private Long id;
 
+    @JsonIgnore
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
+    @NotNull
     private Person person;
 
     @Column(nullable = false, length = 64)
+    @NotNull
     private String trackStatusType;
 
     @Column(insertable = false, updatable = false)
@@ -102,6 +106,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Column(length = 256)
     private String description;
 
+    @JsonIgnore
     @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(columnDefinition = "JSONB")
     private String metaDataJson = "{}";
