@@ -34,10 +34,14 @@ import org.springframework.validation.Validator;
 
 public class ValidationUtil {
     public static <T> void validate(Validator validator, T bean) throws ValidationException {
-        validate(validator, null, bean);
+        validate(validator, null, bean, null);
     }
 
-    public static <T> void validate(Validator validator, @Nullable MessageCodesResolver messageCodesResolver, T bean) throws ValidationException {
+    public static <T> void validate(Validator validator, T bean, @Nullable String objectName) throws ValidationException {
+        validate(validator, null, bean, objectName);
+    }
+
+    public static <T> void validate(Validator validator, @Nullable MessageCodesResolver messageCodesResolver, T bean, @Nullable String objectName) throws ValidationException {
         // A Spring Validator instance can be injected into your beans by
         // injecting an instance of SpringValidatorAdapter, which implements
         // Validator.  Or, inject the ValidationService service into your
@@ -49,7 +53,7 @@ public class ValidationUtil {
         // want.  In controller methods, you can then add a BindingResult
         // parameter to check the result of validation on any @Valid marked
         // method parameters.
-        DataBinder db = new DataBinder(bean, bean.getClass().getName());
+        DataBinder db = new DataBinder(bean, objectName != null ? objectName : bean.getClass().getName());
         db.setMessageCodesResolver(messageCodesResolver);
         db.addValidators(validator);
         db.validate();
