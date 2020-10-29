@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonValidator;
 import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
@@ -487,6 +488,7 @@ public class Person implements ValidateOnFlush {
         collection.rebuild();
     }
 
+    @JsonSetter
     public void setId(String uid) {
         this.uid = uid;
     }
