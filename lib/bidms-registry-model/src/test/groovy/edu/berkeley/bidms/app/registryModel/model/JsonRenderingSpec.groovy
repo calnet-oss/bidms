@@ -111,8 +111,7 @@ class JsonRenderingSpec extends Specification {
     "identifier" : "hr123",
     "isPrimary" : false,
     "weight" : 0
-  } ],
-  "id" : "1"
+  } ]
 }'''
 
     void "test person to json"() {
