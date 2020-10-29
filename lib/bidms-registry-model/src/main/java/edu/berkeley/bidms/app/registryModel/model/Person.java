@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.registryModel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonValidator;
@@ -490,6 +491,7 @@ public class Person implements ValidateOnFlush {
         this.uid = uid;
     }
 
+    @JsonIgnore
     public String getId() {
         return uid;
     }
