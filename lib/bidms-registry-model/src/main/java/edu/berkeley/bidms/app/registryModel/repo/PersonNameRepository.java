@@ -40,4 +40,6 @@ public interface PersonNameRepository extends ExtendedRepository<PersonName, Lon
     List<PersonName> findAllByPerson(Person person);
 
     List<PersonName> findAllBySorObject(SORObject sorObject);
+
+    PersonName findByPersonAndIsPrimary(Person person, boolean isPrimary);
 }
