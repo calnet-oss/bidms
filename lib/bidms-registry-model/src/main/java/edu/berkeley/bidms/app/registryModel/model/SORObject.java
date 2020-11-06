@@ -148,7 +148,6 @@ public class SORObject implements Comparable<SORObject> {
         this.id = id;
     }
 
-    @Transient
     public String getUid() {
         return uid;
     }
