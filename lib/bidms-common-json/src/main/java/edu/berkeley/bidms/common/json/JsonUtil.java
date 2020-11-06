@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.common.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +46,10 @@ public class JsonUtil {
     static {
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"));
         objectMapper.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+
+    public static void registerModule(Module module) {
+        objectMapper.registerModule(module);
     }
 
     /**
