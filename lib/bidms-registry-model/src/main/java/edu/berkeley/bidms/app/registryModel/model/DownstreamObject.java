@@ -29,8 +29,8 @@ package edu.berkeley.bidms.app.registryModel.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.common.json.JsonUtil;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -108,7 +108,6 @@ public class DownstreamObject implements Comparable<DownstreamObject> {
     @Column
     private boolean forceProvision;
 
-    @Transient
     public Map getJson() throws JsonProcessingException {
         // convert to a map and include nulls
         return JsonUtil.convertJsonToMap(objJson);
