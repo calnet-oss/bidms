@@ -26,14 +26,18 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
-import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import edu.berkeley.bidms.app.registryModel.model.AssignableRole;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.PersonRole;
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
  * Repository for {@link PersonRole} entities.
  */
 public interface PersonRoleRepository extends ExtendedRepository<PersonRole, Long> {
     PersonRole findByPersonAndRole(Person person, AssignableRole role);
+
+    List<PersonRole> findAllByPerson(Person person);
 }

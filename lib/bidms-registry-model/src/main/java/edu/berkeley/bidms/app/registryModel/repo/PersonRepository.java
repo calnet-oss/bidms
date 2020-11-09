@@ -26,9 +26,11 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
-import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+import edu.berkeley.bidms.app.registryModel.model.Identifier;
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -37,8 +39,16 @@ import java.util.List;
  */
 public interface PersonRepository extends ExtendedRepository<Person, String> {
     List<Person> findAllByUidIn(List<String> uid);
+
     List<Person> findAllByIsLocked(boolean isLocked);
+
     List<Person> findAllByIsLocked(boolean isLocked, Pageable pageable);
+
     int countByIsLocked(boolean isLocked);
+
     List<Person> findAllByUidLike(String likeUid);
+
+
+    @Query("SELECT ident.person FROM Identifier ident WHERE ident = ?1")
+    Person getPersonAssignedToIdentifier(Identifier identifier);
 }
