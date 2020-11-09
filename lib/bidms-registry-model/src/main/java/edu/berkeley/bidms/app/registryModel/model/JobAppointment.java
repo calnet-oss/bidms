@@ -33,6 +33,7 @@ import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -50,15 +51,19 @@ public class JobAppointment extends PersonAppointment {
         super(person);
     }
 
+    @Size(max = 64)
     @Column(length = 64)
     private String jobCode;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String jobTitle;
 
+    @Size(max = 64)
     @Column(length = 64)
     private String deptCode;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String deptName;
 

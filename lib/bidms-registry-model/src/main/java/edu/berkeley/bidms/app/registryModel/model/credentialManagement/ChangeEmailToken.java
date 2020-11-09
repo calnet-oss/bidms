@@ -41,6 +41,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 /**
@@ -54,6 +56,8 @@ public class ChangeEmailToken extends BaseToken implements Comparable<ChangeEmai
     @Id
     private Long id;
 
+    @Size(max = 255)
+    @NotNull
     @Email
     @Column(nullable = false, length = 255)
     private String emailAddress;

@@ -49,6 +49,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @JsonIgnore
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
@@ -96,6 +98,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @NotNull
     private Person person;
 
+    @Size(max = 64)
     @Column(nullable = false, length = 64)
     @NotNull
     private String trackStatusType;
@@ -103,6 +106,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Column(insertable = false, updatable = false)
     private Date timeCreated;
 
+    @Size(max = 256)
     @Column(length = 256)
     private String description;
 

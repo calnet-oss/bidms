@@ -34,6 +34,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -50,16 +52,20 @@ public class SORObjectChecksum implements Serializable {
     @Id
     private int sorId;
 
+    @Size(max = 255)
     @Id
     @Column(length = 255)
     private String sorObjKey;
 
+    @NotNull
     @Column(nullable = false)
     private Long hash;
 
+    @NotNull
     @Column(nullable = false)
     private Integer hashVersion;
 
+    @NotNull
     @Column(nullable = false)
     private Date timeMarker;
 

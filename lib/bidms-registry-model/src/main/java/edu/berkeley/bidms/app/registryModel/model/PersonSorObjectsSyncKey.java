@@ -32,6 +32,7 @@ import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -42,10 +43,12 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 public class PersonSorObjectsSyncKey {
+    @Size(max = 64)
     @Id
     @Column(name = "uid", nullable = false, length = 64)
     private String id; // uid
 
+    @Size(max = 32)
     @Column(length = 32)
     private String provisionedJsonHash;
 

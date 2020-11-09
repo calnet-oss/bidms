@@ -34,6 +34,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -57,6 +59,8 @@ public class RegistryRole implements Comparable<RegistryRole>, Serializable {
     @Id
     private Integer id;
 
+    @Size(max = 127)
+    @NotNull
     @Column(nullable = false, unique = true, length = 127)
     private String authority;
 

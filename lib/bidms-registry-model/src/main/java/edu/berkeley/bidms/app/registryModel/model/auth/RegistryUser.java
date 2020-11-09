@@ -42,6 +42,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -68,16 +70,22 @@ public class RegistryUser implements Serializable, Comparable<RegistryUser>, Cre
     @Id
     private Long id;
 
+    @Size(max = 127)
+    @NotNull
     @Column(nullable = false, unique = true, length = 127)
     private String username;
 
     // Strong hash for use when Digest Auth is not in effect
     // (spring-security useDigestAuth=false).
+    @Size(max = 128)
+    @NotNull
     @Column(nullable = false, length = 128)
     private String passwordHash;
 
     // MD5 hash of "username:realm:password" for services that need HTTP
     // Digest Auth (spring-security useDigestAuth=true).
+    @Size(max = 32)
+    @NotNull
     @Column(nullable = false, length = 32)
     private String passwordHttpDigestHash;
 

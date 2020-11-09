@@ -45,6 +45,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -76,14 +78,18 @@ public class PersonAppointment implements Comparable<PersonAppointment> {
     @Id
     private Long id;
 
+    @Size(max = 64)
+    @NotNull
     @Column(length = 64, nullable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false, insertable = false, updatable = false)
     @Id
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "apptTypeId", nullable = false)
     private AppointmentType apptType;
@@ -91,10 +97,13 @@ public class PersonAppointment implements Comparable<PersonAppointment> {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @Size(max = 64)
+    @NotNull
     @Column(nullable = false, length = 64)
     private String apptIdentifier;
 

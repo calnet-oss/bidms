@@ -41,6 +41,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A token used for claiming an account.
@@ -54,10 +56,13 @@ public class CredentialToken extends BaseToken implements Comparable<CredentialT
     @Id
     private Long id;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "identifierId", nullable = false)
     private Identifier identifier;
 
+    @Size(max = 64)
+    @NotNull
     @Column(nullable = false, length = 64)
     private String registrationSource = "DEFAULT";
 

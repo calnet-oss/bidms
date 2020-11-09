@@ -48,6 +48,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,9 +83,11 @@ public class PartialMatch {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String personUid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "personUid", nullable = false)
     private Person person;
@@ -91,10 +95,12 @@ public class PartialMatch {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @NotNull
     @Column(nullable = false)
     private Date dateCreated = new Date();
 

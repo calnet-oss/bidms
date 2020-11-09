@@ -36,6 +36,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -44,16 +46,21 @@ import java.util.Date;
  */
 @MappedSuperclass
 public abstract class BaseToken {
+
+    @Size(max = 32)
+    @NotNull
     @Column(nullable = false, length = 32)
     private String token;
 
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @Column(nullable = false)
     private Date expiryDate;
 

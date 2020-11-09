@@ -35,6 +35,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -52,6 +54,8 @@ public class SOR implements Serializable, Comparable<SOR> {
     @Id
     private Integer id;
 
+    @Size(max = 64)
+    @NotNull
     @Column(name = "sorName", nullable = false, unique = true, length = 64)
     private String name;
 

@@ -41,6 +41,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * An {@link AssignableRole} is assigned a category that groups roles
@@ -56,6 +58,8 @@ public class AssignableRoleCategory implements Comparable<AssignableRoleCategory
     @Id
     private Integer id;
 
+    @Size(max = 255)
+    @NotNull
     @Column(nullable = false, unique = true, length = 255)
     private String categoryName;
 

@@ -42,6 +42,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -66,13 +68,16 @@ public class Address implements Comparable<Address> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "addressTypeId", nullable = false)
     private AddressType addressType;
@@ -80,28 +85,36 @@ public class Address implements Comparable<Address> {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String address1;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String address2;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String address3;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String city;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String regionState;
 
+    @Size(max = 64)
     @Column(length = 64)
     private String postalCode;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String country;
 

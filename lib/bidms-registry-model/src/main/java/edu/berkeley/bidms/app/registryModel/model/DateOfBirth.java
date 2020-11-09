@@ -42,6 +42,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -67,9 +69,11 @@ public class DateOfBirth implements Comparable<DateOfBirth> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
@@ -77,10 +81,12 @@ public class DateOfBirth implements Comparable<DateOfBirth> {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @Size(max = 4)
     @Column(length = 4)
     private String dateOfBirthMMDD;
 

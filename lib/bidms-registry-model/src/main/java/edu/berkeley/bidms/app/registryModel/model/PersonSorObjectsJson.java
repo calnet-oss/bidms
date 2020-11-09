@@ -35,6 +35,8 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -47,20 +49,26 @@ import java.util.Date;
  */
 @Entity
 public class PersonSorObjectsJson {
+    @Size(max = 64)
     @Id
     @Column(name = "uid", nullable = false, length = 64)
     private String id; // uid
 
+    @NotNull
     @Column(nullable = false)
     private Date lastUpdated;
 
+    @NotNull
     @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(nullable = false, columnDefinition = "JSONB NOT NULL")
     private String aggregateJson;
 
+    @Size(max = 32)
+    @NotNull
     @Column(nullable = false, length = 32)
     private String jsonHash;
 
+    @Size(max = 32)
     @Column(length = 32)
     private String provisionedJsonHash;
 

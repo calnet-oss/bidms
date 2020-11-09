@@ -38,6 +38,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A role that can be assigned to a person.
@@ -50,9 +52,12 @@ public class AssignableRole implements Comparable<AssignableRole> {
     @Id
     private Integer id;
 
+    @Size(max = 255)
+    @NotNull
     @Column(nullable = false, unique = true, length = 255)
     private String roleName;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleCategoryId", nullable = false)
     private AssignableRoleCategory roleCategory;

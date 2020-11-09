@@ -40,6 +40,8 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -64,20 +66,26 @@ public class IdentifierArchive implements Comparable<IdentifierArchive> {
     @Id
     private Long originalIdentifierId;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false, insertable = false, updatable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "identifierTypeId", nullable = false, insertable = false, updatable = false)
     private IdentifierType identifierType;
 
+    @NotNull
     @Column(nullable = false, unique = true, insertable = false, updatable = false)
     private Long originalSorObjectId; // SORObject could have been deleted so don't try to join it
 
+    @Size(max = 64)
+    @NotNull
     @Column(nullable = false, length = 64, insertable = false, updatable = false)
     private String identifier;
 

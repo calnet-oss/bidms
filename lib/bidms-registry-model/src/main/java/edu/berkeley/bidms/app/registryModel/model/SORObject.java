@@ -29,8 +29,8 @@ package edu.berkeley.bidms.app.registryModel.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.common.json.JsonUtil;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -46,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Map;
 
@@ -69,6 +70,7 @@ public class SORObject implements Comparable<SORObject> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
@@ -81,6 +83,7 @@ public class SORObject implements Comparable<SORObject> {
     @JoinColumn(name = "sorId", nullable = false)
     private SOR sor;
 
+    @Size(max = 255)
     @NotNull
     @Column(name = "sorObjKey", nullable = false, length = 255)
     private String sorPrimaryKey;

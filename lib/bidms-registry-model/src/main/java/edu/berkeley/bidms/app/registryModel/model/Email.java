@@ -42,6 +42,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -66,13 +68,16 @@ public class Email implements Comparable<Email> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "emailTypeId", nullable = false)
     private EmailType emailType;
@@ -80,10 +85,12 @@ public class Email implements Comparable<Email> {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @Size(max = 255)
     @javax.validation.constraints.Email
     @Column(length = 255)
     private String emailAddress;

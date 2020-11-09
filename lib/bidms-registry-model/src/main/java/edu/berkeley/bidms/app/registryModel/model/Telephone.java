@@ -42,6 +42,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -66,13 +68,16 @@ public class Telephone implements Comparable<Telephone> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "telephoneTypeId", nullable = false)
     private TelephoneType telephoneType;
@@ -80,13 +85,17 @@ public class Telephone implements Comparable<Telephone> {
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
+    //@NotNull // TODO in tests
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
+    @Size(max = 64)
+    @NotNull
     @Column(nullable = false, length = 64)
     private String phoneNumber;
 
+    @Size(max = 16)
     @Column(length = 16)
     private String extension;
 

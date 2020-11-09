@@ -42,6 +42,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -67,21 +69,26 @@ public class PersonRole implements Comparable<PersonRole> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleCategoryId", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY(roleCategoryId, roleAsgnUniquePerCat) REFERENCES AssignableRoleCategory(id, roleAsgnUniquePerCat)"))
     private AssignableRoleCategory roleCategory;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId", nullable = false, foreignKey = @ForeignKey(foreignKeyDefinition = "FOREIGN KEY(roleId, roleCategoryId) REFERENCES AssignableRole(id, roleCategoryId)"))
     private AssignableRole role;
 
+    @Size(max = 255)
     @Column(length = 255)
     private String roleValue;
 

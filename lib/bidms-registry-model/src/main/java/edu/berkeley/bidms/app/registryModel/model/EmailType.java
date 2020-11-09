@@ -35,6 +35,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * A type for {@link Email}.
@@ -47,6 +49,8 @@ public class EmailType implements Comparable<EmailType> {
     @Id
     private Integer id;
 
+    @Size(max = 64)
+    @NotNull
     @Column(nullable = false, unique = true, length = 64)
     private String emailTypeName;
 

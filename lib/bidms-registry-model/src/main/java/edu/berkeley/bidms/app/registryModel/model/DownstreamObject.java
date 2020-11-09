@@ -45,6 +45,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Map;
 import java.util.Objects;
 
@@ -76,20 +78,26 @@ public class DownstreamObject implements Comparable<DownstreamObject> {
     @Id
     private Long id;
 
+    @Size(max = 64)
     @Column(length = 64, insertable = false, updatable = false)
     private String uid;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "systemId", nullable = false)
     private DownstreamSystem system;
 
+    @Size(max = 255)
+    @NotNull
     @Column(name = "sysObjKey", nullable = false, length = 255)
     private String systemPrimaryKey;
 
+    @NotNull
     @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(nullable = false, columnDefinition = "JSONB NOT NULL")
     private String objJson;
@@ -99,9 +107,11 @@ public class DownstreamObject implements Comparable<DownstreamObject> {
     @Column(nullable = false, insertable = false, updatable = false)
     private Long hash;
 
+    @NotNull
     @Column(nullable = false)
     private Integer ownershipLevel;
 
+    @Size(max = 64)
     @Column(length = 64)
     private String globUniqId;
 

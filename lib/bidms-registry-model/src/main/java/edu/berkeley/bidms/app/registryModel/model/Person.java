@@ -43,6 +43,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -56,6 +57,10 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 public class Person implements ValidateOnFlush {
+
+
+    @Size(max = 64)
+    @Column(length = 64)
     @Id
     private String uid;
 
