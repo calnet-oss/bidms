@@ -31,7 +31,7 @@ import edu.berkeley.bidms.app.sgs.config.properties.SgsConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 
 import java.io.File;
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
-@SpringBootConfiguration
+@Configuration
 public class SgsConfiguration {
     private final Logger log = LoggerFactory.getLogger(SgsConfiguration.class);
 
