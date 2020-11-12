@@ -28,13 +28,13 @@ package edu.berkeley.bidms.app.matchengine.config;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 import java.lang.reflect.InvocationTargetException;
 
-@SpringBootConfiguration
+@Configuration
 public class MatchEngineConfiguration {
 
     @Value("${bidms.matchengine.match-config}")
