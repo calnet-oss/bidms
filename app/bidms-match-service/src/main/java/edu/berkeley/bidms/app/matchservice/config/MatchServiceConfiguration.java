@@ -31,13 +31,13 @@ import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigP
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate;
 import edu.berkeley.bidms.restclient.util.RestClientUtil;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.net.URI;
 
-@SpringBootConfiguration
+@Configuration
 public class MatchServiceConfiguration {
 
     private BidmsConfigProperties bidmsConfigProperties;
@@ -64,7 +64,7 @@ public class MatchServiceConfiguration {
         return bidmsConfigProperties.getRest().getMatchengine().getPerson().getUrl();
     }
 
-    @Bean
+    @Bean("matchServiceMatchEngineRestTemplate")
     public MatchEngineRestTemplate getMatchEngineRestTemplate(RestTemplateBuilder builder) {
         return RestClientUtil.configureSslBasicAuthRestTemplate(builder, getRestMatchEngineBaseUrl(), getMatchEngineRestUsername(), getMatchEngineRestPassword(), new MatchEngineRestTemplate());
     }
@@ -89,7 +89,7 @@ public class MatchServiceConfiguration {
         return bidmsConfigProperties.getRest().getProvision().getNewUid().getUrl();
     }
 
-    @Bean
+    @Bean("matchServiceProvisionRestTemplate")
     public ProvisionRestTemplate getProvisionRestTemplate(RestTemplateBuilder builder) {
         return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getRestProvisionBaseUrl(), getProvisionRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
     }
