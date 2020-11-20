@@ -150,8 +150,8 @@ public class RestClientUtil {
                         throw new RuntimeException(e);
                     }
                 })
-                .setConnectTimeout(Duration.ofSeconds(10))
-                .setReadTimeout(Duration.ofSeconds(10))
+                .setConnectTimeout(Duration.ofSeconds(20))
+                .setReadTimeout(Duration.ofSeconds(60))
                 .errorHandler(new DefaultResponseErrorHandler() {
                     @Override
                     public void handleError(ClientHttpResponse response) throws IOException {
