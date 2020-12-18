@@ -26,19 +26,21 @@
  */
 package edu.berkeley.bidms.app.matchengine.service
 
-import edu.berkeley.bidms.app.common.config.BidmsAppCommonConfiguration
 import groovy.sql.Sql
 import org.springframework.stereotype.Service
 
+import javax.sql.DataSource
+
 @Service
 class SqlService {
-    BidmsAppCommonConfiguration commonConfig
 
-    SqlService(BidmsAppCommonConfiguration commonConfig) {
-        this.commonConfig = commonConfig
+    DataSource dataSource
+
+    SqlService(DataSource dataSource) {
+        this.dataSource = dataSource
     }
 
     Sql getSqlInstance() {
-        new Sql(commonConfig.dataSource)
+        new Sql(dataSource)
     }
 }
