@@ -97,13 +97,18 @@ class DatabaseService {
     Record findRecord(String systemOfRecord, String identifier) {
         def sql = sqlService.sqlInstance
 
-        def systemOfRecordAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.systemOfRecordAttribute }
-        def identifierAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.identifierAttribute }
+        try {
+            def systemOfRecordAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.systemOfRecordAttribute }
+            def identifierAttribute = matchConfig.matchAttributeConfigs.find { it.name == matchConfig.matchReference.identifierAttribute }
 
-        def query = 'SELECT * FROM ' + matchConfig.matchTable + ' WHERE ' + systemOfRecordAttribute.column + '=? AND ' + identifierAttribute.column + '=? AND ' + systemOfRecordAttribute.isPrimaryKeyColumn + '=?'
-        def row = sql.firstRow(query, [systemOfRecord, identifier, true])
+            def query = 'SELECT * FROM ' + matchConfig.matchTable + ' WHERE ' + systemOfRecordAttribute.column + '=? AND ' + identifierAttribute.column + '=? AND ' + systemOfRecordAttribute.isPrimaryKeyColumn + '=?'
+            def row = sql.firstRow(query, [systemOfRecord, identifier, true])
 
-        return row ? new Record(referenceId: getReferenceIdFromRow(row), exactMatch: true) : null
+            return row ? new Record(referenceId: getReferenceIdFromRow(row), exactMatch: true) : null
+        }
+        finally {
+            sql.close()
+        }
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
@@ -138,14 +143,19 @@ class DatabaseService {
 
     private SearchResult performSearch(QueryStatement queryStatement) {
         def sql = sqlService.sqlInstance
-        log.debug("Performing query: $queryStatement.sql with values ${queryStatement.redactedValues}")
-        def start = System.currentTimeMillis()
-        List<Map> result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
-        if (log.isDebugEnabled()) {
-            List<Map> forLogging = result.collect { it.subMap([matchConfig.matchReference.column]) }
-            log.debug("--- returned: ${forLogging} in ${System.currentTimeMillis() - start} ms")
+        try {
+            log.debug("Performing query: $queryStatement.sql with values ${queryStatement.redactedValues}")
+            def start = System.currentTimeMillis()
+            List<Map> result = sql.rows(queryStatement.normalizedSql, queryStatement.values)
+            if (log.isDebugEnabled()) {
+                List<Map> forLogging = result.collect { it.subMap([matchConfig.matchReference.column]) }
+                log.debug("--- returned: ${forLogging} in ${System.currentTimeMillis() - start} ms")
+            }
+            return new SearchResult(queryStatement.ruleName, result as Set)
         }
-        return new SearchResult(queryStatement.ruleName, result as Set)
+        finally {
+            sql.close()
+        }
     }
 
     private String getReferenceIdFromRow(Map<String, String> databaseRow) {
