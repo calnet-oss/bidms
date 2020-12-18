@@ -26,12 +26,7 @@
  */
 package edu.berkeley.bidms.app.common.config;
 
-import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -39,45 +34,9 @@ import javax.sql.DataSource;
 
 @SpringBootConfiguration
 public class BidmsAppCommonConfiguration {
-    private final Logger log = LoggerFactory.getLogger(BidmsAppCommonConfiguration.class);
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String dsDriverClassName;
-
-    @Value("${spring.datasource.url}")
-    private String dsUrl;
-
-    @Value("${spring.datasource.username}")
-    private String dsUsername;
-
-    @Value("${spring.datasource.password}")
-    private String dsPassword;
-
-    private BidmsConfigProperties bidmsConfigProperties;
-
-    public BidmsAppCommonConfiguration(BidmsConfigProperties bidmsConfigProperties) {
-        this.bidmsConfigProperties = bidmsConfigProperties;
-    }
 
     @Bean
-    public DataSource getDataSource() {
-        DataSourceBuilder<? extends DataSource> dataSourceBuilder = DataSourceBuilder.create();
-        DataSource dataSource = dataSourceBuilder
-                .driverClassName(dsDriverClassName)
-                .url(dsUrl)
-                .username(dsUsername)
-                .password(dsPassword)
-                .build();
-        log.debug("Using dataSource of type " + dataSource.getClass().getName());
-        if (dataSource.getClass().isAssignableFrom(com.zaxxer.hikari.HikariDataSource.class)) {
-            com.zaxxer.hikari.HikariDataSource ds = (com.zaxxer.hikari.HikariDataSource) dataSource;
-            log.debug("dataSource configured with autoCommit=" + ds.isAutoCommit() + ", transactionIsolation=" + ds.getTransactionIsolation() + ", connectionTimeout=" + ds.getConnectionTimeout() + ", idleTimeout=" + ds.getIdleTimeout() + ", initializationFailTimeout=" + ds.getInitializationFailTimeout() + ", leakDetectionThreshold=" + ds.getLeakDetectionThreshold() + ", maximumPoolSize=" + ds.getMaximumPoolSize() + ", maxLifetime=" + ds.getMaxLifetime() + ", minimumIdle=" + ds.getMinimumIdle() + ", validationTimeout=" + ds.getValidationTimeout() + ", isIsolateInternalQueries=" + ds.isIsolateInternalQueries() + ", connectionInitSql=" + ds.getConnectionInitSql() + ", connectionTestQuery=" + ds.getConnectionTestQuery());
-        }
-        return dataSource;
-    }
-
-    @Bean
-    public JdbcTemplate getRegistryJdbcTemplate() {
-        return new JdbcTemplate(getDataSource());
+    public JdbcTemplate getRegistryJdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 }
