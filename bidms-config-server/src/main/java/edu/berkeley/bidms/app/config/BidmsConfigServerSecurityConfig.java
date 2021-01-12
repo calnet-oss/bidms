@@ -38,7 +38,8 @@ public class BidmsConfigServerSecurityConfig extends WebSecurityConfigurerAdapte
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/bidms/default/**").fullyAuthenticated()
+                .antMatchers("/bidms/**").fullyAuthenticated()
+                .antMatchers("/sgs/**").fullyAuthenticated()
                 .anyRequest().denyAll()
                 .and().httpBasic();
     }
