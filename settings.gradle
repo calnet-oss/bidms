@@ -71,7 +71,7 @@ getVersionPropertiesClosure(file("versions.properties"))
 
 def splitSpaceDelimitedPropertyClosure = { overridePropertyName, defaultList ->
     def subprojects = []
-    List<String> subsList = (hasProperty(overridePropertyName) ? getProperty(overridePropertyName) : defaultList).split("\\s+")
+    List<String> subsList = (hasProperty(overridePropertyName) ? getProperty(overridePropertyName) : defaultList).split("\\s+").findAll { it.trim() }.collect { it.trim() }
     subsList.each {
         subprojects += getProperty(it).split("\\s+") as List<String>
     }
