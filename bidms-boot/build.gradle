@@ -54,9 +54,9 @@ dependencies {
 }
 
 war {
-    baseName 'bidms'
+    archiveBaseName = bidmsBootWarName
 }
 
 bootWar {
-    baseName 'bidms'
+    archiveBaseName = bidmsBootWarName
 }
