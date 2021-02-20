@@ -35,6 +35,8 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     compile 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.958')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
 }
 
 war {
