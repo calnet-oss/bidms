@@ -35,8 +35,11 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     compile 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.958')
-    implementation 'com.amazonaws:aws-java-sdk-s3'
+    // Optionally enable AWS S3 support by setting the enableConfigServerS3
+    // property to true when building.
+    if (project.hasProperty("enableConfigServerS3") && project.getProperty("enableConfigServerS3")) {
+        runtimeOnly group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: versions.awsSdk
+    }
 }
 
 war {
