@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.common.config.properties.rest;
 
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestDownstreamProvisionProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchServiceProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties;
@@ -40,6 +41,8 @@ public class RestProperties {
     private RestProvisionProperties provision;
     @NotNull
     private RestMatchServiceProperties matchService;
+    @NotNull
+    private RestDownstreamProvisionProperties downstream;
 
     public RestMatchEngineProperties getMatchengine() {
         return matchengine;
@@ -63,5 +66,13 @@ public class RestProperties {
 
     public void setMatchService(RestMatchServiceProperties matchService) {
         this.matchService = matchService;
+    }
+
+    public RestDownstreamProvisionProperties getDownstream() {
+        return downstream;
+    }
+
+    public void setDownstream(RestDownstreamProvisionProperties downstream) {
+        this.downstream = downstream;
     }
 }
