@@ -27,6 +27,10 @@ bidms:
       baseUrl: http://notneeded
       trigger-match:
         url: http://notneeded
+    downstream:
+      baseUrl: http://notneeded
+      provision-uid:
+        url: http://notneeded
   jms:
     downstream:
       provision-uid:
