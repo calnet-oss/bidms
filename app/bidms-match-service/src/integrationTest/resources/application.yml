@@ -33,6 +33,10 @@ bidms:
       baseUrl: http://notneeded
       trigger-match:
         url: http://notneeded
+    downstream:
+      baseUrl: http://notneeded
+      provision-uid:
+        url: http://notneeded
   jms-connections:
     AMQ:
       broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
