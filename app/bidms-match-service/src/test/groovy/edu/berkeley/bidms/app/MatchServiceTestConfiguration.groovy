@@ -33,6 +33,7 @@ import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointC
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsProvisioningProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.RestProperties
+import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestDownstreamProvisionProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestEndpointConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchServiceProperties
@@ -70,6 +71,10 @@ class MatchServiceTestConfiguration {
                         matchService: new RestMatchServiceProperties(
                                 baseUrl: new URI("http://localhost:8080/match-service"),
                                 triggerMatch: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/match-service/triggerMatch"))
+                        ),
+                        downstream: new RestDownstreamProvisionProperties(
+                                baseUrl: new URI("http://localhost:8080/downstream"),
+                                provisionUid: new RestEndpointConfigProperties(url: new URI("http://localhost:8080/downstream/provisionUid"))
                         )
                 ),
                 jms: new JmsProperties(
