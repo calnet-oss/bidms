@@ -105,10 +105,16 @@ allprojects {
                 }
             }
         }
+        // Optional for calnet-oss libraries like bidms-connectors.
+        if (project.hasProperty("calnetOssLibs_proxy_url")) {
+            maven {
+                url project.property("calnetOssLibs_proxy_url")
+            }
+        }
         // temporary for spring boot release candidates
-        maven { url 'https://repo.spring.io/milestone' }
+        //maven { url 'https://repo.spring.io/milestone' }
         // temporary for springfox snapshots
-        maven { url 'http://oss.jfrog.org/simple/oss-snapshot-local' }
+        //maven { url 'http://oss.jfrog.org/simple/oss-snapshot-local' }
     }
 }
 
