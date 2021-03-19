@@ -109,6 +109,12 @@ allprojects {
         if (project.hasProperty("calnetOssLibs_proxy_url")) {
             maven {
                 url project.property("calnetOssLibs_proxy_url")
+                if (project.hasProperty("default_proxy_username")) {
+                    credentials {
+                        username project.property("default_proxy_username")
+                        password project.property("default_proxy_password")
+                    }
+                }
             }
         }
         // temporary for spring boot release candidates
