@@ -40,6 +40,11 @@ dependencies {
     if (project.hasProperty("enableConfigServerS3") && project.getProperty("enableConfigServerS3")) {
         runtimeOnly group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: versions.awsSdk
     }
+    // Optionally enable Vault support by setting the
+    // enableConfigServerVault property to true when building.
+    if (project.hasProperty("enableConfigServerVault") && project.getProperty("enableConfigServerVault")) {
+        runtimeOnly group: 'org.springframework.vault', name: 'spring-vault-core', version: versions.springVault
+    }
 }
 
 war {
