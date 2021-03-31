@@ -14,6 +14,8 @@ logging:
   level:
     edu.berkeley.bidms: TRACE
 bidms:
+  log:
+    directory: logs
   rest:
     matchengine:
       baseUrl: http://notneeded

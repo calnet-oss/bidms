@@ -10,3 +10,6 @@ spring:
 logging:
   level:
     edu.berkeley.bidms: DEBUG
+bidms:
+  log:
+    directory: logs

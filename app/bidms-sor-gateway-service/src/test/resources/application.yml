@@ -9,6 +9,8 @@ spring:
     password: sa
 
 bidms:
+  log:
+    directory: logs
   rest:
     matchengine:
       baseUrl: http://notneeded

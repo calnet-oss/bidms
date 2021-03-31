@@ -20,6 +20,8 @@ server:
     include-message: always
 
 bidms:
+  log:
+    directory: logs
   sgs:
     sql-template-directory: file://${user.home}/bidms-config-repo/sql
     hash-executors:

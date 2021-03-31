@@ -10,6 +10,8 @@
     <!-- audit log is pure json -->
     <property name="MESSAGEONLY_LOG_PATTERN" value="%m"/>
 
+    <springProperty scope="context" name="logDirectory" source="bidms.log.directory"/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
@@ -19,9 +21,9 @@
     <appender name="BIDMSFILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <append>true</append>
-        <file>logs/bidms.log</file>
+        <file>${logDirectory}/bidms.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/bidms.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logDirectory}/bidms.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
@@ -33,9 +35,9 @@
     <appender name="AUDITFILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <append>true</append>
-        <file>logs/bidms-audit.log</file>
+        <file>${logDirectory}/bidms-audit.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/bidms-audit.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logDirectory}/bidms-audit.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
