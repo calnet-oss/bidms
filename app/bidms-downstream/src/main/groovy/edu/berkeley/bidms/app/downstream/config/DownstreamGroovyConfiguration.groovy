@@ -30,6 +30,7 @@ import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties
 import edu.berkeley.bidms.app.downstream.config.properties.DownstreamConfigProperties
 import edu.berkeley.bidms.app.downstream.service.ldap.LdapDownstreamObjectUpdaterService
 import edu.berkeley.bidms.connector.ldap.LdapConnector
+import edu.berkeley.bidms.downstream.jms.DownstreamProvisionJmsTemplate
 import edu.berkeley.bidms.downstream.ldap.LdapDeleteEventLoggingCallback
 import edu.berkeley.bidms.downstream.ldap.LdapInsertEventLoggingCallback
 import edu.berkeley.bidms.downstream.ldap.LdapPersistCompletionEventLoggingCallback
@@ -39,6 +40,7 @@ import edu.berkeley.bidms.downstream.ldap.LdapUpdateEventLoggingCallback
 import edu.berkeley.bidms.downstream.ldap.MainEntryUidObjectDefinition
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.ldap.core.LdapTemplate
@@ -46,6 +48,8 @@ import org.springframework.ldap.core.support.LdapContextSource
 import org.springframework.ldap.pool2.factory.PoolConfig
 import org.springframework.ldap.pool2.factory.PooledContextSource
 import org.springframework.ldap.pool2.validation.DefaultDirContextValidator
+
+import javax.jms.ConnectionFactory
 
 @Configuration
 class DownstreamGroovyConfiguration {
@@ -158,5 +162,10 @@ class DownstreamGroovyConfiguration {
         bean.setRemoveDuplicatePrimaryKeys(true);
         bean.setDynamicAttributeNames(stringArray("objectClass.APPEND"));
         return bean;
+    }
+
+    @Bean("provDownstreamProvisionJmsTemplate")
+    DownstreamProvisionJmsTemplate getDownstreamProvisionJmsTemplate(ApplicationContext applicationContext) {
+        return new DownstreamProvisionJmsTemplate(applicationContext.getBean(downstreamConfigProperties.getJms().getDownstream().getJmsConnectionFactoryBeanName(), ConnectionFactory));
     }
 }

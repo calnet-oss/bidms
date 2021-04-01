@@ -26,10 +26,13 @@
  */
 package edu.berkeley.bidms.app.downstream.config.properties;
 
+import edu.berkeley.bidms.app.downstream.config.properties.jms.JmsProperties;
 import edu.berkeley.bidms.app.downstream.config.properties.job.JobConfigProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotNull;
 
 @Validated
 @Configuration
@@ -40,6 +43,8 @@ public class DownstreamConfigProperties {
     private DirectoryConnectionConfigProperties ad;
     private LdapConnectorConfigProperties ldapConnector;
     private JobConfigProperties job;
+    @NotNull
+    private JmsProperties jms;
 
     public DirectoryConnectionConfigProperties getLdap() {
         return ldap;
@@ -72,4 +77,10 @@ public class DownstreamConfigProperties {
     public void setJob(JobConfigProperties job) {
         this.job = job;
     }
+
+    public void setJms(JmsProperties jms) {
+        this.jms = jms;
+    }
+
+    public JmsProperties getJms() { return jms; }
 }
