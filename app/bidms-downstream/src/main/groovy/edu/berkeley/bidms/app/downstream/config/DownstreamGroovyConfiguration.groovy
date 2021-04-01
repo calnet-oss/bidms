@@ -164,7 +164,7 @@ class DownstreamGroovyConfiguration {
         return bean;
     }
 
-    @Bean("provDownstreamProvisionJmsTemplate")
+    @Bean("provDownstreamProvisionJmsTemplateForDownstreamApp")
     DownstreamProvisionJmsTemplate getDownstreamProvisionJmsTemplate(ApplicationContext applicationContext) {
         return new DownstreamProvisionJmsTemplate(applicationContext.getBean(downstreamConfigProperties.getJms().getDownstream().getJmsConnectionFactoryBeanName(), ConnectionFactory));
     }
