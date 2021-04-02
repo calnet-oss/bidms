@@ -60,6 +60,8 @@ public class JmsConnectionConfiguration {
     ) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         configurer.configure(factory, connectionFactory);
+        factory.setConcurrency("1-4");
+        factory.setReceiveTimeout(30000L);
         return factory;
     }
 }
