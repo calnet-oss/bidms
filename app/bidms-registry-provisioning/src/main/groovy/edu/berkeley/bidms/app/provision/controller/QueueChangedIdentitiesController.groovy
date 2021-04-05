@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.provision.controller
 
-import edu.berkeley.bidms.app.provision.service.AbstractProvisionService
+import edu.berkeley.bidms.app.provision.service.ProvisionService
 import edu.berkeley.bidms.app.provision.service.ProvisionUidConsumingService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
@@ -39,9 +39,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class QueueChangedIdentitiesController {
 
-    AbstractProvisionService provisionService
+    ProvisionService provisionService
 
-    QueueChangedIdentitiesController(AbstractProvisionService provisionService) {
+    QueueChangedIdentitiesController(ProvisionService provisionService) {
         this.provisionService = provisionService
     }
 

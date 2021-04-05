@@ -50,7 +50,7 @@ class NewUidService {
     DataSource dataSource
 
     @Autowired
-    AbstractProvisionService provisionService
+    ProvisionService provisionService
 
     @Autowired
     SORObjectRepository sorObjectRepository

@@ -40,7 +40,7 @@ import javax.jms.Message
 @Slf4j
 @Service
 class ProvisionUidConsumingService {
-    AbstractProvisionService provisionService
+    ProvisionService provisionService
 
     private static final Object lock = new Object()
     private static volatile long counter = 0
@@ -50,7 +50,7 @@ class ProvisionUidConsumingService {
     private static volatile long totalBatchTimeSeconds = 0
     private static final int batchSize = 1000
 
-    ProvisionUidConsumingService(AbstractProvisionService provisionService) {
+    ProvisionUidConsumingService(ProvisionService provisionService) {
         this.provisionService = provisionService
     }
 

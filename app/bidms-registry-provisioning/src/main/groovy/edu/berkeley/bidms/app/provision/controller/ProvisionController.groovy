@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.provision.controller
 
-import edu.berkeley.bidms.app.provision.service.AbstractProvisionService
+import edu.berkeley.bidms.app.provision.service.ProvisionService
 import edu.berkeley.bidms.app.restservice.common.response.NotFoundException
 import edu.berkeley.bidms.app.restservice.common.response.ServiceUnavailableException
 import edu.berkeley.bidms.logging.AuditFailEvent
@@ -57,9 +57,9 @@ class ProvisionController {
     @Value('${bidms.provision.app-name}')
     private String APP_NAME
 
-    AbstractProvisionService provisionService
+    ProvisionService provisionService
 
-    ProvisionController(AbstractProvisionService provisionService) {
+    ProvisionController(ProvisionService provisionService) {
         this.provisionService = provisionService
     }
 
@@ -115,14 +115,14 @@ class ProvisionController {
                 return provisionService.bulkProvision(synchronousDownstream, eventId)
             }
         }
-        catch (AbstractProvisionService.NullResponseEndpointException e) {
+        catch (ProvisionService.NullResponseEndpointException e) {
             log.warn("uid not found: ${uid}")
             AuditUtil.logAuditEvent(APP_NAME, new AuditFailEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
                     op: (uid ? AuditOperation.provisionUid : AuditOperation.bulkProvision),
                     errorMsg: e.message, forUid: uid, attrs: getAuditAttrs(synchronousDownstream)))
             throw new NotFoundException("uid not found: ${uid}")
         }
-        catch (AbstractProvisionService.EndpointException e) {
+        catch (ProvisionService.EndpointException e) {
             log.error("endpoint exception", e)
             AuditUtil.logAuditEvent(APP_NAME, new AuditFailEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
                     op: (uid ? AuditOperation.provisionUid : AuditOperation.bulkProvision),

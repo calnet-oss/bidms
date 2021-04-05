@@ -28,7 +28,7 @@ package edu.berkeley.bidms.app.provision.job
 
 import edu.berkeley.bidms.app.common.config.properties.job.DailyCronJobConfigProperties
 import edu.berkeley.bidms.app.provision.config.properties.ProvisioningConfigProperties
-import edu.berkeley.bidms.app.provision.service.AbstractProvisionService
+import edu.berkeley.bidms.app.provision.service.ProvisionService
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.util.logging.Slf4j
 import org.quartz.DisallowConcurrentExecution
@@ -76,9 +76,9 @@ class ProvisionChangedIdentitiesJob implements Job {
     static final Class<Trigger> TRIGGER_CLASS = JobTrigger
 
     ProvisioningConfigProperties provisioningConfig
-    AbstractProvisionService provisionService
+    ProvisionService provisionService
 
-    ProvisionChangedIdentitiesJob(ProvisioningConfigProperties provisioningConfig, AbstractProvisionService provisionService) {
+    ProvisionChangedIdentitiesJob(ProvisioningConfigProperties provisioningConfig, ProvisionService provisionService) {
         this.provisioningConfig = provisioningConfig
         this.provisionService = provisionService
     }
