@@ -40,7 +40,8 @@ import org.springframework.stereotype.Service
 // If you wish to override this bean, create your own with @Service("downstreamProvisioningService")
 @ConditionalOnMissingBean(name = "downstreamProvisioningService")
 @Service("edu.berkeley.bidms.app.provision.service.DownstreamProvisioningService")
-class DownstreamProvisioningService extends AbstractDownstreamProvisioningService {
+class DownstreamProvisioningService {
+    ProvisioningConfigProperties provisionConfig
     DownstreamProvisioningRestOperations downstreamProvisionRestTemplate
     DownstreamProvisionRestClientService downstreamRestClientService
     DownstreamProvisionJmsTemplate downstreamProvisionJmsTemplate
@@ -53,14 +54,13 @@ class DownstreamProvisioningService extends AbstractDownstreamProvisioningServic
             DownstreamProvisionJmsTemplate downstreamProvisionJmsTemplate,
             DownstreamProvisioningJmsClientService downstreamProvisioningJmsClientService
     ) {
-        super(provisionConfig)
+        this.provisionConfig = provisionConfig
         this.downstreamProvisionRestTemplate = downstreamProvisionRestTemplate
         this.downstreamRestClientService = downstreamRestClientService
         this.downstreamProvisionJmsTemplate = downstreamProvisionJmsTemplate
         this.downstreamProvisioningJmsClientService = downstreamProvisioningJmsClientService
     }
 
-    @Override
     void provisionUidAsynchronously(String eventId, String uid) {
         final Map<String, ?> headers = [
                 eventId   : eventId,
@@ -75,7 +75,6 @@ class DownstreamProvisioningService extends AbstractDownstreamProvisioningServic
         }
     }
 
-    @Override
     void provisionUidSynchronously(String eventId, String uid) {
         Map<String, Object> mainEntryResponse = provisionMainEntry(eventId, uid)
         Map<String, Object> adEntryResponse = (adEnabled ? provisionAdEntry(eventId, uid) : null)
@@ -84,6 +83,20 @@ class DownstreamProvisioningService extends AbstractDownstreamProvisioningServic
         if (adEnabled) {
             checkResponse(adEntryResponse, uid, DownstreamSystemEnum.AD.name, false)
         }
+    }
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected void checkResponse(Map<String, Object> response, String uid, String downstreamSystemName, boolean checkGreaterThanZeroPersistCount) {
+        if ((response.containsKey("persistCount") && (checkGreaterThanZeroPersistCount ? response.persistCount == 1 : response.persistCount != null)) ||
+                (response.containsKey("singleObjectUnchanged") && response.singleObjectUnchanged)) {
+            log.debug("Successful synchronous reprovision to $downstreamSystemName of uid $uid via REST")
+        } else {
+            throw new RuntimeException("When synchronously reprovisioning uid $uid to $downstreamSystemName, got an OK response from REST endpoint, but the response payload did not confirm the uid was successfully provisioned.  REST response: $response")
+        }
+    }
+
+    protected boolean isAdEnabled() {
+        return provisionConfig.provisioningContext?.ad?.enabled
     }
 
     private Map<String, Object> provisionMainEntry(String eventId, String uid) {

@@ -84,7 +84,7 @@ class ProvisionServiceIntegrationSpec extends Specification {
         this.transactionTemplate = new JpaTransactionTemplate(transactionManager, TransactionDefinition.PROPAGATION_REQUIRED)
 
         provisionService.provisionRunnerService = Mock(ProvisionRunner)
-        provisionService.downstreamProvisioningService = Mock(AbstractDownstreamProvisioningService)
+        provisionService.downstreamProvisioningService = Mock(DownstreamProvisioningService)
         provisionService.provisioningJmsClientService = Mock(ProvisioningJmsClientService)
 
         Person person = personRepository.saveAndFlush(new Person(uid: "1"))

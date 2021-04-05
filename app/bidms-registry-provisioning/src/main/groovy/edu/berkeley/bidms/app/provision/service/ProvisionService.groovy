@@ -83,7 +83,7 @@ class ProvisionService {
     ProvisionRunner provisionRunnerService
 
     @Autowired
-    AbstractDownstreamProvisioningService downstreamProvisioningService
+    DownstreamProvisioningService downstreamProvisioningService
 
     @Autowired
     ProvisionJmsTemplate provisionJmsTemplate
