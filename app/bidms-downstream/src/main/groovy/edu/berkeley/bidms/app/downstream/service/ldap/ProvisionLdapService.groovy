@@ -26,7 +26,9 @@
  */
 package edu.berkeley.bidms.app.downstream.service.ldap
 
+import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextProperties
 import edu.berkeley.bidms.app.downstream.config.properties.DownstreamConfigProperties
+import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextConfigProperties
 import edu.berkeley.bidms.app.downstream.service.DownstreamProvisionService
 import edu.berkeley.bidms.app.jmsclient.service.DownstreamProvisioningJmsClientService
 import edu.berkeley.bidms.app.registryModel.model.DownstreamObject
@@ -40,6 +42,7 @@ import edu.berkeley.bidms.app.registryModel.repo.TrackStatusRepository
 import edu.berkeley.bidms.connector.ldap.LdapConnector
 import edu.berkeley.bidms.connector.ldap.LdapRequestContext
 import edu.berkeley.bidms.connector.ldap.UidObjectDefinition
+import edu.berkeley.bidms.downstream.jms.DownstreamProvisionJmsTemplate
 import edu.berkeley.bidms.downstream.ldap.SystemUidObjectDefinition
 import edu.berkeley.bidms.downstream.service.DownstreamProvisioningService
 import edu.berkeley.bidms.downstream.service.DownstreamSystemNotFoundException
@@ -49,9 +52,10 @@ import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.jms.core.JmsTemplate
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.core.support.LdapContextSource
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
@@ -60,9 +64,16 @@ import javax.naming.Name
 import javax.sql.DataSource
 import java.sql.Timestamp
 
+// TODO: Diff with UcbProvisionLdapService and that class should extend this one!
+
 @Slf4j
-//@Service("provisionLdapService")
-abstract class AbstractProvisionLdapService implements DownstreamProvisioningService {
+// If you wish to override this bean, create your own with @Service("provisionLdapService")
+@ConditionalOnMissingBean(name = "provisionLdapService")
+@Service("edu.berkeley.bidms.app.downstream.service.ldap.ProvisionLdapService")
+class ProvisionLdapService<PC extends ProvisioningContextProperties> implements DownstreamProvisioningService<PC> {
+
+    @Autowired
+    ProvisioningContextConfigProperties provisioningContextConfigProperties
 
     @Autowired
     DownstreamConfigProperties downstreamConfig
@@ -76,7 +87,8 @@ abstract class AbstractProvisionLdapService implements DownstreamProvisioningSer
     @Autowired
     DownstreamProvisioningJmsClientService downstreamProvisioningJmsClientService
 
-    JmsTemplate downstreamJmsTemplate // TODO
+    @Autowired
+    DownstreamProvisionJmsTemplate downstreamJmsTemplate
 
     @Autowired
     DownstreamSystemRepository downstreamSystemRepository
@@ -106,6 +118,11 @@ abstract class AbstractProvisionLdapService implements DownstreamProvisioningSer
     private static final Map<String, Long> batchCountMap = [changed: 0, unchanged: 0]
     private static final Map<String, Long> totalBatchTimeSecondsMap = [changed: 0, unchanged: 0]
     private static final int batchSize = 1000
+
+    @Override
+    PC getProvisioningContext() {
+        return provisioningContextConfigProperties.ldap
+    }
 
     UidObjectDefinition getUidObjectDefinition() {
         return mainEntryUidObjectDefinition
@@ -378,7 +395,9 @@ abstract class AbstractProvisionLdapService implements DownstreamProvisioningSer
         return downstreamConfig.ldap.url
     }
 
-    abstract String getDcBase()
+    String getDcBase() {
+        return provisioningContext.dcBase
+    }
 
     /**
      * Provides a LdapContextSource for a particular bind DN and credentials

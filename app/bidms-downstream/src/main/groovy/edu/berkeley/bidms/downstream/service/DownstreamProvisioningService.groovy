@@ -26,7 +26,11 @@
  */
 package edu.berkeley.bidms.downstream.service
 
-interface DownstreamProvisioningService {
+import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextAware
+import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextProperties
+
+interface DownstreamProvisioningService<PC extends ProvisioningContextProperties> extends ProvisioningContextAware<PC> {
+
     /**
      * @return A list of downstreamSystemNames that this provisioning
      *         service handles for provisioning requests. 
