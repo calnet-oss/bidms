@@ -92,8 +92,8 @@ allprojects {
         } else {
             jcenter()
         }
-	// Optional: At UCB, contains non-publically available things like
-	// the Oracle JDBC driver artifact.
+        // Optional: At UCB, contains non-publically available things like
+        // the Oracle JDBC driver artifact.
         if (project.hasProperty("calnetLibs_proxy_url")) {
             maven {
                 url project.property("calnetLibs_proxy_url")
@@ -124,6 +124,14 @@ allprojects {
     }
 }
 
+enum BidmsProjectType {
+    BOM, SUBPROJECT, WAR, DOCS
+}
+
+gradle.ext {
+  gradle.ext.bidmsSubprojects = []
+}
+
 subprojects {
     evaluationDependsOn bidmsBomDep
     apply plugin: 'io.spring.dependency-management'
@@ -140,20 +148,32 @@ subprojects {
         }
     }
 
-    boolean isSubproject = project.path in gradle.bidmsSubprojects
-    if(isSubproject) {
+    BidmsProjectType bidmsProjectType
+    if (project.path.endsWith("-bom")) {
+        bidmsProjectType = BidmsProjectType.BOM
+    } else if (project.path.endsWith("-config-server") || project.path.endsWith("-boot")) {
+        bidmsProjectType = BidmsProjectType.WAR
+    } else if (project.path.endsWith("docs")) {
+        bidmsProjectType = BidmsProjectType.DOCS
+    } else {
+        bidmsProjectType = BidmsProjectType.SUBPROJECT
+        gradle.ext.bidmsSubprojects << project.path
+    }
+
+    boolean isSubproject = bidmsProjectType == BidmsProjectType.SUBPROJECT
+    if (isSubproject) {
         apply plugin: 'groovy'
 
         assert licenseFile
         assert noticeFile
 
         jar {
-            from {[licenseFile, noticeFile]}
+            from { [licenseFile, noticeFile] }
         }
     }
 
-    boolean isWebapp = project.path in gradle.bidmsWebapps
-    if(isWebapp) {
+    boolean isWebapp = bidmsProjectType == BidmsProjectType.WAR
+    if (isWebapp) {
         apply plugin: 'war'
         apply plugin: 'org.springframework.boot'
 
@@ -164,7 +184,7 @@ subprojects {
             // build a conventional war suitable for deployment to external
             // app server
             enabled = true
-            from {[licenseFile, noticeFile]}
+            from { [licenseFile, noticeFile] }
         }
 
         bootWar {
@@ -173,24 +193,24 @@ subprojects {
             classifier = 'boot'
             // make the war executable as a unix script
             launchScript()
-            from {[licenseFile, noticeFile]}
+            from { [licenseFile, noticeFile] }
         }
     }
 
-    if(isSubproject || isWebapp) {
+    if ((project.path.startsWith(":lib") || project.path.startsWith(":app") || project.path.startsWith(":web-archive")) && (isSubproject || isWebapp)) {
         javadoc {
             options.addBooleanOption('-frames', true)
         }
 
         task javadocJar(type: Jar) {
             from javadoc
-            from {[licenseFile]}
+            from { [licenseFile] }
             archiveClassifier.set("javadoc")
         }
 
         task sourceJar(type: Jar) {
             from sourceSets.main.allSource
-            from {[licenseFile, noticeFile]}
+            from { [licenseFile, noticeFile] }
             archiveClassifier.set("sources")
         }
     }

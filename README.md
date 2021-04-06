@@ -12,23 +12,23 @@ BIDMS source code is licensed under the [BSD two-clause license](LICENSE.txt).
 
 ## Quick-start: Running in developer mode
 
-`./gradlew :bidms-boot:bootRun`
+`./gradlew :web-archive:bidms-boot:bootRun`
 
 ## Quick-start: Building a WAR file
 
-`./gradlew :bidms-boot:war`
+`./gradlew :web-archive:bidms-boot:war`
 
 The WAR file ends up at
-`./bidms-boot/build/lib/bidms-VERSION.war`.  This WAR file is
+`./web-archive/bidms-boot/build/lib/bidms-VERSION.war`.  This WAR file is
 suitable for deployment to external application servers and this is the
 recommended method for production deployments.
 
 Spring Boot supports self-executable WAR files with an embedded application
 server.  If this is your preference, you can do the following:<br/>
-`./gradlew :bidms-boot:bootWar`
+`./gradlew :web-archive:bidms-boot:bootWar`
 
 The WAR file ends up at
-`./bidms-boot/build/lib/bidms-VERSION-boot.war` and this can
+`./web-archive/bidms-boot/build/lib/bidms-VERSION-boot.war` and this can
 then be executed as a shell script.
 
 ## Quick-start: Generate aggregate Javadocs

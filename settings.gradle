@@ -56,28 +56,31 @@ def getVersionPropertiesClosure = { File propsFile ->
 }
 getVersionPropertiesClosure(file("versions.properties"))
 
-/**
- * To control which applications get included in the monolithic bidms WAR:
- *
- * All applications are included by default:
- * ./gradlew :bidms-boot:war
- *
- * For just some applications, use the space delimited 'bidmsSubs' Gradle
- * property where the values correspond to the <x>Subs property names found
- * in gradle.properties.  For example, to build a WAR containing just the
- * hello-world application:
- * ./gradlew -PbidmsSubs="bidmsHelloWorldSubs" war
- */
-
-def splitSpaceDelimitedPropertyClosure = { overridePropertyName, defaultList ->
-    def subprojects = []
-    List<String> subsList = (hasProperty(overridePropertyName) ? getProperty(overridePropertyName) : defaultList).split("\\s+").findAll { it.trim() }.collect { it.trim() }
-    subsList.each {
-        subprojects += getProperty(it).split("\\s+") as List<String>
-    }
-    subprojects as String[]
-}
-gradle.ext.bidmsSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubLibs", allBidmsSubLibs) + splitSpaceDelimitedPropertyClosure("bidmsSubApps", allBidmsSubApps)
-gradle.ext.allBidmsWarSubprojects = splitSpaceDelimitedPropertyClosure("bidmsSubApps", allBidmsSubApps)
-gradle.ext.bidmsWebapps = splitSpaceDelimitedPropertyClosure("bidmsWebapps", allBidmsWebapps)
-include((gradle.ext.bidmsSubprojects + gradle.ext.bidmsWebapps + [bidmsBomDep, "bidms-aggregate-javadocs"]) as String[])
+include bidmsBomDep, // convention is BOMs end with '-bom'
+    // Libs
+    bidmsBootInitDep,
+    bidmsAppCommonDep,
+    bidmsAppCommonConfDep,
+    bidmsRestServiceCommonDep,
+    bidmsRegistryModelDep,
+    bidmsSpringSecurityApiDep,
+    bidmsSpringSecurityImplDep,
+    bidmsCommonJsonDep,
+    bidmsLoggingDep,
+    bidmsCommonOrmDep,
+    bidmsRestClientDep,
+    bidmsMessagingClientDep,
+    bidmsMessagingListenerDep,
+    bidmsProvisionCommonDep,
+    // Apps
+    bidmsHelloWorldDep,
+    bidmsSorGatewayServiceDep,
+    bidmsMatchEngineDep,
+    bidmsMatchServiceDep,
+    bidmsRegistryProvisioningDep,
+    bidmsDownstreamDep,
+    // WARs - convention is these end with '-boot' or '-config-server'
+    bidmsConfigServerWebapp,
+    bidmsBootWebapp,
+    // Docs - convention is these end with 'docs'
+    ":bidms-aggregate-javadocs"

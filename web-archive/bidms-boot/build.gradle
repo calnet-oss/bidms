@@ -46,11 +46,14 @@ dependencies {
     implementation 'io.springfox:springfox-spring-webmvc'
     implementation 'io.springfox:springfox-swagger-ui'
 
+    implementation project(rootProject.bidmsBootInitDep)
     implementation project(rootProject.bidmsSpringSecurityImplDep)
 
-    gradle.ext.allBidmsWarSubprojects.each {
-        implementation project(it)
-    }
+    implementation project(rootProject.bidmsSorGatewayServiceDep)
+    implementation project(rootProject.bidmsMatchEngineDep)
+    implementation project(rootProject.bidmsMatchServiceDep)
+    implementation project(rootProject.bidmsRegistryProvisioningDep)
+    implementation project(rootProject.bidmsDownstreamDep)
 }
 
 war {
@@ -59,4 +62,8 @@ war {
 
 bootWar {
     archiveBaseName = bidmsBootWarName
+}
+
+springBoot {
+    mainClassName = 'edu.berkeley.bidms.app.BidmsApplication'
 }
