@@ -96,7 +96,6 @@ class MatchClientServiceSpec extends Specification {
         !((PersonNoMatch) result).matchOnly
     }
 
-
     void "test call to match engine where there is no match and matchOnly flag is set true"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
@@ -208,7 +207,7 @@ class MatchClientServiceSpec extends Specification {
 
     void createPeople() {
         ['1', '2'].each {
-            personRepository.save(new Person(uid: it))
+            personRepository.saveAndFlush(new Person(uid: it))
         }
         assert personRepository.count() == 2
     }

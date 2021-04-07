@@ -60,6 +60,7 @@ dependencies {
     }
     testImplementation 'org.spockframework:spock-spring'
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation pdep(rootProject.bidmsTestConfDep)
 }
 
 sourceSets {

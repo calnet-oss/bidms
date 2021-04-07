@@ -1,0 +1,201 @@
+#
+# Copyright (c) 2021, Regents of the University of California and
+# contributors.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+# IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+spring:
+  application:
+    name: bidms
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;INIT=create domain if not exists jsonb as other
+    username: sa
+    password: sa
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: false
+      org:
+        hibernate:
+          flushMode: COMMIT
+server:
+  error:
+    include-message: always
+logging:
+  level:
+    edu.berkeley.bidms: DEBUG
+bidms:
+  log:
+    directory: logs
+  rest:
+    matchengine:
+      baseUrl: http://notneeded
+      person:
+        url: http://notneeded
+    provision:
+      baseUrl: http://notneeded
+      uid:
+        url: http://notneeded
+      new-uid:
+        baseUrl: http://notneeded
+        url: http://notneeded
+    match-service:
+      baseUrl: http://notneeded
+      trigger-match:
+        url: http://notneeded
+    downstream:
+      baseUrl: http://notneeded
+      provision-uid:
+        url: http://notneeded
+  jms-connections:
+    AMQ:
+      broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+      username: test
+      password: test
+  jms:
+    downstream:
+      provision-uid:
+        queue-name: test.downstreamProvisionUid
+    match-service:
+      new-sor-object:
+        queue-name: test.newSORObjectQueue
+    provision:
+      provision-uid:
+        queue-name: test.provisionUid
+      provision-uid-bulk:
+        queue-name: test.bulkProvisionUid
+      new-uid:
+        queue-name: test.bypassMatchEngineNewUidQueue
+  matchengine:
+    match-config: classpath:/TestMatchConfig.groovy
+  matchservice:
+    rest:
+      matchengine:
+        username: test
+        password: test
+      provision:
+        username: test
+        password: test
+    jms:
+      match-service:
+        jms-listener-container-factory-bean-name: amqJmsListenerContainerFactory
+  sgs:
+    sql-template-directory: file://${catalina.home}
+    hash-executors:
+      jdbcHashExecutor:
+        bean-name: jdbcHashExecutor
+      ldapHashExecutor:
+        bean-name: ldapHashExecutor
+    query-executors:
+      jdbcQueryExecutor:
+        bean-name: jdbcQueryExecutor
+      ldapQueryExecutor:
+        bean-name: ldapQueryExecutor
+    query-entry-extractors:
+      clobColumnExtractor:
+        bean-name: clobColumnExtractor
+      dirContextHashExtractor:
+        bean-name: dirContextHashExtractor
+      dirContextQueryExtractor:
+        bean-name: dirContextQueryExtractor
+    connections:
+      jdbc:
+        EMBEDDEDDB:
+          driver-class-name: org.h2.Driver
+          url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000
+          username: sa
+          password: sa
+      ldap:
+        LDAP:
+          dialect: APACHEDS
+          url: ldap://localhost:10389
+          baseDn: dc=example,dc=edu
+          bindDn: uid=admin,ou=system
+          bindPassword: secret
+          metadata-set-name: LDAP
+    sors:
+      ALUMNI:
+        hash-executor-name: jdbcHashExecutor
+        hash-query-timestamp-supported: true
+        query-timestamp-supported: true
+        query-executor-name: jdbcQueryExecutor
+        connection-name: EMBEDDEDDB
+        jdbc:
+          hash-executor-sql-template: sql${file.separator}alumni-hash.sql
+          query-executor-sql-template: sql${file.separator}alumni-query.sql
+      LDAP:
+        connection-name: LDAP
+        hash-executor-name: ldapHashExecutor
+        hash-query-timestamp-supported: true
+        query-timestamp-supported: true
+        query-executor-name: ldapQueryExecutor
+        ldap:
+          searchBase: ou=People
+    directory-attribute-metadata:
+      LDAP:
+        attributes:
+          # Pseudo-attributes added by the SGS
+          dn:
+            quant: single
+          uidFromDN:
+            quant: single
+          definitiveUid:
+            quant: single
+          # Operational attributes
+          createTimestamp:
+            quant: single
+          modifyTimestamp:
+            quant: single
+          # Schema attributes used by tests (you'll want to use a more complete list in production that is fully representative of your real LDAP schema)
+          cn:
+            quant: multiple
+          givenName:
+            quant: multiple
+          sn:
+            quant: multiple
+          uid:
+            quant: multiple
+  provision:
+    app-name: registry-provisioning
+    provisioningContext:
+      ad:
+        enabled: true
+        dcBase: dc=test,dc=edu
+    rest:
+      downstream:
+        username: test
+        password: test
+    jms:
+      provision:
+        jmsConnectionFactoryBeanName: amqJmsConnectionFactory
+        jmsListenerContainerFactoryBeanName: amqJmsListenerContainerFactory
+      downstream:
+        jmsConnectionFactoryBeanName: amqJmsConnectionFactory

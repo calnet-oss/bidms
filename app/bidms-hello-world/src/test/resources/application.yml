@@ -1,5 +1,0 @@
-# unit tests designed to work with internal configurations, not external configurations
-spring:
-  cloud:
-    config:
-      enabled: false

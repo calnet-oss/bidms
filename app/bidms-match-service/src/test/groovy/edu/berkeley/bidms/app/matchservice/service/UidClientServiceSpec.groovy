@@ -31,6 +31,7 @@ import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate
 import edu.berkeley.bidms.app.matchservice.testutils.TimeoutResponseCreator
 import edu.berkeley.bidms.app.registryModel.model.Person
+import edu.berkeley.bidms.app.registryModel.model.SOR
 import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository
 import edu.berkeley.bidms.app.restclient.service.ProvisionRestClientService
@@ -76,7 +77,7 @@ class UidClientServiceSpec extends Specification {
     void "provision a new uid and #description and return a success"() {
         setup:
         final mockServer = MockRestServiceServer.createServer(restTemplate)
-        SORObject sorObject = new SORObject(id: 1)
+        SORObject sorObject = new SORObject(id: 1, sor: new SOR(name: "TEST"))
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.PUT))
                 .andExpect(content().string(""))

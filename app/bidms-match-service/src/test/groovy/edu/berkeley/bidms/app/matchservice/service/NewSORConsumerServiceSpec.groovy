@@ -212,18 +212,18 @@ class NewSORConsumerServiceSpec extends Specification {
     }
 
     private void setupModel() {
-        def sor = sorRepository.save(new SOR(name: 'SIS'))
-        this.sorObject = sorObjectRepository.save(new SORObject(
+        def sor = sorRepository.saveAndFlush(new SOR(name: 'SIS'))
+        this.sorObject = sorObjectRepository.saveAndFlush(new SORObject(
                 sor: sor,
                 sorPrimaryKey: 'SIS00001',
                 objJson: '{}',
                 jsonVersion: 1,
                 queryTime: new Date()
         ))
-        this.person1 = personRepository.save(new Person(uid: '1'))
-        this.person2 = personRepository.save(new Person(uid: '2'))
+        this.person1 = personRepository.saveAndFlush(new Person(uid: '1'))
+        this.person2 = personRepository.saveAndFlush(new Person(uid: '2'))
 
-        IdentifierType studentIdType = identifierTypeRepository.save(new IdentifierType(idName: "studentId"))
+        IdentifierType studentIdType = identifierTypeRepository.saveAndFlush(new IdentifierType(idName: "studentId"))
         person3 = new Person(uid: '3')
         def id = new Identifier(person3)
         id.with {
@@ -232,9 +232,9 @@ class NewSORConsumerServiceSpec extends Specification {
             isActive = true
             isPrimary = true
         }
-        this.person3 = personRepository.save(person3)
+        this.person3 = personRepository.saveAndFlush(person3)
 
-        sorObjectRepository.save(new SORObject(
+        sorObjectRepository.saveAndFlush(new SORObject(
                 sor: sor,
                 sorPrimaryKey: 'SIS00002',
                 person: person3,

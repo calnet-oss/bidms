@@ -48,7 +48,7 @@ class SorKeyDataCommandSpec extends Specification {
     SORObjectRepository sorObjectRepository
 
     def setup() {
-        sorObjectRepository.save(new SORObject(
+        sorObjectRepository.saveAndFlush(new SORObject(
                 sor: sorRepository.save(new SOR(name: 'SIS')),
                 sorPrimaryKey: '12345',
                 objJson: '{}',

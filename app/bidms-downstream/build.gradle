@@ -86,7 +86,8 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'*/
+    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation pdep(rootProject.bidmsTestConfDep)*/
 }
 
 sourceSets {

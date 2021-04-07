@@ -67,20 +67,20 @@ class DatabaseServiceSpec extends Specification {
     def setup() {
         this.service = new DatabaseService(entityManager, sorObjectRepository, partialMatchRepository)
 
-        SOR sor = sorRepository.save(new SOR(name: 'SIS'))
-        this.sorObject = sorObjectRepository.save(new SORObject(
+        SOR sor = sorRepository.saveAndFlush(new SOR(name: 'SIS'))
+        this.sorObject = sorObjectRepository.saveAndFlush(new SORObject(
                 sor: sor,
                 sorPrimaryKey: 'SIS123',
                 queryTime: new Date(),
                 objJson: "{}",
                 jsonVersion: 1
         ))
-        this.person1 = personRepository.save(new Person(uid: "1"))
-        this.person2 = personRepository.save(new Person(uid: "2"))
+        this.person1 = personRepository.saveAndFlush(new Person(uid: "1"))
+        this.person2 = personRepository.saveAndFlush(new Person(uid: "2"))
 
         def epm = new PartialMatch(person1)
         epm.sorObject = sorObject
-        this.existingPartialMatch = partialMatchRepository.save(epm)
+        this.existingPartialMatch = partialMatchRepository.saveAndFlush(epm)
     }
 
     void "when assigning a uid to a SORObject it will be persisted"() {
@@ -96,14 +96,14 @@ class DatabaseServiceSpec extends Specification {
 
     void "when storing partial match not previously exsting a new PartialMatch is created"() {
         given:
-        def sorObject2 = sorObjectRepository.save(new SORObject(
+        def sorObject2 = sorObjectRepository.saveAndFlush(new SORObject(
                 sor: sorRepository.save(new SOR(name: 'HR')),
                 sorPrimaryKey: 'HR123',
                 queryTime: new Date(),
                 objJson: "{}",
                 jsonVersion: 1
         ))
-        def person3 = personRepository.save(new Person(uid: '3'))
+        def person3 = personRepository.saveAndFlush(new Person(uid: '3'))
 
         expect:
         partialMatchRepository.countBySorObject(sorObject2) == 0
