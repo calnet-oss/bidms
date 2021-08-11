@@ -35,6 +35,12 @@ public class JmsConnectionConfigProperties {
     private String username;
     private String password;
 
+    /** For listener connections **/
+    // RedeliveryPolicy
+    private Integer maximumRedeliveries;
+    private Long initialRedeliveryDelay;
+    private Long redeliveryDelay;
+
     public String getTrustStore() {
         return trustStore;
     }
@@ -89,5 +95,29 @@ public class JmsConnectionConfigProperties {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getMaximumRedeliveries() {
+        return maximumRedeliveries;
+    }
+
+    public void setMaximumRedeliveries(Integer maximumRedeliveries) {
+        this.maximumRedeliveries = maximumRedeliveries;
+    }
+
+    public Long getInitialRedeliveryDelay() {
+        return initialRedeliveryDelay;
+    }
+
+    public void setInitialRedeliveryDelay(Long initialRedeliveryDelay) {
+        this.initialRedeliveryDelay = initialRedeliveryDelay;
+    }
+
+    public Long getRedeliveryDelay() {
+        return redeliveryDelay;
+    }
+
+    public void setRedeliveryDelay(Long redeliveryDelay) {
+        this.redeliveryDelay = redeliveryDelay;
     }
 }

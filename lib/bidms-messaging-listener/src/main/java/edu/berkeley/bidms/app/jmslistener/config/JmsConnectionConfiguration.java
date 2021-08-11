@@ -27,7 +27,7 @@
 package edu.berkeley.bidms.app.jmslistener.config;
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
-import edu.berkeley.bidms.jmsclient.util.JmsClientUtil;
+import edu.berkeley.bidms.jms.util.ConnectionFactoryUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +50,7 @@ public class JmsConnectionConfiguration {
         if (bidmsConfigProperties.getJmsConnections() == null || !bidmsConfigProperties.getJmsConnections().containsKey("AMQ")) {
             throw new RuntimeException(BidmsConfigProperties.JMS_CONNECTIONS_KEY + ".AMQ is not configured");
         }
-        return JmsClientUtil.buildConnectionFactory(bidmsConfigProperties.getJmsConnections().get("AMQ"));
+        return ConnectionFactoryUtil.buildConnectionFactory(bidmsConfigProperties.getJmsConnections().get("AMQ"));
     }
 
     @Bean(name = "amqJmsListenerContainerFactory")

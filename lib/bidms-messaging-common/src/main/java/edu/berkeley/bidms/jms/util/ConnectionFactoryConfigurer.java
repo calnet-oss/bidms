@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Regents of the University of California and
+ * Copyright (c) 2021, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,30 +24,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'groovy'
-}
+package edu.berkeley.bidms.jms.util;
 
-version = versions.bidmsMessagingListener
+import org.apache.activemq.ActiveMQConnectionFactory;
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // JMS
-    implementation "org.springframework:spring-jms"
-    runtimeOnly "javax.jms:javax.jms-api"
-    implementation "org.apache.activemq:activemq-client"
-    implementation "org.apache.activemq:activemq-pool"
-    implementation pdep(rootProject.bidmsMessagingCommonDep)
-
-    implementation pdep(rootProject.bidmsAppCommonConfDep)
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+public interface ConnectionFactoryConfigurer {
+    void configure(ActiveMQConnectionFactory amqConnectionFactory);
 }
