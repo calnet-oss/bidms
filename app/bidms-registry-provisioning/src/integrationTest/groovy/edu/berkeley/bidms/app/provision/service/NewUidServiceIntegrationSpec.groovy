@@ -111,7 +111,7 @@ class NewUidServiceIntegrationSpec extends Specification {
         sorObject.uid == result.uid
 
         and: "uid has been reprovisioned"
-        1 * newUidService.provisionService.provisionUid(_, synchronousDownstream, "eventId") >> { String uid, Boolean synchronousDownstream, String eventId ->
+        1 * newUidService.provisionService.provisionUid(_, synchronousDownstream, "eventId") >> { String uid, Boolean _synchronousDownstream, String eventId ->
             [message: "success", uid: uid]
         }
 
