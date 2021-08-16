@@ -47,3 +47,10 @@ dependencies {
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
     testImplementation pdep(rootProject.bidmsTestConfDep)
 }
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}

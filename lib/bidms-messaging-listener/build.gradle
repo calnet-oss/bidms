@@ -51,3 +51,10 @@ dependencies {
     testImplementation 'org.codehaus.groovy:groovy'
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}

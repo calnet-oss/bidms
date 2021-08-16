@@ -106,3 +106,17 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 check.dependsOn integrationTest
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}
+
+integrationTest {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}

@@ -43,3 +43,10 @@ dependencies {
     testImplementation 'org.spockframework:spock-spring'
     testImplementation 'org.codehaus.groovy:groovy-dateutil'
 }
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}
