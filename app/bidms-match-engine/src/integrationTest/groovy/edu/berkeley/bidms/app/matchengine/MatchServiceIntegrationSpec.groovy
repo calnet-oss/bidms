@@ -70,7 +70,7 @@ class MatchServiceIntegrationSpec extends Specification {
     }
 
     @SuppressWarnings("GroovyAssignabilityCheck")
-    void "test findCandidates where superCanonical and canonical do not returns a match"() {
+    void "test findCandidates where superCanonical and canonical do not return a match"() {
         when:
         service.findCandidates([systemOfRecord: "sis", identifier: "123", a: "b"])
 

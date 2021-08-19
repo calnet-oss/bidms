@@ -85,7 +85,37 @@ class DatabaseService {
         } as Set
 
         def rows = performSearch(sqlStatements)
-        return rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
+
+        Set<Record> records = rowMapperService.mapDataRowsToRecords(rows, confidenceType, matchInput)
+
+        if (confidenceType == ConfidenceType.SUPERCANONICAL && !records) {
+            // If there are no super-canonical results, there's still one
+            // more possibility and that is that the other SORObject that
+            // matches this identifier is sitting in the PartialMatch table.
+            // If that's the case, then this SORObject needs to go into
+            // PartialMatch too because we don't want to be creating a new
+            // uid for this when the other potentially matches up to an
+            // existing uid.
+            rows.each { SearchResult searchResult ->
+                SearchSet searchSet = searchSets.find { it.matchConfidence.ruleName == searchResult.ruleName }
+                def sorMatchAttributeConfig = searchSet.matchConfidence.confidence.collect { matchTypeEntry ->
+                    searchSet.matchAttributeConfigs.find { it.name == matchTypeEntry.key }
+                }.find { it.attribute == "systemOfRecord" }
+                def targetSorName = sorMatchAttributeConfig.search.fixedValue
+                List<String> partialMatchUids = getSorObjectInPartialMatch(targetSorName, matchInput.identifier)
+                if (partialMatchUids) {
+                    records.addAll(partialMatchUids.collect { String uid ->
+                        new Record(
+                                exactMatch: false,
+                                referenceId: uid,
+                                ruleNames: [searchResult.ruleName]
+                        )
+                    })
+                }
+            }
+        }
+
+        return records
     }
 
     /**
@@ -109,6 +139,19 @@ class DatabaseService {
         finally {
             sql.close()
         }
+    }
+
+    // If the SORObject is in the PartialMatch table, returns the uids it is
+    // potentially matching up to.
+    List<String> getSorObjectInPartialMatch(String sorName, String sorObjKey) {
+        String sql = """SELECT pm.personUid FROM PartialMatch pm, SORObject so, SOR sor
+WHERE so.id = pm.sorObjectId AND pm.isReject = false AND sor.sorId = so.sorId
+AND sor.sorName = ? AND so.sorObjKey = ?"""
+        List<String> uids = []
+        sqlService.sqlInstance.eachRow(sql, [sorName, sorObjKey]) { row ->
+            uids << (row.personUid as String)
+        }
+        return uids
     }
 
     private List<SearchSet> getSearchSets(ConfidenceType confidenceType) {
