@@ -26,14 +26,7 @@
  */
 package edu.berkeley.bidms.app.hello.model.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
-
-@ApiModel(description = "A HelloWorld request")
 public class HelloWorldRequest {
-    @ApiModelProperty(notes = "Someone's name")
-    @ApiParam("Someone's name")
     private String name;
 
     public String getName() {

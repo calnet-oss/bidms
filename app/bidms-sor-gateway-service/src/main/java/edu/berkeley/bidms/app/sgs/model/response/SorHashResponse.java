@@ -26,31 +26,23 @@
  */
 package edu.berkeley.bidms.app.sgs.model.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.validation.constraints.NotNull;
 
 /**
  * Contains information regarding the result of a hash query.
  */
-@ApiModel(description = "Results of hashing a SOR")
 public class SorHashResponse {
 
     public enum HashMode { FULL, LAST_CHANGED }
 
-    @ApiModelProperty(notes = "SOR name")
     @NotNull
     private String sorName;
 
-    @ApiModelProperty(notes = "The type of hash query performed")
     @NotNull
     private HashMode hashMode;
 
-    @ApiModelProperty(notes = "Number of entries that were successfully hashed")
     private int successfulHashCount;
 
-    @ApiModelProperty(notes = "Number of entries that experienced an error and were not successfully hashed")
     private int failedHashCount;
 
     public SorHashResponse(@NotNull String sorName, @NotNull HashMode hashMode, int successCount, int failureCount) {

@@ -26,25 +26,16 @@
  */
 package edu.berkeley.bidms.app.sgs.model.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
-
 import javax.validation.constraints.NotNull;
 
 /**
  * A request to execute a query for a SOR.
  */
-@ApiModel(description = "Parameters for a request to query a SOR")
 public class SorQueryRequest {
 
-    @ApiModelProperty(notes = "SOR name")
-    @ApiParam("SOR name")
     @NotNull
     private String sorName;
 
-    @ApiModelProperty(notes = "If true, do a full query of every entity")
-    @ApiParam("If true, do a full query of every entity")
     private boolean full;
 
     public String getSorName() {

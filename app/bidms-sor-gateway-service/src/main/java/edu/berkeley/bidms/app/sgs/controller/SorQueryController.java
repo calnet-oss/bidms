@@ -30,9 +30,6 @@ import edu.berkeley.bidms.app.restservice.common.service.RestRequestRouterServic
 import edu.berkeley.bidms.app.sgs.model.request.SorQueryRequest;
 import edu.berkeley.bidms.app.sgs.model.response.SorQueryResponse;
 import edu.berkeley.bidms.app.sgs.service.SorQueryService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Api(value = "Perform query operations on a SOR")
 @RequestMapping(value = "/sgs")
 @RestController
 public class SorQueryController {
@@ -54,11 +50,10 @@ public class SorQueryController {
     }
 
     // curl http://localhost:8080/sgs/query/SORNAME && echo
-    @ApiOperation(value = "Perform a query on a SOR")
     @GetMapping(value = "/query/{sorName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public SorQueryResponse query(
             HttpServletRequest request,
-            @ApiParam(value = "Parameters for a request to query a SOR") SorQueryRequest cmd
+            SorQueryRequest cmd
     ) {
         return routerService.toService(request, cmd, () -> sorQueryService.query(cmd));
     }

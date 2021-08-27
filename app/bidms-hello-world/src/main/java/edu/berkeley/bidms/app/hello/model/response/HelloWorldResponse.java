@@ -26,13 +26,8 @@
  */
 package edu.berkeley.bidms.app.hello.model.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-@ApiModel(description = "A HelloWorld response")
 public class HelloWorldResponse {
 
-    @ApiModelProperty(notes = "Content of the hello world response")
     private String content;
 
     public String getContent() {

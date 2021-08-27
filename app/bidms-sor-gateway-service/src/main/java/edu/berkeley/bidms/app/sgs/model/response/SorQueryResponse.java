@@ -26,34 +26,25 @@
  */
 package edu.berkeley.bidms.app.sgs.model.response;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.validation.constraints.NotNull;
 
 /**
  * Contains information regarding the result of a query.
  */
-@ApiModel(description = "Results of querying a SOR")
 public class SorQueryResponse {
 
     public enum QueryMode {FULL, INDIVIDUAL, LAST_CHANGED}
 
-    @ApiModelProperty(notes = "SOR name")
     @NotNull
     private String sorName;
 
-    @ApiModelProperty(notes = "The type of query performed")
     @NotNull
     private QueryMode queryMode;
 
-    @ApiModelProperty(notes = "Number of entries that were successfully queried")
     private int successfulQueryCount;
 
-    @ApiModelProperty(notes = "Number of entries that experienced an error and were not successfully queried")
     private int failedQueryCount;
 
-    @ApiModelProperty(notes = "Number of entries that were deleted")
     private int deletedCount;
 
     public SorQueryResponse(@NotNull String sorName, @NotNull QueryMode queryMode) {

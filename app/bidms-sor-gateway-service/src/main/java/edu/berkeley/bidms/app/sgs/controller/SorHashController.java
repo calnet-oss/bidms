@@ -30,9 +30,6 @@ import edu.berkeley.bidms.app.restservice.common.service.RestRequestRouterServic
 import edu.berkeley.bidms.app.sgs.model.request.SorHashRequest;
 import edu.berkeley.bidms.app.sgs.model.response.SorHashResponse;
 import edu.berkeley.bidms.app.sgs.service.SorHashService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Api(value = "Perform hash operations on a SOR")
 @RequestMapping(value = "/sgs")
 @RestController
 public class SorHashController {
@@ -54,11 +50,10 @@ public class SorHashController {
     }
 
     // curl http://localhost:8080/sgs/hash/SORNAME && echo
-    @ApiOperation(value = "Perform a hash query on a SOR")
     @GetMapping(value = "/hash/{sorName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public SorHashResponse hash(
             HttpServletRequest request,
-            @ApiParam(value = "Parameters for a request to hash a SOR") SorHashRequest cmd
+            SorHashRequest cmd
     ) {
         return routerService.toService(request, cmd, () -> sorHashService.hash(cmd));
     }
