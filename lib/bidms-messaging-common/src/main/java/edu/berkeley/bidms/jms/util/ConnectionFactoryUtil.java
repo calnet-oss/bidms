@@ -30,7 +30,7 @@ import edu.berkeley.bidms.app.common.config.properties.JmsConnectionConfigProper
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.springframework.jms.connection.CachingConnectionFactory;
 
 import javax.jms.ConnectionFactory;
 
@@ -98,6 +98,13 @@ public class ConnectionFactoryUtil {
         if (configurer != null) {
             configurer.configure(amqConnectionFactory);
         }
-        return new PooledConnectionFactory(amqConnectionFactory);
+        // See:
+        // http://activemq.apache.org/spring-support.html
+        //   (Use CachingConnectionFactory instead of
+        //   PooledConnectionFactory.  The latter has a messageProducer
+        //   "leak").
+        CachingConnectionFactory ccf = new CachingConnectionFactory();
+        ccf.setTargetConnectionFactory(amqConnectionFactory);
+        return ccf;
     }
 }
