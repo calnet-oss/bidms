@@ -34,17 +34,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.Map;
 
 @EnableJms
-@EnableSwagger2WebMvc
 @SpringBootApplication(scanBasePackages = "edu.berkeley.bidms.app")
 public class BidmsApplication {
     private static final BCryptPasswordEncoder.BCryptVersion BCRYPT_VERSION = BCryptPasswordEncoder.BCryptVersion.$2B;
@@ -52,21 +45,6 @@ public class BidmsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BidmsApplication.class, args);
-    }
-
-    @Bean
-    public Docket swaggerApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("edu.berkeley.bidms.app"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(
-                        new ApiInfoBuilder()
-                                .description("BIDMS REST API")
-                                .version("1.0.0")
-                                .build()
-                );
     }
 
     @Bean(name = RegistryUserCredentialService.DIGEST_AUTH_PASSWORD_ENCODER_BEAN_NAME)

@@ -36,10 +36,5 @@ dependencies {
     // Spring Cloud Config client
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
-    // Springfox for Swagger
-    implementation 'io.springfox:springfox-swagger2'
-    implementation 'io.springfox:springfox-spring-webmvc'
-    implementation 'io.springfox:springfox-swagger-ui'
-
     implementation project(rootProject.bidmsSpringSecurityImplDep)
 }

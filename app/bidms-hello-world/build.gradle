@@ -34,9 +34,6 @@ dependencies {
     }
     compileOnly 'javax.servlet:javax.servlet-api'
 
-    // Springfox for Swagger
-    implementation 'io.springfox:springfox-swagger2'
-
     implementation pdep(rootProject.bidmsRestServiceCommonDep)
 
     testRuntimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'

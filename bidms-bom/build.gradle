@@ -30,9 +30,6 @@ ext {
     dependencyManagementDependencies = [
         [group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servletApi],
         [group: 'com.h2database', name: 'h2', version: versions.h2db],
-        [group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfox],
-        [group: 'io.springfox', name: 'springfox-spring-webmvc', version: versions.springfox],
-        [group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfox],
         [group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: versions.springCloudConfig],
         [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: versions.springCloudConfig],
         [group: 'org.spockframework', name: 'spock-spring', version: versions.spockSpring],

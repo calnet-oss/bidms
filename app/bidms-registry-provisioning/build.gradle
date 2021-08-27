@@ -44,9 +44,6 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy'
     implementation 'org.codehaus.groovy:groovy-sql'
 
-    // Springfox for Swagger
-    //implementation 'io.springfox:springfox-swagger2'
-
     implementation "org.postgresql:postgresql"
 
     // JMS client
