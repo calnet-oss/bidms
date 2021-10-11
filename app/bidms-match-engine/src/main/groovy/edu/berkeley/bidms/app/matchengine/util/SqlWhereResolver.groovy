@@ -33,6 +33,11 @@ import static edu.berkeley.bidms.app.matchengine.config.MatchConfig.MatchType
 class SqlWhereResolver {
     static ALL_ALPHANUMERIC = /[^A-Za-z0-9]/
 
+    // If you did something other than this:
+    // CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public
+    // then you'll have to alter fuzzySchema.
+    static String fuzzySchema = "public"
+
     static Map getWhereClause(MatchType matchType, MatchAttributeConfig config, String value) {
         def sql = config.column
         def searchConfig = config.search
@@ -61,7 +66,7 @@ class SqlWhereResolver {
                 break
             case MatchType.DISTANCE:
                 def distance = searchConfig.distance // If type is distance check if the config has a distance setting
-                sql = searchConfig.distance ? "levenshtein_less_equal($sql,?,$distance)<${distance + 1}" : exactSql(sql)
+                sql = searchConfig.distance ? "${fuzzySchema}.levenshtein_less_equal($sql,?,$distance)<${distance + 1}" : exactSql(sql)
                 break
             case [MatchType.EXACT, MatchType.FIXED_VALUE]:
                 sql = exactSql(sql)

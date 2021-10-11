@@ -119,7 +119,7 @@ class SearchSetSpec extends Specification {
         def whereClause = sut.buildWhereClause(matchInput)
 
         then:
-        whereClause.sql == "substring(lower(FIRST_NAME) from 1 for 3)=substring(? from 1 for 3) AND levenshtein_less_equal(lower(LAST_NAME),?,3)<4 AND DATE_OF_BIRTH=?"
+        whereClause.sql == "substring(lower(FIRST_NAME) from 1 for 3)=substring(? from 1 for 3) AND public.levenshtein_less_equal(lower(LAST_NAME),?,3)<4 AND DATE_OF_BIRTH=?"
         whereClause.values == ["pamela", "anderson", '19830318']
     }
 
