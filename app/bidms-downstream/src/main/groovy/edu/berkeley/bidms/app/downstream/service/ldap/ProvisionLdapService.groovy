@@ -26,9 +26,9 @@
  */
 package edu.berkeley.bidms.app.downstream.service.ldap
 
+import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextConfigProperties
 import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextProperties
 import edu.berkeley.bidms.app.downstream.config.properties.DownstreamConfigProperties
-import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextConfigProperties
 import edu.berkeley.bidms.app.downstream.service.DownstreamProvisionService
 import edu.berkeley.bidms.app.jmsclient.service.DownstreamProvisioningJmsClientService
 import edu.berkeley.bidms.app.registryModel.model.DownstreamObject
@@ -285,37 +285,39 @@ class ProvisionLdapService<PC extends ProvisioningContextProperties> implements 
     /**
      * @return true if a LDAP modification actually occurred
      */
-    @Transactional(rollbackFor = Exception)
+
+    // This is a method that is called from non-transactional methods within
+    // this class so we have to manage the start of the transaction manually.
     boolean persistUid(String eventId, int downstreamSystemId, String uid, String globUniqId, Map<String, Object> jsonObject, Long hash, boolean isDelete) {
+        boolean wasModified = false
         Sql sql = new Sql(dataSource)
         try {
-            ProvisionLdapServiceCallbackContext context = createProvisionLdapServiceCallbackContext(downstreamSystemId)
-            if (!isDelete) {
-                // uid isn't part of the DownstreamObject.objJson, so add it
-                jsonObject.uid = uid
-                // same for the globally unique identifier
-                if (globUniqId) {
-                    jsonObject[uidObjectDefinition.globallyUniqueIdentifierAttributeName] = globUniqId
+            sql.withTransaction {
+                ProvisionLdapServiceCallbackContext context = createProvisionLdapServiceCallbackContext(downstreamSystemId)
+                if (!isDelete) {
+                    // uid isn't part of the DownstreamObject.objJson, so add it
+                    jsonObject.uid = uid
+                    // same for the globally unique identifier
+                    if (globUniqId) {
+                        jsonObject[uidObjectDefinition.globallyUniqueIdentifierAttributeName] = globUniqId
+                    }
+                    synchronized (context.lock) {
+                        wasModified = connector.persist(eventId, uidObjectDefinition, context, jsonObject, isDelete)
+                        updateDownstreamObject(sql, downstreamSystemId, uid, hash)
+                    }
+                } else {
+                    synchronized (context.lock) {
+                        wasModified = connector.persist(eventId, uidObjectDefinition, context, jsonObject, isDelete)
+                        markDeletedDownstreamObjectAsDeletedDownstream(sql, downstreamSystemId, uid)
+                    }
+                    log.info("uid $uid has been deleted from ${downstreamSystemRepository.get(downstreamSystemId).name}")
                 }
-                boolean wasModified = false
-                synchronized (context.lock) {
-                    wasModified = connector.persist(eventId, uidObjectDefinition, context, jsonObject, isDelete)
-                    updateDownstreamObject(sql, downstreamSystemId, uid, hash)
-                }
-                return wasModified
-            } else {
-                boolean wasModified = false
-                synchronized (context.lock) {
-                    wasModified = connector.persist(eventId, uidObjectDefinition, context, jsonObject, isDelete)
-                    markDeletedDownstreamObjectAsDeletedDownstream(sql, downstreamSystemId, uid)
-                }
-                log.info("uid $uid has been deleted from ${downstreamSystemRepository.get(downstreamSystemId).name}")
-                return wasModified
             }
         }
         finally {
             sql.close()
         }
+        return wasModified
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
