@@ -50,6 +50,6 @@ public interface SORObjectRepository extends ExtendedRepository<SORObject, Long>
 
     List<SORObject> findAllBySorPrimaryKeyIn(List<String> sorPrimaryKeys);
 
-    @Query("SELECT obj.sorObject FROM PartialMatch obj WHERE obj.isReject=?1 GROUP BY obj.sorObject")
-    List<SORObject> findAllPartialMatchesByIsRejectGroupBySorObject(boolean isReject);
+    @Query("SELECT obj.sorObject.id FROM PartialMatch obj WHERE obj.isReject=?1 GROUP BY obj.sorObject.id")
+    List<Long> findAllPartialMatchSORObjectIdsByIsRejectGroupBySorObject(boolean isReject);
 }
