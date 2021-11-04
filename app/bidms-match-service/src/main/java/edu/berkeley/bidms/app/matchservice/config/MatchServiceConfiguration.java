@@ -91,6 +91,6 @@ public class MatchServiceConfiguration {
 
     @Bean("matchServiceProvisionRestTemplate")
     public ProvisionRestTemplate getProvisionRestTemplate(RestTemplateBuilder builder) {
-        return RestClientUtil.configureSslDigestAuthRestTemplate(builder, getRestProvisionBaseUrl(), getProvisionRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
+        return RestClientUtil.configureSslBasicAuthRestTemplate(builder, getRestProvisionBaseUrl(), getProvisionRestUsername(), getProvisionRestPassword(), new ProvisionRestTemplate());
     }
 }
