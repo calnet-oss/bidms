@@ -54,7 +54,7 @@ public class ProvisioningConfiguration {
 
     @Bean("provDownstreamProvisioningRestTemplate")
     public DownstreamProvisioningRestTemplate getDownstreamProvisioningRestTemplate(RestTemplateBuilder builder) {
-        return RestClientUtil.configureSslDigestAuthRestTemplate(
+        return RestClientUtil.configureSslBasicAuthRestTemplate(
                 builder,
                 bidmsConfigProperties.getRest().getDownstream().getBaseUrl(),
                 provisioningConfigProperties.getRest().getDownstream().getUsername(),
