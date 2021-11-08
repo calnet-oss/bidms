@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app;
 
 import edu.berkeley.bidms.app.springsecurity.encoder.DigestAuthPasswordEncoder;
 import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialService;
+import edu.berkeley.bidms.springsecurity.util.ExtendedDelegatingPasswordEncoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -53,10 +54,19 @@ public class BidmsApplication {
     }
 
     @Bean(name = RegistryUserCredentialService.PASSWORD_ENCODER_BEAN_NAME)
-    public DelegatingPasswordEncoder getPasswordEncoder() {
-        return new DelegatingPasswordEncoder(
+    public DelegatingPasswordEncoder getPasswordEncoder(DigestAuthPasswordEncoder digestAuthPasswordEncoder) {
+        // The decode default is 'digest' because the bcrypt encoder
+        // generates encoded passwords with the prefix built-into them.
+        // Therefore, we assume that non-prefixed passwords must be digest
+        // passwords.  The use of digest auth is utilized only sparingly
+        // to support orgs that still have a few legacy endpoints.
+        return new ExtendedDelegatingPasswordEncoder(
                 "bcrypt",
-                Map.of("bcrypt", new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH))
+                "digest",
+                Map.of(
+                        "bcrypt", new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH),
+                        "digest", digestAuthPasswordEncoder
+                )
         );
     }
 }
