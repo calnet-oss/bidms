@@ -26,26 +26,32 @@
  */
 package edu.berkeley.bidms.app.springsecurity.encoder
 
+import edu.berkeley.bidms.springsecurity.util.ExtendedDelegatingPasswordEncoder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class PasswordEncoderSpec extends Specification {
     @Shared
     DigestAuthPasswordEncoder httpDigestPasswordEncoder
 
     @Shared
-    PasswordEncoder delegatingPasswordEncoder
+    DelegatingPasswordEncoder delegatingPasswordEncoder
 
     static final def BCRYPT_VERSION = BCryptPasswordEncoder.BCryptVersion.$2B
     static final def BCRYPT_STRENGTH = 12
 
     void setupSpec() {
         httpDigestPasswordEncoder = new DigestAuthPasswordEncoder("Registry Realm")
-        delegatingPasswordEncoder = new DelegatingPasswordEncoder(
-                "bcrypt", ["bcrypt": new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH)]
+        delegatingPasswordEncoder = new ExtendedDelegatingPasswordEncoder(
+                "bcrypt",
+                "digest",
+                [
+                        "bcrypt": new BCryptPasswordEncoder(BCRYPT_VERSION, BCRYPT_STRENGTH),
+                        "digest": httpDigestPasswordEncoder
+                ]
         )
     }
 
@@ -61,5 +67,20 @@ class PasswordEncoderSpec extends Specification {
     void "test httpDigestPasswordEncoder"() {
         expect:
         httpDigestPasswordEncoder.encode("{foouser}foopassword") == "eb1d53d8b371d14c5e0d563f01393320"
+    }
+
+    @Unroll
+    void "test matching passwords with delegating password encoder for #type"() {
+        when:
+        boolean matches = delegatingPasswordEncoder.matches(rawPassword, encodedPassword)
+
+        then:
+        matches
+
+        where:
+        type     | rawPassword                        | encodedPassword
+        'bcrypt' | 'foopassword'                      | '{bcrypt}$2b$12$z.TmHoSo/lXpdfzBlafsZuOOHAAfZallYGk1Gb3cQZHiMExo8tvHi'
+        'digest' | 'eb1d53d8b371d14c5e0d563f01393320' | '{digest}eb1d53d8b371d14c5e0d563f01393320'
+        'digest' | 'eb1d53d8b371d14c5e0d563f01393320' | 'eb1d53d8b371d14c5e0d563f01393320'
     }
 }
