@@ -26,8 +26,6 @@
  */
 package edu.berkeley.bidms.restclient.util;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,7 +34,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -48,7 +45,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -61,15 +57,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.time.Duration;
-import java.util.Date;
 
 public class RestClientUtil {
-
-    private static String defaultRealm = "Registry Realm";
-
-    public static String getDefaultRealm() {
-        return defaultRealm;
-    }
 
     private static ClientHttpRequestFactory getSslClientHttpRequestFactory(
             CredentialsProvider credentialsProvider,
@@ -102,7 +91,10 @@ public class RestClientUtil {
             @Override
             protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
                 HttpClientContext context = HttpClientContext.create();
-                context.setAuthCache(authCache);
+                // An authCache is optional and only useful when preemptive authentication is possible.
+                if (authCache != null) {
+                    context.setAuthCache(authCache);
+                }
                 context.setCredentialsProvider(credentialsProvider);
                 return context;
             }
@@ -122,23 +114,6 @@ public class RestClientUtil {
         BasicScheme basicScheme = new BasicScheme();
         authCache.put(target, basicScheme);
         return authCache;
-    }
-
-    private static AuthCache getDigestAuthCache(HttpHost target, String realm, String password) {
-        AuthCache authCache = new BasicAuthCache();
-        DigestScheme digestAuth = new DigestScheme();
-        digestAuth.overrideParamter("realm", realm);
-        digestAuth.overrideParamter("nonce", createNonce(password));
-        authCache.put(target, digestAuth);
-        return authCache;
-    }
-
-    private static String createNonce(String password) {
-        // format of nonce is:
-        // base64(expirationTime + ":" + md5Hex(expirationTime + ":" + key))
-        Long expirationTime = new Date().getTime() + (60 * 1000); // 1 minute
-        byte[] digest = DigestUtils.md5Digest((expirationTime + ":" + password).getBytes());
-        return Base64.encodeBase64String((expirationTime + ":" + Hex.encodeHexString(digest)).getBytes());
     }
 
     public static RestTemplateBuilder getSslRestTemplateBuilder(RestTemplateBuilder builder, CredentialsProvider credentialsProvider, AuthCache authCache) {
@@ -169,8 +144,7 @@ public class RestClientUtil {
 
     public static <T extends RestTemplate> T configureSslDigestAuthRestTemplate(RestTemplateBuilder builder, URI baseUrl, String username, String password, T restTemplate) {
         HttpHost target = new HttpHost(baseUrl.getHost(), baseUrl.getPort(), baseUrl.getScheme());
-        AuthCache authCache = getDigestAuthCache(target, getDefaultRealm(), password);
-        return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), authCache)
+        return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), null)
                 .configure(restTemplate);
     }
 }
