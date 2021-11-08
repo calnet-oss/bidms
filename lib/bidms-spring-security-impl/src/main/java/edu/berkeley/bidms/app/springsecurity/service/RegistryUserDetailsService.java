@@ -46,6 +46,17 @@ public class RegistryUserDetailsService implements UserDetailsService {
 
     private final DataSource dataSource;
 
+    /**
+     * By default (the common case), this is expected to be a bcrypt hash to
+     * be used for Basic Auth.  See PasswordEncoderSpec in
+     * bidms-spring-security-impl.
+     * <p>
+     * Alternatively (the rare case), it can be something else like a
+     * Digest Auth hash where this UserDetailsService is used by a
+     * DigestAuthenticationFilter. (Not recommended.)
+     */
+    private String passwordColumnName = "passwordHash";
+
     public RegistryUserDetailsService(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -57,7 +68,7 @@ public class RegistryUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try (Connection conn = getDataSource().getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement("SELECT id, username, passwordHash, accountExpired, accountLocked, passwordExpired, enabled FROM RegistryUser WHERE username = ?")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT id, username, " + passwordColumnName + ", accountExpired, accountLocked, passwordExpired, enabled FROM RegistryUser WHERE username = ?")) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -68,7 +79,7 @@ public class RegistryUserDetailsService implements UserDetailsService {
                         boolean enabled = rs.getBoolean("enabled");
                         RegistryUserDetails userDetails = new RegistryUserDetails(
                                 rs.getString("username"),
-                                rs.getString("passwordHash"), // Expected to be a bcrypt hash.  See PasswordEncoderSpec in bidms-spring-security-impl.
+                                rs.getString(passwordColumnName), // Usually expected to be a bcrypt hash.  See PasswordEncoderSpec in bidms-spring-security-impl.
                                 !accountExpired,
                                 !accountLocked,
                                 !passwordExpired,
@@ -96,5 +107,13 @@ public class RegistryUserDetailsService implements UserDetailsService {
             log.error("Unexpected error occurred trying to find registry user", e);
             throw new UsernameNotFoundException("Unexpected error occurred trying to find registry user", e);
         }
+    }
+
+    public String getPasswordColumnName() {
+        return passwordColumnName;
+    }
+
+    public void setPasswordColumnName(String passwordColumnName) {
+        this.passwordColumnName = passwordColumnName;
     }
 }
