@@ -71,8 +71,8 @@ public class DigestAuthPasswordEncoder implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPass, String encPass) {
-        // the 'raw' password will already be encrypted, so compare directly
-        return (encPass != null && rawPass != null) && rawPass == encPass;
+        // the 'raw' password will already be in hashed form, so compare directly
+        return (encPass != null && rawPass != null) && rawPass.toString().equals(encPass);
     }
 
     protected String md5Hex(String s) {
