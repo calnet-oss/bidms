@@ -30,12 +30,24 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
 public interface RegistryProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry delegate) {
-        return delegate.antMatchers("/registry-provisioning/**").hasAuthority("registryProvisioning");
+    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
+        ar
+                .antMatchers("/registry-provisioning/**").hasAuthority("registryProvisioning")
+                .and()
+                .httpBasic().realmName("Registry Realm");
+        return ar;
+    }
+
+    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
+        return defaultAuthorizeRequests(
+                http.requestMatchers((rm) -> {
+                    rm.antMatchers("/registry-provisioning/**");
+                }).authorizeRequests()
+        );
     }
 
     @Override
-    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry delegate) {
-        return defaultRules(delegate);
+    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception {
+        return defaultRules(http);
     }
 }

@@ -30,12 +30,24 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
 public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry delegate) {
-        return delegate.antMatchers("/sgs/**").hasAuthority("sorGateway");
+    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
+        ar
+                .antMatchers("/sgs/**").hasAuthority("sorGateway")
+                .and()
+                .httpBasic().realmName("Registry Realm");
+        return ar;
+    }
+
+    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
+        return defaultAuthorizeRequests(
+                http.requestMatchers((rm) -> {
+                    rm.antMatchers("/sgs/**");
+                }).authorizeRequests()
+        );
     }
 
     @Override
-    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry delegate) {
-        return defaultRules(delegate);
+    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception {
+        return defaultRules(http);
     }
 }
