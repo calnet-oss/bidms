@@ -66,61 +66,60 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        var rm = http
-                .csrf().disable()
-                .authorizeRequests();
+        http.csrf().disable();
 
-        rm.antMatchers("/hello/**").permitAll();
+        http.authorizeRequests().antMatchers("/hello/**").permitAll();
 
         if (sgsSecurityConfigurer != null) {
             log.info("SGS security rules being applied from " + sgsSecurityConfigurer.getClass().getName());
-            sgsSecurityConfigurer.applyRules(rm);
+            sgsSecurityConfigurer.applyRules(http);
         } else {
             log.info("SGS default security rules being applied");
-            SgsSecurityConfigurer.defaultRules(rm);
+            SgsSecurityConfigurer.defaultRules(http);
         }
 
         if (matchEngineSecurityConfigurer != null) {
             log.info("Match engine security rules being applied from " + matchEngineSecurityConfigurer.getClass().getName());
-            matchEngineSecurityConfigurer.applyRules(rm);
+            matchEngineSecurityConfigurer.applyRules(http);
         } else {
             log.info("Match engine default security rules being applied");
-            MatchEngineSecurityConfigurer.defaultRules(rm);
+            MatchEngineSecurityConfigurer.defaultRules(http);
         }
 
         if (matchServiceSecurityConfigurer != null) {
             log.info("Match service security rules being applied from " + matchServiceSecurityConfigurer.getClass().getName());
-            matchServiceSecurityConfigurer.applyRules(rm);
+            matchServiceSecurityConfigurer.applyRules(http);
         } else {
             log.info("Match service default security rules being applied");
-            MatchServiceSecurityConfigurer.defaultRules(rm);
+            MatchServiceSecurityConfigurer.defaultRules(http);
         }
 
         if (registryProvisioningSecurityConfigurer != null) {
             log.info("Registry provisioning security rules being applied from " + registryProvisioningSecurityConfigurer.getClass().getName());
-            registryProvisioningSecurityConfigurer.applyRules(rm);
+            registryProvisioningSecurityConfigurer.applyRules(http);
         } else {
             log.info("Registry provisioning default security rules being applied");
-            RegistryProvisioningSecurityConfigurer.defaultRules(rm);
+            RegistryProvisioningSecurityConfigurer.defaultRules(http);
         }
 
         if (downstreamProvisioningSecurityConfigurer != null) {
             log.info("Downstream provisioning security rules being applied from " + downstreamProvisioningSecurityConfigurer.getClass().getName());
-            downstreamProvisioningSecurityConfigurer.applyRules(rm);
+            downstreamProvisioningSecurityConfigurer.applyRules(http);
         } else {
             log.info("Downstream provisioning default security rules being applied");
-            DownstreamProvisioningSecurityConfigurer.defaultRules(rm);
+            DownstreamProvisioningSecurityConfigurer.defaultRules(http);
         }
 
         if (registryServiceSecurityConfigurer != null) {
             log.info("Registry service security rules being applied from " + registryServiceSecurityConfigurer.getClass().getName());
-            registryServiceSecurityConfigurer.applyRules(rm);
+            registryServiceSecurityConfigurer.applyRules(http);
         } else {
             log.info("Registry service default security rules being applied");
-            RegistryServiceSecurityConfigurer.defaultRules(rm);
+            RegistryServiceSecurityConfigurer.defaultRules(http);
         }
 
-        rm.anyRequest().denyAll()
+        // TODO: httpBasic()
+        http.authorizeRequests().anyRequest().denyAll()
                 .and().httpBasic();
     }
 
