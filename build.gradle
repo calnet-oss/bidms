@@ -117,6 +117,8 @@ allprojects {
                 }
             }
         }
+        // temporary for spring boot release candidates
+        maven { url 'https://repo.spring.io/milestone' }
     }
 }
 

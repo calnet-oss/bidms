@@ -59,6 +59,6 @@ bootWar {
     archiveBaseName = bidmsBootWarName
 }
 
-springBoot {
+/*springBoot {
     mainClassName = 'edu.berkeley.bidms.app.BidmsApplication'
-}
+}*/
