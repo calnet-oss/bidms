@@ -78,7 +78,7 @@ class NewUidController {
      * </ul>
      */
     // the match-service is sending all the parameters in the query string
-    @PutMapping(value = "/newUid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/newUid/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, ?> save(HttpServletRequest request, @Valid NewUidCommand cmd) {
         String eventId
         try {

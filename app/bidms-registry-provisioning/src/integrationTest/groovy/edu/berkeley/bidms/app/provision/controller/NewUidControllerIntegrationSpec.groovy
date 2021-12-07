@@ -81,7 +81,7 @@ class NewUidControllerIntegrationSpec extends Specification {
         }
 
         def response = restTemplate.exchange(
-                "http://localhost:${port}/registry-provisioning/newUid?sorObjectId=123",
+                "http://localhost:${port}/registry-provisioning/newUid/save?sorObjectId=123",
                 HttpMethod.PUT,
                 new HttpEntity<Map>([:], new HttpHeaders(contentType: MediaType.APPLICATION_JSON, accept: [MediaType.APPLICATION_JSON])),
                 Map
