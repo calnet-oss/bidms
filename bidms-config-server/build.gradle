@@ -33,7 +33,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile 'org.springframework.cloud:spring-cloud-config-server'
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     // Optionally enable AWS S3 support by setting the enableConfigServerS3
     // property to true when building.
