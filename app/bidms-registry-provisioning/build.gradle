@@ -83,24 +83,19 @@ dependencies {
     testImplementation pdep(rootProject.bidmsTestConfDep)
 }
 
-
-sourceSets {
-    integrationTest {
-        groovy.srcDir file("src/integrationTest/groovy")
-        resources.srcDir file("src/integrationTest/resources")
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
-}
-
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntime.extendsFrom testRuntime
 }
 
-task integrationTest(type: Test) {
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
+testing {
+    suites {
+        integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project
+            }
+        }
+    }
 }
 check.dependsOn integrationTest
 
