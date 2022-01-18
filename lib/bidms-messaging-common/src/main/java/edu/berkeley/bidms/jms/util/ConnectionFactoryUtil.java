@@ -36,6 +36,10 @@ import javax.jms.ConnectionFactory;
 
 public class ConnectionFactoryUtil {
 
+    private static final int CONNECT_RESPONSE_TIMEOUT_MS = 30 * 1000;
+    private static final int SEND_TIMEOUT_MS = 35 * 1000;
+
+
     private static RedeliveryPolicy createRedeliveryPolicy(JmsConnectionConfigProperties jmsConnectionConfig) {
         //
         // http://activemq.apache.org/redelivery-policy.html
@@ -95,6 +99,8 @@ public class ConnectionFactoryUtil {
         amqConnectionFactory.setBrokerURL(jmsConnectionConfig.getBrokerUrl());
         amqConnectionFactory.setUserName(jmsConnectionConfig.getUsername());
         amqConnectionFactory.setPassword(jmsConnectionConfig.getPassword());
+        amqConnectionFactory.setConnectResponseTimeout(CONNECT_RESPONSE_TIMEOUT_MS);
+        amqConnectionFactory.setSendTimeout(SEND_TIMEOUT_MS);
         if (configurer != null) {
             configurer.configure(amqConnectionFactory);
         }
