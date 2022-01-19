@@ -50,7 +50,7 @@ public class JmsConnectionConfiguration {
         if (bidmsConfigProperties.getJmsConnections() == null || !bidmsConfigProperties.getJmsConnections().containsKey("AMQ")) {
             throw new RuntimeException(BidmsConfigProperties.JMS_CONNECTIONS_KEY + ".AMQ is not configured");
         }
-        return ConnectionFactoryUtil.buildConnectionFactory(bidmsConfigProperties.getJmsConnections().get("AMQ"));
+        return ConnectionFactoryUtil.buildConnectionFactory(bidmsConfigProperties.getJmsConnections().get("AMQ"), false);
     }
 
     @Bean(name = "amqJmsListenerContainerFactory")
