@@ -39,7 +39,6 @@ public class ConnectionFactoryUtil {
     private static final int CONNECT_RESPONSE_TIMEOUT_MS = 30 * 1000;
     private static final int SEND_TIMEOUT_MS = 35 * 1000;
 
-
     private static RedeliveryPolicy createRedeliveryPolicy(JmsConnectionConfigProperties jmsConnectionConfig) {
         //
         // http://activemq.apache.org/redelivery-policy.html
@@ -69,13 +68,13 @@ public class ConnectionFactoryUtil {
         return rp;
     }
 
-    public static ConnectionFactory buildConnectionFactory(JmsConnectionConfigProperties jmsConnectionConfig) {
-        return (buildConnectionFactory(jmsConnectionConfig, (amqConnectionFactory) -> {
+    public static ConnectionFactory buildConnectionFactory(JmsConnectionConfigProperties jmsConnectionConfig, boolean asyncSend) {
+        return (buildConnectionFactory(jmsConnectionConfig, asyncSend, (amqConnectionFactory) -> {
             amqConnectionFactory.setRedeliveryPolicy(createRedeliveryPolicy(jmsConnectionConfig));
         }));
     }
 
-    public static ConnectionFactory buildConnectionFactory(JmsConnectionConfigProperties jmsConnectionConfig, ConnectionFactoryConfigurer configurer) {
+    public static ConnectionFactory buildConnectionFactory(JmsConnectionConfigProperties jmsConnectionConfig, boolean asyncSend, ConnectionFactoryConfigurer configurer) {
         ActiveMQConnectionFactory amqConnectionFactory = null;
         if (jmsConnectionConfig.getBrokerUrl().startsWith("ssl")) {
             ActiveMQSslConnectionFactory amqSslConnectionFactory = new ActiveMQSslConnectionFactory();
@@ -101,6 +100,11 @@ public class ConnectionFactoryUtil {
         amqConnectionFactory.setPassword(jmsConnectionConfig.getPassword());
         amqConnectionFactory.setConnectResponseTimeout(CONNECT_RESPONSE_TIMEOUT_MS);
         amqConnectionFactory.setSendTimeout(SEND_TIMEOUT_MS);
+        if (asyncSend) {
+            // Send messages asynchronously.
+            amqConnectionFactory.setUseAsyncSend(true);
+            amqConnectionFactory.setAlwaysSyncSend(false);
+        }
         if (configurer != null) {
             configurer.configure(amqConnectionFactory);
         }
