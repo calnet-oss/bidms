@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestOperations;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -65,12 +66,17 @@ public class ProvisionRestClientService {
                 .addParameter("uid", uid)
                 .conditionalAddParameter(synchronousDownstream, "synchronousDownstream", true)
                 .rbuild();
+        Map<String, Object> bodyMap = new HashMap<>();
+        bodyMap.put("uid", uid);
+        if (synchronousDownstream) {
+            bodyMap.put("synchronousDownstream", true);
+        }
         return restTemplate.exchange(
                 RequestEntity
                         .post(url)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(""),
+                        .body(bodyMap),
                 Map.class
         );
     }
@@ -94,12 +100,17 @@ public class ProvisionRestClientService {
                 .addParameter("sorObjectId", sorObjectId)
                 .conditionalAddParameter(synchronousDownstream, "synchronousDownstream", true)
                 .rbuild();
+        Map<String, Object> bodyMap = new HashMap<>();
+        bodyMap.put("sorObjectId", sorObjectId);
+        if (synchronousDownstream) {
+            bodyMap.put("synchronousDownstream", true);
+        }
         return restTemplate.exchange(
                 RequestEntity
                         .put(url)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(""),
+                        .body(bodyMap),
                 Map.class
         );
     }
