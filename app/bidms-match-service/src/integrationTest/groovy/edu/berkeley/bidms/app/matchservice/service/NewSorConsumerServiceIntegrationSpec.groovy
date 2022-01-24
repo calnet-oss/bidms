@@ -138,7 +138,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockProvisionServer
                 .expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.PUT))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"sorObjectId\":${sorObject.id},\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess(JsonUtil.convertMapToJson([uid: '001', sorObjectId: '2', provisioningSuccessful: true]), MediaType.APPLICATION_JSON))
 
@@ -180,7 +180,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockProvisionServer
                 .expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"uid\":\"${person.uid}\",\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess(JsonUtil.convertMapToJson([uid: '001', sorObjectId: '2', provisioningSuccessful: true]), MediaType.APPLICATION_JSON))
 
@@ -264,7 +264,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockProvisionServer
                 .expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=002&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"uid\":\"002\",\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess(JsonUtil.convertMapToJson([uid: '002', provisioningSuccessful: true]), MediaType.APPLICATION_JSON))
 

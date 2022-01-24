@@ -80,7 +80,7 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = new SORObject(id: 1, sor: new SOR(name: "TEST"))
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.PUT))
-                .andExpect(content().string(""))
+                .andExpect(content().string(synchronousDownstream ? "{\"sorObjectId\":${sorObject.id},\"synchronousDownstream\":true}" : "{\"sorObjectId\":${sorObject.id}}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess('{"provisioningSuccessful": true}', MediaType.APPLICATION_JSON))
 
@@ -102,7 +102,7 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = new SORObject(id: 1)
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.PUT))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"sorObjectId\":${sorObject.id},\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
@@ -119,7 +119,7 @@ class UidClientServiceSpec extends Specification {
         Person person = new Person(uid: "1")
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"uid\":\"${person.uid}\",\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess())
 
@@ -136,7 +136,7 @@ class UidClientServiceSpec extends Specification {
         Person person = new Person(uid: "1")
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionUidUrl}?uid=${person.uid}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().string(""))
+                .andExpect(content().string("{\"uid\":\"${person.uid}\",\"synchronousDownstream\":true}"))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
