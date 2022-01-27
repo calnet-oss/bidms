@@ -43,7 +43,7 @@ dependencies {
     implementation "org.postgresql:postgresql"
     // not available from mavencentral/jcenter so you need to either add
     // this artifact to your maven proxy or install it locally.
-    implementation 'com.oracle:ojdbc10:19.3'
+    implementation group: 'com.oracle', name: 'ojdbc10', version: versions.oracleJdbc
 
     // Freemarker for SQL templating
     implementation 'org.freemarker:freemarker'

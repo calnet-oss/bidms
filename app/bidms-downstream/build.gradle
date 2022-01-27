@@ -72,19 +72,6 @@ dependencies {
     implementation pdep(rootProject.bidmsMessagingClientDep)
     implementation pdep(rootProject.bidmsMessagingListenerDep)
     implementation pdep(rootProject.bidmsLoggingDep)
-
-    /*testImplementation 'com.h2database:h2'
-    testImplementation 'software.apacheds.embedded:apacheds-embedded'
-    testImplementation 'edu.berkeley.calnet.groovy.libs:ucb-test-embedded-ldap:0.5-SNAPSHOT'
-    testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-tomcat'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
-    testImplementation pdep(rootProject.bidmsTestConfDep)*/
 }
 
 configurations {
