@@ -32,11 +32,29 @@ public class JmsEndpointConfigProperties {
     @NotNull
     private String queueName;
 
+    /**
+     * If non-null, replies are sent to this static queue.  It's one queue
+     * for all replies.  A static listener must be established to listen for
+     * any replies on this queue.
+     * <p>
+     * If null, replies are sent to a temporary queue.  It's one temporary
+     * queue for each reply.
+     */
+    private String sharedReplyToQueueName;
+
     public String getQueueName() {
         return queueName;
     }
 
     public void setQueueName(String queueName) {
         this.queueName = queueName;
+    }
+
+    public String getSharedReplyToQueueName() {
+        return sharedReplyToQueueName;
+    }
+
+    public void setSharedReplyToQueueName(String sharedReplyToQueueName) {
+        this.sharedReplyToQueueName = sharedReplyToQueueName;
     }
 }
