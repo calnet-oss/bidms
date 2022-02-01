@@ -39,7 +39,7 @@ buildscript {
                 }
             }
         } else {
-            jcenter()
+            mavenCentral()
         }
         if (project.hasProperty("gradlePlugins_proxy_url")) {
             maven {
@@ -92,7 +92,7 @@ allprojects {
                 }
             }
         } else {
-            jcenter()
+            mavenCentral()
         }
         // Optional: At UCB, contains non-publically available things like
         // the Oracle JDBC driver artifact.
