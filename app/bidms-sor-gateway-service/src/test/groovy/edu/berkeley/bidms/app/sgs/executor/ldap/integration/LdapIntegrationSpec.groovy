@@ -42,7 +42,7 @@ import org.springframework.ldap.core.ContextSource
 import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.core.support.LdapContextSource
 import org.springframework.ldap.support.LdapNameBuilder
-import software.apacheds.embedded.EmbeddedLdapServer
+import io.github.bkoehm.apacheds.embedded.EmbeddedLdapServer
 import spock.lang.Shared
 import spock.lang.Specification
 

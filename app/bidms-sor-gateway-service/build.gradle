@@ -58,7 +58,7 @@ dependencies {
     implementation pdep(rootProject.bidmsCommonJsonDep)
 
     testImplementation 'com.h2database:h2'
-    testImplementation 'software.apacheds.embedded:apacheds-embedded'
+    testImplementation 'io.github.bkoehm:apacheds-embedded'
 
     testRuntimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
