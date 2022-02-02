@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Regents of the University of California and
+ * Copyright (c) 2022, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,21 +24,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-plugins {
-    id 'java-library'
-}
+package edu.berkeley.bidms.app.orm.config;
 
-version = versions.bidmsCommonOrm
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import edu.berkeley.bidms.common.json.JsonUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-dependencies {
-    api 'org.springframework.boot:spring-boot-starter-data-jpa'
-    api 'org.springframework.boot:spring-boot-starter-validation'
-
-    // to support serializing JPA objects to JSON
-    compileOnly('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+@Configuration
+public class BidmsCommonOrmConfiguration {
+    @Bean
+    public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(JsonUtil.getSortedKeysObjectMapper());
+        // so JPA objects can be serialized with JsonUtil without lazy loading exceptions
+        Hibernate5Module module = new Hibernate5Module();
+        module.enable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
+        // use @Transient in JPA classes to control persistence, not to control what gets serialized as JSON
+        module.disable(Hibernate5Module.Feature.USE_TRANSIENT_ANNOTATION);
+        JsonUtil.registerModule(module);
+        return converter;
     }
-    api 'com.fasterxml.jackson.core:jackson-databind'
-    api 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
-    api pdep(bidmsCommonJsonDep)
 }
