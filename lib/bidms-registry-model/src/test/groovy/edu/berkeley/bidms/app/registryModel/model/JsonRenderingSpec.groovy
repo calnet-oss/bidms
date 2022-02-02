@@ -88,30 +88,30 @@ class JsonRenderingSpec extends Specification {
     }
 
     private static String expectedJSON = '''{
-  "uid" : "1",
+  "datesOfBirth" : [ {
+    "dateOfBirth" : "1999-01-03T08:00:00Z",
+    "dateOfBirthMMDD" : "0301"
+  } ],
+  "identifiers" : [ {
+    "identifier" : "hr123",
+    "identifierType" : {
+      "idName" : "hrId"
+    },
+    "isPrimary" : false,
+    "weight" : 0
+  } ],
   "isLocked" : false,
   "names" : [ {
+    "givenName" : "John",
+    "isPrimary" : false,
+    "middleName" : "M",
     "nameType" : {
       "typeName" : "testName"
     },
     "prefix" : "Mr",
-    "givenName" : "John",
-    "middleName" : "M",
-    "surName" : "Smith",
-    "isPrimary" : false
+    "surName" : "Smith"
   } ],
-  "datesOfBirth" : [ {
-    "dateOfBirthMMDD" : "0301",
-    "dateOfBirth" : "1999-01-03T08:00:00Z"
-  } ],
-  "identifiers" : [ {
-    "identifierType" : {
-      "idName" : "hrId"
-    },
-    "identifier" : "hr123",
-    "isPrimary" : false,
-    "weight" : 0
-  } ]
+  "uid" : "1"
 }'''
 
     void "test person to json"() {
