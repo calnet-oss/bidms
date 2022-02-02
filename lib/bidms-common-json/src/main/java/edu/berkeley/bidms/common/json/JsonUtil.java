@@ -44,15 +44,23 @@ import java.util.TimeZone;
  * Static utility methods for JSON operations.
  */
 public class JsonUtil {
+    // Default objectMapper that does not produce maps with sorted keys
     private final static ObjectMapper objectMapper = JsonMapper.builder()
+            .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"))
+            .defaultTimeZone(TimeZone.getTimeZone("GMT"))
+            .build();
+
+    // A specialized objectMapper that produces maps with sorted keys.
+    // One use of this is to serialize person objects into JSON.
+    private final static ObjectMapper objectMapperSorted = JsonMapper.builder()
             .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
             .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"))
             .defaultTimeZone(TimeZone.getTimeZone("GMT"))
             .build();
 
-    public static ObjectMapper getObjectMapper() {
-        return objectMapper;
+    public static ObjectMapper getSortedKeysObjectMapper() {
+        return objectMapperSorted;
     }
 
     public static void registerModule(Module module) {
@@ -187,6 +195,35 @@ public class JsonUtil {
             return obj != null ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj) : null;
         } else {
             return obj != null ? objectMapper.writeValueAsString(obj) : null;
+        }
+    }
+
+    /**
+     * Convert a POJO to a JSON string.  This implementation has the ability
+     * to enable pretty-print such the JSON will have added whitespace to
+     * make it easier to read.  It also has the ability to produce JSON with
+     * sorted keys.
+     *
+     * @param obj         The object to convert to JSON.
+     * @param prettyPrint true to enable pretty-print
+     * @param sortedKeys  true to enable sorting of keys in the JSON maps
+     * @return A JSON string.  null will be returned if the obj is null.
+     * @throws JsonProcessingException If an error occurs converting the
+     *                                 object to JSON.
+     */
+    public static String convertObjectToJson(Object obj, boolean prettyPrint, boolean sortedKeys) throws JsonProcessingException {
+        if (prettyPrint) {
+            if (sortedKeys) {
+                return obj != null ? objectMapperSorted.writerWithDefaultPrettyPrinter().writeValueAsString(obj) : null;
+            } else {
+                return obj != null ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj) : null;
+            }
+        } else {
+            if (sortedKeys) {
+                return obj != null ? objectMapperSorted.writeValueAsString(obj) : null;
+            } else {
+                return obj != null ? objectMapper.writeValueAsString(obj) : null;
+            }
         }
     }
 
