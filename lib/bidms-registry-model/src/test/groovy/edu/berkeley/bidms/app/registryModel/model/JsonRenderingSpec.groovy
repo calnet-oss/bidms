@@ -87,10 +87,12 @@ class JsonRenderingSpec extends Specification {
         DateOfBirthSpec.insertDates(personRepository, sorRepository, sorObjectRepository, dateOfBirthRepository)
     }
 
+    // #sorObjectId gets string-replaced
     private static String expectedJSON = '''{
   "datesOfBirth" : [ {
     "dateOfBirth" : "1999-01-03T08:00:00Z",
-    "dateOfBirthMMDD" : "0301"
+    "dateOfBirthMMDD" : "0301",
+    "sorObjectId" : #sorObjectId
   } ],
   "identifiers" : [ {
     "identifier" : "hr123",
@@ -98,6 +100,7 @@ class JsonRenderingSpec extends Specification {
       "idName" : "hrId"
     },
     "isPrimary" : false,
+    "sorObjectId" : #sorObjectId,
     "weight" : 0
   } ],
   "isLocked" : false,
@@ -109,6 +112,7 @@ class JsonRenderingSpec extends Specification {
       "typeName" : "testName"
     },
     "prefix" : "Mr",
+    "sorObjectId" : #sorObjectId,
     "surName" : "Smith"
   } ],
   "uid" : "1"
@@ -119,26 +123,12 @@ class JsonRenderingSpec extends Specification {
         entityManager.flush()
         Person person = personRepository.get("1")
         entityManager.refresh(person)
-        Map jsonObject = JsonUtil.convertObjectToMap(person)
-        // remove the indeterminant key values
-        jsonObject.names.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-            it.nameType.remove("id")
-        }
-        jsonObject.datesOfBirth.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-        }
-        jsonObject.identifiers.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-            it.identifierType.remove("id")
-        }
-        String json = JsonUtil.convertMapToJson(jsonObject, true)
-        //println("!!! json = $json")
+        String json = JsonUtil.convertObjectToJson(person, true, true)
+
+        and: "do sorObjectId string replacement"
+        def expectedJSONStringReplaced = expectedJSON.replaceAll("#sorObjectId", person.names.first().sorObjectId.toString())
 
         then:
-        json == expectedJSON
+        json == expectedJSONStringReplaced
     }
 }
