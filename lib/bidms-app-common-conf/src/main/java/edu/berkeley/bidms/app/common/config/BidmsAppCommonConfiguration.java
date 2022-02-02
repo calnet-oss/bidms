@@ -26,6 +26,8 @@
  */
 package edu.berkeley.bidms.app.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.berkeley.bidms.common.json.JsonUtil;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,5 +40,10 @@ public class BidmsAppCommonConfiguration {
     @Bean
     public JdbcTemplate getRegistryJdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper() {
+        return JsonUtil.getSortedKeysObjectMapper();
     }
 }
