@@ -57,8 +57,6 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 public class Person implements ValidateOnFlush {
-
-
     @Size(max = 64)
     @Column(length = 64)
     @Id
