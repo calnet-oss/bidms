@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonRoleArchiveOnFlushValidator;
 import edu.berkeley.bidms.app.registryModel.model.validator.PersonRoleArchiveOnLoadValidator;
 import edu.berkeley.bidms.orm.event.ValidateOnFlush;
@@ -72,6 +73,7 @@ public class PersonRoleArchive implements Comparable<PersonRoleArchive>, Validat
         this.uid = person != null ? person.getUid() : null;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonRoleArchive_seqgen")
     @SequenceGenerator(name = "PersonRoleArchive_seqgen", sequenceName = "PersonRoleArchive_seq", allocationSize = 1)
     @Id

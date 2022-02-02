@@ -31,12 +31,10 @@ plugins {
 version = versions.bidmsAppCommonConf
 
 dependencies {
-    /*implementation('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-    }
-    compileOnly 'javax.servlet:javax.servlet-api'*/
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation pdep(bidmsCommonJsonDep)
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

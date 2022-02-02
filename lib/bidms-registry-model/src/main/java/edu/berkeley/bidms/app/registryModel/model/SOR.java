@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -48,6 +49,7 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 public class SOR implements Serializable, Comparable<SOR> {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Sor_seqgen")
     @SequenceGenerator(name = "Sor_seqgen", sequenceName = "sor_seq", allocationSize = 1)
     @Column(name = "sorId")

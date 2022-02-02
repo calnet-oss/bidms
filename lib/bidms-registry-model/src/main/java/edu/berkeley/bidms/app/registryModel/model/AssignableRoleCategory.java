@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -53,6 +54,7 @@ import javax.validation.constraints.Size;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"id", "roleAsgnUniquePerCat"}))
 @Entity
 public class AssignableRoleCategory implements Comparable<AssignableRoleCategory> {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AssignableRoleCategory_seqgen")
     @SequenceGenerator(name = "AssignableRoleCategory_seqgen", sequenceName = "AssignableRoleCategory_seq", allocationSize = 1)
     @Id

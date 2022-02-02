@@ -87,31 +87,35 @@ class JsonRenderingSpec extends Specification {
         DateOfBirthSpec.insertDates(personRepository, sorRepository, sorObjectRepository, dateOfBirthRepository)
     }
 
+    // #sorObjectId gets string-replaced
     private static String expectedJSON = '''{
-  "uid" : "1",
+  "datesOfBirth" : [ {
+    "dateOfBirth" : "1999-01-03T08:00:00Z",
+    "dateOfBirthMMDD" : "0301",
+    "sorObjectId" : #sorObjectId
+  } ],
+  "identifiers" : [ {
+    "identifier" : "hr123",
+    "identifierType" : {
+      "idName" : "hrId"
+    },
+    "isPrimary" : false,
+    "sorObjectId" : #sorObjectId,
+    "weight" : 0
+  } ],
   "isLocked" : false,
   "names" : [ {
+    "givenName" : "John",
+    "isPrimary" : false,
+    "middleName" : "M",
     "nameType" : {
       "typeName" : "testName"
     },
     "prefix" : "Mr",
-    "givenName" : "John",
-    "middleName" : "M",
-    "surName" : "Smith",
-    "isPrimary" : false
+    "sorObjectId" : #sorObjectId,
+    "surName" : "Smith"
   } ],
-  "datesOfBirth" : [ {
-    "dateOfBirthMMDD" : "0301",
-    "dateOfBirth" : "1999-01-03T08:00:00Z"
-  } ],
-  "identifiers" : [ {
-    "identifierType" : {
-      "idName" : "hrId"
-    },
-    "identifier" : "hr123",
-    "isPrimary" : false,
-    "weight" : 0
-  } ]
+  "uid" : "1"
 }'''
 
     void "test person to json"() {
@@ -119,26 +123,12 @@ class JsonRenderingSpec extends Specification {
         entityManager.flush()
         Person person = personRepository.get("1")
         entityManager.refresh(person)
-        Map jsonObject = JsonUtil.convertObjectToMap(person)
-        // remove the indeterminant key values
-        jsonObject.names.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-            it.nameType.remove("id")
-        }
-        jsonObject.datesOfBirth.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-        }
-        jsonObject.identifiers.each {
-            it.remove("id")
-            assert it.remove("sorObjectId")
-            it.identifierType.remove("id")
-        }
-        String json = JsonUtil.convertMapToJson(jsonObject, true)
-        //println("!!! json = $json")
+        String json = JsonUtil.convertObjectToJson(person, true, true)
+
+        and: "do sorObjectId string replacement"
+        def expectedJSONStringReplaced = expectedJSON.replaceAll("#sorObjectId", person.names.first().sorObjectId.toString())
 
         then:
-        json == expectedJSON
+        json == expectedJSONStringReplaced
     }
 }

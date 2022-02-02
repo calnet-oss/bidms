@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -44,6 +45,7 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 public class TelephoneType implements Comparable<TelephoneType> {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TelephoneType_seqgen")
     @SequenceGenerator(name = "TelephoneType_seqgen", sequenceName = "TelephoneType_seq", allocationSize = 1)
     @Id

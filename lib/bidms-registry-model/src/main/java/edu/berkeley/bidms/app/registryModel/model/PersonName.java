@@ -28,9 +28,10 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.common.json.JsonUtil;
+import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -67,6 +68,7 @@ public class PersonName implements Comparable<PersonName> {
         this.uid = person != null ? person.getUid() : null;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonName_seqgen")
     @SequenceGenerator(name = "PersonName_seqgen", sequenceName = "PersonName_seq", allocationSize = 1)
     @Id

@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
 import javax.persistence.Column;
@@ -63,6 +64,7 @@ public class Identifier implements Comparable<Identifier> {
         this.uid = person != null ? person.getUid() : null;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Identifier_seqgen")
     @SequenceGenerator(name = "Identifier_seqgen", sequenceName = "Identifier_seq", allocationSize = 1)
     @Id

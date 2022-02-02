@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
@@ -82,6 +83,7 @@ public class TrackStatus implements Comparable<TrackStatus> {
         this.uid = person != null ? person.getUid() : null;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TrackStatus_seqgen")
     @SequenceGenerator(name = "TrackStatus_seqgen", sequenceName = "TrackStatus_seq", allocationSize = 1)
     @Id
