@@ -191,11 +191,7 @@ public class JsonUtil {
      *                                 object to JSON.
      */
     public static String convertObjectToJson(Object obj, boolean prettyPrint) throws JsonProcessingException {
-        if (prettyPrint) {
-            return obj != null ? objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj) : null;
-        } else {
-            return obj != null ? objectMapper.writeValueAsString(obj) : null;
-        }
+        return convertObjectToJson(obj, prettyPrint, false);
     }
 
     /**
@@ -238,11 +234,25 @@ public class JsonUtil {
      *                                 object to a map.
      */
     public static Map convertObjectToMap(Object obj) throws JsonProcessingException {
+        return convertObjectToMap(obj, false);
+    }
+
+    /**
+     * Convert a POJO to a map.  This is equivalent to first converting the
+     * POJO to a JSON string and then converting that JSON string to a map.
+     *
+     * @param obj        The object to convert to a map.
+     * @param sortedKeys true to enable sorting of keys in the JSON maps
+     * @return A map built from the object using JSON semantics.  null will
+     * be returned if the obj is null.
+     * @throws JsonProcessingException If an error occurs converting the
+     *                                 object to a map.
+     */
+    public static Map convertObjectToMap(Object obj, boolean sortedKeys) throws JsonProcessingException {
         if (obj == null) {
             return null;
         }
-        // Not sure this is the most efficient way: TODO perhaps convertValue(obj, Map) instead?
-        return convertJsonToMap(convertObjectToJson(obj));
+        return sortedKeys ? objectMapperSorted.convertValue(obj, Map.class) : objectMapper.convertValue(obj, Map.class);
     }
 
     /**
