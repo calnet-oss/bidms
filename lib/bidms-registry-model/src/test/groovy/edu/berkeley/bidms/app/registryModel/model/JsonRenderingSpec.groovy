@@ -26,7 +26,6 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-
 import edu.berkeley.bidms.app.registryModel.repo.DateOfBirthRepository
 import edu.berkeley.bidms.app.registryModel.repo.IdentifierArchiveRepository
 import edu.berkeley.bidms.app.registryModel.repo.IdentifierRepository
@@ -88,7 +87,7 @@ class JsonRenderingSpec extends Specification {
     }
 
     // #sorObjectId gets string-replaced
-    private static String expectedJSON = '''{
+    private static String expectedPersonJSON = '''{
   "datesOfBirth" : [ {
     "dateOfBirth" : "1999-01-03T08:00:00Z",
     "dateOfBirthMMDD" : "0301",
@@ -126,9 +125,41 @@ class JsonRenderingSpec extends Specification {
         String json = JsonUtil.convertObjectToJson(person, true, true)
 
         and: "do sorObjectId string replacement"
-        def expectedJSONStringReplaced = expectedJSON.replaceAll("#sorObjectId", person.names.first().sorObjectId.toString())
+        def expectedJSONStringReplaced = expectedPersonJSON.replaceAll("#sorObjectId", person.names.first().sorObjectId.toString())
 
         then:
         json == expectedJSONStringReplaced
+    }
+
+    void "test sorObject to json"() {
+        given:
+        SORObject so = sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName("LDAP_PEOPLE"), "uid123")
+        def now = new Date()
+        so.person.timeCreated = Date.parse("yyyy-mm-dd", "2022-01-01")
+        so.person.timeUpdated = Date.parse("yyyy-mm-dd", "2022-01-01")
+        so.person.names.add(new PersonName(so.person).with {
+            givenName = "Test"
+            surName = "Person"
+            fullName = "Test Person"
+            it
+        })
+
+        when: 'add some objJson'
+        so.objJson = JsonUtil.convertMapToJson([givenName: "Test", surName: "Person"])
+
+        and: 'render to json'
+        String json = JsonUtil.convertObjectToJson(so, true, true)
+        println json
+        Map jsonAsMap = JsonUtil.convertJsonToMap(json)
+
+        then:
+        jsonAsMap.id == so.id
+        jsonAsMap.sorPrimaryKey == so.sorPrimaryKey
+        jsonAsMap.objJson == [givenName: "Test", surName: "Person"]
+        jsonAsMap.sorName == so.sor.name
+        jsonAsMap.person.uid == "1"
+        jsonAsMap.person.timeCreated
+        jsonAsMap.person.timeUpdated
+        jsonAsMap.person.names == ["Test Person"]
     }
 }

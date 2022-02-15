@@ -26,9 +26,15 @@
  */
 package edu.berkeley.bidms.app.registryModel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import org.hibernate.annotations.Type;
@@ -47,8 +53,12 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Data for a person from a System of Record (SOR).  The data from the SOR is
@@ -61,7 +71,7 @@ import java.util.Map;
  * PartialMatch}.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonIgnoreProperties({"person", "rematch"})
+@JsonIgnoreProperties({"uid", "rematch", "sor"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"sorId", "sorObjKey"}))
 @Entity
 public class SORObject implements Comparable<SORObject> {
@@ -92,6 +102,7 @@ public class SORObject implements Comparable<SORObject> {
     @Column(name = "sorQueryTime", nullable = false)
     private Date queryTime;
 
+    @JsonIgnore
     @NotNull
     @Type(type = "edu.berkeley.bidms.orm.hibernate.usertype.JSONBType")
     @Column(nullable = false, columnDefinition = "JSONB NOT NULL")
@@ -138,7 +149,7 @@ public class SORObject implements Comparable<SORObject> {
         return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((SORObject) obj).getHashCodeObjects());
     }
 
-    @Transient
+    @JsonProperty(value = "objJson", access = JsonProperty.Access.READ_ONLY)
     public Map getJson() throws JsonProcessingException {
         return JsonUtil.convertJsonToMap(objJson);
     }
@@ -155,6 +166,7 @@ public class SORObject implements Comparable<SORObject> {
         return uid;
     }
 
+    @JsonSerialize(using = PersonForSorObjectSerializer.class)
     public Person getPerson() {
         return person;
     }
@@ -170,6 +182,11 @@ public class SORObject implements Comparable<SORObject> {
 
     public void setSor(SOR sor) {
         this.sor = sor;
+    }
+
+    @JsonProperty(value = "sorName", access = JsonProperty.Access.READ_ONLY)
+    public String getSorName() {
+        return sor.getName();
     }
 
     public String getSorPrimaryKey() {
@@ -220,5 +237,41 @@ public class SORObject implements Comparable<SORObject> {
 
     public void setRematch(boolean rematch) {
         this.rematch = rematch;
+    }
+
+    protected static class PersonForSorObjectSerializer extends StdSerializer<Person> {
+        protected PersonForSorObjectSerializer() {
+            this(null);
+        }
+
+        protected PersonForSorObjectSerializer(Class<Person> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(Person p, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            if (p != null) {
+                gen.writeStartObject();
+                gen.writeStringField("uid", p.getUid());
+                if (p.getTimeCreated() != null) {
+                    gen.writeStringField("timeCreated", sdf.format(p.getTimeCreated()));
+                }
+                if (p.getTimeUpdated() != null) {
+                    gen.writeStringField("timeUpdated", sdf.format(p.getTimeUpdated()));
+                }
+                if (p.getNames() != null && p.getNames().size() > 0) {
+                    List<String> names = p.getNames().stream().map(PersonName::getFullName).distinct().sorted().collect(Collectors.toList());
+                    String[] namesArray = new String[names.size()];
+                    names.toArray(namesArray);
+                    gen.writeArrayFieldStart("names");
+                    for (String fullName : namesArray) {
+                        gen.writeString(fullName);
+                    }
+                    gen.writeEndArray();
+                }
+                gen.writeEndObject();
+            }
+        }
     }
 }
