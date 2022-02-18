@@ -31,10 +31,10 @@ import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import groovy.sql.Sql
+import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -61,6 +61,7 @@ class NewUidService {
     @Autowired
     EntityManager entityManager
 
+    @CompileStatic
     @InheritConstructors
     static class NewUidServiceException extends Exception {
     }
@@ -107,7 +108,7 @@ class NewUidService {
      *         successful.  Contains the provisioning exception if the
      *         provisioning step failed.
      */
-    NewUidResult provisionNewUid(Long sorObjectId, Boolean synchronousDownstream, String eventId) {
+    NewUidResult provisionNewUid(Long sorObjectId, Boolean synchronousDownstream, String eventId) throws NewUidServiceException {
         if (sorObjectId == null) {
             throw new NewUidServiceException("sorObjectId cannot be null")
         }
@@ -150,7 +151,7 @@ class NewUidService {
     // We need person committed before we try to provision it because
     // provisioning happens in its own transaction
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected NewUidResult saveNewPerson(long sorObjectId) {
+    protected NewUidResult saveNewPerson(long sorObjectId) throws NewUidServiceException {
         NewUidResult result = new NewUidResult()
 
         SORObject sorObject = sorObjectRepository.get(sorObjectId)
