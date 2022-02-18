@@ -230,6 +230,7 @@ class ProvisionService {
         }
     }
 
+    @CompileStatic
     static class ProvisionResult {
         boolean stopProcessing
     }
