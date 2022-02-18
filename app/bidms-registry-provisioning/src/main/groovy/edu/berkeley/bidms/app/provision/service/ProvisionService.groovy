@@ -61,14 +61,17 @@ import javax.sql.DataSource
 @Service("edu.berkeley.bidms.app.provision.service.ProvisionService")
 class ProvisionService {
 
+    @CompileStatic
     @InheritConstructors
     static class ProvisionServiceException extends Exception {
     }
 
+    @CompileStatic
     @InheritConstructors
     static class EndpointException extends ProvisionServiceException {
     }
 
+    @CompileStatic
     @InheritConstructors
     static class NullResponseEndpointException extends EndpointException {
     }
