@@ -69,7 +69,7 @@ class SqlWhereResolverSpec extends Specification {
         DISTANCE    | 'SIS-123'    | [alphanumeric: true]                                                | "lower(SOR)=?"                                          | 'sis123'
         EXACT       | 'SIS-123'    | [distance: 3, caseSensitive: true]                                  | 'SOR=?'                                                 | 'SIS-123'
         SUBSTRING   | 'SIS-123'    | [distance: 3, substring: [from: 1, length: 4], caseSensitive: true] | 'substring(SOR from 1 for 4)=substring(? from 1 for 4)' | 'SIS-123'
-        DISTANCE    | 'SIS-123'    | [distance: 3, caseSensitive: true]                                  | 'public.levenshtein_less_equal(SOR,?,3)<4'                     | 'SIS-123'
+        DISTANCE    | 'SIS-123'    | [distance: 3, caseSensitive: true]                                  | 'levenshtein_less_equal(SOR,?,3)<4'                     | 'SIS-123'
         EXACT       | '2015-10-21' | [dateFormat: 'yyyy-MM-dd']                                          | 'SOR=?'                                                 | Date.parse('yyyy-MM-dd', '2015-10-21')
         EXACT       | 'kryf'       | [dateFormat: 'yyyy-MM-dd']                                          | 'SOR=?'                                                 | null
     }
