@@ -28,6 +28,7 @@ package edu.berkeley.bidms.app.registryModel.repo;
 
 import edu.berkeley.bidms.app.registryModel.model.Email;
 import edu.berkeley.bidms.app.registryModel.model.EmailType;
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,4 +48,6 @@ public interface EmailRepository extends ExtendedRepository<Email, Long> {
     List<Email> findAllByEmailAddressIgnoreCaseAndEmailType(String emailAddress, EmailType emailType);
 
     List<Email> findAllBySorObject(SORObject sorObject);
+
+    Email findByPersonAndEmailType(Person person, EmailType emailType);
 }
