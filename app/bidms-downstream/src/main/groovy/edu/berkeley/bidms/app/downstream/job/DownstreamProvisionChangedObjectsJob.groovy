@@ -80,14 +80,17 @@ class DownstreamProvisionChangedObjectsJob implements Job {
     DownstreamConfigProperties downstreamConfigProperties
     // This is a Spring-injected map where the key is the
     // downstreamSystemName and the value is the provision service bean.
-    Map<String, DownstreamProvisioningService> downstreamSystemServices
+    Map<String, ? extends DownstreamProvisioningService> downstreamSystemServices
 
     DownstreamProvisionChangedObjectsJob(
             DownstreamConfigProperties downstreamConfigProperties,
-            @Qualifier("downstreamSystemServices") Map<String, DownstreamProvisioningService> downstreamSystemServices
+            @Qualifier("downstreamSystemServices") Map<String, ? extends DownstreamProvisioningService> downstreamSystemServices
     ) {
         this.downstreamConfigProperties = downstreamConfigProperties
         this.downstreamSystemServices = downstreamSystemServices
+        if (!downstreamSystemServices) {
+            log.warn("The downstreamSystemServices map bean is ${downstreamSystemServices == null ? 'null' : 'empty'}")
+        }
     }
 
     DownstreamProvisionChangedObjectsCronJobConfigProperties getConfig() {
