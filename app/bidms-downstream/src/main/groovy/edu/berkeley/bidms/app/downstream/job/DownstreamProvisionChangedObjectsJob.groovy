@@ -110,7 +110,7 @@ class DownstreamProvisionChangedObjectsJob implements Job {
             config?.enabledSystems?.each { String systemName ->
                 def provisionService = downstreamSystemServices[systemName]
                 if (provisionService) {
-                    ProvisioningResult provisioningResult = provisionService.provisionBulk(eventId, systemName)
+                    ProvisioningResult provisioningResult = provisionService.provisionBulk(eventId, systemName, false)
                     log.info("${provisioningResult.count} objects sent to the downstream to-provision queue for $systemName")
                 } else {
                     log.warn("Downstream system $systemName is enabled but there is no service configured for this system in the downstreamSystemServices map bean.  downstreamSystemServices map has the following keys: ${downstreamSystemServices?.keySet()}")
