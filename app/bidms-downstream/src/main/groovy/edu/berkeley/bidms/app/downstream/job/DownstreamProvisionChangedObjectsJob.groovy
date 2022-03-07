@@ -82,7 +82,10 @@ class DownstreamProvisionChangedObjectsJob implements Job {
     // downstreamSystemName and the value is the provision service bean.
     Map<String, DownstreamProvisioningService> downstreamSystemServices
 
-    DownstreamProvisionChangedObjectsJob(DownstreamConfigProperties downstreamConfigProperties, Map<String, DownstreamProvisioningService> downstreamSystemServices) {
+    DownstreamProvisionChangedObjectsJob(
+            DownstreamConfigProperties downstreamConfigProperties,
+            @Qualifier("downstreamSystemServices") Map<String, DownstreamProvisioningService> downstreamSystemServices
+    ) {
         this.downstreamConfigProperties = downstreamConfigProperties
         this.downstreamSystemServices = downstreamSystemServices
     }
@@ -107,7 +110,7 @@ class DownstreamProvisionChangedObjectsJob implements Job {
                     ProvisioningResult provisioningResult = provisionService.provisionBulk(eventId, systemName)
                     log.info("${provisioningResult.count} objects sent to the downstream to-provision queue for $systemName")
                 } else {
-                    log.warn("Downstream system $systemName is enabled but there is no service configured for this system in the downstreamSystemServices map bean.")
+                    log.warn("Downstream system $systemName is enabled but there is no service configured for this system in the downstreamSystemServices map bean.  downstreamSystemServices map has the following keys: ${downstreamSystemServices?.keySet()}")
                 }
             }
         }
