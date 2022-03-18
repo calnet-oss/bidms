@@ -15,6 +15,7 @@ spring:
       server:
         git:
           uri: file:${user.home}/bidms-config-repo
+          default-label: main
           timeout: 20
   security:
     user:
