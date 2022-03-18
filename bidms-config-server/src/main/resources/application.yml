@@ -20,3 +20,6 @@ spring:
     user:
       name: user
       password: configureme
+bidms:
+  log:
+    directory: logs
