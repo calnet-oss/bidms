@@ -29,12 +29,14 @@ package edu.berkeley.bidms.app.downstream.service.ldap
 import edu.berkeley.bidms.connector.ldap.event.LdapEventType
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
+import edu.berkeley.bidms.orm.transaction.JpaTransactionTemplate
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-
-import javax.sql.DataSource
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.support.DefaultTransactionDefinition
 
 @Slf4j
 @Service
@@ -46,10 +48,10 @@ class LdapDownstreamObjectUpdaterService {
         ldapUpdateGloballyUniqueIdentifier
     }
 
-    DataSource dataSource
+    JpaTransactionTemplate requiredTransactionTemplate
 
-    LdapDownstreamObjectUpdaterService(DataSource dataSource) {
-        this.dataSource = dataSource
+    LdapDownstreamObjectUpdaterService(PlatformTransactionManager transactionManager) {
+        this.requiredTransactionTemplate = new JpaTransactionTemplate(transactionManager, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED))
     }
 
     void updateGloballyUniqueIdentifier(
@@ -66,8 +68,8 @@ class LdapDownstreamObjectUpdaterService {
             return
         }
 
-        Sql sql = new Sql(dataSource)
-        try {
+        requiredTransactionTemplate.executeWithoutResult { txStatus ->
+            Sql sql = new Sql(JpaTransactionTemplate.getConnection(txStatus))
             String currentGlobUniqId = getCurrentGloballyUniqueIdentifier(sql, context.downstreamSystemId, uid)
             if (globallyUniqueIdentifier != currentGlobUniqId) {
                 synchronized (context.lock) {
@@ -94,9 +96,6 @@ class LdapDownstreamObjectUpdaterService {
             } else {
                 log.debug("LdapUniqueIdentifierEventProcessingCallback called for systemName=${context.systemTypeName}, uid=$uid, causingEvent=$causingEvent but the globally unique identifier hasn't actually changed")
             }
-        }
-        finally {
-            sql.close()
         }
     }
 
