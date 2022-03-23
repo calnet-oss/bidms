@@ -30,14 +30,15 @@ import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.orm.transaction.JpaTransactionTemplate
 import groovy.sql.Sql
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 
 import javax.persistence.EntityManager
 import javax.sql.DataSource
@@ -61,6 +62,10 @@ class NewUidService {
     @Autowired
     EntityManager entityManager
 
+    PlatformTransactionManager transactionManager
+    JpaTransactionTemplate mandatoryTransactionTemplate
+    JpaTransactionTemplate requiresNewTransactionTemplate
+
     @CompileStatic
     @InheritConstructors
     static class NewUidServiceException extends Exception {
@@ -74,6 +79,12 @@ class NewUidService {
         Exception provisioningException
         String sorPrimaryKey
         String sorName
+    }
+
+    NewUidService(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager
+        this.mandatoryTransactionTemplate = new JpaTransactionTemplate(transactionManager, TransactionDefinition.PROPAGATION_MANDATORY)
+        this.requiresNewTransactionTemplate = new JpaTransactionTemplate(transactionManager, TransactionDefinition.PROPAGATION_REQUIRES_NEW)
     }
 
     /**
@@ -150,47 +161,49 @@ class NewUidService {
 
     // We need person committed before we try to provision it because
     // provisioning happens in its own transaction
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected NewUidResult saveNewPerson(long sorObjectId) throws NewUidServiceException {
-        NewUidResult result = new NewUidResult()
+        return requiresNewTransactionTemplate.execute {
+            NewUidResult result = new NewUidResult()
 
-        SORObject sorObject = sorObjectRepository.get(sorObjectId)
-        if (!sorObject) {
-            log.error("Couldn't find sorObjectId=$sorObjectId")
-            result.uidGenerationSuccessful = false
-            result.provisioningSuccessful = false
-            result.provisioningException = new Exception("Couldn't find sorObjectId=$sorObjectId")
-        } else if (sorObject.person) {
-            // Could have been from an outside matching process.
-            log.warn("sorObjectId=$sorObjectId already has a uid assigned to it: uid=${sorObject.person.uid}")
-            result.hasExistingUid = true
-            result.uidGenerationSuccessful = true
-            result.uid = sorObject.person.uid
-            result.sorPrimaryKey = sorObject.sorPrimaryKey
-            result.sorName = sorObject.sor.name
-        } else {
-            String newUid = getNextUid()
-            if (!newUid) {
-                throw new NewUidServiceException("uid failed to generate")
+            SORObject sorObject = sorObjectRepository.get(sorObjectId)
+            if (!sorObject) {
+                log.error("Couldn't find sorObjectId=$sorObjectId")
+                result.uidGenerationSuccessful = false
+                result.provisioningSuccessful = false
+                result.provisioningException = new Exception("Couldn't find sorObjectId=$sorObjectId")
+            } else if (sorObject.person) {
+                // Could have been from an outside matching process.
+                log.warn("sorObjectId=$sorObjectId already has a uid assigned to it: uid=${sorObject.person.uid}")
+                result.hasExistingUid = true
+                result.uidGenerationSuccessful = true
+                result.uid = sorObject.person.uid
+                result.sorPrimaryKey = sorObject.sorPrimaryKey
+                result.sorName = sorObject.sor.name
+            } else {
+                String newUid = getNextUid()
+                if (!newUid) {
+                    throw new NewUidServiceException("uid failed to generate")
+                }
+                Person person = new Person(uid: newUid)
+                personRepository.saveAndFlush(person)
+                sorObject.person = person
+                sorObjectRepository.saveAndFlush(sorObject)
+                result.uidGenerationSuccessful = true
+                result.uid = person.uid
+                result.sorPrimaryKey = sorObject.sorPrimaryKey
+                result.sorName = sorObject.sor.name
             }
-            Person person = new Person(uid: newUid)
-            personRepository.saveAndFlush(person)
-            sorObject.person = person
-            sorObjectRepository.saveAndFlush(sorObject)
-            result.uidGenerationSuccessful = true
-            result.uid = person.uid
-            result.sorPrimaryKey = sorObject.sorPrimaryKey
-            result.sorName = sorObject.sor.name
-        }
 
-        return result
+            return result
+        }
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
     protected String getNextUid() {
-        Sql regSql = new Sql(dataSource)
-        def row = regSql.firstRow("select nextval('uid_seq') as uid" as String)
-        return row?.uid
+        return mandatoryTransactionTemplate.execute { txStatus ->
+            Sql regSql = new Sql(JpaTransactionTemplate.getConnection(txStatus))
+            def row = regSql.firstRow("select nextval('uid_seq') as uid" as String)
+            return row?.uid
+        }
     }
 
     /**

@@ -52,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional
 
 import javax.persistence.EntityManager
 import javax.persistence.LockModeType
-import javax.sql.DataSource
 
 @CompileStatic
 @Slf4j
@@ -78,9 +77,6 @@ class ProvisionService {
 
     @Autowired
     EntityManager entityManager
-
-    @Autowired
-    DataSource dataSource
 
     @Autowired
     ProvisionRunner provisionRunnerService
@@ -149,37 +145,35 @@ class ProvisionService {
             // provision all uids from the registry toProvision service
             String lastUid = null
             List<String> uidsToProvision
-            def regSql = new Sql(dataSource)
-            try {
-                while ((uidsToProvision = getToProvisionUids(regSql, lastUid)) && uidsToProvision.size() > 0) {
-                    for (String uid in uidsToProvision) {
-                        log.debug("PROFILE: PROVISION JSON PERSON: ENTER $count")
+            do {
+                uidsToProvision = requiresNewTransactionTemplate.execute { txStatus ->
+                    def regSql = new Sql(JpaTransactionTemplate.getConnection(txStatus))
+                    return getToProvisionUids(regSql, lastUid)
+                }
+                for (String uid in uidsToProvision) {
+                    log.debug("PROFILE: PROVISION JSON PERSON: ENTER $count")
+                    try {
+                        lastUid = uid
                         try {
-                            lastUid = uid
-                            try {
-                                toProvisionUid(uid, synchronousDownstream, eventId)
-                            }
-                            catch (Exception e) {
-                                log.error("Couldn't provision uid=$uid.  Message=${e.message}", e)
-                                failureCount++
-                                failedUids.add(uid)
-                            }
-                            count++
-                            if (count % 1000 == 0) {
-                                log.debug("Processed $count users on this request")
-                            }
+                            toProvisionUid(uid, synchronousDownstream, eventId)
                         }
-                        finally {
-                            log.debug("PROFILE: PROVISION JSON PERSON: EXIT")
-                            if (isReadyToHalt(count, failureCount)) break
+                        catch (Exception e) {
+                            log.error("Couldn't provision uid=$uid.  Message=${e.message}", e)
+                            failureCount++
+                            failedUids.add(uid)
+                        }
+                        count++
+                        if (count % 1000 == 0) {
+                            log.debug("Processed $count users on this request")
                         }
                     }
-                    if (isReadyToHalt(count, failureCount)) break
+                    finally {
+                        log.debug("PROFILE: PROVISION JSON PERSON: EXIT")
+                        if (isReadyToHalt(count, failureCount)) break
+                    }
                 }
-            }
-            finally {
-                regSql.close()
-            }
+                if (isReadyToHalt(count, failureCount)) break
+            } while (uidsToProvision.size() > 0)
             def jsonResponse = [
                     message              : "Processed $count uids with $failureCount failures",
                     totalCount           : count,
@@ -456,7 +450,7 @@ class ProvisionService {
      * @param greaterThanUid Start the query for uids past this uid.  Used for paging.
      * @return List of uids.
      */
-    private List<String> getToProvisionUids(Sql regSql, String greaterThanUid) {
+    protected List<String> getToProvisionUids(Sql regSql, String greaterThanUid) {
         List<String> uids = []
         String sql = getToProvisionSql(greaterThanUid != null)
         List<Object> sqlParams = (greaterThanUid ? [greaterThanUid] as List<Object> : [])
@@ -468,21 +462,20 @@ class ProvisionService {
 
     @Transactional(propagation = Propagation.NEVER)
     int requeueUidsNeedingReprovision() {
-        int count = 0
         log.info("Adding all UIDs to provisionUidBulk queue that need to be reprovisioned.")
         String sql = "SELECT uid FROM ${getToProvisionTableName()} ORDER BY uid"
-        def regSql = new Sql(dataSource)
-        try {
+        List<String> uids = new LinkedList<String>()
+        requiresNewTransactionTemplate.executeWithoutResult { txStatus ->
+            def regSql = new Sql(JpaTransactionTemplate.getConnection(txStatus))
             regSql.eachRow(sql) { row ->
-                sendToBulkProvisionUidQueue(row.getString("uid"))
-                count++
+                uids << row.getString("uid")
             }
         }
-        finally {
-            regSql.close()
+        uids.each { uid ->
+            sendToBulkProvisionUidQueue(uid)
         }
-        log.info("Added $count UIDs to provisionUid queue")
-        return count
+        log.info("Added ${uids.size()} UIDs to provisionUid queue")
+        return uids.size()
     }
 
     protected void sendToBulkProvisionUidQueue(String uid) {
