@@ -1,18 +1,20 @@
 package edu.berkeley.bidms.orm.transaction;
 
+import org.springframework.jdbc.datasource.JdbcTransactionObjectSupport;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import java.sql.Connection;
 import java.util.Objects;
 
 public class JpaTransactionTemplate extends TransactionTemplate {
@@ -87,4 +89,17 @@ public class JpaTransactionTemplate extends TransactionTemplate {
     public static void withNewTransactionWithoutResult(PlatformTransactionManager transactionManager, int propagationBehavior, TransactionCallbackWithoutResult callback) {
         new JpaTransactionTemplate(transactionManager, propagationBehavior).execute(callback);
     }*/
+
+    public static Connection getConnection(TransactionStatus transactionStatus) {
+        if (transactionStatus instanceof DefaultTransactionStatus) {
+            Object rawTransaction = ((DefaultTransactionStatus) transactionStatus).getTransaction();
+            if (rawTransaction instanceof JdbcTransactionObjectSupport) {
+                return ((JdbcTransactionObjectSupport) rawTransaction).getConnectionHolder().getConnection();
+            } else {
+                throw new UnsupportedOperationException("Only transaction objects that are instances of JdbcTransactionObjectSupport are supported");
+            }
+        } else {
+            throw new UnsupportedOperationException("Only transactionStatus type of DefaultTransactionStatus supported");
+        }
+    }
 }
