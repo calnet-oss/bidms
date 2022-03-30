@@ -23,9 +23,9 @@
         <append>true</append>
         <file>${logDirectory}/bidms.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logDirectory}/bidms.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>7</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
+            <fileNamePattern>${logDirectory}/bidms.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>4GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -37,9 +37,9 @@
         <append>true</append>
         <file>${logDirectory}/bidms-audit.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logDirectory}/bidms-audit.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>7</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
+            <fileNamePattern>${logDirectory}/bidms-audit.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>4GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${MESSAGEONLY_LOG_PATTERN}</pattern>
