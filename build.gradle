@@ -198,10 +198,6 @@ subprojects {
     }
 
     if ((project.path.startsWith(":lib") || project.path.startsWith(":app") || project.path.startsWith(":web-archive")) && (isSubproject || isWebapp)) {
-        javadoc {
-            options.addBooleanOption('-frames', true)
-        }
-
         task javadocJar(type: Jar) {
             from javadoc
             from { [licenseFile] }
