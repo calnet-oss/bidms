@@ -25,27 +25,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 plugins {
-    id 'groovy'
+    id 'java-library'
+    id 'maven-publish'
 }
 
 version versions.bidmsAppCommonConf
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation pdep(bidmsCommonJsonDep)
-
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    api 'org.springframework.boot:spring-boot-starter-jdbc'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    //api 'com.fasterxml.jackson.core:jackson-databind'
+    api pdep(bidmsCommonJsonDep)
 }
 
-test {
-  useJUnitPlatform()
-  testLogging {
-    events "passed", "skipped", "failed"
-  }
+// to avoid the uneeded dependencyManagement section in the POM
+dependencyManagement {
+    generatedPomCustomization {
+        enabled = false
+    }
+}
+
+// publishing with './gradlew publish'
+publish.dependsOn assemble, sourceJar, javadocJar
+publishToMavenLocal.dependsOn assemble, sourceJar, javadocJar
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifactId project.name
+            version project.version
+            groupId bidmsGroup
+            artifact sourceJar { classifier "sources" }
+            artifact javadocJar { classifier "javadoc" }
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "${project.property('default_deploy_url')}/${calnet_deploy_lib_repo}"
+            credentials {
+                username project.property("default_deploy_user")
+                password project.property("default_deploy_password")
+            }
+        }
+    }
 }
