@@ -32,8 +32,7 @@ plugins {
 version versions.bidmsCommonJson
 
 dependencies {
-    def jacksonVersion = dependencyManagement.managedVersions['com.fasterxml.jackson.core:jackson-databind']
-    api group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jacksonVersion
+    api "com.fasterxml.jackson.core:jackson-databind"
 }
 
 // to avoid the uneeded dependencyManagement section in the POM
@@ -55,6 +54,14 @@ publishing {
             groupId bidmsGroup
             artifact sourceJar { classifier "sources" }
             artifact javadocJar { classifier "javadoc" }
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
         }
     }
     repositories {
