@@ -28,7 +28,7 @@ plugins {
     id 'java-library'
 }
 
-version = versions.bidmsCommonJson
+version versions.bidmsCommonJson
 
 dependencies {
     api 'com.fasterxml.jackson.core:jackson-databind'

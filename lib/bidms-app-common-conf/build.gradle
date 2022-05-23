@@ -28,7 +28,7 @@ plugins {
     id 'groovy'
 }
 
-version = versions.bidmsAppCommonConf
+version versions.bidmsAppCommonConf
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'

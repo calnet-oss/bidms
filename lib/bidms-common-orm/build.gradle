@@ -28,7 +28,7 @@ plugins {
     id 'java-library'
 }
 
-version = versions.bidmsCommonOrm
+version versions.bidmsCommonOrm
 
 dependencies {
     api 'org.springframework.boot:spring-boot-starter-data-jpa'

@@ -28,7 +28,7 @@ plugins {
     id 'groovy'
 }
 
-version = versions.bidmsAppCommon
+version versions.bidmsAppCommon
 
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
