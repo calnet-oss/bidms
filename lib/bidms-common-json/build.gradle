@@ -26,10 +26,44 @@
  */
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 version versions.bidmsCommonJson
 
 dependencies {
-    api 'com.fasterxml.jackson.core:jackson-databind'
+    def jacksonVersion = dependencyManagement.managedVersions['com.fasterxml.jackson.core:jackson-databind']
+    api group: "com.fasterxml.jackson.core", name: "jackson-databind", version: jacksonVersion
+}
+
+// to avoid the uneeded dependencyManagement section in the POM
+dependencyManagement {
+    generatedPomCustomization {
+        enabled = false
+    }
+}
+
+// publishing with './gradlew publish'
+publish.dependsOn assemble, sourceJar, javadocJar
+publishToMavenLocal.dependsOn assemble, sourceJar, javadocJar
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifactId project.name
+            version project.version
+            groupId bidmsGroup
+            artifact sourceJar { classifier "sources" }
+            artifact javadocJar { classifier "javadoc" }
+        }
+    }
+    repositories {
+        maven {
+            url "${project.property('default_deploy_url')}/${calnet_deploy_lib_repo}"
+            credentials {
+                username project.property("default_deploy_user")
+                password project.property("default_deploy_password")
+            }
+        }
+    }
 }
