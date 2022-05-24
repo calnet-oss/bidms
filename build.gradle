@@ -133,6 +133,15 @@ gradle.ext {
 }
 
 subprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = rootProject.sourceCompatibility
+        targetCompatibility = rootProject.targetCompatibility
+    }
+    tasks.withType(GroovyCompile) {
+        sourceCompatibility = rootProject.sourceCompatibility
+        targetCompatibility = rootProject.targetCompatibility
+    }
+
     evaluationDependsOn bidmsBomDep
     apply plugin: 'io.spring.dependency-management'
     dependencyManagement {
