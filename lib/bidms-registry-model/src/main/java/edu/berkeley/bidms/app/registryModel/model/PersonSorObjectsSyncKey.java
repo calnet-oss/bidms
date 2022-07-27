@@ -55,7 +55,7 @@ public class PersonSorObjectsSyncKey {
     @Column
     private boolean forceProvision;
 
-    @Column(insertable = false, updatable = false)
+    @Column
     private Date timeUpdated; // normally updated by a trigger, but sometimes we want to force persistence by modifying this column
 
     private static final int HCB_INIT_ODDRAND = -1734048115;
