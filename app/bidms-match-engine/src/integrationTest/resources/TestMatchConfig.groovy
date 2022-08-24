@@ -153,16 +153,16 @@ attributes {
 }
 
 confidences {
-    superCanonical secondaryToEmployee: FIXED_VALUE, employeeId: EXACT, employeeIdType: FIXED_VALUE
+    superCanonical 'SUPERCANONICAL_EMPLOYEE_ID', secondaryToEmployee: FIXED_VALUE, employeeId: EXACT, employeeIdType: FIXED_VALUE
 
-    canonical givenName: EXACT, surName: EXACT, dateOfBirth: EXACT
+    canonical 'CANONICAL_EXACT_NAME_DOB', givenName: EXACT, surName: EXACT, dateOfBirth: EXACT
 
     // givenName: SUBSTRING is configured to match on first character of the givenName only
-    canonical givenName: SUBSTRING, surName: EXACT, studentId: EXACT, studentIdType: FIXED_VALUE
-    canonical givenName: SUBSTRING, surName: EXACT, employeeId: EXACT, employeeIdType: FIXED_VALUE
+    canonical 'CANONICAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_STUDENTID', givenName: SUBSTRING, surName: EXACT, studentId: EXACT, studentIdType: FIXED_VALUE
+    canonical 'CANONICAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_EMPLOYEEID', givenName: SUBSTRING, surName: EXACT, employeeId: EXACT, employeeIdType: FIXED_VALUE
 
-    canonical surName: EXACT, dateOfBirth: EXACT, studentId: EXACT, studentIdType: FIXED_VALUE
-    canonical surName: EXACT, dateOfBirth: EXACT, employeeId: EXACT, employeeIdType: FIXED_VALUE
+    canonical 'CANONICAL_EXACT_LASTNAME_DOB_STUDENTID', surName: EXACT, dateOfBirth: EXACT, studentId: EXACT, studentIdType: FIXED_VALUE
+    canonical 'CANONICAL_EXACT_LASTNAME_DOB_EMPLOYEEID', surName: EXACT, dateOfBirth: EXACT, employeeId: EXACT, employeeIdType: FIXED_VALUE
 
-    potential givenName: SUBSTRING, surName: EXACT, dateOfBirth: EXACT
+    potential 'POTENTIAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_DOB', givenName: SUBSTRING, surName: EXACT, dateOfBirth: EXACT
 }

@@ -185,7 +185,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
         with(response.body.matchingRecord) {
             referenceId == "20000000"
             exactMatch
-            ruleNames.size() == 1 && ruleNames.first().startsWith("Canonical")
+            ruleNames.size() == 1 && ruleNames.first() == 'CANONICAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_STUDENTID'
         }
     }
 
@@ -235,7 +235,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
         with((response.body.partialMatchingRecords as List).first()) {
             referenceId == "20000000"
             !exactMatch
-            ruleNames.size() == 1 && ruleNames.first().startsWith("Potential")
+            ruleNames.size() == 1 && ruleNames.first() == 'POTENTIAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_DOB'
         }
     }
 
@@ -277,7 +277,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
         with(response.body.matchingRecord) {
             referenceId == "20000000"
             exactMatch
-            ruleNames.size() == 1 && ruleNames.first().startsWith("SuperCanonical")
+            ruleNames.size() == 1 && ruleNames.first() == 'SUPERCANONICAL_EMPLOYEE_ID'
         }
     }
 
@@ -313,7 +313,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
         with(response.body.partialMatchingRecords[0]) {
             referenceId == "uid123"
             !exactMatch
-            ruleNames.size() == 1 && ruleNames.first().startsWith("SuperCanonical")
+            ruleNames.size() == 1 && ruleNames.first() == 'SUPERCANONICAL_EMPLOYEE_ID'
         }
     }
 }
