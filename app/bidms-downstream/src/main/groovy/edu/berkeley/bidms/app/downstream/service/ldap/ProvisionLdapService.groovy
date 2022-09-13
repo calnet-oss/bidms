@@ -64,8 +64,6 @@ import javax.naming.Name
 import javax.sql.DataSource
 import java.sql.Timestamp
 
-// TODO: Diff with UcbProvisionLdapService and that class should extend this one!
-
 @Slf4j
 // If you wish to override this bean, create your own with @Service("provisionLdapService")
 @ConditionalOnMissingBean(name = "provisionLdapService")
