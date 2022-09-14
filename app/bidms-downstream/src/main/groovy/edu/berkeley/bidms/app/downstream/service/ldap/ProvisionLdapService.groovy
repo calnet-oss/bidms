@@ -43,6 +43,7 @@ import edu.berkeley.bidms.connector.ldap.LdapConnector
 import edu.berkeley.bidms.connector.ldap.LdapRequestContext
 import edu.berkeley.bidms.connector.ldap.UidObjectDefinition
 import edu.berkeley.bidms.downstream.jms.DownstreamProvisionJmsTemplate
+import edu.berkeley.bidms.downstream.ldap.LdapConflictResolutionAware
 import edu.berkeley.bidms.downstream.ldap.SystemUidObjectDefinition
 import edu.berkeley.bidms.downstream.service.DownstreamProvisioningService
 import edu.berkeley.bidms.downstream.service.DownstreamSystemNotFoundException
@@ -52,6 +53,7 @@ import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.core.support.LdapContextSource
@@ -69,6 +71,9 @@ import java.sql.Timestamp
 @ConditionalOnMissingBean(name = "provisionLdapService")
 @Service("edu.berkeley.bidms.app.downstream.service.ldap.ProvisionLdapService")
 class ProvisionLdapService<PC extends ProvisioningContextProperties> implements DownstreamProvisioningService<PC> {
+
+    @Value('${bidms.downstream.app-name}')
+    private String APP_NAME
 
     @Autowired
     ProvisioningContextConfigProperties provisioningContextConfigProperties
@@ -298,6 +303,17 @@ class ProvisionLdapService<PC extends ProvisioningContextProperties> implements 
                     // same for the globally unique identifier
                     if (globUniqId) {
                         jsonObject[uidObjectDefinition.globallyUniqueIdentifierAttributeName] = globUniqId
+                    }
+                    if (uidObjectDefinition instanceof LdapConflictResolutionAware) {
+                        // You may wish to make sure that there aren't other
+                        // entries that will conflict with this object. 
+                        // I.e., the schema may be enforcing attribute
+                        // uniqueness on certain attributes and you need to
+                        // resolve any collisions before trying to persist
+                        // this object.
+                        ((LdapConflictResolutionAware) uidObjectDefinition).conflictResolvers?.each { resolver ->
+                            resolver.queryAndResolve(APP_NAME, connector, (UidObjectDefinition) uidObjectDefinition, eventId, downstreamSystemId, uid, globUniqId, jsonObject)
+                        }
                     }
                     synchronized (context.lock) {
                         wasModified = connector.persist(eventId, uidObjectDefinition, context, jsonObject, isDelete)
