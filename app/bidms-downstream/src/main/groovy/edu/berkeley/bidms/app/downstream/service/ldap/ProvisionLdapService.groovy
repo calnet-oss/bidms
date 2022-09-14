@@ -73,7 +73,7 @@ import java.sql.Timestamp
 class ProvisionLdapService<PC extends ProvisioningContextProperties> implements DownstreamProvisioningService<PC> {
 
     @Value('${bidms.downstream.app-name}')
-    private String APP_NAME
+    String APP_NAME
 
     @Autowired
     ProvisioningContextConfigProperties provisioningContextConfigProperties
