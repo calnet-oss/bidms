@@ -45,6 +45,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -52,7 +53,7 @@ import java.util.Objects;
  * a person.  For an inactive role, see {@link PersonRoleArchive}.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonIgnoreProperties({"uid", "person", "roleCategory", "roleAsgnUniquePerCat"})
+@JsonIgnoreProperties({"uid", "person", "roleCategory", "roleAsgnUniquePerCat", "timeCreated", "timeUpdated"})
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "roleId"}))
 @Entity
 public class PersonRole implements Comparable<PersonRole> {
@@ -96,6 +97,12 @@ public class PersonRole implements Comparable<PersonRole> {
 
     @Column
     private boolean roleAsgnUniquePerCat;
+
+    @Column(insertable = false, updatable = false)
+    private Date timeCreated;
+
+    @Column(insertable = false, updatable = false)
+    private Date timeUpdated;
 
     private static final int HCB_INIT_ODDRAND = 1139919653;
     private static final int HCB_MULT_ODDRAND = 645001011;
@@ -190,5 +197,13 @@ public class PersonRole implements Comparable<PersonRole> {
 
     public void setRoleCategory(AssignableRoleCategory roleCategory) {
         this.roleCategory = roleCategory;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public Date getTimeUpdated() {
+        return timeUpdated;
     }
 }
