@@ -45,6 +45,8 @@ public abstract class AuditUtil {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ssZ";
 
+    private static final String HEADER_X_FORWARDED_FOR = "X-Forwarded-For";
+
     /**
      * Log an audit event operation to the audit log by converting it to JSON
      * and logging it to the audit log via SLF4J.
@@ -67,7 +69,10 @@ public abstract class AuditUtil {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
         attrs.put("time", sdf.format(new Date()));
         if (event.getRequest() != null) {
-            attrs.put("remoteIpAddr", event.getRequest().getRemoteAddr());
+            String remoteIp = event.getRequest().getHeader(HEADER_X_FORWARDED_FOR) != null ?
+                    event.getRequest().getHeader(HEADER_X_FORWARDED_FOR) :
+                    event.getRequest().getRemoteAddr();
+            attrs.put("remoteIpAddr", remoteIp);
         }
         if (!noLoggedInUser) {
             attrs.put("loggedInUid", event.getLoggedInUid());
