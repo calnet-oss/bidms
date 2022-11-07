@@ -63,6 +63,7 @@ class DateOfBirthSpec extends Specification {
 
     static DateOfBirth[] getTestDates(PersonRepository personRepository, SORRepository sorRepository, SORObjectRepository sorObjectRepository) {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
         return [
                 new DateOfBirth(
                         person: TestUtil.findPerson(personRepository, "1"),
