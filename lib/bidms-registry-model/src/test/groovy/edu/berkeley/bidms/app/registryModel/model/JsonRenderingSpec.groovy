@@ -89,7 +89,7 @@ class JsonRenderingSpec extends Specification {
     // #sorObjectId gets string-replaced
     private static String expectedPersonJSON = '''{
   "datesOfBirth" : [ {
-    "dateOfBirth" : "1999-01-03T08:00:00Z",
+    "dateOfBirth" : "1999-01-03T00:00:00Z",
     "dateOfBirthMMDD" : "0301",
     "sorObjectId" : #sorObjectId
   } ],
