@@ -46,17 +46,25 @@ public class JSONBType implements UserType {
     // Needed to support PostgreSQL.  Will be null if not using PostgreSQL.
     static Class<?> pgObjectClass;
 
+    static Class<?> h2DriverClass;
+
     static {
         try {
             pgObjectClass = Class.forName("org.postgresql.util.PGobject");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             // PostgreSQL class not available
+        }
+        try {
+            h2DriverClass = Class.forName("org.h2.Driver");
+        }
+        catch(Exception ignored) {
+            // H2DB driver not available
         }
     }
 
     @Override
     public int[] sqlTypes() {
-        return new int[]{Types.OTHER};
+        return new int[]{h2DriverClass == null ? Types.OTHER : Types.JAVA_OBJECT};
     }
 
     @Override
@@ -96,7 +104,7 @@ public class JSONBType implements UserType {
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
-        st.setObject(index, value, (value == null) ? Types.NULL : Types.OTHER);
+        st.setObject(index, value, (value == null) ? Types.NULL : h2DriverClass == null ? Types.OTHER : Types.JAVA_OBJECT);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
