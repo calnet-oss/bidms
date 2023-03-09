@@ -80,10 +80,10 @@ class IntegrationTestUtil {
                     objJson JSON NOT NULL,
                     hash BIGINT,
                     hashVersion INTEGER,
-                    isDeleted BOOLEAN NOT NULL DEFAULT false,
-                    UNIQUE KEY sorobject_uniq_idx (sorId, sorObjKey)
+                    isDeleted BOOLEAN NOT NULL DEFAULT false
                   )"""
-                )
+                ),
+                SqlStmt.create("CREATE UNIQUE INDEX sorobject_uniq_idx ON SORObject(sorId, sorObjKey)")
         ].each { stmt ->
             if (stmt.args) {
                 registryJdbcTemplate.update(stmt.sql, stmt.args)
