@@ -33,6 +33,7 @@ version versions.bidmsCommonJson
 
 dependencies {
     api "com.fasterxml.jackson.core:jackson-databind"
+    api "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
 }
 
 // to avoid the uneeded dependencyManagement section in the POM

@@ -32,9 +32,11 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,9 @@ public class JsonUtil {
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
             .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX"))
             .defaultTimeZone(TimeZone.getTimeZone("GMT"))
+            .build();
+
+    private final static XmlMapper xmlMapper = XmlMapper.builder()
             .build();
 
     public static ObjectMapper getSortedKeysObjectMapper() {
@@ -275,7 +280,7 @@ public class JsonUtil {
      * @param map   The map to convert to an object.
      * @param clazz The class of the object.
      * @param <T>   The class type of the object.
-     * @return The cbject converted from a map.
+     * @return The object converted from a map.
      * @throws IllegalArgumentException If conversion fails due to
      *                                  incompatible type.  See {@link
      *                                  ObjectMapper#convertValue(Object,
@@ -283,5 +288,126 @@ public class JsonUtil {
      */
     public static <T> T convertMapToObject(Map<?, ?> map, Class<T> clazz) throws IllegalArgumentException {
         return map != null ? objectMapper.convertValue(map, clazz) : null;
+    }
+
+    /**
+     * Options that can be enabled when converting XML to JSON or a map.  If
+     * no options are specified then see {@link
+     * #DEFAULT_XML_DESERIALIZATION_OPTIONS}.
+     */
+    public enum XmlDeserializationOption {
+        /**
+         * Enabling WRAP_ROOT will include the original root XML element in
+         * the map.
+         */
+        WRAP_ROOT,
+
+        /**
+         * Enabling REMOVE_ARRAY_WRAPPER will remove wrapper keys around
+         * arrays.  See comments of 
+         * {@link #removeXmlMapArrayWrappers(Map, Map, Object)} for further 
+         * details.
+         */
+        REMOVE_ARRAY_WRAPPER
+    }
+
+    /**
+     * Default options for converting XML to JSON or a map:
+     * <ul>
+     *     <li>WRAP_ROOT</li>
+     *     <li>REMOVE_ARRAY_WRAPPER</li>
+     * </ul>
+     */
+    protected static final XmlDeserializationOption[] DEFAULT_XML_DESERIALIZATION_OPTIONS = new XmlDeserializationOption[]{
+            XmlDeserializationOption.WRAP_ROOT,
+            XmlDeserializationOption.REMOVE_ARRAY_WRAPPER
+    };
+
+    /**
+     * Convert XML to a map.
+     *
+     * @param xml     The XML string to convert to a map.
+     * @param options Options for conversion.
+     * @return The map converted from XML.
+     * @throws JsonProcessingException If an error occurs converting the XML
+     *                                 to a map.
+     */
+    public static Map<?, ?> convertXmlToMap(String xml, XmlDeserializationOption[] options) throws JsonProcessingException {
+        // Jackson does not include the root xml element in the map so we
+        // can wrap it with a dummy root element to get the original root
+        // into the map.
+        String xmlString = isWrapRootEnabled(options) ? "<ROOT>" + xml + "</ROOT>" : xml;
+        Map<?, ?> map = xmlMapper.readValue(xmlString, Map.class);
+        return isRemoveArrayWrapperEnabled(options) ? removeXmlMapArrayWrappers(map, null, null) : map;
+    }
+
+    /**
+     * Convert XML to a map using default options: {@link #DEFAULT_XML_DESERIALIZATION_OPTIONS}.
+     *
+     * @param xml The XML string to convert to a map.
+     * @return The map converted from XML.
+     * @throws JsonProcessingException If an error occurs converting the XML
+     *                                 to a map.
+     */
+    public static Map<?, ?> convertXmlToMap(String xml) throws JsonProcessingException {
+        return convertXmlToMap(xml, DEFAULT_XML_DESERIALIZATION_OPTIONS);
+    }
+
+    /**
+     * Convert XML to a JSON string.
+     *
+     * @param xml     The XML string to convert to JSON.
+     * @param options Options for conversion.
+     * @return A JSON string.
+     * @throws JsonProcessingException If an error occurs converting the XML
+     *                                 to JSON.
+     */
+    public static String convertXmlToJson(String xml, XmlDeserializationOption[] options) throws JsonProcessingException {
+        return convertMapToJson(convertXmlToMap(xml, options));
+    }
+
+    /**
+     * Convert XML to a JSON string using default options: {@link #DEFAULT_XML_DESERIALIZATION_OPTIONS}.
+     *
+     * @param xml The XML string to convert to JSON.
+     * @return A JSON string.
+     * @throws JsonProcessingException If an error occurs converting the XML
+     *                                 to JSON.
+     */
+    public static String convertXmlToJson(String xml) throws JsonProcessingException {
+        return convertMapToJson(convertXmlToMap(xml, DEFAULT_XML_DESERIALIZATION_OPTIONS));
+    }
+
+    private static boolean isWrapRootEnabled(XmlDeserializationOption[] options) {
+        return Arrays.asList(options).contains(XmlDeserializationOption.WRAP_ROOT);
+    }
+
+    private static boolean isRemoveArrayWrapperEnabled(XmlDeserializationOption[] options) {
+        return Arrays.asList(options).contains(XmlDeserializationOption.REMOVE_ARRAY_WRAPPER);
+    }
+
+    /**
+     * This removes the "wrapper key" for arrays that Jackson inserts.  The
+     * purpose of removing the wrapper around the array is to maintain
+     * consistency with another xml-to-json library that was previously in
+     * use.
+     * <p>
+     * This is best described with an example:
+     * Jackson will deserialize XML as:
+     * <br><code>{"PERSON":{"NAMES":{"NAME":[{"FIRST_NAME":"First1"},{"FIRST_NAME":"First2"}]}}}</code><br>
+     * and this method will convert it to (by removing the NAME wrapper around the array):
+     * <br><code>{"PERSON":{"NAMES":[{"FIRST_NAME":"First1"},{"FIRST_NAME":"First2"}]}}</code>
+     */
+    public static <K, V> Map<K, V> removeXmlMapArrayWrappers(Map<K, V> map, Map<K, V> parent, K parentKey) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                removeXmlMapArrayWrappers((Map<K, V>) entry.getValue(), map, entry.getKey());
+            } else if (parent != null && entry.getValue() instanceof List) {
+                // This entry is an array so lets remove the wrapper by
+                // replacing the parent with the array itself.
+                parent.put(parentKey, entry.getValue());
+            }
+        }
+        return map;
     }
 }
