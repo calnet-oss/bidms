@@ -33,7 +33,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -304,8 +319,8 @@ public class JsonUtil {
 
         /**
          * Enabling REMOVE_ARRAY_WRAPPER will remove wrapper keys around
-         * arrays.  See comments of 
-         * {@link #removeXmlMapArrayWrappers(Map, Map, Object)} for further 
+         * arrays.  See comments of
+         * {@link #removeXmlMapArrayWrappers(Map, Map, Object)} for further
          * details.
          */
         REMOVE_ARRAY_WRAPPER
@@ -332,12 +347,41 @@ public class JsonUtil {
      * @throws JsonProcessingException If an error occurs converting the XML
      *                                 to a map.
      */
-    public static Map<?, ?> convertXmlToMap(String xml, XmlDeserializationOption[] options) throws JsonProcessingException {
+    public static Map<?, ?> convertXmlToMap(String xml, XmlDeserializationOption[] options) throws IOException, TransformerException, ParserConfigurationException, SAXException {
+        Map<?, ?> map = null;
+
         // Jackson does not include the root xml element in the map so we
         // can wrap it with a dummy root element to get the original root
         // into the map.
-        String xmlString = isWrapRootEnabled(options) ? "<ROOT>" + xml + "</ROOT>" : xml;
-        Map<?, ?> map = xmlMapper.readValue(xmlString, Map.class);
+        if (isWrapRootEnabled(options)) {
+            // Deserialize as a DOM.
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            InputStream is = new ByteArrayInputStream(xml.getBytes());
+            Document doc = db.parse(new ByteArrayInputStream(xml.getBytes()));
+            is.close();
+
+            // Modify original DOM by wrapping it with a new root element.
+            Node originalRoot = doc.removeChild(doc.getDocumentElement());
+            Element newRoot = doc.createElement("ROOT");
+            newRoot.appendChild(originalRoot);
+            doc.appendChild(newRoot);
+
+            // Reserialize for Jackson to parse.
+            DOMSource domSource = new DOMSource(doc);
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            TransformerFactory.newDefaultInstance().newTransformer().transform(domSource, result);
+            writer.flush();
+            String reserialized = writer.toString();
+            writer.close();
+
+            map = xmlMapper.readValue(reserialized, Map.class);
+        } else {
+            // no root node wrapper, deserialize input as-is
+            map = xmlMapper.readValue(xml, Map.class);
+        }
+
         return isRemoveArrayWrapperEnabled(options) ? removeXmlMapArrayWrappers(map, null, null) : map;
     }
 
@@ -349,7 +393,7 @@ public class JsonUtil {
      * @throws JsonProcessingException If an error occurs converting the XML
      *                                 to a map.
      */
-    public static Map<?, ?> convertXmlToMap(String xml) throws JsonProcessingException {
+    public static Map<?, ?> convertXmlToMap(String xml) throws IOException, TransformerException, ParserConfigurationException, SAXException {
         return convertXmlToMap(xml, DEFAULT_XML_DESERIALIZATION_OPTIONS);
     }
 
@@ -362,7 +406,7 @@ public class JsonUtil {
      * @throws JsonProcessingException If an error occurs converting the XML
      *                                 to JSON.
      */
-    public static String convertXmlToJson(String xml, XmlDeserializationOption[] options) throws JsonProcessingException {
+    public static String convertXmlToJson(String xml, XmlDeserializationOption[] options) throws IOException, TransformerException, ParserConfigurationException, SAXException {
         return convertMapToJson(convertXmlToMap(xml, options));
     }
 
@@ -374,7 +418,7 @@ public class JsonUtil {
      * @throws JsonProcessingException If an error occurs converting the XML
      *                                 to JSON.
      */
-    public static String convertXmlToJson(String xml) throws JsonProcessingException {
+    public static String convertXmlToJson(String xml) throws IOException, TransformerException, ParserConfigurationException, SAXException {
         return convertMapToJson(convertXmlToMap(xml, DEFAULT_XML_DESERIALIZATION_OPTIONS));
     }
 
