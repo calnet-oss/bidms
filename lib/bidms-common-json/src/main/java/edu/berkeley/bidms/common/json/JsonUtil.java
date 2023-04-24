@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -77,6 +78,7 @@ public class JsonUtil {
             .build();
 
     private final static XmlMapper xmlMapper = XmlMapper.builder()
+            .enable(FromXmlParser.Feature.EMPTY_ELEMENT_AS_NULL)
             .build();
 
     public static ObjectMapper getSortedKeysObjectMapper() {
@@ -323,7 +325,14 @@ public class JsonUtil {
          * {@link #removeXmlMapArrayWrappers(Map, Map, Object)} for further
          * details.
          */
-        REMOVE_ARRAY_WRAPPER
+        REMOVE_ARRAY_WRAPPER,
+
+        /**
+         * Enabling NULL_VALUES_AS_EMPTY_ARRAYS will convert null values to
+         * empty arrays.  See comments of
+         * {@link #convertNullsToEmptyArrays(Map)} for further details.
+         */
+        NULL_VALUES_AS_EMPTY_ARRAYS
     }
 
     /**
@@ -331,11 +340,13 @@ public class JsonUtil {
      * <ul>
      *     <li>WRAP_ROOT</li>
      *     <li>REMOVE_ARRAY_WRAPPER</li>
+     *     <li>NULL_VALUES_AS_EMPTY_ARRAYS</li>
      * </ul>
      */
     protected static final XmlDeserializationOption[] DEFAULT_XML_DESERIALIZATION_OPTIONS = new XmlDeserializationOption[]{
             XmlDeserializationOption.WRAP_ROOT,
-            XmlDeserializationOption.REMOVE_ARRAY_WRAPPER
+            XmlDeserializationOption.REMOVE_ARRAY_WRAPPER,
+            XmlDeserializationOption.NULL_VALUES_AS_EMPTY_ARRAYS
     };
 
     /**
@@ -347,6 +358,7 @@ public class JsonUtil {
      * @throws JsonProcessingException If an error occurs converting the XML
      *                                 to a map.
      */
+    @SuppressWarnings("unchecked")
     public static Map<?, ?> convertXmlToMap(String xml, XmlDeserializationOption[] options) throws IOException, TransformerException, ParserConfigurationException, SAXException {
         Map<?, ?> map = null;
 
@@ -382,7 +394,15 @@ public class JsonUtil {
             map = xmlMapper.readValue(xml, Map.class);
         }
 
-        return isRemoveArrayWrapperEnabled(options) ? removeXmlMapArrayWrappers(map, null, null) : map;
+        if (isRemoveArrayWrapperEnabled(options)) {
+            removeXmlMapArrayWrappers(map, null, null);
+        }
+
+        if (isNullValuesAsEmptyArraysEnabled(options)) {
+            convertNullsToEmptyArrays((Map<?, Object>) map);
+        }
+
+        return map;
     }
 
     /**
@@ -430,6 +450,10 @@ public class JsonUtil {
         return Arrays.asList(options).contains(XmlDeserializationOption.REMOVE_ARRAY_WRAPPER);
     }
 
+    private static boolean isNullValuesAsEmptyArraysEnabled(XmlDeserializationOption[] options) {
+        return Arrays.asList(options).contains(XmlDeserializationOption.NULL_VALUES_AS_EMPTY_ARRAYS);
+    }
+
     /**
      * This removes the "wrapper key" for arrays that Jackson inserts.  The
      * purpose of removing the wrapper around the array is to maintain
@@ -442,6 +466,7 @@ public class JsonUtil {
      * and this method will convert it to (by removing the NAME wrapper around the array):
      * <br><code>{"PERSON":{"NAMES":[{"FIRST_NAME":"First1"},{"FIRST_NAME":"First2"}]}}</code>
      */
+    @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> removeXmlMapArrayWrappers(Map<K, V> map, Map<K, V> parent, K parentKey) {
         for (Map.Entry<K, V> entry : map.entrySet()) {
             if (entry.getValue() instanceof Map) {
@@ -450,6 +475,49 @@ public class JsonUtil {
                 // This entry is an array so lets remove the wrapper by
                 // replacing the parent with the array itself.
                 parent.put(parentKey, entry.getValue());
+            }
+        }
+        return map;
+    }
+
+    /**
+     * This converts null values in the map to empty arrays.  For example,
+     * if the XML tag is empty, such as {@code <GROUPS></GROUPS>}, the
+     * Jackson XML deserializer will initially populate the map with a
+     * <code>{"GROUPS": null}</code> and then this method will then further
+     * convert that into <code>{"GROUPS": []}</code>.
+     *
+     * <p></p>
+     *
+     * This may make sense to enable if you are confident that the source
+     * XML:
+     * <ul>
+     *     <li>always uses empty tags to indicate an empty array</li>
+     *     <li>never uses empty tags to indicate a null string</li>
+     *     <li>never uses empty tags to indicate an empty string</li>
+     *     <li>never has tags with just space in it where the space should be preserved (e.g., {@code <meaningfulspace> </meaningfulspace>})</li>
+     * </ul>
+     *
+     * <p></p>
+     *
+     * One example where these constraints may all be true is when utilizing
+     * Oracle's {@code XMLFOREST()} function in conjunction with {@code
+     * TRIM()}.  {@code XMLFOREST()} will exclude empty or null strings from
+     * the XML it produces.  This can be shown with an example:<br/>
+
+     * <pre>
+     *     select xmlforest('1' as id, TRIM(null) AS mynull, TRIM('') AS myempty, TRIM(' ') AS onlyspace) from dual;
+     * </pre>
+     * results in: {@code <ID>1</ID>}
+     */
+    @SuppressWarnings("unchecked")
+    public static <K> Map<K, Object> convertNullsToEmptyArrays(Map<K, Object> map) {
+        for (Map.Entry<K, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                convertNullsToEmptyArrays((Map<K, Object>) entry.getValue());
+            } else if (entry.getValue() == null) {
+                // replace the null value with an empty array list
+                entry.setValue(new ArrayList<>());
             }
         }
         return map;
