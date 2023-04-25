@@ -322,7 +322,7 @@ public class JsonUtil {
         /**
          * Enabling REMOVE_ARRAY_WRAPPER will remove wrapper keys around
          * arrays.  See comments of
-         * {@link #removeXmlMapArrayWrappers(Map, Map, Object)} for further
+         * {@link #removeXmlMapArrayWrappers(Map)} for further
          * details.
          */
         REMOVE_ARRAY_WRAPPER,
@@ -395,11 +395,11 @@ public class JsonUtil {
         }
 
         if (isRemoveArrayWrapperEnabled(options)) {
-            removeXmlMapArrayWrappers(map, null, null);
+            removeXmlMapArrayWrappers(map);
         }
 
         if (isNullValuesAsEmptyArraysEnabled(options)) {
-            convertNullsToEmptyArrays((Map<?, Object>) map);
+            convertNullsToEmptyArrays(map);
         }
 
         return map;
@@ -454,6 +454,25 @@ public class JsonUtil {
         return Arrays.asList(options).contains(XmlDeserializationOption.NULL_VALUES_AS_EMPTY_ARRAYS);
     }
 
+    private interface XmlNodeVisitor {
+        void visit(Object node, Object parent, Object parentKey, Object grandparent, Object grandparentKey);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void traverseXmlNode(Object node, Object parent, Object parentKey, Object grandparent, Object grandparentKey, XmlNodeVisitor visitor) {
+        if (node instanceof Map) {
+            Map<?, ?> map = (Map) node;
+            for (var entry : map.entrySet()) {
+                traverseXmlNode(entry.getValue(), map, entry.getKey(), parent, parentKey, visitor);
+            }
+        } else if (node instanceof List) {
+            for (var childNode : (List) node) {
+                traverseXmlNode(childNode, node, null, parent, parentKey, visitor);
+            }
+        }
+        visitor.visit(node, parent, parentKey, grandparent, grandparentKey);
+    }
+
     /**
      * This removes the "wrapper key" for arrays that Jackson inserts.  The
      * purpose of removing the wrapper around the array is to maintain
@@ -466,17 +485,15 @@ public class JsonUtil {
      * and this method will convert it to (by removing the NAME wrapper around the array):
      * <br><code>{"PERSON":{"NAMES":[{"FIRST_NAME":"First1"},{"FIRST_NAME":"First2"}]}}</code>
      */
-    @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> removeXmlMapArrayWrappers(Map<K, V> map, Map<K, V> parent, K parentKey) {
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                removeXmlMapArrayWrappers((Map<K, V>) entry.getValue(), map, entry.getKey());
-            } else if (parent != null && entry.getValue() instanceof List) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Map removeXmlMapArrayWrappers(Map map) {
+        traverseXmlNode(map, null, null, null, null, (node, parent, parentKey, grandparent, grandparentKey) -> {
+            if (parent instanceof Map && node instanceof List) {
                 // This entry is an array so lets remove the wrapper by
                 // replacing the parent with the array itself.
-                parent.put(parentKey, entry.getValue());
+                ((Map) grandparent).put(grandparentKey, node);
             }
-        }
+        });
         return map;
     }
 
@@ -488,7 +505,7 @@ public class JsonUtil {
      * convert that into <code>{"GROUPS": []}</code>.
      *
      * <p></p>
-     *
+     * <p>
      * This may make sense to enable if you are confident that the source
      * XML:
      * <ul>
@@ -499,27 +516,25 @@ public class JsonUtil {
      * </ul>
      *
      * <p></p>
-     *
+     * <p>
      * One example where these constraints may all be true is when utilizing
      * Oracle's {@code XMLFOREST()} function in conjunction with {@code
      * TRIM()}.  {@code XMLFOREST()} will exclude empty or null strings from
      * the XML it produces.  This can be shown with an example:<br/>
-
+     *
      * <pre>
      *     select xmlforest('1' as id, TRIM(null) AS mynull, TRIM('') AS myempty, TRIM(' ') AS onlyspace) from dual;
      * </pre>
      * results in: {@code <ID>1</ID>}
      */
-    @SuppressWarnings("unchecked")
-    public static <K> Map<K, Object> convertNullsToEmptyArrays(Map<K, Object> map) {
-        for (Map.Entry<K, Object> entry : map.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                convertNullsToEmptyArrays((Map<K, Object>) entry.getValue());
-            } else if (entry.getValue() == null) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Map convertNullsToEmptyArrays(Map map) {
+        traverseXmlNode(map, null, null, null, null, (node, parent, parentKey, grandparent, grandparentKey) -> {
+            if (parent instanceof Map && node == null) {
                 // replace the null value with an empty array list
-                entry.setValue(new ArrayList<>());
+                ((Map) parent).put(parentKey, new ArrayList<>());
             }
-        }
+        });
         return map;
     }
 }
