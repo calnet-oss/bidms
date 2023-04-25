@@ -27,6 +27,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'groovy'
 }
 
 version versions.bidmsCommonJson
@@ -34,6 +35,18 @@ version versions.bidmsCommonJson
 dependencies {
     api "com.fasterxml.jackson.core:jackson-databind"
     api "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.spockframework:spock-spring'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 // to avoid the uneeded dependencyManagement section in the POM
