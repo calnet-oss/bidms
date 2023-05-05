@@ -26,7 +26,6 @@
  */
 package edu.berkeley.bidms.app;
 
-import com.jcraft.jsch.JSch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -74,20 +73,5 @@ public class BidmsConfigServerApplication extends SpringBootServletInitializer {
     @Override
     protected WebApplicationContext run(SpringApplication application) {
         return super.run(application);
-    }
-
-    // only useful to debug ssh problems if using ssh to connect to git server
-    private void enableJSchDebugging() {
-        JSch.setLogger(new com.jcraft.jsch.Logger() {
-            @Override
-            public boolean isEnabled(int i) {
-                return true;
-            }
-
-            @Override
-            public void log(int i, String s) {
-                log.info("JSch " + i + ": " + s);
-            }
-        });
     }
 }
