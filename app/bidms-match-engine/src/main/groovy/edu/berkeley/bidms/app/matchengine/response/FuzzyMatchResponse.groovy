@@ -28,7 +28,7 @@ package edu.berkeley.bidms.app.matchengine.response
 
 import edu.berkeley.bidms.app.matchengine.database.Candidate
 
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 class FuzzyMatchResponse extends Response {
     int responseCode = HttpServletResponse.SC_MULTIPLE_CHOICES

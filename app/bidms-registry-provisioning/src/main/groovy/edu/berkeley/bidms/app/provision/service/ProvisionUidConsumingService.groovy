@@ -34,8 +34,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
-import javax.jms.MapMessage
-import javax.jms.Message
+import jakarta.jms.MapMessage
+import jakarta.jms.Message
 
 @Slf4j
 @Service

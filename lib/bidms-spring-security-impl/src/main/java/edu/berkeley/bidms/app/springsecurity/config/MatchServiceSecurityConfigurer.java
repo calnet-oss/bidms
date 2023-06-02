@@ -32,7 +32,7 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 public interface MatchServiceSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .antMatchers("/match-service/**").hasAuthority("registryMatchService")
+                .requestMatchers("/match-service/**").hasAuthority("registryMatchService")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -40,8 +40,8 @@ public interface MatchServiceSecurityConfigurer extends ServiceSecurityConfigure
 
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
-                http.requestMatchers((rm) -> {
-                    rm.antMatchers("/match-service/**");
+                http.securityMatchers((sm) -> {
+                    sm.requestMatchers("/match-service/**");
                 }).authorizeRequests()
         );
     }

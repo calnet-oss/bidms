@@ -30,8 +30,10 @@ import edu.berkeley.bidms.app.downstream.service.ldap.LdapDownstreamObjectUpdate
 import edu.berkeley.bidms.app.downstream.service.ldap.ProvisionLdapServiceCallbackContext
 import edu.berkeley.bidms.connector.ldap.event.LdapUniqueIdentifierEventCallback
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUniqueIdentifierEventMessage
+import groovy.transform.CompileStatic
 import org.apache.commons.codec.binary.Hex
 
+@CompileStatic
 class LdapUniqueIdentifierEventProcessingCallback implements LdapUniqueIdentifierEventCallback {
     LdapDownstreamObjectUpdaterService ldapDownstreamObjectUpdaterService
 

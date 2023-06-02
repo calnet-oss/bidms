@@ -28,7 +28,7 @@ package edu.berkeley.bidms.app.matchengine.response
 
 import edu.berkeley.bidms.app.matchengine.database.Record
 
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 class ExistingMatchResponse extends Response {
     String systemOfRecord

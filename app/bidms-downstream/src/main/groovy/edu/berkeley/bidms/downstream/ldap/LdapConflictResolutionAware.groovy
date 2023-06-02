@@ -27,7 +27,9 @@
 package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.UidObjectDefinition
+import groovy.transform.CompileStatic
 
+@CompileStatic
 interface LdapConflictResolutionAware {
     List<LdapConflictResolver<? extends UidObjectDefinition>> getConflictResolvers()
 }

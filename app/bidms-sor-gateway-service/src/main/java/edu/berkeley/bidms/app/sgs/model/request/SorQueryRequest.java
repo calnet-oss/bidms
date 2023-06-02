@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.sgs.model.request;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A request to execute a query for a SOR.

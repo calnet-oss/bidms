@@ -28,7 +28,9 @@ package edu.berkeley.bidms.downstream.service
 
 import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextAware
 import edu.berkeley.bidms.app.common.config.properties.provisionContext.ProvisioningContextProperties
+import groovy.transform.CompileStatic
 
+@CompileStatic
 interface DownstreamProvisioningService<PC extends ProvisioningContextProperties> extends ProvisioningContextAware<PC> {
 
     /**

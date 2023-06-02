@@ -34,17 +34,17 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compileOnly 'javax.servlet:javax.servlet-api'
-    compileOnly 'javax.xml.bind:jaxb-api'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
+    //compileOnly 'javax.xml.bind:jaxb-api'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation 'org.apache.groovy:groovy-dateutil'
 }
 
-test {
+tasks.named('test') {
   useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"

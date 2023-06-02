@@ -37,9 +37,10 @@ dependencies {
 
     // JMS
     implementation "org.springframework:spring-jms"
-    runtimeOnly "javax.jms:javax.jms-api"
-    implementation "org.apache.activemq:activemq-client"
+    //implementation "javax.jms:javax.jms-api"
+    implementation "org.apache.activemq:activemq-client-jakarta"
     implementation "org.apache.activemq:activemq-pool"
+    //implementation "org.apache.geronimo.specs:geronimo-jms_1.1_spec"
 
     implementation pdep(rootProject.bidmsAppCommonConfDep)
 
@@ -47,11 +48,11 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation 'org.apache.groovy:groovy'
+    testImplementation 'org.apache.groovy:groovy-dateutil'
 }
 
-test {
+tasks.named('test') {
   useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"

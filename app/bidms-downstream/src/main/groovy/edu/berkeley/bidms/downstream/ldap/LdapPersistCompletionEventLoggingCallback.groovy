@@ -28,11 +28,13 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.event.LdapPersistCompletionEventCallback
 import edu.berkeley.bidms.connector.ldap.event.message.LdapPersistCompletionEventMessage
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.springframework.ldap.core.support.LdapContextSource
 import org.springframework.ldap.pool2.factory.PooledContextSource
 
 @Slf4j
+@CompileStatic
 class LdapPersistCompletionEventLoggingCallback implements LdapPersistCompletionEventCallback {
 
     PooledContextSource pooledContextSource

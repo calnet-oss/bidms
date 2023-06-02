@@ -39,7 +39,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 import javax.sql.DataSource
 
 @SpringBootTest

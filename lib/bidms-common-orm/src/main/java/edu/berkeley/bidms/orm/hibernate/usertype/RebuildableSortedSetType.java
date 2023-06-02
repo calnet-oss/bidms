@@ -29,14 +29,14 @@ package edu.berkeley.bidms.orm.hibernate.usertype;
 import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
 import edu.berkeley.bidms.orm.hibernate.collection.PersistentRebuildableSortedSet;
 import org.hibernate.HibernateException;
-import org.hibernate.collection.internal.PersistentSortedSet;
 import org.hibernate.collection.spi.PersistentCollection;
+import org.hibernate.collection.spi.PersistentSortedSet;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.metamodel.CollectionClassification;
 import org.hibernate.persister.collection.CollectionPersister;
 import org.hibernate.type.SortedSetType;
 import org.hibernate.usertype.UserCollectionType;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -59,15 +59,18 @@ public class RebuildableSortedSetType extends SortedSetType implements UserColle
     }
 
     @Override
-    public PersistentCollection instantiate(SharedSessionContractImplementor session, CollectionPersister persister) throws HibernateException {
-        return instantiate(session, persister, null);
+    public CollectionClassification getClassification() {
+        return getCollectionClassification();
     }
 
     @Override
-    public PersistentCollection instantiate(SharedSessionContractImplementor session, CollectionPersister persister, Serializable key) {
-        PersistentSortedSet set = new PersistentRebuildableSortedSet(session);
-        set.setComparator(comparator);
-        return set;
+    public Class<?> getCollectionClass() {
+        return getReturnedClass();
+    }
+
+    @Override
+    public PersistentCollection instantiate(SharedSessionContractImplementor session, CollectionPersister persister) {
+        return new PersistentRebuildableSortedSet(session, comparator);
     }
 
     @SuppressWarnings("rawtypes")

@@ -71,7 +71,7 @@ class MatchConfigBuilder {
         List<MatchAttributeConfig> matchAttributes = []
 
         @SuppressWarnings("GroovyAssignabilityCheck")
-        def invokeMethod(String name, Object args) {
+        def methodMissing(String name, Object args) {
             assert ((Collection) args).size() == 1
             assert ((Collection) args)[0] instanceof Closure
 

@@ -39,6 +39,6 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
     api 'com.fasterxml.jackson.core:jackson-databind'
-    api 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
     api pdep(bidmsCommonJsonDep)
 }

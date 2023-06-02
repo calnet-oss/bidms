@@ -28,7 +28,9 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.LdapConnector
 import edu.berkeley.bidms.connector.ldap.UidObjectDefinition
+import groovy.transform.CompileStatic
 
+@CompileStatic
 interface LdapConflictResolver<T extends UidObjectDefinition> {
     void queryAndResolve(
             String auditAppName,

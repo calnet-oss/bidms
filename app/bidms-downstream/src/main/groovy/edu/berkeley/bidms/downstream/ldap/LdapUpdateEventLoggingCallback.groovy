@@ -28,8 +28,10 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.event.LdapUpdateEventCallback
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUpdateEventMessage
+import groovy.transform.CompileStatic
 
-class LdapUpdateEventLoggingCallback extends LdapEventLoggingCallback implements LdapUpdateEventCallback {
+@CompileStatic
+class LdapUpdateEventLoggingCallback extends LdapEventLoggingCallback<LdapUpdateEventMessage> implements LdapUpdateEventCallback {
     LdapUpdateEventLoggingCallback(String appName) {
         super(appName)
     }

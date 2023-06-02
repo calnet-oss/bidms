@@ -33,7 +33,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 
-import javax.jms.MapMessage
+import jakarta.jms.MapMessage
 
 @Service
 @Slf4j

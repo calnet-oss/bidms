@@ -32,7 +32,7 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .antMatchers("/sgs/**").hasAuthority("sorGateway")
+                .requestMatchers("/sgs/**").hasAuthority("sorGateway")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -40,8 +40,8 @@ public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
 
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
-                http.requestMatchers((rm) -> {
-                    rm.antMatchers("/sgs/**");
+                http.securityMatchers((sm) -> {
+                    sm.requestMatchers("/sgs/**");
                 }).authorizeRequests()
         );
     }

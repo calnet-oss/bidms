@@ -26,28 +26,21 @@
  */
 package edu.berkeley.bidms.app.config;
 
-import edu.berkeley.bidms.app.springsecurity.config.DownstreamProvisioningSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.config.MatchEngineSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.config.MatchServiceSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.config.RegistryProvisioningSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.config.RegistryServiceSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.config.SgsSecurityConfigurer;
-import edu.berkeley.bidms.app.springsecurity.service.RegistryUserDetailsService;
+import edu.berkeley.bidms.app.springsecurity.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
-public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
+@Configuration
+public class BidmsApplicationSecurityConfig {
 
     private static final Logger log = LoggerFactory.getLogger(BidmsApplicationSecurityConfig.class);
-
-    @Autowired
-    private RegistryUserDetailsService registryUserDetailsService;
 
     // === Optional beans that customize the security configuration for each service (app) ===
     // The app, if it wishes to override, can instantiate these beans in the app's @Configuration class.
@@ -64,11 +57,11 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
     @Autowired(required = false)
     private RegistryServiceSecurityConfigurer registryServiceSecurityConfigurer;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
-        http.authorizeRequests().antMatchers("/hello/**").permitAll();
+        http.authorizeRequests().requestMatchers("/hello/**").permitAll();
 
         if (sgsSecurityConfigurer != null) {
             log.info("SGS security rules being applied from " + sgsSecurityConfigurer.getClass().getName());
@@ -118,13 +111,9 @@ public class BidmsApplicationSecurityConfig extends WebSecurityConfigurerAdapter
             RegistryServiceSecurityConfigurer.defaultRules(http);
         }
 
-        // TODO: httpBasic()
         http.authorizeRequests().anyRequest().denyAll()
                 .and().httpBasic();
-    }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(registryUserDetailsService);
+        return http.build();
     }
 }

@@ -41,7 +41,7 @@ import java.util.Objects;
  * A {@link UserType} that persists objects as JSONB.  Supports both
  * PostgreSQL and H2.
  */
-public class JSONBType implements UserType {
+public class JSONBType implements UserType<String> {
 
     // Needed to support PostgreSQL.  Will be null if not using PostgreSQL.
     static Class<?> pgObjectClass;
@@ -56,36 +56,35 @@ public class JSONBType implements UserType {
         }
         try {
             h2DriverClass = Class.forName("org.h2.Driver");
-        }
-        catch(Exception ignored) {
+        } catch (Exception ignored) {
             // H2DB driver not available
         }
     }
 
     @Override
-    public int[] sqlTypes() {
-        return new int[]{h2DriverClass == null ? Types.OTHER : Types.JAVA_OBJECT};
+    public int getSqlType() {
+        return h2DriverClass == null ? Types.OTHER : Types.JAVA_OBJECT;
     }
 
     @Override
-    public Class<?> returnedClass() {
+    public Class<String> returnedClass() {
         return String.class;
     }
 
     @Override
-    public boolean equals(Object x, Object y) throws HibernateException {
+    public boolean equals(String x, String y) throws HibernateException {
         return Objects.equals(x, y);
     }
 
     @Override
-    public int hashCode(Object x) throws HibernateException {
+    public int hashCode(String x) throws HibernateException {
         return x == null ? 0 : x.hashCode();
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
-        if (names != null && names.length > 0) {
-            Object result = rs.getObject(names[0]);
+    public String nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
+        if (position >= 0) {
+            Object result = rs.getObject(position);
             // Support PostgreSQL: See if PGobject.  (It will be if this is
             // a JSONB column.)
             if (result != null && pgObjectClass != null && pgObjectClass.isAssignableFrom(result.getClass())) {
@@ -97,21 +96,21 @@ public class JSONBType implements UserType {
                     throw new RuntimeException("Couldn't invoke getValue() on instance of " + result.getClass().getName(), e);
                 }
             }
-            return result;
+            return result != null ? result.toString() : null;
         }
         return null;
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement st, String value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         st.setObject(index, value, (value == null) ? Types.NULL : h2DriverClass == null ? Types.OTHER : Types.JAVA_OBJECT);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Object deepCopy(Object value) throws HibernateException {
+    public String deepCopy(String value) throws HibernateException {
         if (value == null) return null;
-        return new String((String) value);
+        return new String(value);
     }
 
     @Override
@@ -120,17 +119,17 @@ public class JSONBType implements UserType {
     }
 
     @Override
-    public Serializable disassemble(Object value) throws HibernateException {
-        return (Serializable) value;
+    public Serializable disassemble(String value) throws HibernateException {
+        return value;
     }
 
     @Override
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
-        return cached;
+    public String assemble(Serializable cached, Object owner) throws HibernateException {
+        return cached != null ? cached.toString() : null;
     }
 
     @Override
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
+    public String replace(String original, String target, Object owner) throws HibernateException {
         return deepCopy(original);
     }
 }

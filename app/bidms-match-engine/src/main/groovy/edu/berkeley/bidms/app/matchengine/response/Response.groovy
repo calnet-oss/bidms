@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.matchengine.response
 
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 class Response {
     static NOT_FOUND = new Response(responseCode: HttpServletResponse.SC_NOT_FOUND)

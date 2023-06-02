@@ -50,10 +50,10 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation 'org.apache.groovy:groovy-dateutil'
 }
 
-test {
+tasks.named('test') {
   useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"

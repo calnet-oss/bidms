@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
 
-import javax.persistence.EntityManagerFactory
+import jakarta.persistence.EntityManagerFactory
 
 @AutoConfigurationPackage
 @SpringBootConfiguration

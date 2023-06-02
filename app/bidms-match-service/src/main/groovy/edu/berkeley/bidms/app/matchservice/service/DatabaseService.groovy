@@ -36,7 +36,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 @Slf4j
 @Service("matchServiceDatabaseService")

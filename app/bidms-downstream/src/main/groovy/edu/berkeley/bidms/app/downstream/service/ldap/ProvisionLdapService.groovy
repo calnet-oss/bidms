@@ -61,7 +61,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import javax.naming.Name
 import javax.sql.DataSource
 import java.sql.Timestamp

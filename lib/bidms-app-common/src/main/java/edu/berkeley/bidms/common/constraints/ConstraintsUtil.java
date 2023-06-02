@@ -29,7 +29,7 @@ package edu.berkeley.bidms.common.constraints;
 import edu.berkeley.bidms.common.validation.ConstraintViolationDynamicPayload;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class ConstraintsUtil {
@@ -46,7 +46,7 @@ public class ConstraintsUtil {
      * <p>
      * To access the payload: {@code violation.unwrap(HibernateConstraintViolation).getDynamicPayload(BidmsConstraintViolationDynamicPayload.class)}
      * where <code>violation</code> is an instance of {@link
-     * javax.validation.ConstraintViolation}.
+     * jakarta.validation.ConstraintViolation}.
      * <p>
      * See <a href="https://docs.jboss.org/hibernate/validator/6.0/reference/en-US/html_single/#section-dynamic-payload">Hibernate
      * Validator reference documentation: Dynamic payload as part of
@@ -54,13 +54,13 @@ public class ConstraintsUtil {
      *
      * @param context An instance of {@link ConstraintValidatorContext}
      *                accessible from implementations of {@link
-     *                javax.validation.ConstraintValidator#isValid(Object,
+     *                jakarta.validation.ConstraintValidator#isValid(Object,
      *                ConstraintValidatorContext)}.
      * @param code    Short form of the error description.
      * @param message Long form of the error description.
      * @return Always returns false as a convenience so that {@code return
      * violation(...)} may be used within implementations of {@link
-     * javax.validation.ConstraintValidator#isValid(Object,
+     * jakarta.validation.ConstraintValidator#isValid(Object,
      * ConstraintValidatorContext)}.
      */
     public static boolean violation(ConstraintValidatorContext context, String code, String message) {
@@ -79,14 +79,14 @@ public class ConstraintsUtil {
      *
      * @param context      An instance of {@link ConstraintValidatorContext}
      *                     accessible from implementations of {@link
-     *                     javax.validation.ConstraintValidator#isValid(Object,
+     *                     jakarta.validation.ConstraintValidator#isValid(Object,
      *                     ConstraintValidatorContext)}.
      * @param propertyName Name of property that has failed validation.
      * @param code         Short form of the error description.
      * @param message      Long form of the error description.
      * @return Always returns false as a convenience so that {@code return
      * violation(...)} may be used within implementations of {@link
-     * javax.validation.ConstraintValidator#isValid(Object,
+     * jakarta.validation.ConstraintValidator#isValid(Object,
      * ConstraintValidatorContext)}.
      */
     public static boolean violation(ConstraintValidatorContext context, String propertyName, String code, String message) {

@@ -55,8 +55,8 @@ publishing {
             artifactId project.name
             version project.version
             groupId bidmsGroup
-            artifact sourceJar { classifier "sources" }
-            artifact javadocJar { classifier "javadoc" }
+            artifact sourceJar
+            artifact javadocJar
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')

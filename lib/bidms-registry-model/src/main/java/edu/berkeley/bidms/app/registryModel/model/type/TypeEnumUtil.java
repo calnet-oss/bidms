@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Regents of the University of California and
+ * Copyright (c) 2023, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,23 +24,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.orm.hibernate.dialect;
+package edu.berkeley.bidms.app.registryModel.model.type;
 
-import org.hibernate.dialect.PostgreSQL10Dialect;
-
-import java.sql.Types;
-
-/**
- * Fixes the issue where the dialect expects int2 but the database returns
- * smallint etc...
- */
-public class PostgreSQLFixDialect extends PostgreSQL10Dialect {
-    public PostgreSQLFixDialect() {
-        super();
-        // defaults are in org.hibernate.dialect.PostgreSQL81Dialect
-        registerColumnType(Types.BIGINT, "bigint");
-        registerColumnType(Types.INTEGER, "integer");
-        registerColumnType(Types.SMALLINT, "smallint");
-        registerColumnType(Types.TINYINT, "smallint");
+public class TypeEnumUtil {
+    public static TypeEnum[] concat(
+            TypeEnum[] a1,
+            TypeEnum[] a2
+    ) {
+        TypeEnum[] result = new TypeEnum[a1.length + a2.length];
+        System.arraycopy(a1, 0, result, 0, a1.length);
+        System.arraycopy(a2, 0, result, a1.length, a2.length);
+        return result;
     }
 }

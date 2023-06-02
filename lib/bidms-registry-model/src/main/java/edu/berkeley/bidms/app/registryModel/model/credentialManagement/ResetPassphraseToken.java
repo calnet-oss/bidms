@@ -29,11 +29,11 @@ package edu.berkeley.bidms.app.registryModel.model.credentialManagement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 
 /**
  * A token used for resetting forgotten passwords.

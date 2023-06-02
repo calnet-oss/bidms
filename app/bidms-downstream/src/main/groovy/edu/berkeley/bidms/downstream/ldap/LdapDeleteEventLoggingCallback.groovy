@@ -28,8 +28,10 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.event.LdapDeleteEventCallback
 import edu.berkeley.bidms.connector.ldap.event.message.LdapDeleteEventMessage
+import groovy.transform.CompileStatic
 
-class LdapDeleteEventLoggingCallback extends LdapEventLoggingCallback implements LdapDeleteEventCallback {
+@CompileStatic
+class LdapDeleteEventLoggingCallback extends LdapEventLoggingCallback<LdapDeleteEventMessage> implements LdapDeleteEventCallback {
 
     LdapDeleteEventLoggingCallback(String appName) {
         super(appName)
@@ -38,9 +40,9 @@ class LdapDeleteEventLoggingCallback extends LdapEventLoggingCallback implements
     @Override
     void receive(LdapDeleteEventMessage msg) {
         if (msg.success) {
-            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [dn: msg.dn])
+            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [dn: msg.dn] as Map<String, Object>)
         } else {
-            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [dn: msg.dn, exception: msg.exception])
+            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [dn: msg.dn, exception: msg.exception] as Map<String, Object>)
         }
     }
 
