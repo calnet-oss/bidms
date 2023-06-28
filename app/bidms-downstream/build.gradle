@@ -59,8 +59,7 @@ dependencies {
     // Spring LDAP
     implementation "org.springframework.ldap:spring-ldap-core"
 
-    implementation group: 'edu.berkeley.calnet.groovy.libs', name: 'bidms-connectors', version: versions.bidmsConnectors
-
+    implementation pdep(rootProject.bidmsConnectorsDep)
     implementation pdep(rootProject.bidmsAppCommonDep)
     implementation pdep(rootProject.bidmsAppCommonConfDep)
     implementation pdep(rootProject.bidmsRestServiceCommonDep)
