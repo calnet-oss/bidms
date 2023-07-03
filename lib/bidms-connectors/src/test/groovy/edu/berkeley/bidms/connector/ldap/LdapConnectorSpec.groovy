@@ -27,6 +27,8 @@
 
 package edu.berkeley.bidms.connector.ldap
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import edu.berkeley.bidms.connector.ConnectorObjectNotFoundException
 import edu.berkeley.bidms.connector.ldap.event.LdapCallbackContext
 import edu.berkeley.bidms.connector.ldap.event.LdapDeleteEventCallback
@@ -43,6 +45,7 @@ import edu.berkeley.bidms.connector.ldap.event.message.LdapInsertEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapRenameEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUniqueIdentifierEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUpdateEventMessage
+import io.github.bkoehm.apacheds.embedded.EmbeddedLdapServer
 import org.slf4j.LoggerFactory
 import org.springframework.ldap.AuthenticationException
 import org.springframework.ldap.NameNotFoundException
@@ -53,13 +56,11 @@ import org.springframework.ldap.pool2.factory.PoolConfig
 import org.springframework.ldap.pool2.factory.PooledContextSource
 import org.springframework.ldap.query.LdapQuery
 import org.springframework.ldap.support.LdapNameBuilder
-import io.github.bkoehm.apacheds.embedded.EmbeddedLdapServer
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import javax.naming.Name
-import javax.naming.NamingException
 import javax.naming.ldap.LdapName
 import javax.naming.ldap.Rdn
 
@@ -94,6 +95,9 @@ class LdapConnectorSpec extends Specification {
     )
 
     void setupSpec() {
+        def logger = (Logger) LoggerFactory.getLogger("org.apache.directory")
+        logger.setLevel(Level.WARN)
+
         this.embeddedLdapServer = new EmbeddedLdapServer() {
             @Override
             String getBasePartitionName() {
@@ -107,7 +111,6 @@ class LdapConnectorSpec extends Specification {
         }
         embeddedLdapServer.deleteInstanceDirectoryOnShutdown = false
         embeddedLdapServer.init()
-
 
         LdapContextSource unpooledLdapContextSource = new LdapContextSource()
         unpooledLdapContextSource.with {
