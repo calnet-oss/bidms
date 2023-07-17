@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Configuration
 class BidmsXacmlConfiguration {
@@ -51,7 +51,7 @@ class BidmsXacmlConfiguration {
     }
 
     private static File getXacmlPropertiesFile() {
-        return xacmlPropertiesResource.file
+        return xacmlPropertiesResource.getFile()
     }
 
     private static Properties getXacmlProperties() {

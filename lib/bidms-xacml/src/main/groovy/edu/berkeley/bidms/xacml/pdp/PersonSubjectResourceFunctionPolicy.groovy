@@ -44,7 +44,7 @@ import com.att.research.xacmlatt.pdp.std.StdCombiningAlgorithms
 import edu.berkeley.bidms.app.xacml.pdp.PersonSubjectResourceFunctionDefinition
 import groovy.transform.CompileStatic
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @CompileStatic
 abstract class PersonSubjectResourceFunctionPolicy extends Policy {
