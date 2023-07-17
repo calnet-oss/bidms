@@ -98,8 +98,8 @@ allprojects {
         } else {
             mavenCentral()
         }
-        // Optional: At UCB, contains non-publically available things like
-        // the Oracle JDBC driver artifact.
+        // Optional: At UCB, contains non-publically available libraries.
+        // (Probably no longer necessary.)
         if (project.hasProperty("calnetLibs_proxy_url")) {
             maven {
                 url project.property("calnetLibs_proxy_url")
@@ -111,7 +111,8 @@ allprojects {
                 }
             }
         }
-        // Optional for calnet-oss libraries like bidms-connectors.
+        // Optional: For external calnet-oss libraries
+        // (Probably no longer necessary.)
         if (project.hasProperty("calnetOssLibs_proxy_url")) {
             maven {
                 url project.property("calnetOssLibs_proxy_url")
@@ -124,8 +125,8 @@ allprojects {
             }
         }
         // temporary for spring boot release candidates
-        maven { url 'https://repo.spring.io/milestone' }
-        maven { url 'https://repo.spring.io/snapshot' }
+        //maven { url 'https://repo.spring.io/milestone' }
+        //maven { url 'https://repo.spring.io/snapshot' }
     }
 }
 

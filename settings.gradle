@@ -74,6 +74,8 @@ include bidmsBomDep, // convention is BOMs end with '-bom'
     bidmsMessagingListenerDep,
     bidmsProvisionCommonDep,
     bidmsTestConfDep,
+    bidmsXacmlDep,
+    bidmsConnectorsDep,
     // Apps
     bidmsHelloWorldDep,
     bidmsSorGatewayServiceDep,

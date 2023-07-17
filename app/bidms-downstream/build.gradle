@@ -62,8 +62,7 @@ dependencies {
 
     implementation "commons-codec:commons-codec"
 
-    implementation group: 'edu.berkeley.calnet.groovy.libs', name: 'bidms-connectors', version: versions.bidmsConnectors
-
+    implementation pdep(rootProject.bidmsConnectorsDep)
     implementation pdep(rootProject.bidmsAppCommonDep)
     implementation pdep(rootProject.bidmsAppCommonConfDep)
     implementation pdep(rootProject.bidmsRestServiceCommonDep)

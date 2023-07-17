@@ -1,0 +1,70 @@
+plugins {
+    id 'groovy'
+    id 'java-library'
+}
+
+version versions.ucbBidmsXacml
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter')
+
+    implementation 'org.codehaus.groovy:groovy'
+
+    // Excluding transitive dependencies for the att-xacml libraries because
+    // they are depending on other libraries that are not needed for what we
+    // are doing.
+    api(group: 'com.att.research.xacml', name: 'att-xacml', version: versions.attXacml) {
+        transitive = false
+    }
+    api(group: 'com.att.research.xacml', name: 'xacml-pdp', version: versions.attXacml) {
+        transitive = false
+    }
+    api(group: 'com.att.research.xacml', name: 'xacml', version: versions.attXacml) {
+        transitive = false
+    }
+
+    // for BidmsXacmlDataTypePerson
+    implementation pdep(rootProject.bidmsRegistryModelDep)
+    implementation pdep(rootProject.bidmsCommonOrmDep)
+    testImplementation 'com.h2database:h2'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.spockframework:spock-spring'
+    testImplementation 'org.codehaus.groovy:groovy-json'
+    testImplementation pdep(rootProject.bidmsCommonJsonDep)
+    testImplementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+testing {
+    suites {
+        integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project
+            }
+        }
+    }
+}
+check.dependsOn integrationTest
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+integrationTest {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
