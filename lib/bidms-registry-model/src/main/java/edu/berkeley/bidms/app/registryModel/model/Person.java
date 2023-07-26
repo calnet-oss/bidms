@@ -181,8 +181,8 @@ public class Person implements ValidateOnFlush {
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id")
-    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.SORTokenCollectionType")
+    //@OrderBy("id")
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.SORTokenCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<SORToken> sorTokens = new RebuildableTreeSet<>();
 
