@@ -179,6 +179,13 @@ public class Person implements ValidateOnFlush {
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonRoleArchive> archivedRoles = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.person.SORTokenCollectionType")
+    @JsonDeserialize(as = RebuildableTreeSet.class)
+    private RebuildableSortedSet<SORToken> sorTokens = new RebuildableTreeSet<>();
+
     public Person addToAddresses(Address obj) {
         obj.setPerson(this);
         addresses.add(obj);
@@ -323,6 +330,18 @@ public class Person implements ValidateOnFlush {
         return this;
     }
 
+    public Person addToSORTokens(SORToken obj) {
+        obj.setPerson(this);
+        sorTokens.add(obj);
+        return this;
+    }
+
+    public Person removeFromSORTokens(SORToken obj) {
+        obj.setPerson(null);
+        sorTokens.remove(obj);
+        return this;
+    }
+
     public boolean safeAddToAddresses(Address obj) {
         obj.setPerson(this);
         return safeAddTo(getAddresses(), obj);
@@ -451,6 +470,16 @@ public class Person implements ValidateOnFlush {
     public boolean safeRemoveFromArchivedRoles(PersonRoleArchive obj) {
         obj.setPerson(null);
         return safeRemoveFrom(getArchivedRoles(), obj);
+    }
+
+    public boolean safeAddToSORTokens(SORToken obj) {
+        obj.setPerson(this);
+        return safeAddTo(getSorTokens(), obj);
+    }
+
+    public boolean safeRemoveFromSORTokens(SORToken obj) {
+        obj.setPerson(null);
+        return safeRemoveFrom(getSorTokens(), obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -635,5 +664,13 @@ public class Person implements ValidateOnFlush {
 
     public void setArchivedRoles(RebuildableSortedSet<PersonRoleArchive> archivedRoles) {
         this.archivedRoles = archivedRoles;
+    }
+
+    public RebuildableSortedSet<SORToken> getSorTokens() {
+        return sorTokens;
+    }
+
+    public void setSorTokens(RebuildableSortedSet<SORToken> sorTokens) {
+        this.sorTokens = sorTokens;
     }
 }
