@@ -53,6 +53,8 @@ import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsSyncKeyReposito
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectChecksumRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository;
+import edu.berkeley.bidms.app.registryModel.repo.SORTokenRepository;
+import edu.berkeley.bidms.app.registryModel.repo.SORTokenTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TrackStatusRepository;
@@ -182,6 +184,12 @@ public class RegistryRepositoryService {
 
     @Autowired
     private PersonSearchViewRepository personSearchViewRepository;
+
+    @Autowired
+    private SORTokenRepository sorTokenRepository;
+
+    @Autowired
+    private SORTokenTypeRepository sorTokenTypeRepository;
 
     public EntityManager getEntityManager() {
         return entityManager;
@@ -477,5 +485,21 @@ public class RegistryRepositoryService {
 
     public void setPersonSearchViewRepository(PersonSearchViewRepository personSearchViewRepository) {
         this.personSearchViewRepository = personSearchViewRepository;
+    }
+
+    public SORTokenRepository getSorTokenRepository() {
+        return sorTokenRepository;
+    }
+
+    public void setSorTokenRepository(SORTokenRepository sorTokenRepository) {
+        this.sorTokenRepository = sorTokenRepository;
+    }
+
+    public SORTokenTypeRepository getSorTokenTypeRepository() {
+        return sorTokenTypeRepository;
+    }
+
+    public void setSorTokenTypeRepository(SORTokenTypeRepository sorTokenTypeRepository) {
+        this.sorTokenTypeRepository = sorTokenTypeRepository;
     }
 }
