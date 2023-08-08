@@ -32,8 +32,8 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .antMatchers("/bidms-downstream/changePassword/**").hasAuthority("bidmsDownstreamChangePassword")
-                .antMatchers("/bidms-downstream/**").hasAuthority("bidmsDownstream")
+                .requestMatchers("/bidms-downstream/changePassword/**").hasAuthority("bidmsDownstreamChangePassword")
+                .requestMatchers("/bidms-downstream/**").hasAuthority("bidmsDownstream")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -41,8 +41,8 @@ public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurit
 
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
-                http.requestMatchers((rm) -> {
-                    rm.antMatchers("/bidms-downstream/**");
+                http.securityMatchers((sm) -> {
+                    sm.requestMatchers("/bidms-downstream/**");
                 }).authorizeRequests()
         );
     }

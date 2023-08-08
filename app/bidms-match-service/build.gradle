@@ -32,7 +32,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compileOnly 'javax.servlet:javax.servlet-api'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -40,16 +40,17 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
     // Groovy
-    implementation 'org.codehaus.groovy:groovy'
-    implementation 'org.codehaus.groovy:groovy-sql'
+    implementation 'org.apache.groovy:groovy'
+    implementation 'org.apache.groovy:groovy-sql'
 
     implementation "org.postgresql:postgresql"
 
     // JMS client
     implementation "org.springframework:spring-jms"
-    runtimeOnly "javax.jms:javax.jms-api"
-    implementation "org.apache.activemq:activemq-client"
+    //implementation "javax.jms:javax.jms-api"
+    implementation "org.apache.activemq:activemq-client-jakarta"
     implementation "org.apache.activemq:activemq-pool"
+    //implementation "org.apache.geronimo.specs:geronimo-jms_1.1_spec"
 
     implementation pdep(rootProject.bidmsAppCommonDep)
     implementation pdep(rootProject.bidmsAppCommonConfDep)
@@ -69,7 +70,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation 'org.apache.groovy:groovy-dateutil'
     testImplementation pdep(rootProject.bidmsTestConfDep)
 }
 
@@ -82,22 +83,23 @@ testing {
     suites {
         integrationTest(JvmTestSuite) {
             dependencies {
-                implementation project
+                implementation project()
             }
         }
     }
 }
-check.dependsOn integrationTest
+tasks.named('check') { 
+    dependsOn(testing.suites.integrationTest)
+}
 
-test {
+tasks.named('test') {
   useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"
   }
 }
 
-integrationTest {
-  useJUnitPlatform()
+tasks.named('integrationTest') {
   testLogging {
     events "passed", "skipped", "failed"
   }

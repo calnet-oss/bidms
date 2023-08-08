@@ -28,8 +28,10 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.event.LdapRenameEventCallback
 import edu.berkeley.bidms.connector.ldap.event.message.LdapRenameEventMessage
+import groovy.transform.CompileStatic
 
-class LdapRenameEventLoggingCallback extends LdapEventLoggingCallback implements LdapRenameEventCallback {
+@CompileStatic
+class LdapRenameEventLoggingCallback extends LdapEventLoggingCallback<LdapRenameEventMessage> implements LdapRenameEventCallback {
 
     LdapRenameEventLoggingCallback(String appName) {
         super(appName)
@@ -38,9 +40,9 @@ class LdapRenameEventLoggingCallback extends LdapEventLoggingCallback implements
     @Override
     void receive(LdapRenameEventMessage msg) {
         if (msg.success) {
-            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [oldDn: msg.oldDn, newDn: msg.newDn])
+            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [oldDn: msg.oldDn, newDn: msg.newDn] as Map<String, Object>)
         } else {
-            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [oldDn: msg.oldDn, newDn: msg.newDn, exception: msg.exception])
+            logAuditEvent(msg.eventId, msg.objectDef, msg.pkey, [oldDn: msg.oldDn, newDn: msg.newDn, exception: msg.exception] as Map<String, Object>)
         }
     }
 

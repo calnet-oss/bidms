@@ -30,7 +30,7 @@ import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstrea
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsProvisioningProperties;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class JmsProperties {
 

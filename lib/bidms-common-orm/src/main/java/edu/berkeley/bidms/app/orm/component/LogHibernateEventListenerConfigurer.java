@@ -26,6 +26,8 @@
  */
 package edu.berkeley.bidms.app.orm.component;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
@@ -33,6 +35,7 @@ import org.hibernate.event.spi.AutoFlushEvent;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEvent;
 import org.hibernate.event.spi.ClearEventListener;
+import org.hibernate.event.spi.DeleteContext;
 import org.hibernate.event.spi.DeleteEvent;
 import org.hibernate.event.spi.DeleteEventListener;
 import org.hibernate.event.spi.DirtyCheckEvent;
@@ -50,8 +53,10 @@ import org.hibernate.event.spi.LoadEvent;
 import org.hibernate.event.spi.LoadEventListener;
 import org.hibernate.event.spi.LockEvent;
 import org.hibernate.event.spi.LockEventListener;
+import org.hibernate.event.spi.MergeContext;
 import org.hibernate.event.spi.MergeEvent;
 import org.hibernate.event.spi.MergeEventListener;
+import org.hibernate.event.spi.PersistContext;
 import org.hibernate.event.spi.PersistEvent;
 import org.hibernate.event.spi.PersistEventListener;
 import org.hibernate.event.spi.PostCollectionRecreateEvent;
@@ -82,6 +87,7 @@ import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.PreUpdateEventListener;
+import org.hibernate.event.spi.RefreshContext;
 import org.hibernate.event.spi.RefreshEvent;
 import org.hibernate.event.spi.RefreshEventListener;
 import org.hibernate.event.spi.ReplicateEvent;
@@ -94,11 +100,8 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -194,7 +197,7 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException {
+        public void onDelete(DeleteEvent event, DeleteContext transientEntities) throws HibernateException {
             log.debug("Event: " + event.getClass().getName());
         }
 
@@ -239,7 +242,7 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onMerge(MergeEvent event, Map copiedAlready) throws HibernateException {
+        public void onMerge(MergeEvent event, MergeContext copiedAlready) throws HibernateException {
             log.debug("Event: " + event.getClass().getName() + " (copiedAlready) on " + event.getOriginal() + "/" + event.getResult());
         }
 
@@ -249,12 +252,12 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onPersist(PersistEvent event, Map createdAlready) throws HibernateException {
+        public void onPersist(PersistEvent event, PersistContext createdAlready) throws HibernateException {
             log.debug("Event: " + event.getClass().getName() + " on " + event.getObject().getClass().getName());
         }
 
         @Override
-        public boolean requiresPostCommitHanding(EntityPersister persister) {
+        public boolean requiresPostCommitHandling(EntityPersister persister) {
             return false;
         }
 
@@ -337,7 +340,7 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onRefresh(RefreshEvent event, Map refreshedAlready) throws HibernateException {
+        public void onRefresh(RefreshEvent event, RefreshContext refreshedAlready) throws HibernateException {
             log.debug("Event: " + event.getClass().getName());
         }
 

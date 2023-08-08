@@ -27,9 +27,10 @@
 package edu.berkeley.bidms.orm.hibernate.collection;
 
 import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
-import org.hibernate.collection.internal.PersistentSortedSet;
+import org.hibernate.collection.spi.PersistentSortedSet;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
+import java.util.Comparator;
 import java.util.SortedSet;
 
 /**
@@ -45,8 +46,8 @@ public class PersistentRebuildableSortedSet extends PersistentSortedSet implemen
         super();
     }
 
-    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session) {
-        super(session);
+    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, Comparator comparator) {
+        super(session, comparator);
     }
 
     public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, SortedSet set) {

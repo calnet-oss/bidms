@@ -1539,7 +1539,7 @@ class LdapConnectorSpec extends Specification {
         def exception = new LdapConnectorException(new AuthenticationException(new javax.naming.AuthenticationException("test \u0000message")))
 
         then:
-        exception.message == "org.springframework.ldap.AuthenticationException: test message; nested exception is javax.naming.AuthenticationException: test message"
+        exception.message == "org.springframework.ldap.AuthenticationException: test message"
     }
 
     LdapTemplate getLdapTemplate() {

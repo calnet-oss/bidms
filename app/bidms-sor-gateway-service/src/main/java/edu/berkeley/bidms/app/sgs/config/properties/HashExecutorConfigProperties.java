@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.sgs.config.properties;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class HashExecutorConfigProperties {
 

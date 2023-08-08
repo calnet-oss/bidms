@@ -32,8 +32,8 @@ import edu.berkeley.bidms.common.validation.Validator;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.converter.Converter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 

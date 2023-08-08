@@ -43,9 +43,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
-import javax.jms.MapMessage
-import javax.jms.Message
-import javax.persistence.EntityManager
+import jakarta.jms.MapMessage
+import jakarta.jms.Message
+import jakarta.persistence.EntityManager
 
 @Slf4j
 @Service

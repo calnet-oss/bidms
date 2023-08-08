@@ -30,20 +30,20 @@ import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
 import edu.berkeley.bidms.orm.collection.RebuildableTreeSet;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 import edu.berkeley.bidms.springsecurity.api.user.CredentialsAwareUser;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CollectionType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.SequenceGenerator;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -107,8 +107,8 @@ public class RegistryUser implements Serializable, Comparable<RegistryUser>, Cre
             joinColumns = @JoinColumn(name = "registryUserId"),
             inverseJoinColumns = @JoinColumn(name = "registryRoleId")
     )
-    @OrderBy("authority")
-    @CollectionType(type = "edu.berkeley.bidms.registryModel.hibernate.usertype.auth.RegistryRoleCollectionType")
+    //@OrderBy("authority")
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.auth.RegistryRoleCollectionType.class)
     private RebuildableSortedSet<RegistryRole> roles = new RebuildableTreeSet<>();
 
     @Override

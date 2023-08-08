@@ -28,6 +28,7 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.app.registryModel.model.type.DownstreamSystemEnum
 import edu.berkeley.bidms.connector.ldap.UidObjectDefinition
+import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import org.springframework.ldap.query.LdapQuery
 import org.springframework.ldap.query.SearchScope
@@ -35,6 +36,7 @@ import org.springframework.ldap.query.SearchScope
 import static org.springframework.ldap.query.LdapQueryBuilder.query
 
 @InheritConstructors
+@CompileStatic
 class MainEntryUidObjectDefinition extends UidObjectDefinition implements SystemUidObjectDefinition {
     private static final String SYSTEM_TYPE = DownstreamSystemEnum.LDAP.name.toLowerCase()
 

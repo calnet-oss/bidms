@@ -49,7 +49,7 @@ import org.springframework.ldap.pool2.factory.PoolConfig
 import org.springframework.ldap.pool2.factory.PooledContextSource
 import org.springframework.ldap.pool2.validation.DefaultDirContextValidator
 
-import javax.jms.ConnectionFactory
+import jakarta.jms.ConnectionFactory
 
 @Configuration
 class DownstreamGroovyConfiguration {

@@ -32,7 +32,7 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import groovy.util.logging.Slf4j
 
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 @Slf4j
 class SorKeyDataCommand {

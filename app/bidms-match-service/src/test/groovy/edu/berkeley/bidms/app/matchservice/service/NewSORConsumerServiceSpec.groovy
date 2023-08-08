@@ -46,8 +46,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
 
-import javax.jms.MapMessage
-import javax.persistence.EntityManager
+import jakarta.jms.MapMessage
+import jakarta.persistence.EntityManager
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest

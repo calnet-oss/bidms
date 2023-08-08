@@ -5,7 +5,7 @@ plugins {
 version versions.bidmsLogging
 
 dependencies {
-    compileOnly 'javax.servlet:javax.servlet-api'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
     api 'org.springframework.boot:spring-boot-starter-logging'
 
     api pdep(rootProject.bidmsCommonJsonDep)

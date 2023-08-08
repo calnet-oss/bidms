@@ -28,11 +28,14 @@ package edu.berkeley.bidms.downstream.ldap
 
 import edu.berkeley.bidms.connector.ldap.LdapObjectDefinition
 import edu.berkeley.bidms.connector.ldap.event.LdapEventCallback
+import edu.berkeley.bidms.connector.ldap.event.message.LdapEventMessage
 import edu.berkeley.bidms.logging.AuditFailEvent
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
+import groovy.transform.CompileStatic
 
-abstract class LdapEventLoggingCallback implements LdapEventCallback {
+@CompileStatic
+abstract class LdapEventLoggingCallback<T extends LdapEventMessage> implements LdapEventCallback<T> {
     private final String appName
 
     LdapEventLoggingCallback(String appName) {

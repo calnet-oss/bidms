@@ -67,7 +67,7 @@ import edu.berkeley.bidms.app.registryModel.repo.view.PersonSearchViewRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * A convenience service to retrieve repositories for JPA entity types.

@@ -26,20 +26,26 @@
  */
 package edu.berkeley.bidms.restclient.util;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -73,7 +79,7 @@ public class RestClientUtil {
             URL trustStoreUrl,
             char[] trustStorePassword
     ) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+        SSLContextBuilder sslContextBuilder = SSLContexts.custom();
         if (trustStoreUrl != null) {
             sslContextBuilder = sslContextBuilder.loadTrustMaterial(
                     trustStoreUrl,
@@ -81,11 +87,21 @@ public class RestClientUtil {
             );
         }
         SSLContext sslContext = sslContextBuilder.build();
-        SSLConnectionSocketFactory socketFactory =
-                new SSLConnectionSocketFactory(sslContext);
-        CloseableHttpClient httpClient = HttpClients.custom()
+        SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
+                .setSslContext(sslContext)
+                .build();
+        final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
                 .setSSLSocketFactory(socketFactory)
+                .build();
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(cm)
                 .setDefaultCredentialsProvider(credentialsProvider)
+                .setDefaultRequestConfig(
+                        RequestConfig.custom()
+                                .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(20)))
+                                .setResponseTimeout(Timeout.of(Duration.ofSeconds(60)))
+                                .build()
+                )
                 .build();
         return new HttpComponentsClientHttpRequestFactory(httpClient) {
             @Override
@@ -102,10 +118,10 @@ public class RestClientUtil {
     }
 
     private static CredentialsProvider getHttpCredentialsProvider(HttpHost targetHost, String username, String password) {
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(
                 new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials(username, password));
+                new UsernamePasswordCredentials(username, password.toCharArray()));
         return credsProvider;
     }
 
@@ -121,12 +137,11 @@ public class RestClientUtil {
                 .requestFactory(() -> {
                     try {
                         return getSslClientHttpRequestFactory(credentialsProvider, authCache);
-                    } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+                    } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException |
+                             KeyManagementException e) {
                         throw new RuntimeException(e);
                     }
                 })
-                .setConnectTimeout(Duration.ofSeconds(20))
-                .setReadTimeout(Duration.ofSeconds(60))
                 .errorHandler(new DefaultResponseErrorHandler() {
                     @Override
                     public void handleError(ClientHttpResponse response) throws IOException {
@@ -136,14 +151,14 @@ public class RestClientUtil {
     }
 
     public static <T extends RestTemplate> T configureSslBasicAuthRestTemplate(RestTemplateBuilder builder, URI baseUrl, String username, String password, T restTemplate) {
-        HttpHost target = new HttpHost(baseUrl.getHost(), baseUrl.getPort(), baseUrl.getScheme());
+        HttpHost target = new HttpHost(baseUrl.getScheme(), baseUrl.getHost(), baseUrl.getPort());
         return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), getBasicAuthCache(target))
                 .basicAuthentication(username, password)
                 .configure(restTemplate);
     }
 
     public static <T extends RestTemplate> T configureSslDigestAuthRestTemplate(RestTemplateBuilder builder, URI baseUrl, String username, String password, T restTemplate) {
-        HttpHost target = new HttpHost(baseUrl.getHost(), baseUrl.getPort(), baseUrl.getScheme());
+        HttpHost target = new HttpHost(baseUrl.getScheme(), baseUrl.getHost(), baseUrl.getPort());
         return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), null)
                 .configure(restTemplate);
     }

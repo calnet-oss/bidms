@@ -28,7 +28,7 @@ package edu.berkeley.bidms.provision.command
 
 import groovy.transform.ToString
 
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 @ToString
 class NewUidCommand {

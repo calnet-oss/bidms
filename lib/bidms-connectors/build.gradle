@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-    implementation "org.codehaus.groovy:groovy"
+    implementation "org.apache.groovy:groovy"
 
     implementation "org.springframework.ldap:spring-ldap-core"
 

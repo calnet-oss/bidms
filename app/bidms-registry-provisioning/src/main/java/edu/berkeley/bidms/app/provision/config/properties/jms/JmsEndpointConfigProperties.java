@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.provision.config.properties.jms;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class JmsEndpointConfigProperties {
 

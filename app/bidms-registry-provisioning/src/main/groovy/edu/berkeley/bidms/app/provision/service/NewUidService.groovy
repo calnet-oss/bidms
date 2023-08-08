@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 import javax.sql.DataSource
 
 @Slf4j

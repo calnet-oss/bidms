@@ -32,15 +32,15 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compileOnly 'javax.servlet:javax.servlet-api'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
     // Groovy
-    implementation 'org.codehaus.groovy:groovy'
-    implementation 'org.codehaus.groovy:groovy-sql'
+    implementation 'org.apache.groovy:groovy'
+    implementation 'org.apache.groovy:groovy-sql'
 
     implementation "org.postgresql:postgresql"
 
@@ -56,7 +56,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.spockframework:spock-spring'
-    testImplementation 'org.codehaus.groovy:groovy-dateutil'
+    testImplementation 'org.apache.groovy:groovy-dateutil'
     testImplementation pdep(rootProject.bidmsTestConfDep)
 }
 
@@ -69,22 +69,23 @@ testing {
     suites {
         integrationTest(JvmTestSuite) {
             dependencies {
-                implementation project
+                implementation project()
             }
         }
     }
 }
-check.dependsOn integrationTest
+tasks.named('check') { 
+    dependsOn(testing.suites.integrationTest)
+}
 
-test {
+tasks.named('test') {
   useJUnitPlatform()
   testLogging {
     events "passed", "skipped", "failed"
   }
 }
 
-integrationTest {
-  useJUnitPlatform()
+tasks.named('integrationTest') {
   testLogging {
     events "passed", "skipped", "failed"
   }

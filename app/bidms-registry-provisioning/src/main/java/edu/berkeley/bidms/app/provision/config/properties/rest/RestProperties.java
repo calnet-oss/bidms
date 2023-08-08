@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.provision.config.properties.rest;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class RestProperties {
     @NotNull

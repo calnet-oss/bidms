@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.sgs.model.response;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Contains information regarding the result of a query.

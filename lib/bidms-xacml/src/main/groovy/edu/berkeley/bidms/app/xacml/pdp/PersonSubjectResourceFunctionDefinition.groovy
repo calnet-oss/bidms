@@ -43,7 +43,7 @@ import edu.berkeley.bidms.xacml.request.PersonSubjectResourceRequest
 import groovy.transform.CompileStatic
 import org.springframework.stereotype.Component
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @Component
 @CompileStatic

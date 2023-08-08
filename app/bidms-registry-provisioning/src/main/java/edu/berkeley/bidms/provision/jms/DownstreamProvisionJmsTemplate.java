@@ -28,7 +28,7 @@ package edu.berkeley.bidms.provision.jms;
 
 import org.springframework.jms.core.JmsTemplate;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 public class DownstreamProvisionJmsTemplate extends JmsTemplate {
     public DownstreamProvisionJmsTemplate(ConnectionFactory connectionFactory) {

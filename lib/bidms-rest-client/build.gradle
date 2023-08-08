@@ -37,7 +37,7 @@ dependencies {
     }
 
     // Apache HTTP client to be used for building RestTemplates
-    api "org.apache.httpcomponents:httpclient"
+    api "org.apache.httpcomponents.client5:httpclient5"
 
     api pdep(rootProject.bidmsAppCommonConfDep)
 }
@@ -59,8 +59,8 @@ publishing {
             artifactId project.name
             version project.version
             groupId bidmsGroup
-            artifact sourceJar { classifier "sources" }
-            artifact javadocJar { classifier "javadoc" }
+            artifact sourceJar
+            artifact javadocJar
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')

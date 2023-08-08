@@ -31,23 +31,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.berkeley.bidms.app.registryModel.model.compositeKey.PersonAppointmentCompositeKey;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -62,7 +62,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @IdClass(PersonAppointmentCompositeKey.class)
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "apptTypeId", "apptIdentifier"}))
+@Table(/*uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "apptTypeId", "apptIdentifier"})*/)
 @Inheritance(strategy = InheritanceType.JOINED)
 public class PersonAppointment implements Comparable<PersonAppointment> {
 
@@ -83,12 +83,13 @@ public class PersonAppointment implements Comparable<PersonAppointment> {
     @Size(max = 64)
     @NotNull
     @Column(length = 64, nullable = false)
+    @Id
     private String uid;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uid", nullable = false, insertable = false, updatable = false)
-    @Id
+    //@Id
     private Person person;
 
     @NotNull

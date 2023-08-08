@@ -36,6 +36,6 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 /**
  * Repository for {@link PersonAppointment} entities.
  */
-public interface PersonAppointmentRepository<T extends PersonAppointment> extends ExtendedRepository<T, PersonAppointmentCompositeKey> {
+public interface PersonAppointmentRepository<T extends PersonAppointment> extends ExtendedRepository<T, Long> {
     T findByPersonAndApptTypeAndApptIdentifier(Person person, AppointmentType apptType, String apptIdentifier);
 }

@@ -26,6 +26,9 @@
  */
 package edu.berkeley.bidms.downstream.ldap
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 interface SystemUidObjectDefinition {
     String getSystemType()
 

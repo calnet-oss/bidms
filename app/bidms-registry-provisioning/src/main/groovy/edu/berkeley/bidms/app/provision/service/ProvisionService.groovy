@@ -50,8 +50,8 @@ import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
-import javax.persistence.EntityManager
-import javax.persistence.LockModeType
+import jakarta.persistence.EntityManager
+import jakarta.persistence.LockModeType
 
 @CompileStatic
 @Slf4j

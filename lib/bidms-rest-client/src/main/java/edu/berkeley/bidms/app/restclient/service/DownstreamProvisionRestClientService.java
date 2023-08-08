@@ -99,10 +99,11 @@ public class DownstreamProvisionRestClientService {
             log.warn("Rest response body: " + response.getBody());
             errorMessage = response.getBody().toString();
         } else {
-            errorMessage = response.getStatusCode().name();
-            log.warn("Rest response code: " + response.getStatusCode().name());
+            HttpStatus httpStatus = HttpStatus.valueOf(response.getStatusCode().value());
+            errorMessage = httpStatus.name();
+            log.warn("Rest response code: " + httpStatus.name());
         }
 
-        throw new BidmsRestClientResponseException(errorMessage, response.getStatusCode(), json);
+        throw new BidmsRestClientResponseException(errorMessage, HttpStatus.valueOf(response.getStatusCode().value()), json);
     }
 }
