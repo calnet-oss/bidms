@@ -31,6 +31,7 @@ import edu.berkeley.bidms.app.registryModel.model.SORToken;
 import edu.berkeley.bidms.app.registryModel.model.SORTokenType;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,4 +41,6 @@ public interface SORTokenRepository extends ExtendedRepository<SORToken, Long> {
     List<SORToken> findAllByPersonAndTokenType(Person person, SORTokenType tokenType);
 
     SORToken findByPersonAndTokenTypeAndToken(Person person, SORTokenType tokenType, String token);
+
+    List<SORToken> findAllByExpirationTimeLessThanEqual(Date date);
 }
