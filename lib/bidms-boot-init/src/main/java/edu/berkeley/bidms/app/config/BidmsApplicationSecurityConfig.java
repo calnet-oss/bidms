@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
@@ -61,7 +62,7 @@ public class BidmsApplicationSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
-        http.authorizeRequests().requestMatchers("/hello/**").permitAll();
+        http.authorizeRequests().requestMatchers(AntPathRequestMatcher.antMatcher("/hello/**")).permitAll();
 
         if (sgsSecurityConfigurer != null) {
             log.info("SGS security rules being applied from " + sgsSecurityConfigurer.getClass().getName());

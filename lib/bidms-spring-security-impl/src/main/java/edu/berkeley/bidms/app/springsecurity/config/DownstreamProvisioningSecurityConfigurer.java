@@ -28,12 +28,13 @@ package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .requestMatchers("/bidms-downstream/changePassword/**").hasAuthority("bidmsDownstreamChangePassword")
-                .requestMatchers("/bidms-downstream/**").hasAuthority("bidmsDownstream")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/changePassword/**")).hasAuthority("bidmsDownstreamChangePassword")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**")).hasAuthority("bidmsDownstream")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -42,7 +43,7 @@ public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurit
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
                 http.securityMatchers((sm) -> {
-                    sm.requestMatchers("/bidms-downstream/**");
+                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**"));
                 }).authorizeRequests()
         );
     }

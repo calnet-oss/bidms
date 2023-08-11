@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
@@ -41,8 +42,8 @@ public class BidmsConfigServerSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers("/bidms/**").fullyAuthenticated()
-                .requestMatchers("/sgs/**").fullyAuthenticated()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms/**")).fullyAuthenticated()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).fullyAuthenticated()
                 .anyRequest().denyAll()
                 .and().httpBasic();
 

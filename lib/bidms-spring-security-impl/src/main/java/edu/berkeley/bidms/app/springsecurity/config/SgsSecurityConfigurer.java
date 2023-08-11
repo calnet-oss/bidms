@@ -28,11 +28,12 @@ package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .requestMatchers("/sgs/**").hasAuthority("sorGateway")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).hasAuthority("sorGateway")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -41,7 +42,7 @@ public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
                 http.securityMatchers((sm) -> {
-                    sm.requestMatchers("/sgs/**");
+                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**"));
                 }).authorizeRequests()
         );
     }

@@ -28,11 +28,12 @@ package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface MatchServiceSecurityConfigurer extends ServiceSecurityConfigurer {
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
         ar
-                .requestMatchers("/match-service/**").hasAuthority("registryMatchService")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/match-service/**")).hasAuthority("registryMatchService")
                 .and()
                 .httpBasic().realmName("Registry Realm");
         return ar;
@@ -41,7 +42,7 @@ public interface MatchServiceSecurityConfigurer extends ServiceSecurityConfigure
     static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
         return defaultAuthorizeRequests(
                 http.securityMatchers((sm) -> {
-                    sm.requestMatchers("/match-service/**");
+                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/match-service/**"));
                 }).authorizeRequests()
         );
     }
