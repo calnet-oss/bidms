@@ -50,7 +50,7 @@ dependencies {
     implementation "org.springframework:spring-jms"
     //implementation "javax.jms:javax.jms-api"
     implementation "org.apache.activemq:activemq-client-jakarta"
-    implementation "org.apache.activemq:activemq-pool"
+    implementation('org.apache.activemq:activemq-pool') { exclude group: 'org.apache.activemq', module: 'activemq-client' }
     implementation "org.apache.commons:commons-collections4"
     //implementation "org.apache.geronimo.specs:geronimo-jms_1.1_spec"
 
@@ -72,7 +72,7 @@ dependencies {
     implementation pdep(rootProject.bidmsProvisionCommonDep)
 
     testImplementation 'com.h2database:h2'
-    testImplementation 'org.apache.activemq:activemq-broker'
+    testImplementation('org.apache.activemq:activemq-broker') { exclude group: 'org.apache.activemq', module: 'activemq-client' }
     testImplementation pdep(rootProject.bidmsSpringSecurityImplDep)
 
     testImplementation 'org.springframework.boot:spring-boot-starter-tomcat'
