@@ -295,6 +295,7 @@ class ProvisionLdapService<PC extends ProvisioningContextProperties> implements 
         boolean wasModified = false
         Sql sql = new Sql(dataSource)
         try {
+            final def log = log
             sql.withTransaction {
                 ProvisionLdapServiceCallbackContext context = createProvisionLdapServiceCallbackContext(downstreamSystemId)
                 if (!isDelete) {
