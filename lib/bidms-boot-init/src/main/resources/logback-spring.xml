@@ -61,7 +61,7 @@
     <logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
 
     <!-- silence 'method not supported' warnings that come about due to URL scanners -->
-    <logger name="org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver" level="ERROR"/
+    <logger name="org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver" level="ERROR"/>
 
     <logger name="Audit" level="INFO" additivity="false">
         <appender-ref ref="AUDITFILE" />
