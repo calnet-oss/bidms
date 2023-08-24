@@ -37,7 +37,6 @@ dependencies {
     implementation "org.apache.activemq:activemq-client-jakarta"
     //implementation('org.apache.activemq:activemq-pool') { exclude group: 'org.apache.activemq', module: 'activemq-client' }
     implementation "org.messaginghub:pooled-jms"
-    //implementation "org.apache.geronimo.specs:geronimo-jms_1.1_spec"
 
     implementation pdep(rootProject.bidmsAppCommonConfDep)
     implementation pdep(rootProject.bidmsMessagingCommonDep)

@@ -53,7 +53,6 @@ dependencies {
     //implementation('org.apache.activemq:activemq-pool') { exclude group: 'org.apache.activemq', module: 'activemq-client' }
     implementation "org.messaginghub:pooled-jms"
     implementation "org.apache.commons:commons-collections4"
-    //implementation "org.apache.geronimo.specs:geronimo-jms_1.1_spec"
 
     // Apache HTTP client to be used for RestTemplates
     implementation "org.apache.httpcomponents.client5:httpclient5"

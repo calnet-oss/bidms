@@ -37,7 +37,6 @@ ext {
         [group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections],
         [group: 'org.postgresql', name: 'postgresql', version: versions.postgresql],
         [group: 'org.json', name: 'json', version: versions.orgJson],
-        [group: 'io.github.bkoehm', name: 'apacheds-embedded', version: versions.apacheDsEmbedded],
-        [group: 'org.apache.geronimo.specs', name: 'geronimo-jms_1.1_spec', version: versions.geronimoJmsSpec]
+        [group: 'io.github.bkoehm', name: 'apacheds-embedded', version: versions.apacheDsEmbedded]
     ]
 }
