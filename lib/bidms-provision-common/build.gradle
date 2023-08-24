@@ -31,5 +31,3 @@ plugins {
 dependencies {
     implementation pdep(rootProject.bidmsRegistryModelDep)
 }
-
-version versions.bidmsProvisionCommon

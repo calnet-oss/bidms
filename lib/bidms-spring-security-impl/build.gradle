@@ -28,8 +28,6 @@ plugins {
     id 'groovy'
 }
 
-version versions.bidmsSpringSecurityImpl
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation pdep(rootProject.bidmsSpringSecurityApiDep)

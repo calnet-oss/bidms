@@ -28,8 +28,6 @@ plugins {
     id 'java-library'
 }
 
-version versions.bidmsSpringSecurityApi
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 }

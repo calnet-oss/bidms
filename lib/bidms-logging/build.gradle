@@ -2,8 +2,6 @@ plugins {
     id 'java-library'
 }
 
-version versions.bidmsLogging
-
 dependencies {
     implementation 'jakarta.servlet:jakarta.servlet-api'
     api 'org.springframework.boot:spring-boot-starter-logging'
