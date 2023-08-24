@@ -26,18 +26,20 @@
  */
 plugins {
     id 'groovy'
+    id 'java-library'
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    api 'org.springframework.boot:spring-boot-starter'
 
     // JMS client
-    implementation "org.springframework:spring-jms"
-    implementation "org.apache.activemq:activemq-client-jakarta"
-    implementation "org.messaginghub:pooled-jms"
+    api "org.springframework:spring-jms"
+    api "org.apache.activemq:activemq-client-jakarta"
+    api "org.messaginghub:pooled-jms"
+    api "org.apache.commons:commons-collections4"
 
-    implementation pdep(rootProject.bidmsAppCommonConfDep)
-    implementation pdep(rootProject.bidmsMessagingCommonDep)
+    api pdep(rootProject.bidmsAppCommonConfDep)
+    api pdep(rootProject.bidmsMessagingCommonDep)
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
