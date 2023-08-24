@@ -34,46 +34,5 @@ version versions.bidmsAppCommonConf
 dependencies {
     api 'org.springframework.boot:spring-boot-starter-jdbc'
     api 'org.springframework.boot:spring-boot-starter-validation'
-    //api 'com.fasterxml.jackson.core:jackson-databind'
     api pdep(bidmsCommonJsonDep)
-}
-
-// to avoid the uneeded dependencyManagement section in the POM
-dependencyManagement {
-    generatedPomCustomization {
-        enabled = false
-    }
-}
-
-// publishing with './gradlew publish'
-publish.dependsOn assemble, sourceJar, javadocJar
-publishToMavenLocal.dependsOn assemble, sourceJar, javadocJar
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            artifactId project.name
-            version project.version
-            groupId bidmsGroup
-            artifact sourceJar
-            artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            url "${project.property('default_deploy_url')}/${calnet_deploy_lib_repo}"
-            credentials {
-                username project.property("default_deploy_user")
-                password project.property("default_deploy_password")
-            }
-        }
-    }
 }
