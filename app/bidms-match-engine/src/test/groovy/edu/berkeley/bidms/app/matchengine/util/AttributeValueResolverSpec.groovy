@@ -15,11 +15,11 @@ class AttributeValueResolverSpec extends Specification {
 
             names         : [[
                                      type  : "official",
-                                     given : "Pamela",
-                                     family: "Anderson"],
+                                     given : "Janet",
+                                     family: "Smith"],
                              [
-                                     given : "Pam",
-                                     family: "Anderson"]
+                                     given : "Jane",
+                                     family: "Smith"]
             ],
             dateOfBirth   : "1983-03-18",
             identifiers   : [[
@@ -57,10 +57,10 @@ class AttributeValueResolverSpec extends Specification {
 
         where:
         path          | attribute    | group        || expected
-        'names'       | 'given'      | null         || 'Pam'
-        'names'       | 'given'      | 'official'   || 'Pamela'
-        'names'       | 'family'     | null         || 'Anderson'
-        'names'       | 'family'     | 'official'   || 'Anderson'
+        'names'       | 'given'      | null         || 'Jane'
+        'names'       | 'given'      | 'official'   || 'Janet'
+        'names'       | 'family'     | null         || 'Smith'
+        'names'       | 'family'     | 'official'   || 'Smith'
         'identifiers' | 'identifier' | 'national'   || '3B902AE12DF55196'
         'identifiers' | 'identifier' | 'enterprise' || 'ABCD1234'
         'identifiers' | 'identifier' | null         || '3B902AE12DF55196'
