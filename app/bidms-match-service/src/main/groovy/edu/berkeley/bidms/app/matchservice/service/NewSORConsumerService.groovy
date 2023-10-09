@@ -34,6 +34,7 @@ import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
 import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 import org.hibernate.ObjectNotFoundException
@@ -114,7 +115,8 @@ class NewSORConsumerService {
                 return null
             }
 
-            return matchPerson(sorObject, getAttributesFromMessage(message))
+            String eventId = AuditUtil.createEventId()
+            return matchPerson(eventId, sorObject, getAttributesFromMessage(message))
         }
         catch (Exception e) {
             String systemOfRecord = msg.getString('systemOfRecord')
@@ -146,9 +148,9 @@ class NewSORConsumerService {
     }
 
     @Transactional(propagation = Propagation.NEVER)
-    Map<String, String> matchPerson(SORObject sorObject, Map<String, Object> sorAttributes, boolean synchronousDownstream = true) {
+    Map<String, String> matchPerson(String eventId, SORObject sorObject, Map<String, Object> sorAttributes, boolean synchronousDownstream = true) {
         // done in a new transaction
-        PersonMatch personMatch = doMatch(sorObject, sorAttributes)
+        PersonMatch personMatch = doMatch(eventId, sorObject, sorAttributes)
         // resumes previous read-only transaction
         String newlyGeneratedUid = doProvisionIfNecessary(personMatch, sorObject, synchronousDownstream)
 
@@ -171,7 +173,7 @@ class NewSORConsumerService {
     }
 
     @Transactional(rollbackFor = Exception, propagation = Propagation.REQUIRES_NEW)
-    PersonMatch doMatch(SORObject sorObject, Map<String, Object> sorAttributes) {
+    PersonMatch doMatch(String eventId, SORObject sorObject, Map<String, Object> sorAttributes) {
         try {
             log.debug("Attempting to match $sorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
             if (log.debugEnabled) {
@@ -186,7 +188,7 @@ class NewSORConsumerService {
                 }
                 log.debug("Attempting to match $displaySorAttributes for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey})")
             }
-            PersonMatch match = matchClientService.match(sorAttributes)
+            PersonMatch match = matchClientService.match(eventId, sorAttributes)
             log.info("Response from MatchService for SORObject(sor=${sorObject.sor.name}, sorObjKey=${sorObject.sorPrimaryKey}): $match")
 
             // If it is a partial match just store the partial and return

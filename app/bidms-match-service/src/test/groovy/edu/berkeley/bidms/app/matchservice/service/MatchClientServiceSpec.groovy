@@ -88,7 +88,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withStatus(HttpStatus.NOT_FOUND))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone'])
+        def result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone'])
 
         then:
         mockServer.verify()
@@ -106,7 +106,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withStatus(HttpStatus.NOT_FOUND))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', matchOnly: true])
+        def result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', matchOnly: true])
 
         then:
         mockServer.verify()
@@ -124,7 +124,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withSuccess(EXACT_MATCH_RESPONSE, MediaType.APPLICATION_JSON))
 
         when:
-        PersonExactMatch result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        PersonExactMatch result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -142,7 +142,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((withStatus(HttpStatus.MULTIPLE_CHOICES)).body(PARTIAL_MATCH_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        PersonPartialMatches result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        PersonPartialMatches result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -161,7 +161,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond((withStatus(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        def result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         mockServer.verify()
@@ -179,7 +179,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(withServerError())
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(RuntimeException)
@@ -195,7 +195,7 @@ class MatchClientServiceSpec extends Specification {
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
-        service.match([systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
+        service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
 
         then:
         thrown(ResourceAccessException)

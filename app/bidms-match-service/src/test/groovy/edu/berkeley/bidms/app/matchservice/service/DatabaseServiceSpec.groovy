@@ -160,6 +160,6 @@ class DatabaseServiceSpec extends Specification {
     }
 
     private static PersonPartialMatch createPersonPartialMatch(String name, Person person) {
-        return new PersonPartialMatch(person, [name])
+        return new PersonPartialMatch(eventId: 'eventId', person: person, ruleNames: [name])
     }
 }

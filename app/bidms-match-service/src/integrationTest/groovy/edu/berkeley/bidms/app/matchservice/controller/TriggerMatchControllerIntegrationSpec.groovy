@@ -101,7 +101,7 @@ class TriggerMatchControllerIntegrationSpec extends Specification {
         )
 
         then:
-        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as SORObject, attrMap, true)
+        serviceCallCount * controller.newSORConsumerService.matchPerson(_ as String, _ as SORObject, attrMap, true)
         response.statusCode == expectedStatus
 
         where:

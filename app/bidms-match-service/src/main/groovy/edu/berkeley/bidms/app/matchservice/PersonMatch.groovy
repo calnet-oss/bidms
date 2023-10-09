@@ -30,6 +30,7 @@ import edu.berkeley.bidms.app.registryModel.model.Person
 import groovy.transform.Canonical
 
 abstract class PersonMatch {
+    String eventId
 }
 
 class PersonNoMatch extends PersonMatch {
@@ -82,6 +83,7 @@ class PersonPartialMatches extends PersonMatch {
 
 @Canonical
 class PersonPartialMatch {
+    String eventId
     Person person
     List<String> ruleNames
 

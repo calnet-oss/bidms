@@ -241,8 +241,8 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
     def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
         given:
         def personPartialMatches = [
-                new PersonPartialMatch(personRepository.get('002'), ['Potential #1']),
-                new PersonPartialMatch(personRepository.get('003'), ['Potential #2'])
+                new PersonPartialMatch(person: personRepository.get('002'), ruleNames: ['Potential #1']),
+                new PersonPartialMatch(person: personRepository.get('003'), ruleNames: ['Potential #2'])
         ]
         def data = [systemOfRecord: "HR", sorPrimaryKey: "HR0001", givenName: 'FirstName', surName: 'LastName', dateOfBirth: '1988-01-01']
 

@@ -33,6 +33,7 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.app.restservice.common.response.BadRequestException
 import edu.berkeley.bidms.common.validation.ValidationException
+import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 import org.springframework.http.MediaType
@@ -64,6 +65,7 @@ class TriggerMatchController {
 
     @PostMapping(value = "/internal/api/trigger-match", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, String> matchPerson(@RequestBody SorKeyDataCommand sorKeyDataCommand) {
+        String eventId = AuditUtil.createEventId()
         sorKeyDataCommand.sorRepository = sorRepository
         sorKeyDataCommand.sorObjectRepository = sorObjectRepository
         try {
@@ -75,7 +77,7 @@ class TriggerMatchController {
         }
 
         log.debug("Sor Key Data attributes. $sorKeyDataCommand.attributes")
-        Map<String, String> result = newSORConsumerService.matchPerson(sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes, sorKeyDataCommand.synchronousDownstream)
+        Map<String, String> result = newSORConsumerService.matchPerson(eventId, sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes, sorKeyDataCommand.synchronousDownstream)
         return result ?: [:]
     }
 }

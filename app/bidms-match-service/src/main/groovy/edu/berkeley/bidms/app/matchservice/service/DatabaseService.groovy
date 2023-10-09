@@ -67,8 +67,6 @@ class DatabaseService {
 
     /**
      * Store a potential match(es), linking a sorObject to the People in the Database
-     * @param sorObject
-     * @param matchingPeople
      */
     void storePartialMatch(SORObject sorObject, List<PersonPartialMatch> matchingPeople) {
         removeExistingPartialMatches(sorObject)
@@ -77,13 +75,14 @@ class DatabaseService {
         }
     }
 
-    void createPartialMatch(SORObject sorObject, PersonPartialMatch personPartialMatch) {
+    private void createPartialMatch(SORObject sorObject, PersonPartialMatch personPartialMatch) {
         PartialMatch partialMatch = partialMatchRepository.findBySorObjectAndPerson(sorObject, personPartialMatch.person)
         if (!partialMatch) {
             partialMatch = new PartialMatch(personPartialMatch.person)
             partialMatch.sorObject = sorObject
         }
         try {
+            partialMatch.metaData.eventId = personPartialMatch.eventId
             partialMatch.metaData.ruleNames = personPartialMatch.ruleNames
             partialMatchRepository.saveAndFlush(partialMatch)
         } catch (e) {

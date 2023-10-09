@@ -69,7 +69,7 @@ class MatchClientService {
      * @return PersonMatch object
      * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK, FOUND or MULTIPLE_CHOICES
      */
-    PersonMatch match(Map<String, Object> sorKeyData) {
+    PersonMatch match(String eventId, Map<String, Object> sorKeyData) {
         Map matchInputData = buildMatchInputData(sorKeyData)
         ResponseEntity<Map> response = matchEngineRestClientService.match(restTemplate, matchInputData)
         // The difference between OK and FOUND (I think) is that OK
@@ -81,13 +81,13 @@ class MatchClientService {
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
                 // matchOnly=true on input will cause person not to go to newUid queue
-                return new PersonNoMatch(matchOnly: matchInputData.matchOnly as Boolean)
+                return new PersonNoMatch(eventId: eventId, matchOnly: matchInputData.matchOnly as Boolean)
             case HttpStatus.OK:
-                return exactMatch(jsonResponse)
+                return exactMatch(eventId, jsonResponse)
             case HttpStatus.FOUND:
-                return existingMatch(jsonResponse)
+                return existingMatch(eventId, jsonResponse)
             case HttpStatus.MULTIPLE_CHOICES:
-                return partialMatch(jsonResponse)
+                return partialMatch(eventId, jsonResponse)
             default:
                 log.error("Got wrong return code from match engine..")
                 throw new RuntimeException("Got wrong return code from match engine: $response.statusCode.reasonPhrase ($response.statusCode) - ${response.body}")
@@ -95,27 +95,27 @@ class MatchClientService {
 
     }
 
-    private PersonExactMatch exactMatch(Map json) {
+    private PersonExactMatch exactMatch(String eventId, Map json) {
         // Person object is not to be changed
         Person person = personRepository.get(json.matchingRecord.referenceId as String)
         List<String> ruleNames = json.matchingRecord.ruleNames
 
-        new PersonExactMatch(person, ruleNames)
+        new PersonExactMatch(eventId: eventId, person: person, ruleNames: ruleNames)
     }
 
-    private PersonExistingMatch existingMatch(Map json) {
+    private PersonExistingMatch existingMatch(String eventId, Map json) {
         def person = personRepository.get(json.matchingRecord.referenceId as String)
-        new PersonExistingMatch(person)
+        new PersonExistingMatch(eventId: eventId, person: person)
     }
 
-    private PersonPartialMatches partialMatch(Map json) {
+    private PersonPartialMatches partialMatch(String eventId, Map json) {
         def partialMatches = json.partialMatchingRecords.collect {
             // Person object is not to be changed
             Person person = personRepository.get(it.referenceId as String)
             List<String> ruleNames = it.ruleNames
-            new PersonPartialMatch(person, ruleNames)
+            new PersonPartialMatch(eventId: eventId, person: person, ruleNames: ruleNames)
         }
-        new PersonPartialMatches(partialMatches)
+        new PersonPartialMatches(eventId: eventId, partialMatches: partialMatches)
     }
 
     /**

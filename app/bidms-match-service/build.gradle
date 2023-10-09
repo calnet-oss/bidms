@@ -60,6 +60,7 @@ dependencies {
     implementation pdep(rootProject.bidmsRestClientDep)
     implementation pdep(rootProject.bidmsMessagingClientDep)
     implementation pdep(rootProject.bidmsMessagingListenerDep)
+    implementation pdep(rootProject.bidmsLoggingDep)
 
     testImplementation 'com.h2database:h2'
 
