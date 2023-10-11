@@ -63,6 +63,7 @@ import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryUserRepository;
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.ChangeEmailTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.CredentialTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.ResetPassphraseTokenRepository;
+import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository;
 import edu.berkeley.bidms.app.registryModel.repo.view.PersonSearchViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -190,6 +191,9 @@ public class RegistryRepositoryService {
 
     @Autowired
     private SORTokenTypeRepository sorTokenTypeRepository;
+
+    @Autowired
+    private MatchHistoryRepository matchHistoryRepository;
 
     public EntityManager getEntityManager() {
         return entityManager;
@@ -501,5 +505,13 @@ public class RegistryRepositoryService {
 
     public void setSorTokenTypeRepository(SORTokenTypeRepository sorTokenTypeRepository) {
         this.sorTokenTypeRepository = sorTokenTypeRepository;
+    }
+
+    public MatchHistoryRepository getMatchHistoryRepository() {
+        return matchHistoryRepository;
+    }
+
+    public void setMatchHistoryRepository(MatchHistoryRepository matchHistoryRepository) {
+        this.matchHistoryRepository = matchHistoryRepository;
     }
 }
