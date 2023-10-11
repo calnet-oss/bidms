@@ -28,19 +28,22 @@ package edu.berkeley.bidms.app.provision.service
 
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.model.history.MatchHistory
+import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
 import edu.berkeley.bidms.orm.transaction.JpaTransactionTemplate
 import groovy.sql.Sql
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 
-import jakarta.persistence.EntityManager
 import javax.sql.DataSource
 
 @Slf4j
@@ -61,6 +64,9 @@ class NewUidService {
 
     @Autowired
     EntityManager entityManager
+
+    @Autowired
+    MatchHistoryRepository matchHistoryRepository
 
     PlatformTransactionManager transactionManager
     JpaTransactionTemplate mandatoryTransactionTemplate
@@ -126,7 +132,7 @@ class NewUidService {
 
         // We need person committed before we try to provision it because
         // provisioning happens in its own transaction.
-        NewUidResult result = saveNewPerson(sorObjectId)
+        NewUidResult result = saveNewPerson(eventId, sorObjectId)
         entityManager.clear()
 
         if (result.uidGenerationSuccessful) {
@@ -161,7 +167,7 @@ class NewUidService {
 
     // We need person committed before we try to provision it because
     // provisioning happens in its own transaction
-    protected NewUidResult saveNewPerson(long sorObjectId) throws NewUidServiceException {
+    protected NewUidResult saveNewPerson(String eventId, long sorObjectId) throws NewUidServiceException {
         return requiresNewTransactionTemplate.execute {
             NewUidResult result = new NewUidResult()
 
@@ -184,10 +190,25 @@ class NewUidService {
                 if (!newUid) {
                     throw new NewUidServiceException("uid failed to generate")
                 }
+
+                // create the person
                 Person person = new Person(uid: newUid)
                 personRepository.saveAndFlush(person)
+                // assign the person to the sorobject
                 sorObject.person = person
                 sorObjectRepository.saveAndFlush(sorObject)
+                // record the new uid in MatchHistory
+                MatchHistory matchHistory = new MatchHistory(
+                        eventId: eventId,
+                        sorObjectId: sorObject.id,
+                        sorId: sorObject.sor.id,
+                        sorPrimaryKey: sorObject.sorPrimaryKey,
+                        matchResultType: MatchHistoryResultTypeEnum.NEW_UID,
+                        actionTime: new Date(),
+                        uidAssigned: person.uid
+                )
+                matchHistoryRepository.saveAndFlush(matchHistory)
+
                 result.uidGenerationSuccessful = true
                 result.uid = person.uid
                 result.sorPrimaryKey = sorObject.sorPrimaryKey

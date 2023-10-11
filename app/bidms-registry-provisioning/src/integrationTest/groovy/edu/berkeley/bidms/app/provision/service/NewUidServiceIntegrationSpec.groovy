@@ -28,18 +28,19 @@ package edu.berkeley.bidms.app.provision.service
 
 import edu.berkeley.bidms.app.registryModel.model.SOR
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
 import groovy.sql.Sql
-import org.json.JSONArray
+import jakarta.persistence.EntityManager
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import jakarta.persistence.EntityManager
 import javax.sql.DataSource
 
 @SpringBootTest
@@ -61,6 +62,9 @@ class NewUidServiceIntegrationSpec extends Specification {
 
     @Autowired
     NewUidService newUidService
+
+    @Autowired
+    MatchHistoryRepository matchHistoryRepository
 
     void setup() {
         // Create uid_seq in our test DB which keeps track of last uid assigned.
@@ -87,6 +91,7 @@ class NewUidServiceIntegrationSpec extends Specification {
         SOR sor = sorRepository.findByName("TEST_SOR")
         sorObjectRepository.delete(sorObjectRepository.findBySorAndSorPrimaryKey(sor, "new123"))
         sorRepository.delete(sor)
+        matchHistoryRepository.deleteAll()
         Sql sql = new Sql(dataSource)
         sql.execute("DROP SEQUENCE uid_seq" as String)
         sql.close()
@@ -106,6 +111,9 @@ class NewUidServiceIntegrationSpec extends Specification {
         NewUidService.NewUidResult result = newUidService.provisionNewUid(sorObject.id, synchronousDownstream, "eventId")
         sorObject = sorObjectRepository.findBySorAndSorPrimaryKey(sor, "new123")
 
+        and: "retrieve match history"
+        def matchHistories = matchHistoryRepository.findBySorObjectIdAndMatchResultType(sorObject.id, MatchHistoryResultTypeEnum.NEW_UID)
+
         then: "sorObject now has a uid"
         result.uidGenerationSuccessful && result.uid
         sorObject.uid == result.uid
@@ -117,6 +125,14 @@ class NewUidServiceIntegrationSpec extends Specification {
 
         and: "the new uid has a Person row"
         personRepository.get(sorObject.uid)
+
+        and: "there is a match history row"
+        matchHistories.size() == 1
+        matchHistories[0].uidAssigned == result.uid
+        matchHistories[0].sorObjectId == sorObject.id
+        matchHistories[0].sorId == sorObject.sor.id
+        matchHistories[0].sorPrimaryKey == sorObject.sorPrimaryKey
+        matchHistories[0].eventId == "eventId"
 
         where:
         synchronousDownstream | _
