@@ -65,7 +65,9 @@ class TriggerMatchController {
 
     @PostMapping(value = "/internal/api/trigger-match", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, String> matchPerson(@RequestBody SorKeyDataCommand sorKeyDataCommand) {
-        String eventId = AuditUtil.createEventId()
+        if (!sorKeyDataCommand.eventId) {
+            sorKeyDataCommand.eventId = AuditUtil.createEventId()
+        }
         sorKeyDataCommand.sorRepository = sorRepository
         sorKeyDataCommand.sorObjectRepository = sorObjectRepository
         try {
@@ -77,7 +79,7 @@ class TriggerMatchController {
         }
 
         log.debug("Sor Key Data attributes. $sorKeyDataCommand.attributes")
-        Map<String, String> result = newSORConsumerService.matchPerson(eventId, sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes, sorKeyDataCommand.synchronousDownstream)
+        Map<String, String> result = newSORConsumerService.matchPerson(sorKeyDataCommand.eventId, sorKeyDataCommand.sorObject, sorKeyDataCommand.attributes, sorKeyDataCommand.synchronousDownstream)
         return result ?: [:]
     }
 }

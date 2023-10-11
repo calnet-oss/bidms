@@ -60,6 +60,9 @@ class SorKeyDataCommand {
     Boolean matchOnly
     boolean synchronousDownstream = true
 
+    // optional
+    String eventId
+
     @NotNull
     SORObject getSorObject() {
         log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")

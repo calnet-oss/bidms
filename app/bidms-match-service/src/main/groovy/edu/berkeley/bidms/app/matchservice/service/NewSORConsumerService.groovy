@@ -115,7 +115,7 @@ class NewSORConsumerService {
                 return null
             }
 
-            String eventId = AuditUtil.createEventId()
+            String eventId = message.getString("eventId") ?: AuditUtil.createEventId()
             return matchPerson(eventId, sorObject, getAttributesFromMessage(message))
         }
         catch (Exception e) {
@@ -169,6 +169,8 @@ class NewSORConsumerService {
             resultMap.uid = newlyGeneratedUid
         }
 
+        databaseService.recordMatchHistory(sorObject, personMatch, newlyGeneratedUid)
+
         return resultMap
     }
 
@@ -200,7 +202,7 @@ class NewSORConsumerService {
                 databaseService.assignUidToSOR(sorObject, match.person)
             }
 
-            // if it's an existing match, do nothing
+            // if it's an existing match (already assigned to a uid), do nothing
 
             return match
         }
@@ -238,7 +240,7 @@ class NewSORConsumerService {
              * imported from HCM.
              */
             if (!personNoMatch.matchOnly) {
-                return uidClientService.provisionNewUid(sorObject, synchronousDownstream)
+                return uidClientService.provisionNewUid(personNoMatch.eventId, sorObject, synchronousDownstream)
             } else {
                 log.info("sorObjectId=${sorObject.id}, sorPrimaryKey=${sorObject.sorPrimaryKey}, sorName=${sorObject.sor.name} didn't match with anyone and matchOnly is set to true.  This SORObject is not being sent to that newUid queue.  Instead, it's expected LdapSync will later sync it up to a UID provisioned by the legacy system.")
             }

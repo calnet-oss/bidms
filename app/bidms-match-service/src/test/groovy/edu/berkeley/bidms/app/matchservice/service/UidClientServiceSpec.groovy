@@ -80,12 +80,12 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = new SORObject(id: 1, sor: new SOR(name: "TEST"))
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}" + (synchronousDownstream ? "&synchronousDownstream=true" : "")))
                 .andExpect(method(HttpMethod.PUT))
-                .andExpect(content().string(synchronousDownstream ? "{\"sorObjectId\":${sorObject.id},\"synchronousDownstream\":true}" : "{\"sorObjectId\":${sorObject.id}}"))
+                .andExpect(content().string(synchronousDownstream ? """{"eventId":"event123","sorObjectId":${sorObject.id},"synchronousDownstream":true}""" : """{"eventId":"event123","sorObjectId":${sorObject.id}}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess('{"provisioningSuccessful": true}', MediaType.APPLICATION_JSON))
 
         when:
-        service.provisionNewUid(sorObject, synchronousDownstream)
+        service.provisionNewUid('event123', sorObject, synchronousDownstream)
 
         then:
         mockServer.verify()
@@ -102,12 +102,12 @@ class UidClientServiceSpec extends Specification {
         SORObject sorObject = new SORObject(id: 1)
         mockServer.expect(requestTo("${matchServiceConfiguration.restProvisionNewUidUrl}?sorObjectId=${sorObject.id}&synchronousDownstream=true"))
                 .andExpect(method(HttpMethod.PUT))
-                .andExpect(content().string("{\"sorObjectId\":${sorObject.id},\"synchronousDownstream\":true}"))
+                .andExpect(content().string("""{"eventId":"event123","sorObjectId":${sorObject.id},"synchronousDownstream":true}"""))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(TimeoutResponseCreator.withTimeout())
 
         when:
-        service.provisionNewUid(sorObject)
+        service.provisionNewUid('event123', sorObject)
 
         then:
         thrown(ResourceAccessException)

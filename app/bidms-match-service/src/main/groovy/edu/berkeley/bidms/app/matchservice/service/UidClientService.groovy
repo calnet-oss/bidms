@@ -80,12 +80,12 @@ class UidClientService {
      *
      * @param sorObject the SORObject to pass to Registry Provisioning
      */
-    String provisionNewUid(SORObject sorObject, boolean synchronousDownstream = true) {
+    String provisionNewUid(String eventId, SORObject sorObject, boolean synchronousDownstream = true) {
         // synchronousDownstream=true means synchronous downstream directory provisioning
         if (sorObject?.id == null) {
             throw new IllegalArgumentException("sorObject.id cannot be null")
         }
-        ResponseEntity<Map> response = provisionRestClientService.provisionNewUid(restTemplate, sorObject.id, synchronousDownstream)
+        ResponseEntity<Map> response = provisionRestClientService.provisionNewUid(restTemplate, sorObject.id, synchronousDownstream, eventId)
         if (response.statusCode != HttpStatus.OK) {
             log.error("Could not generate a new uid for sorObject ${sorObject.id}, response code: ${response.statusCode}:${response.body}")
             return null

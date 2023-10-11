@@ -26,17 +26,25 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
+import edu.berkeley.bidms.app.matchservice.PersonExactMatch
+import edu.berkeley.bidms.app.matchservice.PersonExistingMatch
+import edu.berkeley.bidms.app.matchservice.PersonMatch
+import edu.berkeley.bidms.app.matchservice.PersonNoMatch
 import edu.berkeley.bidms.app.matchservice.PersonPartialMatch
+import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
 import edu.berkeley.bidms.app.registryModel.model.PartialMatch
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.model.history.MatchHistory
+import edu.berkeley.bidms.app.registryModel.model.history.MatchHistoryMetaData
+import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.PartialMatchRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
+import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
 import groovy.util.logging.Slf4j
+import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
-import jakarta.persistence.EntityManager
 
 @Slf4j
 @Service("matchServiceDatabaseService")
@@ -46,11 +54,18 @@ class DatabaseService {
     EntityManager entityManager
     SORObjectRepository sorObjectRepository
     PartialMatchRepository partialMatchRepository
+    MatchHistoryRepository matchHistoryRepository
 
-    DatabaseService(EntityManager entityManager, SORObjectRepository sorObjectRepository, PartialMatchRepository partialMatchRepository) {
+    DatabaseService(
+            EntityManager entityManager,
+            SORObjectRepository sorObjectRepository,
+            PartialMatchRepository partialMatchRepository,
+            MatchHistoryRepository matchHistoryRepository
+    ) {
         this.entityManager = entityManager
         this.sorObjectRepository = sorObjectRepository
         this.partialMatchRepository = partialMatchRepository
+        this.matchHistoryRepository = matchHistoryRepository
     }
 
     /**
@@ -96,5 +111,54 @@ class DatabaseService {
             partialMatchRepository.delete(it)
         }
         entityManager.flush()
+    }
+
+    MatchHistory recordMatchHistory(SORObject sorObject, PersonMatch personMatch, String newlyGeneratedUid) {
+        if (personMatch instanceof PersonExistingMatch) {
+            // if PersonExistingMatch, then sorObject was already assigned to a uid and no action was taken
+            return null
+        }
+        Date actionTime = new Date()
+        MatchHistory matchHistory = new MatchHistory(
+                eventId: personMatch.eventId,
+                sorObjectId: sorObject.id,
+                sorId: sorObject.sor.id,
+                sorPrimaryKey: sorObject.sorPrimaryKey,
+                actionTime: actionTime
+        )
+
+        if (personMatch instanceof PersonExactMatch) {
+            matchHistory.matchResultType = MatchHistoryResultTypeEnum.EXACT
+            matchHistory.uidAssigned = ((PersonExactMatch) personMatch).person.uid
+            matchHistory.metaData.exactMatch = new MatchHistoryMetaData.MatchHistoryExactMatch(
+                    ruleNames: ((PersonExactMatch) personMatch).ruleNames
+            )
+        } else if (personMatch instanceof PersonPartialMatches) {
+            matchHistory.matchResultType = MatchHistoryResultTypeEnum.POTENTIAL
+            int fullPotentialMatchCount = ((PersonPartialMatches) personMatch).partialMatches.size()
+            matchHistory.metaData.fullPotentialMatchCount = fullPotentialMatchCount
+            // Don't store more than 64, which is already an excessive amount.  More than this means a bad match rule that should be fixed.
+            int potentialMatchCount = fullPotentialMatchCount > 64 ? 64 : fullPotentialMatchCount
+            matchHistory.metaData.potentialMatches = new ArrayList<>(potentialMatchCount)
+            for (int i = 0; i < potentialMatchCount; i++) {
+                PersonPartialMatch partialMatch = ((PersonPartialMatches) personMatch).partialMatches[i]
+                matchHistory.metaData.potentialMatches << new MatchHistoryMetaData.MatchHistoryPartialMatch(
+                        potentialMatchToUid: partialMatch.person.uid,
+                        ruleNames: partialMatch.ruleNames
+                )
+            }
+        } else if (personMatch instanceof PersonNoMatch) {
+            if (((PersonNoMatch) personMatch).matchOnly) {
+                matchHistory.matchResultType = MatchHistoryResultTypeEnum.NONE_MATCH_ONLY
+            } else if (newlyGeneratedUid) {
+                matchHistory.matchResultType = MatchHistoryResultTypeEnum.NONE_NEW_UID
+                matchHistory.uidAssigned = newlyGeneratedUid
+            } else {
+                // uid is to be assigned but it's deferred for later assignment
+                matchHistory.matchResultType = MatchHistoryResultTypeEnum.NONE_NEW_UID_DEFERRED
+            }
+        }
+
+        return matchHistoryRepository.saveAndFlush(matchHistory)
     }
 }

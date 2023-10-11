@@ -26,22 +26,28 @@
  */
 package edu.berkeley.bidms.app.matchservice.service
 
+import edu.berkeley.bidms.app.matchservice.PersonExactMatch
+import edu.berkeley.bidms.app.matchservice.PersonExistingMatch
+import edu.berkeley.bidms.app.matchservice.PersonNoMatch
 import edu.berkeley.bidms.app.matchservice.PersonPartialMatch
-import edu.berkeley.bidms.app.matchservice.service.DatabaseService
+import edu.berkeley.bidms.app.matchservice.PersonPartialMatches
 import edu.berkeley.bidms.app.registryModel.model.PartialMatch
 import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.model.SOR
 import edu.berkeley.bidms.app.registryModel.model.SORObject
+import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.PartialMatchRepository
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
+import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
+import edu.berkeley.bidms.common.json.JsonUtil
+import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
-
-import jakarta.persistence.EntityManager
+import spock.lang.Unroll
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
@@ -57,6 +63,8 @@ class DatabaseServiceSpec extends Specification {
     PersonRepository personRepository
     @Autowired
     PartialMatchRepository partialMatchRepository
+    @Autowired
+    MatchHistoryRepository matchHistoryRepository
 
     DatabaseService service
     SORObject sorObject
@@ -65,7 +73,7 @@ class DatabaseServiceSpec extends Specification {
     Person person2
 
     def setup() {
-        this.service = new DatabaseService(entityManager, sorObjectRepository, partialMatchRepository)
+        this.service = new DatabaseService(entityManager, sorObjectRepository, partialMatchRepository, matchHistoryRepository)
 
         SOR sor = sorRepository.saveAndFlush(new SOR(name: 'SIS'))
         this.sorObject = sorObjectRepository.saveAndFlush(new SORObject(
@@ -157,6 +165,51 @@ class DatabaseServiceSpec extends Specification {
 
         then: "The there is no partial match records for sorObject"
         partialMatchRepository.countBySorObject(sorObject) == 0
+    }
+
+    @Unroll
+    void "test recordMatchHistory"() {
+        given:
+        def sorObjectId = sorObject.id
+        def sorId = sorObject.sor.id
+        def sorPrimaryKey = sorObject.sorPrimaryKey
+
+        when:
+        def matchHistory = service.recordMatchHistory(sorObject, match, newUid)
+        println JsonUtil.convertObjectToJson(matchHistory)
+        def metaData = JsonUtil.convertObjectToJson(matchHistory.metaData)
+        println metaData
+
+        then:
+        matchHistory.eventId == 'event123'
+        matchHistory.sorObjectId == sorObjectId
+        matchHistory.sorId == sorId
+        matchHistory.sorPrimaryKey == sorPrimaryKey
+        matchHistory.matchResultType == exptdMatchResultType
+        matchHistory.actionTime
+        matchHistory.uidAssigned == exptdUidAssigned
+        metaData == exptdMetaData
+
+        where:
+        match                                                                                                                                                                  | newUid || exptdMatchResultType                             | exptdUidAssigned | exptdMetaData
+        new PersonNoMatch(eventId: 'event123')                                                                                                                                 | "002"  || MatchHistoryResultTypeEnum.NONE_NEW_UID          | '002'            | '{}'
+        new PersonNoMatch(eventId: 'event123')                                                                                                                                 | null   || MatchHistoryResultTypeEnum.NONE_NEW_UID_DEFERRED | null             | '{}'
+        new PersonNoMatch(eventId: 'event123', matchOnly: true)                                                                                                                | null   || MatchHistoryResultTypeEnum.NONE_MATCH_ONLY       | null             | '{}'
+        new PersonExactMatch(eventId: 'event123', person: new Person(uid: '001'), ruleNames: ['TEST_RULE'])                                                                    | null   || MatchHistoryResultTypeEnum.EXACT                 | '001'            | '{"exactMatch":{"ruleNames":["TEST_RULE"]}}'
+        new PersonPartialMatches(eventId: 'event123', partialMatches: [new PersonPartialMatch(eventId: 'event123', person: new Person(uid: '001'), ruleNames: ['TEST_RULE'])]) | null   || MatchHistoryResultTypeEnum.POTENTIAL             | null             | '{"fullPotentialMatchCount":1,"potentialMatches":[{"potentialMatchToUid":"001","ruleNames":["TEST_RULE"]}]}'
+    }
+
+    void "test recordMatchHistory for SORObject with uid already assigned"() {
+        given:
+        def sorObjectId = sorObject.id
+        def sorId = sorObject.sor.id
+
+        when:
+        // should return null because sorobject already matched up and there is no new event to record
+        def matchHistory = service.recordMatchHistory(sorObject, new PersonExistingMatch(eventId: 'event123', person: new Person(uid: '001')), null)
+
+        then:
+        !matchHistory
     }
 
     private static PersonPartialMatch createPersonPartialMatch(String name, Person person) {
