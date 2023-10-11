@@ -81,6 +81,10 @@ public class ProvisionRestClientService {
         );
     }
 
+    public ResponseEntity<Map> provisionNewUid(RestOperations restTemplate, long sorObjectId, boolean synchronousDownstream) {
+        return provisionNewUid(restTemplate, sorObjectId, synchronousDownstream, null);
+    }
+
     /**
      * Assigns a new uid to a SORObject and provisions that uid.
      *
@@ -92,10 +96,11 @@ public class ProvisionRestClientService {
      *                              provisioning means the REST call won't
      *                              return a result until the downstream
      *                              provisioning attempt has completed.
+     * @param eventId               Optional eventId to pass to service
      * @return The response body type is a {@link Map} which is
      * representative of the endpoint JSON response.
      */
-    public ResponseEntity<Map> provisionNewUid(RestOperations restTemplate, long sorObjectId, boolean synchronousDownstream) {
+    public ResponseEntity<Map> provisionNewUid(RestOperations restTemplate, long sorObjectId, boolean synchronousDownstream, String eventId) {
         URI url = new SmarterURIBuilder(bidmsConfigProperties.getRest().getProvision().getNewUid().getUrl())
                 .addParameter("sorObjectId", sorObjectId)
                 .conditionalAddParameter(synchronousDownstream, "synchronousDownstream", true)
@@ -104,6 +109,9 @@ public class ProvisionRestClientService {
         bodyMap.put("sorObjectId", sorObjectId);
         if (synchronousDownstream) {
             bodyMap.put("synchronousDownstream", true);
+        }
+        if (eventId != null) {
+            bodyMap.put("eventId", eventId);
         }
         return restTemplate.exchange(
                 RequestEntity
