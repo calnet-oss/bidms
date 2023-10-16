@@ -38,7 +38,6 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
 import edu.berkeley.bidms.common.json.JsonUtil
-import edu.berkeley.bidms.logging.AuditUtil
 import groovy.util.logging.Slf4j
 import org.apache.activemq.command.ActiveMQMapMessage
 import org.springframework.beans.factory.annotation.Autowired
@@ -158,7 +157,9 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockMatchEngineServer.verify()
         mockProvisionServer.verify()
         matchHistories.size() == 1
-        matchHistories[0].uidAssigned == "001"
+        with(matchHistories[0]) {
+            uidAssigned == "001"
+        }
 
         where:
         description                          | synchronousDownstream
@@ -203,8 +204,10 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockMatchEngineServer.verify()
         mockProvisionServer.verify()
         matchHistories.size() == 1
-        matchHistories[0].uidAssigned == "002"
-        matchHistories[0].metaData.exactMatch.ruleNames == ["Canonical #1"]
+        with(matchHistories[0]) {
+            uidAssigned == "002"
+            metaData.exactMatch.ruleNames == ["Canonical #1"]
+        }
     }
 
     def 'when entering the system with a SORObject that matches multiple existing persons, do not expect to see a response on the queue but instead expect to find two rows in the PartialMatch table'() {
@@ -252,10 +255,12 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         rows.size() == 2
         rows.collect { it.person.uid }.sort() == ['002', '003']
         matchHistories.size() == 1
-        matchHistories[0].metaData.fullPotentialMatchCount == 2
-        matchHistories[0].metaData.potentialMatches[0].ruleNames
-        matchHistories[0].metaData.potentialMatches[1].ruleNames
-        matchHistories[0].metaData.potentialMatches*.potentialMatchToUid.sort() == ["002", "003"]
+        with(matchHistories[0]) {
+            metaData.fullPotentialMatchCount == 2
+            metaData.potentialMatches[0].ruleNames
+            metaData.potentialMatches[1].ruleNames
+            metaData.potentialMatches*.potentialMatchToUid.sort() == ["002", "003"]
+        }
     }
 
     def 'when entering the system with a SORObject that does match an single existing person, expect to see all PartialMatches for that SORObject to be deleted'() {
@@ -303,7 +308,9 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         mockProvisionServer.verify()
         rows.size() == 0
         matchHistories.size() == 1
-        matchHistories[0].uidAssigned == "002"
-        matchHistories[0].metaData.exactMatch
+        with(matchHistories[0]) {
+            uidAssigned == "002"
+            metaData.exactMatch
+        }
     }
 }
