@@ -39,7 +39,7 @@ public class MatchHistoryMetaData {
     private MatchHistoryExactMatch exactMatch;
 
     /**
-     * Total number of uids that the sorObject potentially matched to. 
+     * Total number of uids that the sorObject potentially matched to.
      * Normally, this will match the size of the potentialMatches list size,
      * but if the potentialMatches list has to be truncated, this count is
      * the number of potential matches before truncation.
@@ -48,7 +48,7 @@ public class MatchHistoryMetaData {
 
     /**
      * Populated for partial matches.
-     * Potential matches are uids the sorObject potentially matches to. 
+     * Potential matches are uids the sorObject potentially matches to.
      * It's possible an accidental bad match rule produces a potential match
      * to a great many uids, so calling code should either error out if too
      * many matches found and/or should truncate this list to avoid the

@@ -59,5 +59,38 @@ public enum MatchHistoryResultTypeEnum {
      * First would be a row with NONE_NEW_UID type inserted by match-service and the
      * second would be a row with this NEW_UID type inserted by the registry-provisioning service responsible for creating new uids.
      */
-    NEW_UID
+    NEW_UID,
+
+    /**
+     * During manual reconciliation, the sorObject was matched to an existing uid.
+     */
+    RECONCILIATION_MATCH,
+
+    /**
+     * During manual reconciliation, the sorObject was marked to be assigned a new uid.
+     * The new uid isn't actually assigned in this step, but rather it is sent back
+     * through the match-service and a NEW_UID row should appear after this.
+     */
+    RECONCILIATION_NEW_UID_DEFERRED,
+
+    /**
+     * During manual reconciliation, the potential match is rejected.
+     */
+    RECONCILIATION_REJECT,
+
+    /**
+     * When a sorObject is split off an existing uid by removing the uid from the sorObject.
+     */
+    SPLIT_REMOVE_UID,
+
+    /**
+     * When a sorObject is swapped between two uids.
+     * Note: This may be a candidate for removal due to lack of implementation upstream.
+     */
+    SWAP,
+
+    /**
+     * When a sorObject is moved to another uid due to merging of two uids into one.
+     */
+    MERGE
 }
