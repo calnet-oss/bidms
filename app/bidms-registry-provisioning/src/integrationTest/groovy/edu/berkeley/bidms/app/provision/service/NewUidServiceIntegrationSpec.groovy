@@ -128,11 +128,13 @@ class NewUidServiceIntegrationSpec extends Specification {
 
         and: "there is a match history row"
         matchHistories.size() == 1
-        matchHistories[0].uidAssigned == result.uid
-        matchHistories[0].sorObjectId == sorObject.id
-        matchHistories[0].sorId == sorObject.sor.id
-        matchHistories[0].sorPrimaryKey == sorObject.sorPrimaryKey
-        matchHistories[0].eventId == "eventId"
+        with(matchHistories[0]) {
+            uidAssigned == result.uid
+            sorObjectId == sorObject.id
+            sorId == sorObject.sor.id
+            sorPrimaryKey == sorObject.sorPrimaryKey
+            eventId == "eventId"
+        }
 
         where:
         synchronousDownstream | _
