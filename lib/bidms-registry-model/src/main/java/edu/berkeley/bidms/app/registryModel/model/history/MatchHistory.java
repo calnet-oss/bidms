@@ -91,6 +91,10 @@ public class MatchHistory {
     @Column(length = 64)
     private String uidAssigned;
 
+    @Size(max = 64)
+    @Column(length = 64)
+    private String doneByUid;
+
     @JsonIgnore
     @NotNull
     @Type(JSONBType.class)
@@ -162,6 +166,14 @@ public class MatchHistory {
 
     public void setUidAssigned(String newUidAssigned) {
         this.uidAssigned = newUidAssigned;
+    }
+
+    public String getDoneByUid() {
+        return doneByUid;
+    }
+
+    public void setDoneByUid(String doneByUid) {
+        this.doneByUid = doneByUid;
     }
 
     @PostLoad
