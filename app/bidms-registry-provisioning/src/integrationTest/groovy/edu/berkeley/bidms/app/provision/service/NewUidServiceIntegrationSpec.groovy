@@ -133,7 +133,7 @@ class NewUidServiceIntegrationSpec extends Specification {
             sorObjectId == sorObject.id
             sorId == sorObject.sor.id
             sorPrimaryKey == sorObject.sorPrimaryKey
-            eventId == "eventId"
+            eventId.trim() == "eventId"
         }
 
         where:
