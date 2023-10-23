@@ -60,7 +60,7 @@ public class MatchHistory {
 
     @NotNull
     @Size(max = 36)
-    @Column(length = 36, nullable = false)
+    @Column(length = 36, nullable = false, columnDefinition = "CHAR(36)")
     private String eventId;
 
     @NotNull
