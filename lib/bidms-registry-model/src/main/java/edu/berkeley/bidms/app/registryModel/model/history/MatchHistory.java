@@ -72,12 +72,13 @@ public class MatchHistory {
     private Long sorObjectId;
 
     @NotNull
-    @Column(nullable = false)
+    @Size(max = 255)
+    @Column(nullable = false, name = "sorObjKey", length = 255)
     private String sorPrimaryKey;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 32, nullable = false)
+    @Column(length = 63, nullable = false)
     private MatchHistoryResultTypeEnum matchResultType;
 
     /**
