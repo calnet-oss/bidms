@@ -57,6 +57,8 @@ public class MatchHistoryMetaData {
     @Size(max = 64)
     private List<MatchHistoryPartialMatch> potentialMatches;
 
+    private MatchHistoryUnassignment unassignment;
+
     public MatchHistoryExactMatch getExactMatch() {
         return exactMatch;
     }
@@ -79,6 +81,14 @@ public class MatchHistoryMetaData {
 
     public void setPotentialMatches(List<MatchHistoryPartialMatch> potentialMatches) {
         this.potentialMatches = potentialMatches;
+    }
+
+    public MatchHistoryUnassignment getUnassignment() {
+        return unassignment;
+    }
+
+    public void setUnassignment(MatchHistoryUnassignment unassignment) {
+        this.unassignment = unassignment;
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -120,6 +130,24 @@ public class MatchHistoryMetaData {
 
         public void setRuleNames(List<String> ruleNames) {
             this.ruleNames = ruleNames;
+        }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public static class MatchHistoryUnassignment {
+        /**
+         * The uid that was removed from the SORObject when the split
+         * occurred or the previous uid that was assigned when a new uid was
+         * assigned during a merge.
+         */
+        private String unassignedUid;
+
+        public String getUnassignedUid() {
+            return unassignedUid;
+        }
+
+        public void setUnassignedUid(String unassignedUid) {
+            this.unassignedUid = unassignedUid;
         }
     }
 }
