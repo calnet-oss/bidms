@@ -79,6 +79,11 @@ public enum MatchHistoryResultTypeEnum {
     RECONCILIATION_REJECT,
 
     /**
+     * During manual reconciliation, the potential match is unrejected.
+     */
+    RECONCILIATION_UNREJECT,
+
+    /**
      * When a sorObject is split off an existing uid by removing the uid from the sorObject.
      */
     SPLIT_REMOVE_UID,
