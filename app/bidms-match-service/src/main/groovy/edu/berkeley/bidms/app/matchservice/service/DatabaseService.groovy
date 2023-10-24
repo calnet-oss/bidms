@@ -136,7 +136,7 @@ class DatabaseService {
         } else if (personMatch instanceof PersonPartialMatches) {
             matchHistory.matchResultType = MatchHistoryResultTypeEnum.POTENTIAL
             int fullPotentialMatchCount = ((PersonPartialMatches) personMatch).partialMatches.size()
-            matchHistory.metaData.fullPotentialMatchCount = fullPotentialMatchCount
+            matchHistory.metaData.potentialMatchCount = fullPotentialMatchCount
             // Don't store more than 64, which is already an excessive amount.  More than this means a bad match rule that should be fixed.
             int potentialMatchCount = fullPotentialMatchCount > 64 ? 64 : fullPotentialMatchCount
             matchHistory.metaData.potentialMatches = new ArrayList<>(potentialMatchCount)

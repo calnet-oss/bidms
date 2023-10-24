@@ -256,7 +256,7 @@ class NewSorConsumerServiceIntegrationSpec extends Specification {
         rows.collect { it.person.uid }.sort() == ['002', '003']
         matchHistories.size() == 1
         with(matchHistories[0]) {
-            metaData.fullPotentialMatchCount == 2
+            metaData.potentialMatchCount == 2
             metaData.potentialMatches[0].ruleNames
             metaData.potentialMatches[1].ruleNames
             metaData.potentialMatches*.potentialMatchToUid.sort() == ["002", "003"]
