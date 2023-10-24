@@ -44,7 +44,7 @@ public class MatchHistoryMetaData {
      * but if the potentialMatches list has to be truncated, this count is
      * the number of potential matches before truncation.
      */
-    private Integer fullPotentialMatchCount;
+    private Integer potentialMatchCount;
 
     /**
      * Populated for partial matches.
@@ -67,12 +67,12 @@ public class MatchHistoryMetaData {
         this.exactMatch = exactMatch;
     }
 
-    public Integer getFullPotentialMatchCount() {
-        return fullPotentialMatchCount;
+    public Integer getPotentialMatchCount() {
+        return potentialMatchCount;
     }
 
-    public void setFullPotentialMatchCount(Integer fullPotentialMatchCount) {
-        this.fullPotentialMatchCount = fullPotentialMatchCount;
+    public void setPotentialMatchCount(Integer potentialMatchCount) {
+        this.potentialMatchCount = potentialMatchCount;
     }
 
     public List<MatchHistoryPartialMatch> getPotentialMatches() {
