@@ -38,11 +38,6 @@ public enum MatchHistoryResultTypeEnum {
     POTENTIAL,
 
     /**
-     * no match and new uid assignment is disabled: sorObject created with no uid
-     */
-    NONE_MATCH_ONLY,
-
-    /**
      * new uid should be assigned but was deferred for later assignment
      */
     NONE_NEW_UID_DEFERRED,
