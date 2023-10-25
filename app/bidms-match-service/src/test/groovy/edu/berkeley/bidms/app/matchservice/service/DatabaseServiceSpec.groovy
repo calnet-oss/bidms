@@ -194,9 +194,8 @@ class DatabaseServiceSpec extends Specification {
         match                                                                                                                                                                  | newUid || exptdMatchResultType                             | exptdUidAssigned | exptdMetaData
         new PersonNoMatch(eventId: 'event123')                                                                                                                                 | "002"  || MatchHistoryResultTypeEnum.NONE_NEW_UID          | '002'            | '{}'
         new PersonNoMatch(eventId: 'event123')                                                                                                                                 | null   || MatchHistoryResultTypeEnum.NONE_NEW_UID_DEFERRED | null             | '{}'
-        new PersonNoMatch(eventId: 'event123', matchOnly: true)                                                                                                                | null   || MatchHistoryResultTypeEnum.NONE_MATCH_ONLY       | null             | '{}'
         new PersonExactMatch(eventId: 'event123', person: new Person(uid: '001'), ruleNames: ['TEST_RULE'])                                                                    | null   || MatchHistoryResultTypeEnum.EXACT                 | '001'            | '{"exactMatch":{"ruleNames":["TEST_RULE"]}}'
-        new PersonPartialMatches(eventId: 'event123', partialMatches: [new PersonPartialMatch(eventId: 'event123', person: new Person(uid: '001'), ruleNames: ['TEST_RULE'])]) | null   || MatchHistoryResultTypeEnum.POTENTIAL             | null             | '{"fullPotentialMatchCount":1,"potentialMatches":[{"potentialMatchToUid":"001","ruleNames":["TEST_RULE"]}]}'
+        new PersonPartialMatches(eventId: 'event123', partialMatches: [new PersonPartialMatch(eventId: 'event123', person: new Person(uid: '001'), ruleNames: ['TEST_RULE'])]) | null   || MatchHistoryResultTypeEnum.POTENTIAL             | null             | '{"potentialMatchCount":1,"potentialMatches":[{"potentialMatchToUid":"001","ruleNames":["TEST_RULE"]}]}'
     }
 
     void "test recordMatchHistory for SORObject with uid already assigned"() {
@@ -207,6 +206,19 @@ class DatabaseServiceSpec extends Specification {
         when:
         // should return null because sorobject already matched up and there is no new event to record
         def matchHistory = service.recordMatchHistory(sorObject, new PersonExistingMatch(eventId: 'event123', person: new Person(uid: '001')), null)
+
+        then:
+        !matchHistory
+    }
+
+    void "test recordMatchHistory for SORObject with matchOnly flag set"() {
+        given:
+        def sorObjectId = sorObject.id
+        def sorId = sorObject.sor.id
+
+        when:
+        // should return null because matchOnly flag is true
+        def matchHistory = service.recordMatchHistory(sorObject, new PersonNoMatch(eventId: 'event123', matchOnly: true), null)
 
         then:
         !matchHistory

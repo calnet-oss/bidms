@@ -117,7 +117,19 @@ class DatabaseService {
         if (personMatch instanceof PersonExistingMatch) {
             // if PersonExistingMatch, then sorObject was already assigned to a uid and no action was taken
             return null
+        } else if (personMatch instanceof PersonNoMatch && ((PersonNoMatch) personMatch).matchOnly) {
+            // A "no match" with the "match only" flag set essentially means
+            // that the system is expecting at some later time that a match
+            // will show up and to keep trying until a match is eventually
+            // found (via the SORObject.match flag that tells a rematch job
+            // to try again).  Subsequently, it will keep trying until it
+            // finds a match.  We don't want to log history entries for this
+            // because it can happen over and over again.  When the eventual
+            // match does occur, then that will be stored as a history
+            // entry.
+            return null
         }
+
         Date actionTime = new Date()
         MatchHistory matchHistory = new MatchHistory(
                 eventId: personMatch.eventId,
@@ -149,7 +161,8 @@ class DatabaseService {
             }
         } else if (personMatch instanceof PersonNoMatch) {
             if (((PersonNoMatch) personMatch).matchOnly) {
-                matchHistory.matchResultType = MatchHistoryResultTypeEnum.NONE_MATCH_ONLY
+                // We check for this at the top of the method and return null.  This is just a double-check.
+                throw new IllegalStateException()
             } else if (newlyGeneratedUid) {
                 matchHistory.matchResultType = MatchHistoryResultTypeEnum.NONE_NEW_UID
                 matchHistory.uidAssigned = newlyGeneratedUid
