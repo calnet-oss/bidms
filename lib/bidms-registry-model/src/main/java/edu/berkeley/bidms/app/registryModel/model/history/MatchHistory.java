@@ -29,6 +29,7 @@ package edu.berkeley.bidms.app.registryModel.model.history;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import edu.berkeley.bidms.orm.hibernate.usertype.JSONBType;
@@ -36,9 +37,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -95,6 +99,11 @@ public class MatchHistory {
     @Size(max = 64)
     @Column(length = 64)
     private String doneByUid;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doneByUid", insertable = false, updatable = false)
+    private Person doneBy;
 
     @JsonIgnore
     @NotNull
@@ -175,6 +184,10 @@ public class MatchHistory {
 
     public void setDoneByUid(String doneByUid) {
         this.doneByUid = doneByUid;
+    }
+
+    public Person getDoneBy() {
+        return doneBy;
     }
 
     @PostLoad
