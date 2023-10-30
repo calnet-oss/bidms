@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.SOR;
 import edu.berkeley.bidms.app.registryModel.model.type.MatchHistoryResultTypeEnum;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import edu.berkeley.bidms.orm.hibernate.usertype.JSONBType;
@@ -79,6 +80,11 @@ public class MatchHistory {
     @Size(max = 255)
     @Column(nullable = false, name = "sorObjKey", length = 255)
     private String sorPrimaryKey;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sorId", insertable = false, updatable = false)
+    private SOR sor;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -152,6 +158,10 @@ public class MatchHistory {
 
     public void setSorPrimaryKey(String sorObjKey) {
         this.sorPrimaryKey = sorObjKey;
+    }
+
+    public SOR getSor() {
+        return sor;
     }
 
     public MatchHistoryResultTypeEnum getMatchResultType() {
