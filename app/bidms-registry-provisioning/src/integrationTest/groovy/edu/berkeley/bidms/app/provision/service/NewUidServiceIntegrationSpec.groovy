@@ -89,9 +89,9 @@ class NewUidServiceIntegrationSpec extends Specification {
 
     void cleanup() {
         SOR sor = sorRepository.findByName("TEST_SOR")
+        matchHistoryRepository.deleteAll()
         sorObjectRepository.delete(sorObjectRepository.findBySorAndSorPrimaryKey(sor, "new123"))
         sorRepository.delete(sor)
-        matchHistoryRepository.deleteAll()
         Sql sql = new Sql(dataSource)
         sql.execute("DROP SEQUENCE uid_seq" as String)
         sql.close()
