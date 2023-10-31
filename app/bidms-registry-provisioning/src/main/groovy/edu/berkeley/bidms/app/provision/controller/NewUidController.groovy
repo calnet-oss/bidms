@@ -33,6 +33,7 @@ import edu.berkeley.bidms.logging.AuditFailEvent
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
 import edu.berkeley.bidms.provision.command.NewUidCommand
+import edu.berkeley.bidms.provision.jms.ProvisionJmsTemplate
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -63,9 +64,12 @@ class NewUidController {
 
     ProvisioningJmsClientService provisioningJmsClientService
 
-    NewUidController(NewUidService newUidService, ProvisioningJmsClientService provisioningJmsClientService) {
+    ProvisionJmsTemplate provisionJmsTemplate
+
+    NewUidController(NewUidService newUidService, ProvisioningJmsClientService provisioningJmsClientService, ProvisionJmsTemplate provisionJmsTemplate) {
         this.newUidService = newUidService
         this.provisioningJmsClientService = provisioningJmsClientService
+        this.provisionJmsTemplate = provisionJmsTemplate
     }
 
     /**
@@ -130,11 +134,11 @@ class NewUidController {
                 return jsonResultMap
             } else {
                 // send to newUID queue for asynchronous processing
-                provisioningJmsClientService.newUid(provisioningJmsTemplate, cmd.sorObjectId, cmd.synchronousDownstream)
+                provisioningJmsClientService.newUid(provisionJmsTemplate, cmd.sorObjectId, cmd.synchronousDownstream)
                 AuditUtil.logAuditEvent(APP_NAME, new AuditSuccessEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
                         op: AuditOperation.newUid, attrs: getAuditAttrs(cmd.sorObjectId, cmd.synchronousDownstream, cmd.asynchronousQueue)))
                 return [
-                        message: "Successfully sent sorObjectId=${cmd.sorObjectId} to newUID queue"
+                        message: "Successfully sent sorObjectId=${cmd.sorObjectId} to newUID queue" as String
                 ]
             }
         }

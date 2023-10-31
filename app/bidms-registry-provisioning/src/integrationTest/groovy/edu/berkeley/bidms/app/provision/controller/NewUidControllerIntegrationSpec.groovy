@@ -74,7 +74,7 @@ class NewUidControllerIntegrationSpec extends Specification {
         this.newTransactionTemplate = new JpaTransactionTemplate(transactionManager, TransactionDefinition.PROPAGATION_REQUIRES_NEW)
     }
 
-    void "test that the NewUidController is accepting requests"() {
+    void "test that the NewUidController is accepting requests, synchronous newUid assignment"() {
         when:
         newTransactionTemplate.executeWithoutResult {
             TestUtil.addTestUser(registryUserCredentialService, registryUserRepository, registryRoleRepository)
@@ -98,5 +98,30 @@ class NewUidControllerIntegrationSpec extends Specification {
         response.statusCode == HttpStatus.OK
         json.provisioningErrorMessage == "Couldn't find sorObjectId=123"
         !json.provisioningSuccessful
+    }
+
+    void "test that the NewUidController is accepting requests, asynchronous newUid assignment"() {
+        when:
+        newTransactionTemplate.executeWithoutResult {
+            TestUtil.addTestUser(registryUserCredentialService, registryUserRepository, registryRoleRepository)
+        }
+
+        def response = restTemplate.exchange(
+                "http://localhost:${port}/registry-provisioning/newUid/save",
+                HttpMethod.PUT,
+                new HttpEntity<Map>([sorObjectId: 123, asynchronousQueue: true], new HttpHeaders(contentType: MediaType.APPLICATION_JSON, accept: [MediaType.APPLICATION_JSON])),
+                Map
+        )
+
+        Map json = (response.statusCode == HttpStatus.OK ? response.body : null)
+
+        and: "cleanup"
+        newTransactionTemplate.executeWithoutResult {
+            TestUtil.deleteTestUser(registryUserRepository, registryRoleRepository)
+        }
+
+        then:
+        response.statusCode == HttpStatus.OK
+        json.message == "Successfully sent sorObjectId=123 to newUID queue"
     }
 }
