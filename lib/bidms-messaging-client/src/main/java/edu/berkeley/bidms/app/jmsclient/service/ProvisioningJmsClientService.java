@@ -52,8 +52,11 @@ public class ProvisioningJmsClientService {
         jmsTemplate.convertAndSend(jmsEndpointConfigProperties.getQueueName(), Map.of("uid", uid));
     }
 
-    public void newUid(final JmsTemplate jmsTemplate, final long sorObjectId, final Boolean synchronousDownstream) {
+    public void newUid(final JmsTemplate jmsTemplate, final long sorObjectId, Boolean synchronousDownstream) {
         JmsEndpointConfigProperties jmsEndpointConfigProperties = bidmsConfigProperties.getJms().getProvision().getNewUid();
-        jmsTemplate.convertAndSend(jmsEndpointConfigProperties.getQueueName(), Map.of("sorObjectId", sorObjectId, "synchronousDownstream", synchronousDownstream ? synchronousDownstream : false));
+        if (synchronousDownstream == null) {
+            synchronousDownstream = Boolean.FALSE;
+        }
+        jmsTemplate.convertAndSend(jmsEndpointConfigProperties.getQueueName(), Map.of("sorObjectId", sorObjectId, "synchronousDownstream", synchronousDownstream));
     }
 }
