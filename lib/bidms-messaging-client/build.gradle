@@ -34,7 +34,7 @@ dependencies {
 
     // JMS client
     api "org.springframework:spring-jms"
-    api "org.apache.activemq:activemq-client-jakarta"
+    api "org.apache.activemq:activemq-client"
     api "org.messaginghub:pooled-jms"
     api "org.apache.commons:commons-collections4"
 
