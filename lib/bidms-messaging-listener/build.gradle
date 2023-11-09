@@ -35,7 +35,7 @@ dependencies {
 
     // JMS
     implementation "org.springframework:spring-jms"
-    implementation "org.apache.activemq:activemq-client-jakarta"
+    implementation "org.apache.activemq:activemq-client"
     implementation "org.messaginghub:pooled-jms"
     implementation pdep(rootProject.bidmsMessagingCommonDep)
 
