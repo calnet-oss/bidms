@@ -79,7 +79,7 @@ allprojects {
     // TEMPORARY FIXME for Spring Boot 3.1.0 - Hibernate 6.3 fixes a bug present in Hibernate 6.2 (triggered by JobAppointment joined subclass).
     // https://hibernate.atlassian.net/browse/HHH-16593
     ext['hibernate.version'] = '6.3.1.Final'
-    ext['activemq.version'] = '6.0.0-SNAPSHOT'
+    ext['activemq.version'] = versions.activemq
 
     repositories {
         mavenLocal()
