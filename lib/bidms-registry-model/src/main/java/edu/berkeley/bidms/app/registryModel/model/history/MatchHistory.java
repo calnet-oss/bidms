@@ -102,6 +102,12 @@ public class MatchHistory {
     @Column(length = 64)
     private String uidAssigned;
 
+    /**
+     * The uid that was removed from the SORObject when the split occurred
+     * or the previous uid before a merge occurred.
+     */
+    private String uidUnassigned;
+
     @Size(max = 64)
     @Column(length = 64)
     private String doneByUid;
