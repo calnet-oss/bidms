@@ -194,6 +194,14 @@ public class MatchHistory {
         this.uidAssigned = newUidAssigned;
     }
 
+    public String getUidUnassigned() {
+        return uidUnassigned;
+    }
+
+    public void setUidUnassigned(String uidUnassigned) {
+        this.uidUnassigned = uidUnassigned;
+    }
+
     public String getDoneByUid() {
         return doneByUid;
     }
