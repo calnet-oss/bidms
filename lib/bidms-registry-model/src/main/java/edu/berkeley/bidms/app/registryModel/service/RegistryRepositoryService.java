@@ -45,11 +45,13 @@ import edu.berkeley.bidms.app.registryModel.repo.JobAppointmentRepository;
 import edu.berkeley.bidms.app.registryModel.repo.NameTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PartialMatchRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonNameRepository;
+import edu.berkeley.bidms.app.registryModel.repo.PersonPronounRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonRoleArchiveRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonRoleRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsSyncKeyRepository;
+import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectChecksumRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository;
@@ -145,10 +147,16 @@ public class RegistryRepositoryService {
     private NameTypeRepository nameTypeRepository;
 
     @Autowired
+    private PronounTypeRepository pronounTypeRepository;
+
+    @Autowired
     private PartialMatchRepository partialMatchRepository;
 
     @Autowired
     private PersonNameRepository personNameRepository;
+
+    @Autowired
+    private PersonPronounRepository personPronounRepository;
 
     @Autowired
     private PersonRepository personRepository;
@@ -379,6 +387,14 @@ public class RegistryRepositoryService {
         this.nameTypeRepository = nameTypeRepository;
     }
 
+    public PronounTypeRepository getPronounTypeRepository() {
+        return pronounTypeRepository;
+    }
+
+    public void setPronounTypeRepository(PronounTypeRepository pronounTypeRepository) {
+        this.pronounTypeRepository = pronounTypeRepository;
+    }
+
     public PartialMatchRepository getPartialMatchRepository() {
         return partialMatchRepository;
     }
@@ -393,6 +409,14 @@ public class RegistryRepositoryService {
 
     public void setPersonNameRepository(PersonNameRepository personNameRepository) {
         this.personNameRepository = personNameRepository;
+    }
+
+    public PersonPronounRepository getPersonPronounRepository() {
+        return personPronounRepository;
+    }
+
+    public void setPersonPronounRepository(PersonPronounRepository personPronounRepository) {
+        this.personPronounRepository = personPronounRepository;
     }
 
     public PersonRepository getPersonRepository() {

@@ -101,6 +101,12 @@ public class Person implements ValidateOnFlush {
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonName> names = new RebuildableTreeSet<>();
 
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OrderBy("id")
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonPronounCollectionType.class)
+    @JsonDeserialize(as = RebuildableTreeSet.class)
+    private RebuildableSortedSet<PersonPronoun> pronouns = new RebuildableTreeSet<>();
+
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     //@OrderBy("id")
@@ -207,6 +213,18 @@ public class Person implements ValidateOnFlush {
     public Person removeFromNames(PersonName obj) {
         obj.setPerson(null);
         names.remove(obj);
+        return this;
+    }
+
+    public Person addToPronouns(PersonPronoun obj) {
+        obj.setPerson(this);
+        pronouns.add(obj);
+        return this;
+    }
+
+    public Person removeFromPronouns(PersonPronoun obj) {
+        obj.setPerson(null);
+        pronouns.remove(obj);
         return this;
     }
 
@@ -360,6 +378,16 @@ public class Person implements ValidateOnFlush {
     public boolean safeRemoveFromNames(PersonName obj) {
         obj.setPerson(null);
         return safeRemoveFrom(getNames(), obj);
+    }
+
+    public boolean safeAddToPronouns(PersonPronoun obj) {
+        obj.setPerson(this);
+        return safeAddTo(getPronouns(), obj);
+    }
+
+    public boolean safeRemoveFromPronouns(PersonPronoun obj) {
+        obj.setPerson(null);
+        return safeRemoveFrom(getPronouns(), obj);
     }
 
     public boolean safeAddToDatesOfBirth(DateOfBirth obj) {
@@ -584,6 +612,14 @@ public class Person implements ValidateOnFlush {
 
     public void setNames(RebuildableSortedSet<PersonName> names) {
         this.names = names;
+    }
+
+    public RebuildableSortedSet<PersonPronoun> getPronouns() {
+        return pronouns;
+    }
+
+    public void setPronouns(RebuildableSortedSet<PersonPronoun> pronouns) {
+        this.pronouns = pronouns;
     }
 
     public RebuildableSortedSet<Identifier> getIdentifiers() {
