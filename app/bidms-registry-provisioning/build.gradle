@@ -49,7 +49,7 @@ dependencies {
     // JMS client
     implementation "org.springframework:spring-jms"
     implementation "org.apache.activemq:activemq-client"
-    implementation "org.messaginghub:pooled-jms"
+    implementation "org.apache.activemq:activemq-pool"
     implementation "org.apache.commons:commons-collections4"
 
     // Apache HTTP client to be used for RestTemplates
