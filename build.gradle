@@ -76,9 +76,6 @@ allprojects {
         versions = gradle.versions
     }
 
-    // TEMPORARY FIXME for Spring Boot 3.1.0 - Hibernate 6.3 fixes a bug present in Hibernate 6.2 (triggered by JobAppointment joined subclass).
-    // https://hibernate.atlassian.net/browse/HHH-16593
-    ext['hibernate.version'] = '6.3.1.Final'
     ext['activemq.version'] = versions.activemq
 
     repositories {
@@ -178,6 +175,16 @@ subprojects {
     boolean isSubproject = bidmsProjectType == BidmsProjectType.SUBPROJECT
     if (isSubproject) {
         apply plugin: 'groovy'
+
+        tasks.withType(GroovyCompile).configureEach {
+            // In order to remove this, will have to go through and change some
+            // @RequestParam and/or @PathVariable annotations to include the "name"
+            // attribute, especially in cases where the controller method contains
+            // multiple parameters of the same type (e.g., a controller method with
+            // two or more Integer parameters.) This behavior changed starting with
+            // Spring Boot 3.2.
+            groovyOptions.parameters = true
+        }
 
         assert licenseFile
         assert noticeFile
