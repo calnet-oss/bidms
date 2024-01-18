@@ -30,13 +30,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import edu.berkeley.bidms.common.json.mod.AddSerializationPropertyModification
+import edu.berkeley.bidms.common.json.mod.RemoveSerializationPropertyModification
 import edu.berkeley.bidms.common.json.mod.jackson.ObjectSerializerPropertiesModifier
 import spock.lang.Specification
 
 class SerializationModificationSpec extends Specification {
 
     static final Person person = new Person(
-            telephone: new Telephone(id: 1, telephone: "555-5555"),
+            telephone: new Telephone(id: 1, telephoneTypeId: 123, telephone: "555-5555"),
             email: new Email(id: 1, emailAddress: "test@test.com")
     )
 
@@ -51,6 +52,9 @@ class SerializationModificationSpec extends Specification {
         map.email.emailAddress == "test@test.com"
         !map.email.id
 
+        and: "telephone does contain telephoneTypeId"
+        map.telephone.telephoneTypeId == 123
+
         and: "expected other data is present"
         map.email.emailAddress == "test@test.com"
         map.telephone.telephone == "555-5555"
@@ -61,7 +65,12 @@ class SerializationModificationSpec extends Specification {
         given: "a mapper with a serialization modification"
         def objectMapper = JsonMapper.builder()
                 .addModule(new SimpleModule().setSerializerModifier(new ObjectSerializerPropertiesModifier(
+                        // add serialization of Email.id
                         new AddSerializationPropertyModification("id", Email)
+                )))
+                .addModule(new SimpleModule().setSerializerModifier(new ObjectSerializerPropertiesModifier(
+                        // remove serialization of Telephone.telephoneTypeId
+                        new RemoveSerializationPropertyModification("telephoneTypeId", Telephone)
                 )))
                 .build()
 
@@ -70,6 +79,9 @@ class SerializationModificationSpec extends Specification {
 
         then: "email does contain id"
         map.email.id == 1
+
+        and: "telephone does not contain telephoneTypeId"
+        !map.telephone.telephoneTypeId
 
         and: "expected other data is present"
         map.email.emailAddress == "test@test.com"
@@ -81,6 +93,8 @@ class SerializationModificationSpec extends Specification {
         // id not included in the serialization
         @JsonIgnore
         long id
+
+        Long telephoneTypeId
 
         String telephone
     }

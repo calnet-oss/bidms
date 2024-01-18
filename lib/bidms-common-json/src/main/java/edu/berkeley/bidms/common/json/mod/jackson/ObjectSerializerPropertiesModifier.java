@@ -29,6 +29,7 @@ package edu.berkeley.bidms.common.json.mod.jackson;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.introspect.POJOPropertyBuilder;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import edu.berkeley.bidms.common.json.mod.AddSerializationPropertyModification;
+import edu.berkeley.bidms.common.json.mod.RemoveSerializationPropertyModification;
 import edu.berkeley.bidms.common.json.mod.SerializationModification;
 
 import java.util.List;
@@ -45,7 +47,7 @@ import java.util.List;
  * overrides the Jackson annotations on a class.  For example, this can be
  * used to add serialization of a particular object property that may be
  * otherwise disabled by the Jackson annotations on the class.
- *
+ * <p>
  * Usage:
  * <pre>
  *     static final List<Class<?>> INCLUDE_ID_FOR_CLASSES = [Email.class];
@@ -74,6 +76,9 @@ public class ObjectSerializerPropertiesModifier extends BeanSerializerModifier {
         if (mod instanceof AddSerializationPropertyModification &&
                 ((AddSerializationPropertyModification) mod).getClassesWithProperty().contains(beanDesc.getType().getRawClass())) {
             addProperty(config, beanDesc, ((AddSerializationPropertyModification) mod).getPropertyName(), beanProperties);
+        } else if (mod instanceof RemoveSerializationPropertyModification &&
+                ((RemoveSerializationPropertyModification) mod).getClassesWithProperty().contains(beanDesc.getType().getRawClass())) {
+            removeProperty(config, beanDesc, ((RemoveSerializationPropertyModification) mod).getPropertyName(), beanProperties);
         }
         return beanProperties;
     }
@@ -89,21 +94,49 @@ public class ObjectSerializerPropertiesModifier extends BeanSerializerModifier {
      */
     @SuppressWarnings("GrMethodMayBeStatic")
     private void addProperty(SerializationConfig config, BeanDescription beanDesc, String propertyName, List<BeanPropertyWriter> beanProperties) {
-        var classDef = AnnotatedClassResolver.resolve(config, beanDesc.getType(), config);
-        final String getterMethodName = "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
-        AnnotatedMethod propertyGetter = classDef.findMethod(getterMethodName, null);
-        if (propertyGetter == null) {
-            throw new RuntimeException("Class " + beanDesc.getType().getTypeName() + " does not have method " + getterMethodName);
-        }
-
-        var pname = new PropertyName(propertyName);
-        var propDef = new POJOPropertyBuilder(config, config.getAnnotationIntrospector(), true, pname);
-        propDef.addGetter(propertyGetter, pname, false, true, false);
-
-        ((BasicBeanDescription) beanDesc).addProperty(propDef);
-
+        final PropertyInternals pint = new PropertyInternals();
+        pint.init(config, beanDesc, propertyName);
+        ((BasicBeanDescription) beanDesc).addProperty(pint.propDef);
         beanProperties.add(
-                new BeanPropertyWriter(propDef, propDef.getAccessor(), beanDesc.getClassAnnotations(), config.constructType(propertyGetter.getRawReturnType()), null, null, null, false, null, null)
+                new BeanPropertyWriter(pint.propDef, pint.propDef.getAccessor(), beanDesc.getClassAnnotations(), config.constructType(pint.propertyGetter.getRawReturnType()), null, null, null, false, null, null)
         );
+    }
+
+    /**
+     * This is for the purposes of configuring Jackson to remove serialization
+     * of a POJO property.
+     *
+     * @param config         Jackson serialization config from the object mapper
+     * @param beanDesc       A Jackson object that describes the POJO class.
+     * @param propertyName   The name of the property in the POJO class to not serialize.
+     * @param beanProperties A mutable list for Jackson that will be modified to remove the property that is not be serialized.
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    private void removeProperty(SerializationConfig config, BeanDescription beanDesc, String propertyName, List<BeanPropertyWriter> beanProperties) {
+        final PropertyInternals pint = new PropertyInternals();
+        pint.init(config, beanDesc, propertyName);
+        ((BasicBeanDescription) beanDesc).removeProperty(propertyName);
+        var matches = beanProperties.stream().filter(bp -> bp.getFullName().equals(pint.fullPropertyName)).toList();
+        beanProperties.removeAll(matches);
+    }
+
+    private static class PropertyInternals {
+        AnnotatedClass classDef;
+        AnnotatedMethod propertyGetter;
+        PropertyName fullPropertyName;
+        POJOPropertyBuilder propDef;
+
+        void init(SerializationConfig config, BeanDescription beanDesc, String propertyName) {
+            this.classDef = AnnotatedClassResolver.resolve(config, beanDesc.getType(), config);
+            final String getterMethodName = "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+            this.propertyGetter = classDef.findMethod(getterMethodName, null);
+            if (propertyGetter == null) {
+                throw new RuntimeException("Class " + beanDesc.getType().getTypeName() + " does not have method " + getterMethodName);
+            }
+
+            this.fullPropertyName = new PropertyName(propertyName);
+            this.propDef = new POJOPropertyBuilder(config, config.getAnnotationIntrospector(), true, fullPropertyName);
+            propDef.addGetter(propertyGetter, fullPropertyName, false, true, false);
+        }
     }
 }
