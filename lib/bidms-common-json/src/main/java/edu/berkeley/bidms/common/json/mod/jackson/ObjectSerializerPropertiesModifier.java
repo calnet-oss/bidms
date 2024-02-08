@@ -76,9 +76,13 @@ public class ObjectSerializerPropertiesModifier extends BeanSerializerModifier {
         if (mod instanceof AddSerializationPropertyModification &&
                 ((AddSerializationPropertyModification) mod).getClassesWithProperty().contains(beanDesc.getType().getRawClass())) {
             addProperty(config, beanDesc, ((AddSerializationPropertyModification) mod).getPropertyName(), beanProperties);
-        } else if (mod instanceof RemoveSerializationPropertyModification &&
-                ((RemoveSerializationPropertyModification) mod).getClassesWithProperty().contains(beanDesc.getType().getRawClass())) {
-            removeProperty(config, beanDesc, ((RemoveSerializationPropertyModification) mod).getPropertyName(), beanProperties);
+        } else if (mod instanceof RemoveSerializationPropertyModification) {
+            RemoveSerializationPropertyModification rm = (RemoveSerializationPropertyModification) mod;
+            for (RemoveSerializationPropertyModification.PropertyForClasses props : rm.getProperties()) {
+                if (props.getClassesWithProperty().contains(beanDesc.getType().getRawClass())) {
+                    removeProperty(config, beanDesc, props.getPropertyName(), beanProperties);
+                }
+            }
         }
         return beanProperties;
     }
