@@ -52,7 +52,7 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties({"uid", "person", "sorObject"})
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "addressTypeId", "address1", "address2", "address3", "city", "regionState", "postalCode", "country"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "addressTypeId", "address1", "address2", "address3", "city", "regionState", "postalCode", "country", "roomNumber", "mailCode"}))
 @Entity
 public class Address implements Comparable<Address> {
 
@@ -120,13 +120,22 @@ public class Address implements Comparable<Address> {
     @Column(length = 255)
     private String country;
 
+    @Size(max = 95)
+    @Column(length = 95)
+    private String roomNumber;
+
+    @Size(max = 64)
+    @Column(length = 64)
+    private String mailCode;
+
     private static final int HCB_INIT_ODDRAND = 1943320795;
     private static final int HCB_MULT_ODDRAND = 88274277;
 
     private Object[] getHashCodeObjects() {
         return new Object[]{
                 uid, addressType, sorObjectId, address1, address2,
-                address3, city, regionState, postalCode, country
+                address3, city, regionState, postalCode, country,
+                roomNumber, mailCode
         };
     }
 
@@ -275,6 +284,26 @@ public class Address implements Comparable<Address> {
     public void setCountry(String country) {
         boolean changed = !Objects.equals(country, this.country);
         this.country = country;
+        if (changed) notifyPerson();
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        boolean changed = !Objects.equals(country, this.roomNumber);
+        this.roomNumber = roomNumber;
+        if (changed) notifyPerson();
+    }
+
+    public String getMailCode() {
+        return mailCode;
+    }
+
+    public void setMailCode(String mailCode) {
+        boolean changed = !Objects.equals(country, this.mailCode);
+        this.mailCode = mailCode;
         if (changed) notifyPerson();
     }
 }

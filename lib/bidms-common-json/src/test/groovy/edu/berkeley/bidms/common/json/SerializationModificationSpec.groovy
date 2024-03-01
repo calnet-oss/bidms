@@ -70,7 +70,7 @@ class SerializationModificationSpec extends Specification {
                 )))
                 .addModule(new SimpleModule().setSerializerModifier(new ObjectSerializerPropertiesModifier(
                         // remove serialization of Telephone.telephoneTypeId
-                        new RemoveSerializationPropertyModification("telephoneTypeId", Telephone)
+                        new RemoveSerializationPropertyModification(new RemoveSerializationPropertyModification.PropertyForClasses("telephoneTypeId", Telephone))
                 )))
                 .build()
 

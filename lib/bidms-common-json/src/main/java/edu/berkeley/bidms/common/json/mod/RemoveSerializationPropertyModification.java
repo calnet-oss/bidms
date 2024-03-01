@@ -33,23 +33,40 @@ import java.util.List;
  * To remove serialization of a property name that exists for one or more classes.
  */
 public class RemoveSerializationPropertyModification implements SerializationModification {
-    private final String propertyName;
-    private final List<Class<?>> classesWithProperty;
 
-    public RemoveSerializationPropertyModification(String propertyName, List<Class<?>> classesWithProperty) {
-        this.propertyName = propertyName;
-        this.classesWithProperty = classesWithProperty;
+    private final List<PropertyForClasses> properties;
+
+    public RemoveSerializationPropertyModification(List<PropertyForClasses> properties) {
+        this.properties = properties;
     }
 
-    public RemoveSerializationPropertyModification(String propertyName, Class<?>... classesWithProperty) {
-        this(propertyName, Arrays.asList(classesWithProperty));
+    public RemoveSerializationPropertyModification(PropertyForClasses... properties) {
+        this(Arrays.asList(properties));
     }
 
-    public String getPropertyName() {
-        return propertyName;
+    public List<PropertyForClasses> getProperties() {
+        return properties;
     }
 
-    public List<Class<?>> getClassesWithProperty() {
-        return classesWithProperty;
+    public static class PropertyForClasses {
+        private final String propertyName;
+        private final List<Class<?>> classesWithProperty;
+
+        public PropertyForClasses(String propertyName, List<Class<?>> classesWithProperty) {
+            this.propertyName = propertyName;
+            this.classesWithProperty = classesWithProperty;
+        }
+
+        public PropertyForClasses(String propertyName, Class<?>... classesWithProperty) {
+            this(propertyName, Arrays.asList(classesWithProperty));
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public List<Class<?>> getClassesWithProperty() {
+            return classesWithProperty;
+        }
     }
 }
