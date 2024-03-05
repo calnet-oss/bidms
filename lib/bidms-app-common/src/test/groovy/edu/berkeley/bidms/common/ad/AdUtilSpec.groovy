@@ -28,6 +28,8 @@ package edu.berkeley.bidms.common.ad
 
 import spock.lang.Specification
 
+import java.text.SimpleDateFormat
+
 class AdUtilSpec extends Specification {
 
     void "test convertObjectGUIDToUUID"() {
@@ -36,5 +38,48 @@ class AdUtilSpec extends Specification {
 
         then:
         result.toString() == "7e2d0093-eaa4-47fb-9ecc-64e4e67e36c4"
+    }
+
+    void "test ad1601EpochMilliseconds"() {
+        given:
+        SimpleDateFormat msEpochSdf = new SimpleDateFormat("yyyyMMddHHmmss'Z'")
+        msEpochSdf.setTimeZone(TimeZone.getTimeZone("UTC"))
+
+        when:
+        // January 1, 1601 (UTC) which is the epoch time that Active Directory uses for attributes like lastLogonTimestamp
+        def msEpoch = msEpochSdf.parse("16010101000000Z").time
+
+        then:
+        msEpoch == AdUtil.ad1601EpochMilliseconds
+    }
+
+    void "test convert1601TimestampToDate"() {
+        given:
+        // https://www.epochconverter.com/ldap says the following is: GMT: Friday, March 1, 2024 5:29:10 PM
+        // On a windows machine, w32tm.exe /ntte says this is 17:29:10.6137535 - 3/1/2024
+        // Rounded up to milliseconds, this would be 17:29:10.614.
+        String timestamp = "133537877506137535"
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS'Z'")
+
+        when:
+        Date asDate = AdUtil.convert1601TimestampToDate(timestamp)
+        String asFormattedString = formatter.format(asDate)
+
+        then:
+        asFormattedString == "20240301092910.614Z"
+    }
+
+    // reverse of the above test except the result is at ceiling millisecond precision rather than nanosecond precision
+    void "test convertDateTo1601TimestampString"() {
+        given:
+        String asFormattedString = "20240301092910.614Z"
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS'Z'")
+        Date asDate = formatter.parse(asFormattedString)
+
+        when:
+        String adTimestampString = AdUtil.convertDateTo1601TimestampString(asDate)
+
+        then:
+        adTimestampString == "133537877506140000"
     }
 }

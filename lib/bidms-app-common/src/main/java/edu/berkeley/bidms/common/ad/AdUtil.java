@@ -26,13 +26,23 @@
  */
 package edu.berkeley.bidms.common.ad;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.UUID;
 
 /**
  * Miscellaneous utility methods for handling Active Directory data.
  */
 public abstract class AdUtil {
+
+    /**
+     * milliseconds since January 1, 1601 (UTC) which is the epoch time that
+     * Active Directory uses for attributes like lastLogonTimestamp
+     */
+    private static final long AD_1601_EPOCH = -11644473600000L;
 
     /**
      * This converts a raw objectGUID byte array into a UUID.  The UUID in
@@ -53,5 +63,67 @@ public abstract class AdUtil {
         };
         ByteBuffer bb = ByteBuffer.wrap(rearranged);
         return new UUID(bb.getLong(), bb.getLong());
+    }
+
+    /**
+     * Get the milliseconds since January 1, 1601 (UTC) which is the epoch
+     * time that Active Directory uses for attributes like
+     * lastLogonTimestamp
+     *
+     * @return milliseconds since January 1, 1601 (UTC)
+     */
+    public static long getAd1601EpochMilliseconds() {
+        return AD_1601_EPOCH;
+    }
+
+    /**
+     * Convert an AD "1601 timestamp" string (which is a large integer) into
+     * a Date object.  This is the timestamp style used for attributes such
+     * as lastLogonTimestamp.
+     * <p>
+     * Note the AD timestamps may have nanosecond precision but Java Date
+     * objects only have millisecond precision, so some precision is lost
+     * with this conversion.  If there are any nanoseconds, this converter
+     * will use the ceiling to the next millisecond.
+     *
+     * @param adTimestamp The ad "1601 timestamp" as a string.
+     * @return Date representing the timestamp with millisecond precision.  Some precision is lost with conversion.
+     */
+    public static Date convert1601TimestampToDate(String adTimestamp) {
+        // lastLogonTimestamp - "The LastLogonTimestamp attribute in Active
+        // Directory stores the value as a large integer representing the
+        // number of 100-nanosecond intervals since January 1, 1601 (UTC)."
+        // Sources:
+        // https://learn.microsoft.com/en-us/answers/questions/1327515/lastlogontimestamp-attribute
+        // https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/convert-datetime-attributes-to-standard-format
+        // (Online converter tool) https://www.epochconverter.com/ldap
+        BigDecimal asBig = new BigDecimal(adTimestamp);
+        BigDecimal javaMilliseconds = (asBig.divide(BigDecimal.valueOf(10000), 4, RoundingMode.UNNECESSARY)).add(BigDecimal.valueOf(getAd1601EpochMilliseconds()));
+        // If there are any nanoseconds, use the ceiling to the next millisecond.  Java Date objects have millisecond precision.
+        return new Date(javaMilliseconds.setScale(0, RoundingMode.CEILING).longValueExact());
+    }
+
+    /**
+     * Converts a Java Date object to an AD "1601 timestamp" integer.  This
+     * is the timestamp style used for attributes such as
+     * lastLogonTimestamp.
+     *
+     * @param date Date object to convert to a AD timestamp integer.
+     * @return An AD "1601 timestamp" as a BigInteger.
+     */
+    public static BigInteger convertDateTo1601Timestamp(Date date) {
+        return ((BigInteger.valueOf(date.getTime()).subtract(BigInteger.valueOf(getAd1601EpochMilliseconds()))).multiply(BigInteger.valueOf(10000)));
+    }
+
+    /**
+     * Converts a Java Date object to an AD "1601 timestamp" integer string.
+     * This is the timestamp style used for attributes such as
+     * lastLogonTimestamp.
+     *
+     * @param date Date object to convert to a AD timestamp integer string.
+     * @return An AD "1601 timestamp" as an integer string.
+     */
+    public static String convertDateTo1601TimestampString(Date date) {
+        return convertDateTo1601Timestamp(date).toString();
     }
 }
