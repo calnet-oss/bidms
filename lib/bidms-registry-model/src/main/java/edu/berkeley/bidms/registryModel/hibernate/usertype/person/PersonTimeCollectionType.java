@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Regents of the University of California and
+ * Copyright (c) 2024, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,35 +24,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.registryModel.model.type;
+package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
-import edu.berkeley.bidms.app.registryModel.model.PronounType;
-import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository;
+import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-/**
- * The different types of pronouns from SOR JSON that translates into a
- * PronounType
- */
-public enum PronounTypeEnum implements TypeEnum<PronounType, PronounTypeRepository> {
-    /* no "generic" pronoun types yet */;
+public class PersonTimeCollectionType extends RebuildableSortedSetType {
 
-    public PronounType get(PronounTypeRepository repo) {
-        PronounType pronounType = repo.findByPronounTypeName(name());
-        if (pronounType == null) {
-            throw new RuntimeException("PronounType " + name() + "could not be found");
-        }
-        return pronounType;
-    }
+    private static final String PERSON_FIELD = "times";
+    private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;
 
-    public String getName() {
-        return name();
-    }
-
-    public Integer getId(PronounTypeRepository repo) {
-        return get(repo).getId();
-    }
-
-    public static PronounTypeEnum getEnum(PronounType t) {
-        return valueOf(PronounTypeEnum.class, t.getPronounTypeName());
+    public PersonTimeCollectionType() {
+        super(ROLE, null, null);
     }
 }

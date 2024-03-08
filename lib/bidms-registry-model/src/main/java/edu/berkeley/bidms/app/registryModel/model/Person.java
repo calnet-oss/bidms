@@ -39,7 +39,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CollectionType;
 import org.springframework.validation.Validator;
@@ -191,6 +190,13 @@ public class Person implements ValidateOnFlush {
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.SORTokenCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<SORToken> sorTokens = new RebuildableTreeSet<>();
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@OrderBy("id")
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonTimeCollectionType.class)
+    @JsonDeserialize(as = RebuildableTreeSet.class)
+    private RebuildableSortedSet<PersonTime> times = new RebuildableTreeSet<>();
 
     public Person addToAddresses(Address obj) {
         obj.setPerson(this);
@@ -360,6 +366,18 @@ public class Person implements ValidateOnFlush {
         return this;
     }
 
+    public Person addToTimes(PersonTime obj) {
+        obj.setPerson(this);
+        times.add(obj);
+        return this;
+    }
+
+    public Person removeFromSORTokens(PersonTime obj) {
+        obj.setPerson(null);
+        times.remove(obj);
+        return this;
+    }
+
     public boolean safeAddToAddresses(Address obj) {
         obj.setPerson(this);
         return safeAddTo(getAddresses(), obj);
@@ -508,6 +526,16 @@ public class Person implements ValidateOnFlush {
     public boolean safeRemoveFromSORTokens(SORToken obj) {
         obj.setPerson(null);
         return safeRemoveFrom(getSorTokens(), obj);
+    }
+
+    public boolean safeAddToTimes(PersonTime obj) {
+        obj.setPerson(this);
+        return safeAddTo(getTimes(), obj);
+    }
+
+    public boolean safeRemoveFromTimes(PersonTime obj) {
+        obj.setPerson(null);
+        return safeRemoveFrom(getTimes(), obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -708,5 +736,13 @@ public class Person implements ValidateOnFlush {
 
     public void setSorTokens(RebuildableSortedSet<SORToken> sorTokens) {
         this.sorTokens = sorTokens;
+    }
+
+    public RebuildableSortedSet<PersonTime> getTimes() {
+        return times;
+    }
+
+    public void setTimes(RebuildableSortedSet<PersonTime> times) {
+        this.times = times;
     }
 }

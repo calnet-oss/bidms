@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Regents of the University of California and
+ * Copyright (c) 2024, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -26,33 +26,33 @@
  */
 package edu.berkeley.bidms.app.registryModel.model.type;
 
-import edu.berkeley.bidms.app.registryModel.model.PronounType;
-import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository;
+import edu.berkeley.bidms.app.registryModel.model.TimeType;
+import edu.berkeley.bidms.app.registryModel.repo.TimeTypeRepository;
 
 /**
- * The different types of pronouns from SOR JSON that translates into a
- * PronounType
+ * The different types of times from SOR JSON that translate into a
+ * TimeType.
  */
-public enum PronounTypeEnum implements TypeEnum<PronounType, PronounTypeRepository> {
-    /* no "generic" pronoun types yet */;
+public enum TimeTypeEnum implements TypeEnum<TimeType, TimeTypeRepository> {
+    adLastLogonTime;
 
-    public PronounType get(PronounTypeRepository repo) {
-        PronounType pronounType = repo.findByPronounTypeName(name());
-        if (pronounType == null) {
-            throw new RuntimeException("PronounType " + name() + "could not be found");
+    public TimeType get(TimeTypeRepository repo) {
+        TimeType timeType = repo.findByTimeTypeName(name());
+        if (timeType == null) {
+            throw new RuntimeException("TimeType " + name() + " could not be found");
         }
-        return pronounType;
+        return timeType;
     }
 
     public String getName() {
         return name();
     }
 
-    public Integer getId(PronounTypeRepository repo) {
+    public Integer getId(TimeTypeRepository repo) {
         return get(repo).getId();
     }
 
-    public static PronounTypeEnum getEnum(PronounType t) {
-        return valueOf(PronounTypeEnum.class, t.getPronounTypeName());
+    public static TimeTypeEnum getEnum(TimeType t) {
+        return valueOf(TimeTypeEnum.class, t.getTimeTypeName());
     }
 }
