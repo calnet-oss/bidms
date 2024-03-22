@@ -44,7 +44,6 @@ dependencies {
     implementation project(rootProject.bidmsBootInitDep)
     implementation project(rootProject.bidmsSpringSecurityImplDep)
 
-    implementation project(rootProject.bidmsSorGatewayServiceDep)
     implementation project(rootProject.bidmsMatchEngineDep)
     implementation project(rootProject.bidmsMatchServiceDep)
     implementation project(rootProject.bidmsRegistryProvisioningDep)
