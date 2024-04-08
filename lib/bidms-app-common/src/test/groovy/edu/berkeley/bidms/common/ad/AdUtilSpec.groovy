@@ -29,6 +29,7 @@ package edu.berkeley.bidms.common.ad
 import spock.lang.Specification
 
 import java.text.SimpleDateFormat
+import java.time.Instant
 
 class AdUtilSpec extends Specification {
 
@@ -42,38 +43,49 @@ class AdUtilSpec extends Specification {
 
     void "test ad1601EpochMilliseconds"() {
         given:
-        SimpleDateFormat msEpochSdf = new SimpleDateFormat("yyyyMMddHHmmss'Z'")
+        SimpleDateFormat msEpochSdf = new SimpleDateFormat("yyyyMMddHHmmssZ")
         msEpochSdf.setTimeZone(TimeZone.getTimeZone("UTC"))
 
         when:
         // January 1, 1601 (UTC) which is the epoch time that Active Directory uses for attributes like lastLogonTimestamp
-        def msEpoch = msEpochSdf.parse("16010101000000Z").time
+        def msEpoch = msEpochSdf.parse("16010101000000-0000").time
 
         then:
         msEpoch == AdUtil.ad1601EpochMilliseconds
     }
 
-    void "test convert1601TimestampToDate"() {
+    void "test convert1601TimestampToInstant"() {
         given:
         // https://www.epochconverter.com/ldap says the following is: GMT: Friday, March 1, 2024 5:29:10 PM
         // On a windows machine, w32tm.exe /ntte says this is 17:29:10.6137535 - 3/1/2024
         // Rounded up to milliseconds, this would be 17:29:10.614.
         String timestamp = "133537877506137535"
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS'Z'")
+
+        when:
+        Instant instant = AdUtil.convert1601TimestampToInstant(timestamp)
+
+        then:
+        instant.toString() == "2024-03-01T17:29:10.613753500Z"
+    }
+
+    void "test convert1601TimestampToDate"() {
+        given:
+        String timestamp = "133537877506137535"
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ")
 
         when:
         Date asDate = AdUtil.convert1601TimestampToDate(timestamp)
         String asFormattedString = formatter.format(asDate)
 
         then:
-        asFormattedString == "20240301092910.614Z"
+        asFormattedString == "20240301092910.614-0800"
     }
 
     // reverse of the above test except the result is at ceiling millisecond precision rather than nanosecond precision
     void "test convertDateTo1601TimestampString"() {
         given:
-        String asFormattedString = "20240301092910.614Z"
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSS'Z'")
+        String asFormattedString = "20240301092910.614-0800"
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ")
         Date asDate = formatter.parse(asFormattedString)
 
         when:

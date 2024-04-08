@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Regents of the University of California and
+ * Copyright (c) 2024, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,35 +24,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.registryModel.model.type;
+package edu.berkeley.bidms.app.registryModel.repo;
 
-import edu.berkeley.bidms.app.registryModel.model.PronounType;
-import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository;
+import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.PersonTime;
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
+import edu.berkeley.bidms.app.registryModel.model.TimeType;
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+
+import java.util.List;
 
 /**
- * The different types of pronouns from SOR JSON that translates into a
- * PronounType
+ * Repository for {@link PersonTime} entities.
  */
-public enum PronounTypeEnum implements TypeEnum<PronounType, PronounTypeRepository> {
-    /* no "generic" pronoun types yet */;
+public interface PersonTimeRepository extends ExtendedRepository<PersonTime, Long> {
+    List<PersonTime> findAllByPerson(Person person);
 
-    public PronounType get(PronounTypeRepository repo) {
-        PronounType pronounType = repo.findByPronounTypeName(name());
-        if (pronounType == null) {
-            throw new RuntimeException("PronounType " + name() + "could not be found");
-        }
-        return pronounType;
-    }
+    List<PersonTime> findAllBySorObject(SORObject sorObject);
 
-    public String getName() {
-        return name();
-    }
+    PersonTime findByPersonAndTimeType(Person person, TimeType timeType);
 
-    public Integer getId(PronounTypeRepository repo) {
-        return get(repo).getId();
-    }
-
-    public static PronounTypeEnum getEnum(PronounType t) {
-        return valueOf(PronounTypeEnum.class, t.getPronounTypeName());
-    }
 }

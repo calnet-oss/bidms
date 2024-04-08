@@ -51,6 +51,7 @@ import edu.berkeley.bidms.app.registryModel.repo.PersonRoleArchiveRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonRoleRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsSyncKeyRepository;
+import edu.berkeley.bidms.app.registryModel.repo.PersonTimeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectChecksumRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository;
@@ -59,6 +60,7 @@ import edu.berkeley.bidms.app.registryModel.repo.SORTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.SORTokenTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TelephoneTypeRepository;
+import edu.berkeley.bidms.app.registryModel.repo.TimeTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.TrackStatusRepository;
 import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryRoleRepository;
 import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryUserRepository;
@@ -202,6 +204,12 @@ public class RegistryRepositoryService {
 
     @Autowired
     private MatchHistoryRepository matchHistoryRepository;
+
+    @Autowired
+    private TimeTypeRepository timeTypeRepository;
+
+    @Autowired
+    private PersonTimeRepository personTimeRepository;
 
     public EntityManager getEntityManager() {
         return entityManager;
@@ -537,5 +545,21 @@ public class RegistryRepositoryService {
 
     public void setMatchHistoryRepository(MatchHistoryRepository matchHistoryRepository) {
         this.matchHistoryRepository = matchHistoryRepository;
+    }
+
+    public TimeTypeRepository getTimeTypeRepository() {
+        return timeTypeRepository;
+    }
+
+    public void setTimeTypeRepository(TimeTypeRepository timeTypeRepository) {
+        this.timeTypeRepository = timeTypeRepository;
+    }
+
+    public PersonTimeRepository getPersonTimeRepository() {
+        return personTimeRepository;
+    }
+
+    public void setPersonTimeRepository(PersonTimeRepository personTimeRepository) {
+        this.personTimeRepository = personTimeRepository;
     }
 }
