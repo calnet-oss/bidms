@@ -134,7 +134,7 @@ class ProvisionController {
             AuditUtil.logAuditEvent(APP_NAME, new AuditFailEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
                     op: (uid ? AuditOperation.provisionUid : AuditOperation.bulkProvision),
                     errorMsg: e.message, forUid: uid, attrs: getAuditAttrs(synchronousDownstream)))
-            throw new ServerErrorException(e.message)
+            throw new ServerErrorException(e.message, e)
         }
         finally {
             log.debug("PROFILE: save(): EXIT")

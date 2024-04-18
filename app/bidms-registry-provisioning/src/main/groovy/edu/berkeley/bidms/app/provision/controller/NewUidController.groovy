@@ -147,7 +147,7 @@ class NewUidController {
             AuditUtil.logAuditEvent(APP_NAME, new AuditFailEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
                     op: AuditOperation.newUid,
                     errorMsg: e.message, attrs: getAuditAttrs(cmd.sorObjectId, cmd.synchronousDownstream, cmd.asynchronousQueue)))
-            throw new ServerErrorException(e.message)
+            throw new ServerErrorException(e.message, e)
         }
     }
 
