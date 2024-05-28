@@ -159,6 +159,10 @@ public class Identifier implements Comparable<Identifier> {
         this.id = id;
     }
 
+    public String getUid() {
+        return uid;
+    }
+
     public Person getPerson() {
         return person;
     }
