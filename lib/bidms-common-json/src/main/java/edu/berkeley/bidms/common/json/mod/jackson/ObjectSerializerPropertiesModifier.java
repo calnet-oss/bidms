@@ -49,7 +49,7 @@ import java.util.List;
  * otherwise disabled by the Jackson annotations on the class.
  * <p>
  * Usage:
- * <pre>
+ * <pre>{@code
  *     static final List<Class<?>> INCLUDE_ID_FOR_CLASSES = [Email.class];
  *     var objectMapper = JsonMapper.builder()
  *                 .addModule(new SimpleModule().setSerializerModifier(new ObjectSerializerPropertiesModifier(
@@ -58,7 +58,7 @@ import java.util.List;
  *                 .build();
  *     // objectMapper can then be used as usual, such as to convert the bean to a map
  *     objectMapper.convertValue(bean, Map.class);
- * </pre>
+ * }</pre>
  */
 public class ObjectSerializerPropertiesModifier extends BeanSerializerModifier {
 

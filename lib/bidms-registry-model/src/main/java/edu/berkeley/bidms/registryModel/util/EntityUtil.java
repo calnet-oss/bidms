@@ -134,7 +134,7 @@ public class EntityUtil {
      * {@link #isEqual(Object, Object[], Object, Object[])} except it is
      * typically called from an implementation of the {@link
      * Comparable#compareTo(Object)} method in an entity class to compare two
-     * entities. See {@link #genHashCode(int, int, Object[]) documentation
+     * entities. See {@link #genHashCode(int, int, Object[])} documentation
      * for a more detailed explanation of entity equality.
      *
      * @param left                 Entity object 1 of the equality

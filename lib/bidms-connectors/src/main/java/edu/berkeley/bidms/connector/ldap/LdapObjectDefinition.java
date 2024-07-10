@@ -114,7 +114,7 @@ public interface LdapObjectDefinition extends ObjectDefinition {
      * Returns an array of attribute names (with their dynamic indicators)
      * for which the values of these attributes are dynamically determined by
      * a callback that is assigned to the dynamic indicator.
-     * <p/>
+     * <p>
      * The strings in this array have the following naming convention:
      * <code>attributeName.indicator</code> where <i>attributeName</i> is
      * the attribute in the downstream system and <i>indicator</i> is a
@@ -124,7 +124,7 @@ public interface LdapObjectDefinition extends ObjectDefinition {
      * <i>attributeName.indicator</i> or <i>indicator</i> (for an indicator
      * that applies to all attributes) and the value is the instance of the
      * callback.
-     * <p/>
+     * </p>
      * 'dn.ONCREATE' may be included, which is a special case that will
      * disable renaming of the object.
      *
@@ -166,7 +166,7 @@ public interface LdapObjectDefinition extends ObjectDefinition {
      * attrMap["GROUPS.REMOVE"] = ["cn=groupC,dc=example,dc=com","cn=groupD,dc=example,dc=com"]
      * }</pre>
      * <p>
-     * This tells the connector to add the entry to <codegroupA</code> and
+     * This tells the connector to add the entry to <code>groupA</code> and
      * <code>groupB</code> and remove the entry from <code>groupC</code> and
      * <code>groupD</code>.
      * <p>
@@ -183,7 +183,7 @@ public interface LdapObjectDefinition extends ObjectDefinition {
      * these two meta attributes would append
      * <code>,dc=example,dc=com</code>.
      * <p>
-     * If the directory implements a <code>memberOf</code></code> virtual
+     * If the directory implements a <code>memberOf</code> virtual
      * attribute (such as Active Directory), then you could have your {@link
      * LdapDynamicAttributeCallback} handler compare the existing
      * <code>memberOf</code> list with your desired <code>memberOf</code>
