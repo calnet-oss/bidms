@@ -108,8 +108,7 @@ public class Identifier implements Comparable<Identifier> {
     /**
      * weight: lowest number (0) is highest priority identifier of the same
      * type.  Used by PrimaryIdentifierExecutor to aid in determining
-     * isPrimary.  HrmsIdentifierBuilder is an example where the weight is
-     * set to something non-zero.  Defaults to 0.
+     * isPrimary.
      */
     @Column
     private int weight = 0;
@@ -120,7 +119,7 @@ public class Identifier implements Comparable<Identifier> {
     private Object[] getHashCodeObjects() {
         return new Object[]{
                 uid, identifierType, sorObjectId, identifier, isActive,
-                isPrimary
+                isPrimary, weight
         };
     }
 
