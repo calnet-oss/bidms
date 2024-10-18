@@ -24,7 +24,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchengine.util
+package edu.berkeley.bidms.app.matchengine.util.sql
 
 import edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig
 

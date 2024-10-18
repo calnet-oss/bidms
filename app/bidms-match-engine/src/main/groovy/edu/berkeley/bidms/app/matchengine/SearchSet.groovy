@@ -30,7 +30,7 @@ import edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig
 import edu.berkeley.bidms.app.matchengine.config.MatchConfidence
 import edu.berkeley.bidms.app.matchengine.config.MatchConfig
 import edu.berkeley.bidms.app.matchengine.util.AttributeValueResolver
-import edu.berkeley.bidms.app.matchengine.util.SqlWhereResolver
+import edu.berkeley.bidms.app.matchengine.util.sql.SqlWhereResolver
 import groovy.transform.ToString
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
