@@ -31,7 +31,6 @@ import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import groovy.util.logging.Slf4j
-
 import jakarta.validation.constraints.NotNull
 
 @Slf4j
@@ -56,6 +55,8 @@ class SorKeyDataCommand {
     String email
     String dateOfBirth
     String socialSecurityNumber
+    List<String> emailAddresses
+    List<String> phoneNumbers
     Map otherIds = [:]
     Boolean matchOnly
     boolean synchronousDownstream = true
@@ -72,11 +73,14 @@ class SorKeyDataCommand {
     }
 
     Map<String, Object> getAttributes() {
-        def sorAttributes = NewSORConsumerService.MATCH_STRING_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] } +
-                NewSORConsumerService.MATCH_BOOLEAN_FIELDS.findAll { this[it] }.collectEntries { [it, this[it] as Boolean] }
+        Map<String, Object> sorAttributes = (
+                NewSORConsumerService.MATCH_STRING_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] } +
+                        NewSORConsumerService.MATCH_STRING_LIST_FIELDS.findAll { this[it] }.collectEntries { [it, this[it].toString()] } +
+                        NewSORConsumerService.MATCH_BOOLEAN_FIELDS.findAll { this[it] }.collectEntries { [it, this[it] as Boolean] }
+        ) as Map<String, Object>
         if (otherIds) {
             sorAttributes.otherIds = otherIds
         }
-        sorAttributes
+        return sorAttributes
     }
 }
