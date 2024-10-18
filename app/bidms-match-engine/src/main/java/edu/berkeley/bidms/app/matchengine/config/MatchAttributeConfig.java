@@ -245,6 +245,8 @@ public class MatchAttributeConfig {
 
     public static class InputSettings {
         private String fixedValue;
+        private boolean list;
+        private boolean stringList;
 
         public String getFixedValue() {
             return fixedValue;
@@ -254,10 +256,28 @@ public class MatchAttributeConfig {
             this.fixedValue = fixedValue;
         }
 
+        public boolean isList() {
+            return list;
+        }
+
+        public void setList(boolean list) {
+            this.list = list;
+        }
+
+        public boolean isStringList() {
+            return stringList;
+        }
+
+        public void setStringList(boolean stringList) {
+            this.stringList = stringList;
+        }
+
         @Override
         public String toString() {
             return "InputSettings{" +
                     "fixedValue='" + fixedValue + '\'' +
+                    ",list=" + list +
+                    ",stringList=" + stringList +
                     '}';
         }
     }

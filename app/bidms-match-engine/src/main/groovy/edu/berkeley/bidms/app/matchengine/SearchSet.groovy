@@ -31,7 +31,8 @@ import edu.berkeley.bidms.app.matchengine.config.MatchConfidence
 import edu.berkeley.bidms.app.matchengine.config.MatchConfig
 import edu.berkeley.bidms.app.matchengine.util.AttributeValueResolver
 import edu.berkeley.bidms.app.matchengine.util.sql.SqlWhereResolver
-import groovy.transform.ToString
+import edu.berkeley.bidms.app.matchengine.util.sql.WhereAndValues
+import edu.berkeley.bidms.app.matchengine.util.sql.WhereValue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -42,16 +43,26 @@ class SearchSet {
     List<MatchAttributeConfig> matchAttributeConfigs;
 
     WhereAndValues buildWhereClause(Map matchInput) {
-        List<WhereAndValue> whereAndValues = matchConfidence.confidence.collect { String name, MatchConfig.MatchType matchType ->
+        List<WhereValue> whereAndValues = matchConfidence.confidence.collect { String name, MatchConfig.MatchType matchType ->
             def config = matchAttributeConfigs.find { it.name == name }
             if (config.input?.fixedValue && matchInput[config.attribute] != config.input.fixedValue) {
                 // matchInput attribute value does not match the fixedValue
                 // in the 'input' part of the config
                 return null
             }
-            def value = AttributeValueResolver.getAttributeValue(config, matchInput)
-            def sqlValue = SqlWhereResolver.getWhereClause(matchType, config, value)
-            new WhereAndValue(sqlValue)
+            if (config.input?.list || config.input?.stringList) {
+                def values = config.input?.stringList ? AttributeValueResolver.getStringAttributeValues(config, matchInput) : AttributeValueResolver.getAttributeValues(config, matchInput)
+                if (values) {
+                    return SqlWhereResolver.getWhereListClause(matchType, config, values)
+                } else {
+                    // cannot have empty lists for the SQL IN clause
+                    return null
+                }
+            } else {
+                // gets resolved as a string value
+                def value = AttributeValueResolver.getAttributeValue(config, matchInput)
+                return SqlWhereResolver.getWhereClause(matchType, config, value)
+            }
         }
         log.trace("Found ${whereAndValues.size()} statements for ${matchConfidence.ruleName}. Now checking if all has a value")
         if (whereAndValues.every { it?.value != null }) {
@@ -60,40 +71,6 @@ class SearchSet {
             return returnValue
         } else {
             return null
-        }
-    }
-
-    @ToString(includeNames = true)
-    private static class WhereAndValue {
-        String sql
-        def value
-    }
-
-    @ToString(includeNames = true)
-    static class WhereAndValues {
-        String ruleName
-        String sql
-        List values
-
-        List getRedactedValues() {
-            // Rather crude method of redacting last-5 SSNs and DOBs:
-            // Anything that is 5 digits or in the format of yyyy-mm-dd.
-            values.collect { def input ->
-                if (input) {
-                    // SSN: 5 digits
-                    if (input.toString() =~ /^\d\d\d\d\d$/) {
-                        "*****"
-                    }
-                    // DOB: yyyy-mm-dd
-                    else if (input.toString() =~ /^\d\d\d\d-\d\d-\d\d$/) {
-                        "*****-**-**"
-                    } else {
-                        input
-                    }
-                } else {
-                    input
-                }
-            }
         }
     }
 }

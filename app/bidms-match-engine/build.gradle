@@ -41,6 +41,7 @@ dependencies {
     // Groovy
     implementation 'org.apache.groovy:groovy'
     implementation 'org.apache.groovy:groovy-sql'
+    implementation 'org.apache.groovy:groovy-dateutil'
 
     implementation "org.postgresql:postgresql"
 
