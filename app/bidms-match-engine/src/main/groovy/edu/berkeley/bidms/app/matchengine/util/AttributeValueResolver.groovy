@@ -32,7 +32,7 @@ class AttributeValueResolver {
     private AttributeValueResolver() {}
 
     static String getAttributeValue(MatchAttributeConfig config, Map matchInput) {
-        if(config?.search?.fixedValue) {
+        if (config?.search?.fixedValue) {
             return config.search.fixedValue
         }
         if (config.path) {
@@ -52,9 +52,27 @@ class AttributeValueResolver {
         }
     }
 
+    static List getAttributeValues(MatchAttributeConfig config, Map matchInput) {
+        if (!config.path) {
+            throw new IllegalStateException("path is a required configuration value when configuring list attributes")
+        }
+        List inputValues = matchInput[config.path] as List
+        if (!inputValues) {
+            return null
+        }
+        return inputValues
+    }
+
+    static List<String> getStringAttributeValues(MatchAttributeConfig config, Map matchInput) {
+        List<String> inputValues = getAttributeValues(config, matchInput) as List<String>
+        return inputValues.collect { value ->
+            normalizeValue(config, value?.toString())
+        }
+    }
+
     private static String normalizeValue(MatchAttributeConfig matchAttributeConfig, String value) {
         // If the nullEquivalents is not set, return the value
-            if(!matchAttributeConfig.nullEquivalents) {
+        if (!matchAttributeConfig.nullEquivalents) {
             value
         }
         // Expect matchAttributeConfig ot be a list of Regular Expressions. If any of these matches, it's a null like value

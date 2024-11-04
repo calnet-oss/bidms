@@ -37,16 +37,15 @@ import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
+import jakarta.jms.MapMessage
+import jakarta.jms.Message
+import jakarta.persistence.EntityManager
 import org.hibernate.ObjectNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-
-import jakarta.jms.MapMessage
-import jakarta.jms.Message
-import jakarta.persistence.EntityManager
 
 @Slf4j
 @Service
@@ -55,6 +54,7 @@ class NewSORConsumerService {
     // these correspond to properties in SorKeyData from the
     // registry-sor-key-data plugin
     static MATCH_STRING_FIELDS = ['systemOfRecord', 'sorPrimaryKey', 'givenName', 'middleName', 'surName', 'fullName', 'dateOfBirth', 'socialSecurityNumber']
+    static MATCH_STRING_LIST_FIELDS = ['emailAddresses', 'phoneNumbers']
     static MATCH_BOOLEAN_FIELDS = ['matchOnly']
 
     @Autowired
@@ -271,13 +271,17 @@ class NewSORConsumerService {
     /**
      * Converts a mapMessage to a Map of attributes.
      */
+    @SuppressWarnings("GrMethodMayBeStatic")
     private Map<String, Object> getAttributesFromMessage(MapMessage message) {
-        def sorAttributes = MATCH_STRING_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value } +
-                MATCH_BOOLEAN_FIELDS.collectEntries { [it, message.getString(it) as Boolean ?: message.getBoolean(it)] }.findAll { it.value }
+        Map<String, Object> sorAttributes = (
+                MATCH_STRING_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value } +
+                        MATCH_STRING_LIST_FIELDS.collectEntries { [it, message.getString(it)] }.findAll { it.value } +
+                        MATCH_BOOLEAN_FIELDS.collectEntries { [it, message.getString(it) as Boolean ?: message.getBoolean(it)] }.findAll { it.value }
+        ) as Map<String, Object>
         if (message.getObject('otherIds')) {
             Map otherIds = (Map) message.getObject('otherIds')
             sorAttributes.otherIds = otherIds
         }
-        sorAttributes
+        return sorAttributes
     }
 }

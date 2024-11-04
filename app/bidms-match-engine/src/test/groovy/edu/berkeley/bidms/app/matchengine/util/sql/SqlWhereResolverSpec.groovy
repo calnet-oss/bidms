@@ -1,4 +1,4 @@
-package edu.berkeley.bidms.app.matchengine.util
+package edu.berkeley.bidms.app.matchengine.util.sql
 
 import edu.berkeley.bidms.app.matchengine.config.MatchAttributeConfig
 import spock.lang.Specification

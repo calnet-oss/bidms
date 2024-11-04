@@ -148,8 +148,27 @@ attributes {
             fixedValue = 'PAYROLL'
         }
     }
-
-
+    phoneNumber {
+        description = 'Phone number'
+        column = 'phoneNumber'
+        attribute = 'phoneNumber'
+        path = 'phoneNumbers'
+        input {
+            stringList = true
+        }
+    }
+    emailAddress {
+        description = 'Email address'
+        column = 'emailAddress'
+        attribute = 'emailAddress'
+        path = 'emailAddresses'
+        input {
+            stringList = true
+        }
+        search {
+            caseSensitive = false
+        }
+    }
 }
 
 confidences {
@@ -165,4 +184,7 @@ confidences {
     canonical 'CANONICAL_EXACT_LASTNAME_DOB_EMPLOYEEID', surName: EXACT, dateOfBirth: EXACT, employeeId: EXACT, employeeIdType: FIXED_VALUE
 
     potential 'POTENTIAL_FIRSTNAME_INITIAL_EXACT_LASTNAME_DOB', givenName: SUBSTRING, surName: EXACT, dateOfBirth: EXACT
+
+    potential 'POTENTIAL_EXACT_LASTNAME_PHONE', surName: EXACT, phoneNumber: EXACT
+    potential 'POTENTIAL_EXACT_LASTNAME_EMAIL', surName: EXACT, emailAddress: EXACT
 }

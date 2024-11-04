@@ -83,7 +83,9 @@ class MatchEngineRulesIntegrationSpec extends Specification {
   identifierSor     VARCHAR(64),
   identifierId      BIGINT,
   identifier        VARCHAR(64) NOT NULL,
-  idIsSorPrimaryKey BOOLEAN
+  idIsSorPrimaryKey BOOLEAN,
+  phoneNumber       VARCHAR(64),
+  emailAddress      VARCHAR(64)
 )""" as String)
     }
 
@@ -315,5 +317,177 @@ class MatchEngineRulesIntegrationSpec extends Specification {
             !exactMatch
             ruleNames.size() == 1 && ruleNames.first() == 'SUPERCANONICAL_EMPLOYEE_ID'
         }
+    }
+
+    def "test a possible match using exact surName and an email address"() {
+        given:
+        Map requestData = [
+                systemOfRecord: "STUDENT",
+                identifier    : '5000000',
+                names         : [
+                        [
+                                type     : 'official',
+                                givenName: 'David',
+                                surName  : 'Smith'
+                        ]
+                ],
+                emailAddresses: ['personal@email.com']
+        ]
+
+        when:
+        sql.executeInsert(
+                "INSERT INTO MatchView (uid, identifierType, identifierSor, identifier, idIsSorPrimaryKey, personNameType, personNameSor, givenName, surName, emailAddress) VALUES(?,?,?,?,?,?,?,?,?,?)" as String,
+                "20000000", // uid
+                "employeeId", // identifierType
+                "PAYROLL", // identifierSor
+                "60000000", // identifier
+                true, // idIsSorPrimaryKey
+                "payrollName", // personNameType
+                "PAYROLL", // personNameSor
+                "David", // givenName
+                "Smith", // surName
+                "personal@email.com" // emailAddress
+        )
+
+        and:
+        ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:${port}/match-engine/person" as String, requestData, Map)
+
+        and: "cleanup"
+        sql.executeUpdate("DELETE FROM MatchView WHERE uid=?" as String, "20000000")
+
+        then:
+        response.statusCode == HttpStatus.MULTIPLE_CHOICES
+        (response.body.partialMatchingRecords as List).size() == 1
+        with((response.body.partialMatchingRecords as List).first()) {
+            referenceId == "20000000"
+            !exactMatch
+            ruleNames.size() == 1 && ruleNames.first() == 'POTENTIAL_EXACT_LASTNAME_EMAIL'
+        }
+    }
+
+    def "test no match found when email list is empty and no other info available other than name"() {
+        given:
+        Map requestData = [
+                systemOfRecord: "STUDENT",
+                identifier    : '5000000',
+                names         : [
+                        [
+                                type     : 'official',
+                                givenName: 'David',
+                                surName  : 'Smith'
+                        ]
+                ],
+                emailAddresses: []
+        ]
+
+        when:
+        sql.executeInsert(
+                "INSERT INTO MatchView (uid, identifierType, identifierSor, identifier, idIsSorPrimaryKey, personNameType, personNameSor, givenName, surName, emailAddress) VALUES(?,?,?,?,?,?,?,?,?,?)" as String,
+                "20000000", // uid
+                "employeeId", // identifierType
+                "PAYROLL", // identifierSor
+                "60000000", // identifier
+                true, // idIsSorPrimaryKey
+                "payrollName", // personNameType
+                "PAYROLL", // personNameSor
+                "David", // givenName
+                "Smith", // surName
+                "personal@email.com" // emailAddress
+        )
+
+        and:
+        ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:${port}/match-engine/person" as String, requestData, Map)
+
+        and: "cleanup"
+        sql.executeUpdate("DELETE FROM MatchView WHERE uid=?" as String, "20000000")
+
+        then:
+        response.statusCode == HttpStatus.NOT_FOUND
+    }
+
+    def "test a possible match using exact surName and a phone number"() {
+        given:
+        Map requestData = [
+                systemOfRecord: "STUDENT",
+                identifier    : '5000000',
+                names         : [
+                        [
+                                type     : 'official',
+                                givenName: 'David',
+                                surName  : 'Smith'
+                        ]
+                ],
+                phoneNumbers: ['+1 555-555-5555']
+        ]
+
+        when:
+        sql.executeInsert(
+                "INSERT INTO MatchView (uid, identifierType, identifierSor, identifier, idIsSorPrimaryKey, personNameType, personNameSor, givenName, surName, phoneNumber) VALUES(?,?,?,?,?,?,?,?,?,?)" as String,
+                "20000000", // uid
+                "employeeId", // identifierType
+                "PAYROLL", // identifierSor
+                "60000000", // identifier
+                true, // idIsSorPrimaryKey
+                "payrollName", // personNameType
+                "PAYROLL", // personNameSor
+                "David", // givenName
+                "Smith", // surName
+                "+1 555-555-5555" // phoneNumber
+        )
+
+        and:
+        ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:${port}/match-engine/person" as String, requestData, Map)
+
+        and: "cleanup"
+        sql.executeUpdate("DELETE FROM MatchView WHERE uid=?" as String, "20000000")
+
+        then:
+        response.statusCode == HttpStatus.MULTIPLE_CHOICES
+        (response.body.partialMatchingRecords as List).size() == 1
+        with((response.body.partialMatchingRecords as List).first()) {
+            referenceId == "20000000"
+            !exactMatch
+            ruleNames.size() == 1 && ruleNames.first() == 'POTENTIAL_EXACT_LASTNAME_PHONE'
+        }
+    }
+
+    def "test no match found when phone number list is empty and no other info available other than name"() {
+        given:
+        Map requestData = [
+                systemOfRecord: "STUDENT",
+                identifier    : '5000000',
+                names         : [
+                        [
+                                type     : 'official',
+                                givenName: 'David',
+                                surName  : 'Smith'
+                        ]
+                ],
+                phoneNumbers: []
+        ]
+
+        when:
+        sql.executeInsert(
+                "INSERT INTO MatchView (uid, identifierType, identifierSor, identifier, idIsSorPrimaryKey, personNameType, personNameSor, givenName, surName, phoneNumber) VALUES(?,?,?,?,?,?,?,?,?,?)" as String,
+                "20000000", // uid
+                "employeeId", // identifierType
+                "PAYROLL", // identifierSor
+                "60000000", // identifier
+                true, // idIsSorPrimaryKey
+                "payrollName", // personNameType
+                "PAYROLL", // personNameSor
+                "David", // givenName
+                "Smith", // surName
+                "+1 555-555-5555" // phoneNumber
+        )
+
+        and:
+        ResponseEntity<Map> response = restTemplate.postForEntity("http://localhost:${port}/match-engine/person" as String, requestData, Map)
+
+        and: "cleanup"
+        sql.executeUpdate("DELETE FROM MatchView WHERE uid=?" as String, "20000000")
+
+        then:
+        response.statusCode == HttpStatus.NOT_FOUND
     }
 }

@@ -29,6 +29,7 @@ package edu.berkeley.bidms.app.matchengine.service
 import edu.berkeley.bidms.app.matchengine.ConfidenceType
 import edu.berkeley.bidms.app.matchengine.SearchResult
 import edu.berkeley.bidms.app.matchengine.SearchSet
+import edu.berkeley.bidms.app.matchengine.util.sql.WhereAndValues
 import edu.berkeley.bidms.app.matchengine.config.MatchConfidence
 import edu.berkeley.bidms.app.matchengine.config.MatchConfig
 import edu.berkeley.bidms.app.matchengine.database.Record
@@ -62,7 +63,7 @@ class DatabaseService {
         def searchSets = getSearchSets(confidenceType)
 
         // Find where clauses that has content
-        List<SearchSet.WhereAndValues> whereClauses = searchSets.collect { searchSet ->
+        List<WhereAndValues> whereClauses = searchSets.collect { searchSet ->
             searchSet.buildWhereClause(matchInput)
         }.findAll {
             it
@@ -81,7 +82,7 @@ class DatabaseService {
                                 WHERE  ${matchConfig.matchReference.column} IS NOT NULL
                                 AND    ${whereClause.sql}
                          """.stripIndent(),
-                    values: whereClause.values)
+                    values: whereClause.values.flatten())
         } as Set
 
         def rows = performSearch(sqlStatements)

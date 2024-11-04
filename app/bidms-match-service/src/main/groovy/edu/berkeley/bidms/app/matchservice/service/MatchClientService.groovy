@@ -120,23 +120,21 @@ class MatchClientService {
 
     /**
      * Map input parameters to a Match-Engine request
-     * @param params
-     * @return
      */
-    private static Map buildMatchInputData(Map<String, Object> params) {
-        def map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
+    private static Map<String, Object> buildMatchInputData(Map<String, Object> params) {
+        Map<String, Object> map = [systemOfRecord: params.systemOfRecord, identifier: params.sorPrimaryKey]
 
         // Copy top level properties
-        ['dateOfBirth', 'email', 'matchOnly'].each {
+        ['dateOfBirth', 'email', 'emailAddresses', 'phoneNumbers', 'matchOnly'].each {
             if (params[it]) {
                 map[it] = params[it]
             }
         }
 
         // Copy name attributes to names structure
-        def name = ['givenName', 'middleName', 'surName', 'fullName'].collectEntries {
+        def name = (['givenName', 'middleName', 'surName', 'fullName'].collectEntries {
             [it, params[it]]
-        }.findAll { it.value }
+        } as Map<String, Object>).findAll { it.value }
 
         if (name) {
             name.type = "official"
@@ -144,7 +142,6 @@ class MatchClientService {
         }
 
         if (params.socialSecurityNumber || params.otherIds) {
-
             // Copy other identifiers (comes in a map) to the identifiers list
             map.identifiers = params.otherIds?.collect { type, value ->
                 [
