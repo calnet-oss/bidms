@@ -26,11 +26,15 @@
  */
 package edu.berkeley.bidms.common.validation;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
+
+import java.util.Set;
 
 public class ValidationUtil {
     public static <T> void validate(Validator validator, T bean) throws ValidationException {
@@ -60,6 +64,12 @@ public class ValidationUtil {
         Errors errors = db.getBindingResult();
         if (errors.hasErrors()) {
             throw new ValidationException("Validation failed", errors);
+        }
+    }
+
+    public static <T> Set<ConstraintViolation<T>> validateWithDefaultValidator(T object) {
+        try (var validatorFactory = Validation.buildDefaultValidatorFactory()) {
+            return validatorFactory.getValidator().validate(object);
         }
     }
 }
