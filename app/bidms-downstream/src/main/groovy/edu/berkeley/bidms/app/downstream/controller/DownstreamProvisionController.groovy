@@ -101,7 +101,7 @@ class DownstreamProvisionController {
                     errorMsg: e.message, attrs: [
                     notFound: true
             ]))
-            throw new edu.berkeley.bidms.app.restservice.common.response.NotFoundException()
+            throw new edu.berkeley.bidms.app.restservice.common.response.NotFoundException("not found: ${e.message}")
         }
         catch (Exception e) {
             AuditUtil.logAuditEvent(APP_NAME, new AuditFailEvent(request: request, eventId: eventId, loggedInUsername: getCurrentUsername(request),
