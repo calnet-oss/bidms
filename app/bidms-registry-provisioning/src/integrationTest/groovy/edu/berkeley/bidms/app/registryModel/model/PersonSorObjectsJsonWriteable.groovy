@@ -27,10 +27,8 @@
 package edu.berkeley.bidms.app.registryModel.model
 
 import jakarta.persistence.Entity
-import jakarta.persistence.Table
 
 @Entity
-@Table(name = "PersonSorObjectsJson")
 class PersonSorObjectsJsonWriteable extends PersonSorObjectsJson {
     @Override
     void enforceReadOnly() {

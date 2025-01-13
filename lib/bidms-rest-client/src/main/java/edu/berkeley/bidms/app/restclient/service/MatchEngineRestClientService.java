@@ -27,10 +27,12 @@
 package edu.berkeley.bidms.app.restclient.service;
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
 
 import java.util.Map;
@@ -53,13 +55,17 @@ public class MatchEngineRestClientService {
      * representative of the endpoint JSON response.
      */
     public ResponseEntity<Map> match(RestOperations restTemplate, Map matchInputData) {
-        return restTemplate.exchange(
-                RequestEntity
-                        .post(bidmsConfigProperties.getRest().getMatchengine().getPerson().getUrl())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(matchInputData),
-                Map.class
-        );
+        try {
+            return restTemplate.exchange(
+                    RequestEntity
+                            .post(bidmsConfigProperties.getRest().getMatchengine().getPerson().getUrl())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(matchInputData),
+                    Map.class
+            );
+        } catch (HttpClientErrorException.NotFound ignored) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
