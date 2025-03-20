@@ -75,11 +75,31 @@ public class DigestAuthPasswordEncoder implements PasswordEncoder {
         return (encPass != null && rawPass != null) && rawPass.toString().equals(encPass);
     }
 
-    protected String md5Hex(String s) {
+    public static String md5Hex(String s) {
         try {
             return new String(Hex.encode(MessageDigest.getInstance("MD5").digest(s.getBytes())));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("No MD5 algorithm available!");
         }
+    }
+
+    // derived from Spring Security's DigestAuthUtils class (expects password to already be encoded)
+    public static String generateDigest(
+            String encodedPassword, String httpMethod,
+            String uri, String qop, String nonce, String nc, String cnonce
+    )
+            throws IllegalArgumentException {
+        String a2 = httpMethod + ":" + uri;
+        String a1Md5 = encodedPassword;
+        String a2Md5 = md5Hex(a2);
+        if (qop == null) {
+            // as per RFC 2069 compliant clients (also reaffirmed by RFC 2617)
+            return md5Hex(a1Md5 + ":" + nonce + ":" + a2Md5);
+        }
+        if ("auth".equals(qop)) {
+            // As per RFC 2617 compliant clients
+            return md5Hex(a1Md5 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + a2Md5);
+        }
+        throw new IllegalArgumentException("This method does not support a qop: '" + qop + "'");
     }
 }

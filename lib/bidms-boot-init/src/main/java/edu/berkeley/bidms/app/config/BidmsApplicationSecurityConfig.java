@@ -26,14 +26,21 @@
  */
 package edu.berkeley.bidms.app.config;
 
-import edu.berkeley.bidms.app.springsecurity.config.*;
+import edu.berkeley.bidms.app.springsecurity.config.DownstreamProvisioningSecurityConfigurer;
+import edu.berkeley.bidms.app.springsecurity.config.MatchEngineSecurityConfigurer;
+import edu.berkeley.bidms.app.springsecurity.config.MatchServiceSecurityConfigurer;
+import edu.berkeley.bidms.app.springsecurity.config.RegistryProvisioningSecurityConfigurer;
+import edu.berkeley.bidms.app.springsecurity.config.RegistryServiceSecurityConfigurer;
+import edu.berkeley.bidms.app.springsecurity.config.SgsSecurityConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -60,12 +67,14 @@ public class BidmsApplicationSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable();
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        http.authorizeRequests().requestMatchers(AntPathRequestMatcher.antMatcher("/hello/**")).permitAll();
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/hello/**")).permitAll()
+        );
 
         if (sgsSecurityConfigurer != null) {
-            log.info("SGS security rules being applied from " + sgsSecurityConfigurer.getClass().getName());
+            log.info("SGS security rules being applied from {}", sgsSecurityConfigurer.getClass().getName());
             sgsSecurityConfigurer.applyRules(http);
         } else {
             log.info("SGS default security rules being applied");
@@ -73,7 +82,7 @@ public class BidmsApplicationSecurityConfig {
         }
 
         if (matchEngineSecurityConfigurer != null) {
-            log.info("Match engine security rules being applied from " + matchEngineSecurityConfigurer.getClass().getName());
+            log.info("Match engine security rules being applied from {}", matchEngineSecurityConfigurer.getClass().getName());
             matchEngineSecurityConfigurer.applyRules(http);
         } else {
             log.info("Match engine default security rules being applied");
@@ -81,7 +90,7 @@ public class BidmsApplicationSecurityConfig {
         }
 
         if (matchServiceSecurityConfigurer != null) {
-            log.info("Match service security rules being applied from " + matchServiceSecurityConfigurer.getClass().getName());
+            log.info("Match service security rules being applied from {}", matchServiceSecurityConfigurer.getClass().getName());
             matchServiceSecurityConfigurer.applyRules(http);
         } else {
             log.info("Match service default security rules being applied");
@@ -89,7 +98,7 @@ public class BidmsApplicationSecurityConfig {
         }
 
         if (registryProvisioningSecurityConfigurer != null) {
-            log.info("Registry provisioning security rules being applied from " + registryProvisioningSecurityConfigurer.getClass().getName());
+            log.info("Registry provisioning security rules being applied from {}", registryProvisioningSecurityConfigurer.getClass().getName());
             registryProvisioningSecurityConfigurer.applyRules(http);
         } else {
             log.info("Registry provisioning default security rules being applied");
@@ -97,7 +106,7 @@ public class BidmsApplicationSecurityConfig {
         }
 
         if (downstreamProvisioningSecurityConfigurer != null) {
-            log.info("Downstream provisioning security rules being applied from " + downstreamProvisioningSecurityConfigurer.getClass().getName());
+            log.info("Downstream provisioning security rules being applied from {}", downstreamProvisioningSecurityConfigurer.getClass().getName());
             downstreamProvisioningSecurityConfigurer.applyRules(http);
         } else {
             log.info("Downstream provisioning default security rules being applied");
@@ -105,15 +114,16 @@ public class BidmsApplicationSecurityConfig {
         }
 
         if (registryServiceSecurityConfigurer != null) {
-            log.info("Registry service security rules being applied from " + registryServiceSecurityConfigurer.getClass().getName());
+            log.info("Registry service security rules being applied from {}", registryServiceSecurityConfigurer.getClass().getName());
             registryServiceSecurityConfigurer.applyRules(http);
         } else {
             log.info("Registry service default security rules being applied");
             RegistryServiceSecurityConfigurer.defaultRules(http);
         }
 
-        http.authorizeRequests().anyRequest().denyAll()
-                .and().httpBasic();
+        http.authorizeHttpRequests(ar -> ar
+                .anyRequest().denyAll()
+        ).httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

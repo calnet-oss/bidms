@@ -27,8 +27,7 @@
 package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
 public interface ServiceSecurityConfigurer {
-    ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception;
+    HttpSecurity applyRules(HttpSecurity http) throws Exception;
 }
