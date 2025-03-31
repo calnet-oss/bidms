@@ -28,8 +28,10 @@ package edu.berkeley.bidms.app.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -39,13 +41,15 @@ public class BidmsConfigServerSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
+
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms/**")).fullyAuthenticated()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).fullyAuthenticated()
-                .anyRequest().denyAll()
-                .and().httpBasic();
+                .authorizeHttpRequests((ar) -> ar
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms/**")).fullyAuthenticated()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).fullyAuthenticated()
+                        .anyRequest().denyAll()
+                )
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

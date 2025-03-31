@@ -79,7 +79,7 @@ public class RegistryUserDetailsService implements UserDetailsService {
                         boolean enabled = rs.getBoolean("enabled");
                         RegistryUserDetails userDetails = new RegistryUserDetails(
                                 rs.getString("username"),
-                                rs.getString(passwordColumnName), // Usually expected to be a bcrypt hash.  See PasswordEncoderSpec in bidms-spring-security-impl.
+                                (passwordColumnName.equals("passwordHttpDigestHash") ? "{digest}" : "") + rs.getString(passwordColumnName), // Usually expected to be a bcrypt hash.  See PasswordEncoderSpec in bidms-spring-security-impl.
                                 !accountExpired,
                                 !accountLocked,
                                 !passwordExpired,

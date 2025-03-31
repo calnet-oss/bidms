@@ -27,28 +27,32 @@
 package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface MatchEngineSecurityConfigurer extends ServiceSecurityConfigurer {
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
-        ar
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/match-engine/**")).hasAuthority("ucbMatch")
-                .and()
-                .httpBasic().realmName("Registry Realm");
-        return ar;
+
+    @SuppressWarnings("UnusedReturnValue")
+    static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
+        return ar.requestMatchers(AntPathRequestMatcher.antMatcher("/match-engine/**")).hasAuthority("ucbMatch");
     }
 
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
-        return defaultAuthorizeRequests(
-                http.securityMatchers((sm) -> {
+    @SuppressWarnings("UnusedReturnValue")
+    static HttpBasicConfigurer<HttpSecurity> defaultHttpBasic(HttpBasicConfigurer<HttpSecurity> httpBasic) {
+        return httpBasic.realmName("Registry Realm");
+    }
+
+    static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
+        return http.securityMatchers((sm) -> {
                     sm.requestMatchers(AntPathRequestMatcher.antMatcher("/match-engine/**"));
-                }).authorizeRequests()
-        );
+                })
+                .authorizeHttpRequests(MatchEngineSecurityConfigurer::defaultAuthorizeRequests)
+                .httpBasic(MatchEngineSecurityConfigurer::defaultHttpBasic);
     }
 
     @Override
-    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception {
+    default HttpSecurity applyRules(HttpSecurity http) throws Exception {
         return defaultRules(http);
     }
 }

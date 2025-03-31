@@ -27,28 +27,32 @@
 package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
-        ar
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).hasAuthority("sorGateway")
-                .and()
-                .httpBasic().realmName("Registry Realm");
-        return ar;
+
+    @SuppressWarnings("UnusedReturnValue")
+    static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
+        return ar.requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).hasAuthority("sorGateway");
     }
 
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
-        return defaultAuthorizeRequests(
-                http.securityMatchers((sm) -> {
+    @SuppressWarnings("UnusedReturnValue")
+    static HttpBasicConfigurer<HttpSecurity> defaultHttpBasic(HttpBasicConfigurer<HttpSecurity> httpBasic) {
+        return httpBasic.realmName("Registry Realm");
+    }
+
+    static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
+        return http.securityMatchers((sm) -> {
                     sm.requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**"));
-                }).authorizeRequests()
-        );
+                })
+                .authorizeHttpRequests(SgsSecurityConfigurer::defaultAuthorizeRequests)
+                .httpBasic(SgsSecurityConfigurer::defaultHttpBasic);
     }
 
     @Override
-    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception {
+    default HttpSecurity applyRules(HttpSecurity http) throws Exception {
         return defaultRules(http);
     }
 }

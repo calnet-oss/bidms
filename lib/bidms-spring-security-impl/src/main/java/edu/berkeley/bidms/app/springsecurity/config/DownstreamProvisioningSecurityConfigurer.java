@@ -27,29 +27,34 @@
 package edu.berkeley.bidms.app.springsecurity.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultAuthorizeRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry ar) throws Exception {
-        ar
+
+    @SuppressWarnings("UnusedReturnValue")
+    static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
+        return ar
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/changePassword/**")).hasAuthority("bidmsDownstreamChangePassword")
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**")).hasAuthority("bidmsDownstream")
-                .and()
-                .httpBasic().realmName("Registry Realm");
-        return ar;
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**")).hasAuthority("bidmsDownstream");
     }
 
-    static ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry defaultRules(HttpSecurity http) throws Exception {
-        return defaultAuthorizeRequests(
-                http.securityMatchers((sm) -> {
+    @SuppressWarnings("UnusedReturnValue")
+    static HttpBasicConfigurer<HttpSecurity> defaultHttpBasic(HttpBasicConfigurer<HttpSecurity> httpBasic) {
+        return httpBasic.realmName("Registry Realm");
+    }
+
+    static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
+        return http.securityMatchers((sm) -> {
                     sm.requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**"));
-                }).authorizeRequests()
-        );
+                })
+                .authorizeHttpRequests(DownstreamProvisioningSecurityConfigurer::defaultAuthorizeRequests)
+                .httpBasic(DownstreamProvisioningSecurityConfigurer::defaultHttpBasic);
     }
 
     @Override
-    default ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry applyRules(HttpSecurity http) throws Exception {
+    default HttpSecurity applyRules(HttpSecurity http) throws Exception {
         return defaultRules(http);
     }
 }
