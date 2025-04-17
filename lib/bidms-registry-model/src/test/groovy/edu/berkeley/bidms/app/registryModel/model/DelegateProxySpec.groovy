@@ -78,7 +78,8 @@ class DelegateProxySpec extends Specification {
                         sourceProxyId: "PROXY123",
                         delegateProxyType: delegateProxyTypeRepository.findByDelegateProxyTypeName("sisDelegateProxy"),
                         delegateProxySorObject: TestUtil.findSORObject(sorRepository, sorObjectRepository, "SIS_DELEGATE", "sisDelegate123"),
-                        proxyForId: "EMPLID123"
+                        proxyForId: "EMPLID123",
+                        proxyForDisplayName: "Std Display"
                 )
         ]
     }

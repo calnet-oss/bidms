@@ -31,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.berkeley.bidms.app.registryModel.repo.IdentifierRepository;
 import edu.berkeley.bidms.app.registryModel.repo.IdentifierTypeRepository;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,6 +45,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -113,6 +113,9 @@ public class DelegateProxy implements Comparable<DelegateProxy> {
     @NotNull
     @Column(nullable = false, length = 64)
     private String proxyForId; // the source system identifier this delegate is a proxy for (ex: the CS_DELEGATE EMPLID)
+    @Size(max = 255)
+    @Column(length = 255)
+    private String proxyForDisplayName; // a display name for the person this delegate is a proxy for
 
     /**
      * Lazy loads the proxyForIdentifier
@@ -145,7 +148,7 @@ public class DelegateProxy implements Comparable<DelegateProxy> {
 
     private Object[] getHashCodeObjects() {
         return new Object[]{
-                uid, delegateProxyType, sourceProxyId, delegateProxySorObjectId, delegateProxySecurityKey, proxyForId
+                uid, delegateProxyType, sourceProxyId, delegateProxySorObjectId, delegateProxySecurityKey, proxyForId, proxyForDisplayName
         };
     }
 
@@ -254,6 +257,16 @@ public class DelegateProxy implements Comparable<DelegateProxy> {
     public void setProxyForId(String proxyForId) {
         boolean changed = !Objects.equals(proxyForId, this.proxyForId);
         this.proxyForId = proxyForId;
+        if (changed) notifyPerson();
+    }
+
+    public String getProxyForDisplayName() {
+        return proxyForDisplayName;
+    }
+
+    public void setProxyForDisplayName(String proxyForDisplayName) {
+        boolean changed = !Objects.equals(proxyForDisplayName, this.proxyForDisplayName);
+        this.proxyForDisplayName = proxyForDisplayName;
         if (changed) notifyPerson();
     }
 }
