@@ -30,6 +30,7 @@ import edu.berkeley.bidms.app.registryModel.model.AssignableRole;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.app.registryModel.model.PersonRole;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -38,6 +39,9 @@ import java.util.List;
  */
 public interface PersonRoleRepository extends ExtendedRepository<PersonRole, Long> {
     PersonRole findByPersonAndRole(Person person, AssignableRole role);
+
+    @Query("SELECT pr FROM PersonRole pr WHERE pr.person = ?1 AND pr.role.roleName = ?2")
+    PersonRole findByPersonAndRoleName(Person person, String roleName);
 
     List<PersonRole> findAllByPerson(Person person);
 }
