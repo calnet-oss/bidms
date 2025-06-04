@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.registryModel.service;
 
+import edu.berkeley.bidms.app.registryModel.repo.ActivityTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AddressRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AddressTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.AppointmentTypeRepository;
@@ -44,6 +45,7 @@ import edu.berkeley.bidms.app.registryModel.repo.IdentifierTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.JobAppointmentRepository;
 import edu.berkeley.bidms.app.registryModel.repo.NameTypeRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PartialMatchRepository;
+import edu.berkeley.bidms.app.registryModel.repo.PersonActivityRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonNameRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonPronounRepository;
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository;
@@ -69,10 +71,9 @@ import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.Credential
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.ResetPassphraseTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository;
 import edu.berkeley.bidms.app.registryModel.repo.view.PersonSearchViewRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import jakarta.persistence.EntityManager;
 
 /**
  * A convenience service to retrieve repositories for JPA entity types.
@@ -210,6 +211,12 @@ public class RegistryRepositoryService {
 
     @Autowired
     private PersonTimeRepository personTimeRepository;
+
+    @Autowired
+    private ActivityTypeRepository activityTypeRepository;
+
+    @Autowired
+    private PersonActivityRepository personActivityRepository;
 
     public EntityManager getEntityManager() {
         return entityManager;
@@ -561,5 +568,21 @@ public class RegistryRepositoryService {
 
     public void setPersonTimeRepository(PersonTimeRepository personTimeRepository) {
         this.personTimeRepository = personTimeRepository;
+    }
+
+    public ActivityTypeRepository getActivityTypeRepository() {
+        return activityTypeRepository;
+    }
+
+    public void setActivityTypeRepository(ActivityTypeRepository activityTypeRepository) {
+        this.activityTypeRepository = activityTypeRepository;
+    }
+
+    public PersonActivityRepository getPersonActivityRepository() {
+        return personActivityRepository;
+    }
+
+    public void setPersonActivityRepository(PersonActivityRepository personActivityRepository) {
+        this.personActivityRepository = personActivityRepository;
     }
 }
