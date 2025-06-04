@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Regents of the University of California and
+ * Copyright (c) 2025, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -45,30 +45,29 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.Objects;
 
 /**
- * A time value that belongs to a person.
+ * An activity that belongs to a person.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties({"uid", "person", "sorObject"})
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "timeTypeId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"uid", "sorObjectId", "activityTypeId", "sourceActivityId"}))
 @Entity
-public class PersonTime implements Comparable<PersonTime> {
+public class PersonActivity implements Comparable<PersonActivity> {
 
-    protected PersonTime() {
+    protected PersonActivity() {
     }
 
-    public PersonTime(Person person) {
+    public PersonActivity(Person person) {
         this.person = person;
         this.uid = person != null ? person.getUid() : null;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonTime_seqgen")
-    @SequenceGenerator(name = "PersonTime_seqgen", sequenceName = "PersonTime_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PersonActivity_seqgen")
+    @SequenceGenerator(name = "PersonActivity_seqgen", sequenceName = "PersonActivity_seq", allocationSize = 1)
     @Id
     private Long id;
 
@@ -83,31 +82,44 @@ public class PersonTime implements Comparable<PersonTime> {
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "timeTypeId", nullable = false)
-    private TimeType timeType;
+    @JoinColumn(name = "activityTypeId", nullable = false)
+    private ActivityType activityType;
 
     @Column(insertable = false, updatable = false)
     private Long sorObjectId;
 
-    //@NotNull // TODO in tests
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sorObjectId", nullable = false)
     private SORObject sorObject;
 
     @NotNull
-    @Column(nullable = false)
-    private Date time;
+    @Size(max = 31)
+    @Column(length = 31)
+    private String sourceActivityId;
 
-    @NotNull
-    @Column(nullable = false)
-    private BigInteger sourceValue;
+    @Size(max = 31)
+    @Column(length = 31)
+    private String sourceActivityCode;
 
-    private static final int HCB_INIT_ODDRAND = -686965271;
-    private static final int HCB_MULT_ODDRAND = 379441719;
+    @Column
+    private Date lastAttemptTime;
+
+    @Column
+    private Date lastCompletionTime;
+
+    @Size(max = 63)
+    @Column(length = 63)
+    private String activityStatus;
+
+    private static final int HCB_INIT_ODDRAND = 393828601;
+    private static final int HCB_MULT_ODDRAND = -1463611535;
 
     private Object[] getHashCodeObjects() {
         return new Object[]{
-                uid, timeType, sorObjectId, time, sourceValue
+                uid, activityType, sorObjectId, sourceActivityId,
+                sourceActivityCode, lastAttemptTime,
+                lastCompletionTime, activityStatus
         };
     }
 
@@ -121,20 +133,20 @@ public class PersonTime implements Comparable<PersonTime> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PersonTime) {
-            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((PersonTime) obj).getHashCodeObjects());
+        if (obj instanceof PersonActivity) {
+            return EntityUtil.isEqual(this, getHashCodeObjects(), obj, ((PersonActivity) obj).getHashCodeObjects());
         }
         return false;
     }
 
     @Override
-    public int compareTo(PersonTime obj) {
-        return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((PersonTime) obj).getHashCodeObjects());
+    public int compareTo(PersonActivity obj) {
+        return EntityUtil.compareTo(this, getHashCodeObjects(), obj, ((PersonActivity) obj).getHashCodeObjects());
     }
 
     private void notifyPerson() {
         if (person != null) {
-            person.notifyChange(person.getTimes());
+            person.notifyChange(person.getActivities());
         }
     }
 
@@ -158,38 +170,18 @@ public class PersonTime implements Comparable<PersonTime> {
         if (changed) {
             notifyPerson();
             if (originalPerson != null) {
-                originalPerson.notifyChange(originalPerson.getTimes());
+                originalPerson.notifyChange(originalPerson.getActivities());
             }
         }
     }
 
-    public TimeType getTimeType() {
-        return timeType;
+    public ActivityType getActivityType() {
+        return activityType;
     }
 
-    public void setTimeType(TimeType timeType) {
-        boolean changed = !Objects.equals(timeType, this.timeType);
-        this.timeType = timeType;
-        if (changed) notifyPerson();
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        boolean changed = !Objects.equals(time, this.time);
-        this.time = time;
-        if (changed) notifyPerson();
-    }
-
-    public BigInteger getSourceValue() {
-        return sourceValue;
-    }
-
-    public void setSourceValue(BigInteger sourceValue) {
-        boolean changed = !Objects.equals(sourceValue, this.sourceValue);
-        this.sourceValue = sourceValue;
+    public void setActivityType(ActivityType activityType) {
+        boolean changed = !Objects.equals(activityType, this.activityType);
+        this.activityType = activityType;
         if (changed) notifyPerson();
     }
 
@@ -206,6 +198,56 @@ public class PersonTime implements Comparable<PersonTime> {
         boolean changed = !Objects.equals(sorObject, this.sorObject) || (sorObject != null && !Objects.equals(sorObject.getId(), sorObjectId));
         this.sorObject = sorObject;
         this.sorObjectId = sorObject != null ? sorObject.getId() : null;
+        if (changed) notifyPerson();
+    }
+
+    public String getSourceActivityId() {
+        return sourceActivityId;
+    }
+
+    public void setSourceActivityId(String sourceActivityId) {
+        boolean changed = !Objects.equals(sourceActivityId, this.sourceActivityId);
+        this.sourceActivityId = sourceActivityId;
+        if (changed) notifyPerson();
+    }
+
+    public String getSourceActivityCode() {
+        return sourceActivityCode;
+    }
+
+    public void setSourceActivityCode(String sourceActivityCode) {
+        boolean changed = !Objects.equals(sourceActivityCode, this.sourceActivityCode);
+        this.sourceActivityCode = sourceActivityCode;
+        if (changed) notifyPerson();
+    }
+
+    public Date getLastAttemptTime() {
+        return lastAttemptTime;
+    }
+
+    public void setLastAttemptTime(Date lastAttemptTime) {
+        boolean changed = !Objects.equals(lastAttemptTime, this.lastAttemptTime);
+        this.lastAttemptTime = lastAttemptTime;
+        if (changed) notifyPerson();
+    }
+
+    public Date getLastCompletionTime() {
+        return lastCompletionTime;
+    }
+
+    public void setLastCompletionTime(Date lastCompletionTime) {
+        boolean changed = !Objects.equals(lastCompletionTime, this.lastCompletionTime);
+        this.lastCompletionTime = lastCompletionTime;
+        if (changed) notifyPerson();
+    }
+
+    public String getActivityStatus() {
+        return activityStatus;
+    }
+
+    public void setActivityStatus(String activityStatus) {
+        boolean changed = !Objects.equals(activityStatus, this.activityStatus);
+        this.activityStatus = activityStatus;
         if (changed) notifyPerson();
     }
 }

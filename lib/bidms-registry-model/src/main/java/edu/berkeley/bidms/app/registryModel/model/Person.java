@@ -182,6 +182,12 @@ public class Person implements ValidateOnFlush {
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonTime> times = new RebuildableTreeSet<>();
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonTimeCollectionType.class)
+    @JsonDeserialize(as = RebuildableTreeSet.class)
+    private RebuildableSortedSet<PersonActivity> activities = new RebuildableTreeSet<>();
+
     public Person addToAddresses(Address obj) {
         obj.setPerson(this);
         addresses.add(obj);
@@ -356,9 +362,21 @@ public class Person implements ValidateOnFlush {
         return this;
     }
 
-    public Person removeFromSORTokens(PersonTime obj) {
+    public Person removeFromTimes(PersonTime obj) {
         obj.setPerson(null);
         times.remove(obj);
+        return this;
+    }
+
+    public Person addToActivities(PersonActivity obj) {
+        obj.setPerson(this);
+        activities.add(obj);
+        return this;
+    }
+
+    public Person removeFromActivities(PersonActivity obj) {
+        obj.setPerson(null);
+        activities.remove(obj);
         return this;
     }
 
@@ -520,6 +538,16 @@ public class Person implements ValidateOnFlush {
     public boolean safeRemoveFromTimes(PersonTime obj) {
         obj.setPerson(null);
         return safeRemoveFrom(getTimes(), obj);
+    }
+
+    public boolean safeAddToActivities(PersonActivity obj) {
+        obj.setPerson(this);
+        return safeAddTo(getActivities(), obj);
+    }
+
+    public boolean safeRemoveFromActivities(PersonActivity obj) {
+        obj.setPerson(null);
+        return safeRemoveFrom(getActivities(), obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -728,5 +756,13 @@ public class Person implements ValidateOnFlush {
 
     public void setTimes(RebuildableSortedSet<PersonTime> times) {
         this.times = times;
+    }
+
+    public RebuildableSortedSet<PersonActivity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(RebuildableSortedSet<PersonActivity> activities) {
+        this.activities = activities;
     }
 }

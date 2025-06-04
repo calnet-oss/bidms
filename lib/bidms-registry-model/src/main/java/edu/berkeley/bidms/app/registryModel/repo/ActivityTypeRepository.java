@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Regents of the University of California and
+ * Copyright (c) 2025, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -26,12 +26,12 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
-import edu.berkeley.bidms.app.registryModel.model.TimeType;
+import edu.berkeley.bidms.app.registryModel.model.ActivityType;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
 /**
- * Repository for {@link TimeType} entities.
+ * Repository for {@link ActivityType} entities.
  */
-public interface TimeTypeRepository extends ExtendedRepository<TimeType, Integer> {
-    TimeType findByTimeTypeName(String timeTypeName);
+public interface ActivityTypeRepository extends ExtendedRepository<ActivityType, Integer> {
+    ActivityType findByActivityTypeName(String activityTypeName);
 }
