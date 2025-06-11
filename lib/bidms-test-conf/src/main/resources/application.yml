@@ -77,7 +77,7 @@ bidms:
         url: http://notneeded
   jms-connections:
     AMQ:
-      broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+      broker-url: "vm://embedded?broker.persistent=false&broker.useShutdownHook=false"
       username: test
       password: test
   jms:
