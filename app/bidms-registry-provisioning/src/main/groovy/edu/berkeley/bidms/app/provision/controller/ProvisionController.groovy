@@ -77,10 +77,10 @@ class ProvisionController {
      */
     @PostMapping(value = "/provision", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, ?> save(
-        HttpServletRequest request,
-        @RequestParam(required = false) String uid,
-        @RequestParam(required = false) Boolean synchronousDownstream,
-        @RequestParam(required = false) String eventId
+            HttpServletRequest request,
+            @RequestParam(required = false) String uid,
+            @RequestParam(required = false) Boolean synchronousDownstream,
+            @RequestParam(required = false) String eventId
     ) {
         if (!eventId) {
             eventId = AuditUtil.createEventId()

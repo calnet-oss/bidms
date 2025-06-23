@@ -74,7 +74,7 @@ class NewUidController {
 
     /**
      * Assign a new uid to a SORObject.  Typically called by the matching process.
-     * 
+     *
      * <ul>
      *     <li>cmd.sorObjectId             - id of the SORObject in the database</li>
      *     <li>cmd.synchronousDownstream   - If true, reprovision the UID synchronously.</li>
