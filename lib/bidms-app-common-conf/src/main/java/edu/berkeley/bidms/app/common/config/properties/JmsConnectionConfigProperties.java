@@ -35,7 +35,9 @@ public class JmsConnectionConfigProperties {
     private String username;
     private String password;
 
-    /** For listener connections **/
+    /**
+     * For listener connections
+     */
     // RedeliveryPolicy
     private Integer maximumRedeliveries;
     private Long initialRedeliveryDelay;
