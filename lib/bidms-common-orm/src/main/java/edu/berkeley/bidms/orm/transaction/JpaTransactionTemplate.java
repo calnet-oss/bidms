@@ -1,5 +1,7 @@
 package edu.berkeley.bidms.orm.transaction;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import org.springframework.jdbc.datasource.JdbcTransactionObjectSupport;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.EntityManagerHolder;
@@ -11,9 +13,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 
 import java.sql.Connection;
 import java.util.Objects;

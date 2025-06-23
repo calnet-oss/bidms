@@ -26,8 +26,6 @@
  */
 package edu.berkeley.bidms.orm.collection;
 
-import edu.berkeley.bidms.orm.collection.RebuildableSortedSet;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
