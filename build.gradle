@@ -132,7 +132,7 @@ enum BidmsProjectType {
 }
 
 gradle.ext {
-  gradle.ext.bidmsSubprojects = []
+    gradle.ext.bidmsSubprojects = []
 }
 
 subprojects {
