@@ -27,7 +27,6 @@
 package edu.berkeley.bidms.app.matchengine.response
 
 import edu.berkeley.bidms.app.matchengine.database.Record
-
 import jakarta.servlet.http.HttpServletResponse
 
 class ExactMatchResponse extends Response {
