@@ -33,7 +33,7 @@ import edu.berkeley.bidms.logging.AuditFailEvent
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.util.logging.Slf4j
-import org.springframework.beans.factory.annotation.Qualifier
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -41,8 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerErrorException
-
-import jakarta.servlet.http.HttpServletRequest
 
 @Slf4j
 @RequestMapping(value = "/registry-provisioning")

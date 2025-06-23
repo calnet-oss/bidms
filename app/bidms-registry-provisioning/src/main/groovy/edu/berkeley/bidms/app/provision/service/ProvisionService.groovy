@@ -42,6 +42,8 @@ import groovy.sql.Sql
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
+import jakarta.persistence.EntityManager
+import jakarta.persistence.LockModeType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Service
@@ -49,9 +51,6 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-
-import jakarta.persistence.EntityManager
-import jakarta.persistence.LockModeType
 
 @CompileStatic
 @Slf4j

@@ -29,12 +29,11 @@ package edu.berkeley.bidms.app.provision.config.properties;
 import edu.berkeley.bidms.app.provision.config.properties.jms.JmsProperties;
 import edu.berkeley.bidms.app.provision.config.properties.job.JobConfigProperties;
 import edu.berkeley.bidms.app.provision.config.properties.rest.RestProperties;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 @Validated
 @Configuration
