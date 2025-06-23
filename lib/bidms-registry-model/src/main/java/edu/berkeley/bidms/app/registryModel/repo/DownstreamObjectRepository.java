@@ -38,6 +38,8 @@ import java.util.List;
  */
 public interface DownstreamObjectRepository extends ExtendedRepository<DownstreamObject, Long> {
     List<DownstreamObject> findAllByPerson(Person person);
+
     DownstreamObject findBySystemAndSystemPrimaryKey(DownstreamSystem system, String systemPrimaryKey);
+
     DownstreamObject findByPersonAndSystemAndSystemPrimaryKey(Person person, DownstreamSystem system, String systemPrimaryKey);
 }

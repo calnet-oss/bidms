@@ -37,5 +37,6 @@ import java.util.List;
  */
 public interface DelegateProxyRepository extends ExtendedRepository<DelegateProxy, Long> {
     DelegateProxy findBySourceProxyId(String id);
+
     List<DelegateProxy> findAllByDelegateProxySorObject(SORObject sorObject);
 }

@@ -32,6 +32,6 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
 import java.util.List;
 
-public interface MatchHistoryRepository extends ExtendedRepository<MatchHistory, String>  {
+public interface MatchHistoryRepository extends ExtendedRepository<MatchHistory, String> {
     List<MatchHistory> findBySorObjectIdAndMatchResultType(Long sorObjectId, MatchHistoryResultTypeEnum resultTypeEnum);
 }

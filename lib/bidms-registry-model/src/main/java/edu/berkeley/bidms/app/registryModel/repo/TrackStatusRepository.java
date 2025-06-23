@@ -37,5 +37,6 @@ import java.util.List;
  */
 public interface TrackStatusRepository extends ExtendedRepository<TrackStatus, Long> {
     TrackStatus findByPersonAndTrackStatusType(Person person, String trackStatusType);
+
     List<TrackStatus> findAllByTrackStatusType(String trackStatusType);
 }

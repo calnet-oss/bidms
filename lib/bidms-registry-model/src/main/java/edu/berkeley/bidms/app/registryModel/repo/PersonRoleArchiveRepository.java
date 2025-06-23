@@ -34,6 +34,6 @@ import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 /**
  * Repository for {@link PersonRoleArchive} entities.
  */
-public interface PersonRoleArchiveRepository extends ExtendedRepository<PersonRoleArchive,Long> {
+public interface PersonRoleArchiveRepository extends ExtendedRepository<PersonRoleArchive, Long> {
     PersonRoleArchive findByPersonAndRole(Person person, AssignableRole role);
 }
