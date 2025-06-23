@@ -30,7 +30,6 @@ import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestDownstr
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchEngineProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestMatchServiceProperties;
 import edu.berkeley.bidms.app.common.config.properties.rest.endpoint.RestProvisionProperties;
-
 import jakarta.validation.constraints.NotNull;
 
 public class RestProperties {

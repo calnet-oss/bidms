@@ -29,7 +29,6 @@ package edu.berkeley.bidms.app.common.config.properties.jms;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsDownstreamProvisioningProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsMatchServiceProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsProvisioningProperties;
-
 import jakarta.validation.constraints.NotNull;
 
 public class JmsProperties {
