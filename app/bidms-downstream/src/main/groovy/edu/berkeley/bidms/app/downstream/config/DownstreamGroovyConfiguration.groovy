@@ -38,6 +38,7 @@ import edu.berkeley.bidms.downstream.ldap.LdapRenameEventLoggingCallback
 import edu.berkeley.bidms.downstream.ldap.LdapUniqueIdentifierEventProcessingCallback
 import edu.berkeley.bidms.downstream.ldap.LdapUpdateEventLoggingCallback
 import edu.berkeley.bidms.downstream.ldap.MainEntryUidObjectDefinition
+import jakarta.jms.ConnectionFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
@@ -48,8 +49,6 @@ import org.springframework.ldap.core.support.LdapContextSource
 import org.springframework.ldap.pool2.factory.PoolConfig
 import org.springframework.ldap.pool2.factory.PooledContextSource
 import org.springframework.ldap.pool2.validation.DefaultDirContextValidator
-
-import jakarta.jms.ConnectionFactory
 
 @Configuration
 class DownstreamGroovyConfiguration {
