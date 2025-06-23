@@ -51,7 +51,7 @@ testing {
         }
     }
 }
-tasks.named('check') { 
+tasks.named('check') {
     dependsOn(testing.suites.integrationTest)
 }
 
