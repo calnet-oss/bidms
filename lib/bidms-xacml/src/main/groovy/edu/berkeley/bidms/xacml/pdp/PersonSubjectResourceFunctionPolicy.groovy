@@ -43,7 +43,6 @@ import com.att.research.xacmlatt.pdp.policy.expressions.AttributeValueExpression
 import com.att.research.xacmlatt.pdp.std.StdCombiningAlgorithms
 import edu.berkeley.bidms.app.xacml.pdp.PersonSubjectResourceFunctionDefinition
 import groovy.transform.CompileStatic
-
 import jakarta.annotation.PostConstruct
 
 @CompileStatic

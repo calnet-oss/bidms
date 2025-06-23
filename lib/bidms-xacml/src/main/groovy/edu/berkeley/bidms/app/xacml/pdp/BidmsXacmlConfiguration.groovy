@@ -33,11 +33,10 @@ import com.att.research.xacmlatt.pdp.ATTPDPEngineFactory
 import com.att.research.xacmlatt.pdp.policy.PolicyFinderFactory
 import edu.berkeley.bidms.xacml.pdp.BidmsXacmlEvaluationContextFactory
 import edu.berkeley.bidms.xacml.pdp.BidmsXacmlPolicyFinder
+import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
-
-import jakarta.annotation.PostConstruct
 
 @Configuration
 class BidmsXacmlConfiguration {

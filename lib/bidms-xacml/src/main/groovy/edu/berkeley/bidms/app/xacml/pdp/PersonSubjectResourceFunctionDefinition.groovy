@@ -41,9 +41,8 @@ import edu.berkeley.bidms.xacml.pdp.BidmsXacmlFunctionDefinitionFactory
 import edu.berkeley.bidms.xacml.pdp.PersonSubjectResourceEvaluator
 import edu.berkeley.bidms.xacml.request.PersonSubjectResourceRequest
 import groovy.transform.CompileStatic
-import org.springframework.stereotype.Component
-
 import jakarta.annotation.PostConstruct
+import org.springframework.stereotype.Component
 
 @Component
 @CompileStatic
