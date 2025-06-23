@@ -31,6 +31,8 @@ import groovy.transform.CompileStatic
 @CompileStatic
 interface SystemOperation {
     String getSystemType()
+
     String getSystemTypeAttrName()
+
     Enum getAuditOp()
 }

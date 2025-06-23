@@ -88,19 +88,19 @@ testing {
         }
     }
 }
-tasks.named('check') { 
+tasks.named('check') {
     dependsOn(testing.suites.integrationTest)
 }
 
 tasks.named('test') {
-  useJUnitPlatform()
-  testLogging {
-    events "passed", "skipped", "failed"
-  }
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 tasks.named('integrationTest') {
-  testLogging {
-    events "passed", "skipped", "failed"
-  }
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

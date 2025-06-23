@@ -82,5 +82,7 @@ public class DownstreamConfigProperties {
         this.jms = jms;
     }
 
-    public JmsProperties getJms() { return jms; }
+    public JmsProperties getJms() {
+        return jms;
+    }
 }
