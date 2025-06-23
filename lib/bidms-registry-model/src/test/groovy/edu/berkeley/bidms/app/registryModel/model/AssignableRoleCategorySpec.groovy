@@ -26,9 +26,8 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-
-import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleCategoryRepository
 import edu.berkeley.bidms.app.registryModel.model.type.AssignableRoleCategoryEnum
+import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleCategoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest

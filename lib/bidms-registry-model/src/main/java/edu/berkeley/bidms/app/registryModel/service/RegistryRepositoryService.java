@@ -69,10 +69,9 @@ import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.Credential
 import edu.berkeley.bidms.app.registryModel.repo.credentialManagement.ResetPassphraseTokenRepository;
 import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository;
 import edu.berkeley.bidms.app.registryModel.repo.view.PersonSearchViewRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import jakarta.persistence.EntityManager;
 
 /**
  * A convenience service to retrieve repositories for JPA entity types.

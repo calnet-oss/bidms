@@ -32,8 +32,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import edu.berkeley.bidms.orm.hibernate.usertype.JSONBType;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -48,6 +46,7 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.Type;
 
 import java.util.Map;
 import java.util.Objects;

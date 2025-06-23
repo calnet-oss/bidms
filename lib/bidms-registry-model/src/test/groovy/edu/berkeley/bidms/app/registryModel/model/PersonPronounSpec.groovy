@@ -26,9 +26,9 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository
 import edu.berkeley.bidms.app.registryModel.repo.PersonPronounRepository
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
+import edu.berkeley.bidms.app.registryModel.repo.PronounTypeRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import org.springframework.beans.factory.annotation.Autowired

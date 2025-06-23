@@ -27,7 +27,6 @@
 package edu.berkeley.bidms.app.registryModel.model.auth;
 
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
