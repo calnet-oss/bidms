@@ -28,14 +28,14 @@ ext {
     versions = gradle.versions
 
     dependencyManagementDependencies = [
-        [group: 'com.h2database', name: 'h2', version: versions.h2db],
-        [group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: versions.springCloudConfig],
-        [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: versions.springCloudConfig],
-        [group: 'org.spockframework', name: 'spock-spring', version: versions.spockSpring],
-        [group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang],
-        [group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections],
-        [group: 'org.postgresql', name: 'postgresql', version: versions.postgresql],
-        [group: 'org.json', name: 'json', version: versions.orgJson],
-        [group: 'io.github.bkoehm', name: 'apacheds-embedded', version: versions.apacheDsEmbedded]
+            [group: 'com.h2database', name: 'h2', version: versions.h2db],
+            [group: 'org.springframework.cloud', name: 'spring-cloud-config-server', version: versions.springCloudConfig],
+            [group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: versions.springCloudConfig],
+            [group: 'org.spockframework', name: 'spock-spring', version: versions.spockSpring],
+            [group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang],
+            [group: 'org.apache.commons', name: 'commons-collections4', version: versions.commonsCollections],
+            [group: 'org.postgresql', name: 'postgresql', version: versions.postgresql],
+            [group: 'org.json', name: 'json', version: versions.orgJson],
+            [group: 'io.github.bkoehm', name: 'apacheds-embedded', version: versions.apacheDsEmbedded]
     ]
 }
