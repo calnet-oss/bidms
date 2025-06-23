@@ -417,7 +417,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
                                 surName  : 'Smith'
                         ]
                 ],
-                phoneNumbers: ['+1 555-555-5555']
+                phoneNumbers  : ['+1 555-555-5555']
         ]
 
         when:
@@ -463,7 +463,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
                                 surName  : 'Smith'
                         ]
                 ],
-                phoneNumbers: []
+                phoneNumbers  : []
         ]
 
         when:

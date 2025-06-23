@@ -35,6 +35,7 @@ class ExistingMatchResponse extends Response {
     String identifier
     int responseCode = HttpServletResponse.SC_FOUND
     Record responseData
+
     Map getJsonMap() {
         [
                 matchingRecord: responseData

@@ -29,4 +29,4 @@ package edu.berkeley.bidms.app.matchengine.exceptions
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-class RecordExistsException extends RuntimeException { }
+class RecordExistsException extends RuntimeException {}
