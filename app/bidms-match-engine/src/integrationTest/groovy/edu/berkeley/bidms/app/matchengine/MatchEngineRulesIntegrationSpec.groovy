@@ -30,8 +30,8 @@ import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import spock.lang.Specification
@@ -417,7 +417,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
                                 surName  : 'Smith'
                         ]
                 ],
-                phoneNumbers: ['+1 555-555-5555']
+                phoneNumbers  : ['+1 555-555-5555']
         ]
 
         when:
@@ -463,7 +463,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
                                 surName  : 'Smith'
                         ]
                 ],
-                phoneNumbers: []
+                phoneNumbers  : []
         ]
 
         when:

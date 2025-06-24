@@ -48,7 +48,7 @@ class ToMapContextMapper implements ContextMapper<Map<String, Object>> {
 
         Map<String, Object> result = [:]
         searchResult.attributes.all.each { Attribute attr ->
-            if(attr.size() > 0) {
+            if (attr.size() > 0) {
                 result.put(attr.ID, convertAttribute(attr))
             }
         }
@@ -68,8 +68,7 @@ class ToMapContextMapper implements ContextMapper<Map<String, Object>> {
                 list.add(it)
             }
             return list
-        }
-        else {
+        } else {
             throw new RuntimeException("attr size is 0")
         }
     }

@@ -37,18 +37,18 @@ javadoc {
     options.addBooleanOption('-frames', true)
 
     gradle.bidmsSubprojects.each {
-        pdep(it).tasks.withType(Javadoc).each {  javadocTask ->
+        pdep(it).tasks.withType(Javadoc).each { javadocTask ->
             source += javadocTask.source
             classpath += javadocTask.classpath
             excludes += javadocTask.excludes
             includes += javadocTask.includes
         }
-    }    
+    }
 }
 
 task javadocJar(type: Jar) {
     from javadoc
-    from {[licenseFile]}
+    from { [licenseFile] }
     archiveBaseName.set("bidms-aggregate")
     archiveClassifier.set("javadoc")
 }

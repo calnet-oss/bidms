@@ -29,13 +29,12 @@ package edu.berkeley.bidms.app
 import edu.berkeley.bidms.app.orm.component.ValidateableEventListenerConfigurer
 import edu.berkeley.bidms.app.springsecurity.encoder.DigestAuthPasswordEncoder
 import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialService
+import jakarta.persistence.EntityManagerFactory
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder
-
-import jakarta.persistence.EntityManagerFactory
 
 @AutoConfigurationPackage
 @SpringBootConfiguration

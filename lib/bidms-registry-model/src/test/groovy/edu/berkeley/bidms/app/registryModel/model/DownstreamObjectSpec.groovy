@@ -26,14 +26,13 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-
+import edu.berkeley.bidms.app.registryModel.model.type.DownstreamObjectOwnershipLevelEnum
+import edu.berkeley.bidms.app.registryModel.model.type.DownstreamSystemEnum
 import edu.berkeley.bidms.app.registryModel.repo.DownstreamObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.DownstreamSystemRepository
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
-import edu.berkeley.bidms.app.registryModel.model.type.DownstreamObjectOwnershipLevelEnum
-import edu.berkeley.bidms.app.registryModel.model.type.DownstreamSystemEnum
 import edu.berkeley.bidms.common.json.JsonUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase

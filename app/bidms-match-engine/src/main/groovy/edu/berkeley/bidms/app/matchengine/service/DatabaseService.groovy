@@ -29,10 +29,10 @@ package edu.berkeley.bidms.app.matchengine.service
 import edu.berkeley.bidms.app.matchengine.ConfidenceType
 import edu.berkeley.bidms.app.matchengine.SearchResult
 import edu.berkeley.bidms.app.matchengine.SearchSet
-import edu.berkeley.bidms.app.matchengine.util.sql.WhereAndValues
 import edu.berkeley.bidms.app.matchengine.config.MatchConfidence
 import edu.berkeley.bidms.app.matchengine.config.MatchConfig
 import edu.berkeley.bidms.app.matchengine.database.Record
+import edu.berkeley.bidms.app.matchengine.util.sql.WhereAndValues
 import groovy.transform.ToString
 import groovy.util.logging.Slf4j
 import org.springframework.stereotype.Service

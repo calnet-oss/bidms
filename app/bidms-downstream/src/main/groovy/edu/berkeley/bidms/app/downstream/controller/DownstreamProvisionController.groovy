@@ -35,6 +35,7 @@ import edu.berkeley.bidms.logging.AuditFailEvent
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.util.logging.Slf4j
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PathVariable
@@ -42,8 +43,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-
-import jakarta.servlet.http.HttpServletRequest
 
 @Slf4j
 @RequestMapping(value = "/bidms-downstream")

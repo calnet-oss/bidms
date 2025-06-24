@@ -26,11 +26,11 @@
  */
 package edu.berkeley.bidms.app.restservice.common.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.concurrent.Callable;
 
 /**

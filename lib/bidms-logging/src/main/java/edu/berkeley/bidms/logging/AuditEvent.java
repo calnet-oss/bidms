@@ -27,11 +27,12 @@
 package edu.berkeley.bidms.logging;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Map;
 
 /**
  * Audit event data to be converted into plain SLF4J log messages.
- *
+ * <p>
  * This is an abstract class.  Use AuditSuccessEvent for successful events
  * and AuditFailEvent for failure events.
  */

@@ -28,6 +28,8 @@ package edu.berkeley.bidms.app.common.config.properties.directory;
 
 public interface DirectoryProvisioningContextProperties {
     public boolean isEnabled();
+
     public String getDcBase();
+
     public boolean isBuildDownstreamObjectEnabled();
 }

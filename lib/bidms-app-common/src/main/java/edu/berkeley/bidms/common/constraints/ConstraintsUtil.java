@@ -27,9 +27,9 @@
 package edu.berkeley.bidms.common.constraints;
 
 import edu.berkeley.bidms.common.validation.ConstraintViolationDynamicPayload;
+import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
-import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class ConstraintsUtil {

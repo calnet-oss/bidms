@@ -26,8 +26,8 @@
  */
 package edu.berkeley.bidms.restclient.util;
 
-import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;

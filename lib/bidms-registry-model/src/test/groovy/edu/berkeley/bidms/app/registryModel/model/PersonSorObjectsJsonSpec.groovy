@@ -26,14 +26,12 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-
 import edu.berkeley.bidms.app.registryModel.repo.PersonSorObjectsJsonRepository
+import jakarta.persistence.Entity
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
-
-import jakarta.persistence.Entity
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest

@@ -29,7 +29,6 @@ package edu.berkeley.bidms.app.registryModel.model.credentialManagement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.berkeley.bidms.app.registryModel.model.Identifier;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

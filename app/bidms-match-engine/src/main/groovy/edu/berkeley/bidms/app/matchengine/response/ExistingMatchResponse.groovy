@@ -27,7 +27,6 @@
 package edu.berkeley.bidms.app.matchengine.response
 
 import edu.berkeley.bidms.app.matchengine.database.Record
-
 import jakarta.servlet.http.HttpServletResponse
 
 class ExistingMatchResponse extends Response {
@@ -35,6 +34,7 @@ class ExistingMatchResponse extends Response {
     String identifier
     int responseCode = HttpServletResponse.SC_FOUND
     Record responseData
+
     Map getJsonMap() {
         [
                 matchingRecord: responseData

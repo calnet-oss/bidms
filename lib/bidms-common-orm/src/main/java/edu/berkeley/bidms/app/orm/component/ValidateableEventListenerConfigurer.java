@@ -28,6 +28,8 @@ package edu.berkeley.bidms.app.orm.component;
 
 import edu.berkeley.bidms.orm.event.ValidateOnFlush;
 import edu.berkeley.bidms.orm.event.ValidateOnLoad;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
@@ -39,9 +41,6 @@ import org.hibernate.event.spi.PostLoadEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManagerFactory;
 
 @Component
 public class ValidateableEventListenerConfigurer {

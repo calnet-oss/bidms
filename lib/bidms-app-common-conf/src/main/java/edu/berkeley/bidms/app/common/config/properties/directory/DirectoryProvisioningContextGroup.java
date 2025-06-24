@@ -28,5 +28,6 @@ package edu.berkeley.bidms.app.common.config.properties.directory;
 
 public interface DirectoryProvisioningContextGroup {
     String getGroupID();
+
     String getDnPrefix();
 }

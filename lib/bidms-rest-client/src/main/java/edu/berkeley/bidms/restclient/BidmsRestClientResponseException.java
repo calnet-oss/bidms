@@ -33,9 +33,9 @@ import java.util.Map;
 public class BidmsRestClientResponseException extends Exception {
 
     private final HttpStatus httpStatus;
-    private final Map<?,?> json;
+    private final Map<?, ?> json;
 
-    public BidmsRestClientResponseException(final String message, final HttpStatus httpStatus, final Map<?,?> json) {
+    public BidmsRestClientResponseException(final String message, final HttpStatus httpStatus, final Map<?, ?> json) {
         super(message);
         this.httpStatus = httpStatus;
         this.json = json;

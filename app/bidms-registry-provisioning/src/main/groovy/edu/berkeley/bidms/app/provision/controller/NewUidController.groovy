@@ -35,6 +35,8 @@ import edu.berkeley.bidms.logging.AuditUtil
 import edu.berkeley.bidms.provision.command.NewUidCommand
 import edu.berkeley.bidms.provision.jms.ProvisionJmsTemplate
 import groovy.util.logging.Slf4j
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
@@ -43,9 +45,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerErrorException
-
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.validation.Valid
 
 @Slf4j
 @RequestMapping(value = "/registry-provisioning")
@@ -74,7 +73,7 @@ class NewUidController {
 
     /**
      * Assign a new uid to a SORObject.  Typically called by the matching process.
-     * 
+     *
      * <ul>
      *     <li>cmd.sorObjectId             - id of the SORObject in the database</li>
      *     <li>cmd.synchronousDownstream   - If true, reprovision the UID synchronously.</li>

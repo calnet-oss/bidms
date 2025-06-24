@@ -27,12 +27,12 @@
 package edu.berkeley.bidms.app.matchengine.response
 
 import edu.berkeley.bidms.app.matchengine.database.Candidate
-
 import jakarta.servlet.http.HttpServletResponse
 
 class FuzzyMatchResponse extends Response {
     int responseCode = HttpServletResponse.SC_MULTIPLE_CHOICES
     Set<Candidate> responseData
+
     Map getJsonMap() {
         [
                 partialMatchingRecords: responseData

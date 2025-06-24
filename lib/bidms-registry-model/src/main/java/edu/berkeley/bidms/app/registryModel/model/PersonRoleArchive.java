@@ -35,8 +35,6 @@ import edu.berkeley.bidms.orm.event.ValidateOnFlush;
 import edu.berkeley.bidms.orm.event.ValidateOnLoad;
 import edu.berkeley.bidms.registryModel.util.DateUtil;
 import edu.berkeley.bidms.registryModel.util.EntityUtil;
-import org.springframework.validation.Validator;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,6 +49,8 @@ import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.validation.Validator;
+
 import java.util.Date;
 import java.util.Objects;
 

@@ -31,7 +31,6 @@ import org.springframework.ldap.core.ContextMapper
 import org.springframework.ldap.core.DirContextAdapter
 
 import javax.naming.NamingException
-import javax.naming.directory.Attribute
 
 /**
  * Returns the search result entry as a DirContextAdapter.

@@ -27,12 +27,11 @@
 package edu.berkeley.bidms.jms.util;
 
 import edu.berkeley.bidms.app.common.config.properties.JmsConnectionConfigProperties;
+import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSslConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.springframework.jms.connection.CachingConnectionFactory;
-
-import jakarta.jms.ConnectionFactory;
 
 public class ConnectionFactoryUtil {
 

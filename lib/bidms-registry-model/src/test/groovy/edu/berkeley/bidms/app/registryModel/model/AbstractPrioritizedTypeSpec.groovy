@@ -26,9 +26,9 @@
  */
 package edu.berkeley.bidms.app.registryModel.model
 
-import edu.berkeley.bidms.registryModel.repo.ExtendedRepository
 import edu.berkeley.bidms.app.registryModel.model.type.PrioritizedEnum
 import edu.berkeley.bidms.app.registryModel.model.type.TypeEnum
+import edu.berkeley.bidms.registryModel.repo.ExtendedRepository
 
 abstract class AbstractPrioritizedTypeSpec<T, EN extends TypeEnum & PrioritizedEnum, I, R extends ExtendedRepository<T, I>> extends AbstractTypeSpec<T, EN, I, R> {
     abstract int getPriority(T type)

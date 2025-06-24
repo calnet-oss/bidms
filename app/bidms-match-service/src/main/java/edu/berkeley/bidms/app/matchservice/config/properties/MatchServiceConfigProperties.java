@@ -27,12 +27,11 @@
 package edu.berkeley.bidms.app.matchservice.config.properties;
 
 import edu.berkeley.bidms.app.matchservice.config.properties.rest.RestProperties;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 @Validated
 @Configuration

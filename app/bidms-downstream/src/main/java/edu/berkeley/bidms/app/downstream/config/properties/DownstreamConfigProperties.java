@@ -28,11 +28,10 @@ package edu.berkeley.bidms.app.downstream.config.properties;
 
 import edu.berkeley.bidms.app.downstream.config.properties.jms.JmsProperties;
 import edu.berkeley.bidms.app.downstream.config.properties.job.JobConfigProperties;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.constraints.NotNull;
 
 @Validated
 @Configuration
@@ -82,5 +81,7 @@ public class DownstreamConfigProperties {
         this.jms = jms;
     }
 
-    public JmsProperties getJms() { return jms; }
+    public JmsProperties getJms() {
+        return jms;
+    }
 }

@@ -28,7 +28,7 @@ package edu.berkeley.bidms.app.common.config.properties.jms.endpoint;
 
 import jakarta.validation.constraints.NotNull;
 
-public class JmsDownstreamProvisioningProperties  extends AbstractJmsServiceProviderProperties {
+public class JmsDownstreamProvisioningProperties extends AbstractJmsServiceProviderProperties {
     @NotNull
     private JmsEndpointConfigProperties provisionUid;
 

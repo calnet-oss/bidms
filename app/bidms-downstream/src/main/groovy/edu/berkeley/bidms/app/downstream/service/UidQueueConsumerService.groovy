@@ -30,10 +30,9 @@ import edu.berkeley.bidms.downstream.service.ProvisioningResult
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.Synchronized
 import groovy.util.logging.Slf4j
+import jakarta.jms.MapMessage
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
-
-import jakarta.jms.MapMessage
 
 @Service
 @Slf4j

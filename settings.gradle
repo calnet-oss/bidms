@@ -57,32 +57,32 @@ def getVersionPropertiesClosure = { File propsFile ->
 getVersionPropertiesClosure(file("versions.properties"))
 
 include bidmsBomDep, // convention is BOMs end with '-bom'
-    // Libs
-    bidmsBootInitDep,
-    bidmsAppCommonDep,
-    bidmsAppCommonConfDep,
-    bidmsRestServiceCommonDep,
-    bidmsRegistryModelDep,
-    bidmsSpringSecurityApiDep,
-    bidmsSpringSecurityImplDep,
-    bidmsCommonJsonDep,
-    bidmsLoggingDep,
-    bidmsCommonOrmDep,
-    bidmsRestClientDep,
-    bidmsMessagingCommonDep,
-    bidmsMessagingClientDep,
-    bidmsMessagingListenerDep,
-    bidmsProvisionCommonDep,
-    bidmsTestConfDep,
-    bidmsXacmlDep,
-    bidmsConnectorsDep,
-    // Apps
-    bidmsMatchEngineDep,
-    bidmsMatchServiceDep,
-    bidmsRegistryProvisioningDep,
-    bidmsDownstreamDep,
-    // WARs - convention is these end with '-boot' or '-config-server'
-    bidmsConfigServerWebapp,
-    bidmsBootWebapp,
-    // Docs - convention is these end with 'docs'
-    ":bidms-aggregate-javadocs"
+        // Libs
+        bidmsBootInitDep,
+        bidmsAppCommonDep,
+        bidmsAppCommonConfDep,
+        bidmsRestServiceCommonDep,
+        bidmsRegistryModelDep,
+        bidmsSpringSecurityApiDep,
+        bidmsSpringSecurityImplDep,
+        bidmsCommonJsonDep,
+        bidmsLoggingDep,
+        bidmsCommonOrmDep,
+        bidmsRestClientDep,
+        bidmsMessagingCommonDep,
+        bidmsMessagingClientDep,
+        bidmsMessagingListenerDep,
+        bidmsProvisionCommonDep,
+        bidmsTestConfDep,
+        bidmsXacmlDep,
+        bidmsConnectorsDep,
+        // Apps
+        bidmsMatchEngineDep,
+        bidmsMatchServiceDep,
+        bidmsRegistryProvisioningDep,
+        bidmsDownstreamDep,
+        // WARs - convention is these end with '-boot' or '-config-server'
+        bidmsConfigServerWebapp,
+        bidmsBootWebapp,
+        // Docs - convention is these end with 'docs'
+        ":bidms-aggregate-javadocs"

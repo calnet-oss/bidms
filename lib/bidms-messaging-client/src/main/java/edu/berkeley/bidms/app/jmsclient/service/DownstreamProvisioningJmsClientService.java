@@ -28,15 +28,15 @@ package edu.berkeley.bidms.app.jmsclient.service;
 
 import edu.berkeley.bidms.app.common.config.properties.BidmsConfigProperties;
 import edu.berkeley.bidms.app.common.config.properties.jms.endpoint.JmsEndpointConfigProperties;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.jms.JMSException;
-import jakarta.jms.Message;
-import jakarta.jms.Session;
 import java.util.Map;
 import java.util.Objects;
 

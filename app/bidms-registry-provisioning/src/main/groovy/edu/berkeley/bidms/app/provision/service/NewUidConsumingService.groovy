@@ -29,14 +29,13 @@ package edu.berkeley.bidms.app.provision.service
 import edu.berkeley.bidms.logging.AuditSuccessEvent
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.util.logging.Slf4j
+import jakarta.jms.MapMessage
+import jakarta.jms.Message
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-
-import jakarta.jms.MapMessage
-import jakarta.jms.Message
 
 @Slf4j
 @Service

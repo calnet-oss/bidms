@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.app.common.config.properties.rest.endpoint;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.net.URI;
 
 public class RestEndpointConfigProperties {
