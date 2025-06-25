@@ -1534,6 +1534,10 @@ class LdapConnectorSpec extends Specification {
         group2Retrieved.first().uniqueMember == ["ou=groups,dc=berkeley,dc=edu", "uid=1,ou=people,dc=berkeley,dc=edu"]
     }
 
+    LdapTemplate getLdapTemplate() {
+        return new LdapTemplate(ldapContextSource)
+    }
+
     void "test null character replacement in LdapConnectorException message"() {
         when:
         def exception = new LdapConnectorException(new AuthenticationException(new javax.naming.AuthenticationException("test \u0000message")))
@@ -1542,7 +1546,51 @@ class LdapConnectorSpec extends Specification {
         exception.message == "org.springframework.ldap.AuthenticationException: test message"
     }
 
-    LdapTemplate getLdapTemplate() {
-        return new LdapTemplate(ldapContextSource)
+    void "test scrubbing null characters out of exception stack trace"() {
+        when:
+        Exception e = null
+        try {
+            TestThrowingExceptionClass.throwTopException()
+        } catch (exception) {
+            e = exception
+        }
+        String stackTrace = getLdapConnectorExceptionStackTrace(e)
+
+        then:
+        stackTrace.contains("this is an exception with a null\n character")
+
+        and: "the stack trace has the null characters removed"
+        !stackTrace.bytes.any { it == 0 }
+    }
+
+    static String getLdapConnectorExceptionStackTrace(Exception e) {
+        LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
+        if (ldapConnectorException) {
+            return LdapConnectorException.getFullExceptionStackTraceAsScrubbedString(e)
+        } else {
+            return null
+        }
+    }
+
+    static class TestThrowingExceptionClass {
+        static void throwTopException() {
+            try {
+                throwLdapConnectorException()
+            } catch (Exception e) {
+                throw new UnsupportedOperationException(e.message, e)
+            }
+        }
+
+        static void throwLdapConnectorException() {
+            try {
+                throwLdapConnectorExceptionCause()
+            } catch (Exception e) {
+                throw new LdapConnectorException(e.message, e)
+            }
+        }
+
+        static void throwLdapConnectorExceptionCause() {
+            throw new UnsupportedOperationException("this is an exception with a null\n\u0000 character")
+        }
     }
 }

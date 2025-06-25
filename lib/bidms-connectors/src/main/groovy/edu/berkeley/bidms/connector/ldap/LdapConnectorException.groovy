@@ -28,6 +28,7 @@
 package edu.berkeley.bidms.connector.ldap
 
 import edu.berkeley.bidms.connector.ConnectorException
+import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 
 import javax.naming.NamingException
@@ -37,6 +38,7 @@ import java.util.regex.Pattern
 /**
  * Exception thrown within LdapConnector functionality.
  */
+@CompileStatic
 @InheritConstructors
 class LdapConnectorException extends ConnectorException {
     private Pattern ldapErrorCodePattern = Pattern.compile("error code (\\d+)")
@@ -50,15 +52,54 @@ class LdapConnectorException extends ConnectorException {
      * When interacting with AD, it has been observed that some
      * NamingException strings may contain characters equating to the
      * character \u0000, i.e.  the 'null' character.  These null characters
-     * can be problematic for some JSON parsers.
+     * can be problematic for some JSON parsers.  This method removes the
+     * null characters from the message string.
      */
     @Override
     String getMessage() {
         return scrubString(super.getMessage())
     }
 
-    private static String scrubString(String str) {
+    /**
+     * When interacting with AD, it has been observed that some
+     * NamingException strings may contain characters equating to the
+     * character \u0000, i.e.  the 'null' character.  These null characters
+     * can be undesired in a log file.  This method removes the null
+     * characters from the full stack trace string.
+     *
+     * @return The stack trace as it would appear from {@link Exception#printStackTrace}
+     *         but with null characters removed from the string.
+     */
+    static String getFullExceptionStackTraceAsScrubbedString(Throwable t) {
+        StringWriter sWriter = new StringWriter()
+        PrintWriter pWriter = new PrintWriter(sWriter)
+        t.printStackTrace(pWriter)
+        return scrubString(sWriter.toString())
+    }
+
+    static String scrubString(String str) {
         return str.replaceAll("\u0000", "")
+    }
+
+    /**
+     * If an exception causation chain contains a
+     * {@link LdapConnectorException}, this will return the first
+     * occurrence of it in the chain.
+     *
+     * @param e The exception with a possible causation chain to search through.
+     *
+     * @return The first occurrence of {@link LdapConnectorException}
+     *         in the chain, otherwise null.
+     */
+    static LdapConnectorException findLdapConnectorExceptionInChain(Exception e) {
+        if (e instanceof LdapConnectorException) {
+            return (LdapConnectorException) e
+        }
+        if (e.cause instanceof Exception) {
+            return findLdapConnectorExceptionInChain((Exception) e.cause)
+        } else {
+            return null
+        }
     }
 
     NamingException getNamingException() {
