@@ -72,6 +72,13 @@ dependencies {
     implementation pdep(rootProject.bidmsMessagingClientDep)
     implementation pdep(rootProject.bidmsMessagingListenerDep)
     implementation pdep(rootProject.bidmsLoggingDep)
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.spockframework:spock-spring'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 configurations {

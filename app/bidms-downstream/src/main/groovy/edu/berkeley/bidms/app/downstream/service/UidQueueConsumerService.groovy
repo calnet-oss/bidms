@@ -26,6 +26,7 @@
  */
 package edu.berkeley.bidms.app.downstream.service
 
+import edu.berkeley.bidms.connector.ldap.LdapConnectorException
 import edu.berkeley.bidms.downstream.service.ProvisioningResult
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.Synchronized
@@ -72,7 +73,30 @@ class UidQueueConsumerService {
             checkTimingStats(downstreamSystemName.toLowerCase(), start, result)
         }
         catch (Exception e) {
-            log.error("There was an error trying to provision uid " + message.getString("uid") + " downstream to " + message.getString("downstreamSystemName"), e);
+            String msg = "There was an error trying to provision uid ${message.getString('uid')} downstream to ${message.getString('downstreamSystemName')}"
+            String ldapConnectorExceptionStackTrace = getLdapConnectorExceptionStackTrace(e)
+            if (ldapConnectorExceptionStackTrace) {
+                // exception chain contains LdapConnectorException: we
+                // formulate a filtered stack trace to avoid null characters
+                // in the string
+                msg += ": $ldapConnectorExceptionStackTrace"
+                log.error(msg)
+            } else {
+                log.error(msg, e);
+            }
+        }
+    }
+
+    static String getLdapConnectorExceptionStackTrace(Exception e) {
+        LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
+        if (ldapConnectorException) {
+            // AD NamingExceptions have null characters embedded in the
+            // exception strings which are annoying in the log files.
+            // This strips out null characters from the stacktrace
+            // printout.
+            return LdapConnectorException.getFullExceptionStackTraceAsScrubbedString(e)
+        } else {
+            return null
         }
     }
 
