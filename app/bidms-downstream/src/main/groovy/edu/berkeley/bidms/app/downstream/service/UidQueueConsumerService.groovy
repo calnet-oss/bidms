@@ -74,6 +74,17 @@ class UidQueueConsumerService {
         }
         catch (Exception e) {
             String msg = "There was an error trying to provision uid ${message.getString('uid')} downstream to ${message.getString('downstreamSystemName')}"
+            LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
+            if (ldapConnectorException) {
+                Long adErrorCode = ldapConnectorException.activeDirectoryErrorCode
+                Integer ldapErrorCode = ldapConnectorException.ldapErrorCode
+                if (ldapErrorCode) {
+                    msg += ": ldapErrorCode=$ldapErrorCode"
+                    if (adErrorCode) {
+                        msg += ", adErrorCode=$adErrorCode"
+                    }
+                }
+            }
             String ldapConnectorExceptionStackTrace = getLdapConnectorExceptionStackTrace(e)
             if (ldapConnectorExceptionStackTrace) {
                 // exception chain contains LdapConnectorException: we
