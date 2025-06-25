@@ -50,6 +50,8 @@ import edu.berkeley.bidms.connector.ldap.event.message.LdapRenameEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapSetAttributeEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUniqueIdentifierEventMessage
 import edu.berkeley.bidms.connector.ldap.event.message.LdapUpdateEventMessage
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FirstParam
 import groovy.util.logging.Slf4j
 import org.springframework.ldap.NameNotFoundException
 import org.springframework.ldap.core.ContextMapper
@@ -75,6 +77,8 @@ import javax.naming.ldap.LdapName
 import javax.naming.ldap.Rdn
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Connector for LDAP and Active Directory directory servers.
@@ -84,6 +88,35 @@ import java.util.concurrent.TimeUnit
 // TransactionAwareContextSourceProxy.
 @Transactional
 class LdapConnector implements Connector {
+
+    /**
+     * Regular expression patterns for exception messages thrown during
+     * LdapTemplate operations where if the pattern matches, then the
+     * LdapTemplate operation will be retried.  This should be used for LDAP
+     * or AD exceptions that indicate the request was rejected due to server
+     * being busy.  For "server is busy" errors, it's appropriate to retry a
+     * few times before giving up.
+     */
+    private static final List<Pattern> DEFAULT_EXCEPTION_MSG_RETRY_PATTERNS = [
+            // This is an error that seems be presented when AD is busy.
+            // Documentation is hard to come by: It's possible this error is
+            // thrown for other reasons too, but in our case we encounter it
+            // when AD seems to be trying to handle too many requests at
+            // once.
+            Pattern.compile("LDAP: error code 53 - 0000001F: SvcErr: DSID-031A126A, problem 5003")
+    ]
+
+    /**
+     * When the error matches a retry pattern, this is the maximum number of
+     * attempts before giving up on a LdapTemplate operation.
+     */
+    private static final int DEFAULT_RETRY_LIMIT = 4
+
+    /**
+     * When the error matches a retry pattern, this is the delay (in
+     * milliseconds) between reattempts.
+     */
+    private static final int DEFAULT_RETRY_DELAY_MILLISECONDS = 50
 
     ContextSource contextSource
 
@@ -386,7 +419,13 @@ class LdapConnector implements Connector {
      */
     List<DirContextAdapter> searchByPrimaryKey(LdapRequestContext reqCtx, String pkey) {
         LdapQuery query = reqCtx.objectDef.getLdapQueryForPrimaryKey(pkey)
-        return (query ? reqCtx.ldapTemplate.search(query, toDirContextAdapterContextMapper) : null)
+        if (query) {
+            return execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+                ldapTemplate.search(query, toDirContextAdapterContextMapper)
+            }
+        } else {
+            return null
+        }
     }
 
     /**
@@ -402,9 +441,9 @@ class LdapConnector implements Connector {
      */
     DirContextAdapter lookup(LdapRequestContext reqCtx, Name dn, String[] attributes = null) {
         if (!attributes) {
-            return (DirContextAdapter) reqCtx.ldapTemplate.lookup(dn)
+            return (DirContextAdapter) execLdapTemplateOp(reqCtx.ldapTemplate) { it.lookup(dn) }
         } else {
-            return (DirContextAdapter) reqCtx.ldapTemplate.lookup(dn, attributes, toDirContextAdapterContextMapper)
+            return (DirContextAdapter) execLdapTemplateOp(reqCtx.ldapTemplate) { it.lookup(dn, attributes, toDirContextAdapterContextMapper) }
         }
     }
 
@@ -422,7 +461,9 @@ class LdapConnector implements Connector {
             String pkey,
             Object uniqueIdentifier
     ) {
-        return reqCtx.ldapTemplate.searchForObject(reqCtx.objectDef.getLdapQueryForGloballyUniqueIdentifier(pkey, uniqueIdentifier), toDirContextAdapterContextMapper)
+        return execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+            ldapTemplate.searchForObject(reqCtx.objectDef.getLdapQueryForGloballyUniqueIdentifier(pkey, uniqueIdentifier), toDirContextAdapterContextMapper)
+        }
     }
 
     /**
@@ -450,10 +491,12 @@ class LdapConnector implements Connector {
                     .base(dn)
                     .searchScope(SearchScope.ONELEVEL)
                     .where("objectClass").isPresent()
-            List<DirContextAdapter> subordinates = reqCtx.ldapTemplate.search(
-                    subordinateQuery,
-                    toDirContextAdapterContextMapper
-            )
+            List<DirContextAdapter> subordinates = execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+                ldapTemplate.search(
+                        subordinateQuery,
+                        toDirContextAdapterContextMapper
+                )
+            }
             subordinates.each { DirContextAdapter foundSubordinate ->
                 if (!nameEquals(reqCtx.objectDef, foundSubordinate.dn, dn)) {
                     delete(reqCtx, pkey, foundSubordinate.dn)
@@ -461,7 +504,7 @@ class LdapConnector implements Connector {
             }
 
             // now that the subordinates are deleted, delete the DN
-            reqCtx.ldapTemplate.unbind(dn)
+            execLdapTemplateOp(reqCtx.ldapTemplate) { it.unbind(dn) }
         }
         catch (Throwable t) {
             exception = t
@@ -501,7 +544,7 @@ class LdapConnector implements Connector {
         Throwable exception
         Object directoryUniqueIdentifier = null
         try {
-            reqCtx.ldapTemplate.rename(oldDn, newDn)
+            execLdapTemplateOp(reqCtx.ldapTemplate) { it.rename(oldDn, newDn) }
 
             if (reqCtx.objectDef.globallyUniqueIdentifierAttributeName && uniqueIdentifierEventCallbacks) {
                 // Get the possibly-changed unique identifier for the
@@ -665,7 +708,7 @@ class LdapConnector implements Connector {
 
             modificationItems = existingEntry.modificationItems
             boolean isModified = modificationItems?.size()
-            reqCtx.ldapTemplate.modifyAttributes(existingEntry)
+            execLdapTemplateOp(reqCtx.ldapTemplate) { it.modifyAttributes(existingEntry) }
 
             return isModified
         }
@@ -720,7 +763,7 @@ class LdapConnector implements Connector {
             // word "bind" and "rebind" to mean "create" and "update." In
             // this context, it does not mean "authenticate (bind) to the
             // directory server.
-            reqCtx.ldapTemplate.bind(dn, null, buildAttributes(convertedNewAttributeMap))
+            execLdapTemplateOp(reqCtx.ldapTemplate) { it.bind(dn, null, buildAttributes(convertedNewAttributeMap)) }
 
             if (reqCtx.objectDef.globallyUniqueIdentifierAttributeName && uniqueIdentifierEventCallbacks) {
                 // Get the newly-created directory unique identifier so we
@@ -1520,16 +1563,18 @@ class LdapConnector implements Connector {
             // Spring LDAP doesn't support removing write-only
             // attributes (like userPassword) so that's why we use
             // DirContext directly here.
-            DirContext dirctx = reqCtx.ldapTemplate.contextSource.readWriteContext
-            try {
-                attributeNamesToRemove.each { String attrNameToRemove ->
-                    ModificationItem item = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(attrNameToRemove, null))
-                    modificationItems << item
-                    dirctx.modifyAttributes(matchingEntryResult.entry.dn, item)
+            execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+                DirContext dirctx = ldapTemplate.contextSource.readWriteContext
+                try {
+                    attributeNamesToRemove.each { String attrNameToRemove ->
+                        ModificationItem item = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(attrNameToRemove, null))
+                        modificationItems << item
+                        dirctx.modifyAttributes(matchingEntryResult.entry.dn, item)
+                    }
                 }
-            }
-            finally {
-                dirctx.close()
+                finally {
+                    dirctx.close()
+                }
             }
 
             boolean isModified = modificationItems?.size()
@@ -1594,31 +1639,33 @@ class LdapConnector implements Connector {
             // Spring LDAP doesn't support write-only attributes (like
             // userPassword) so that's why we use DirContext directly
             // here.
-            DirContext dirctx = reqCtx.ldapTemplate.contextSource.readWriteContext
-            try {
-                if (!useRemoveAndAddApproach) {
-                    ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
-                    items = [item]
-                    dirctx.modifyAttributes(matchingEntryResult.entry.dn, items)
-                } else {
-                    // Active Directory requires this approach when user
-                    // changes own password.  First try remove and add and
-                    // if that fails, try just an add.
-                    try {
-                        ModificationItem removeItem = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(attributeName, oldAttributeValue))
-                        ModificationItem addItem = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
-                        items = [removeItem, addItem]
+            execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+                DirContext dirctx = ldapTemplate.contextSource.readWriteContext
+                try {
+                    if (!useRemoveAndAddApproach) {
+                        ModificationItem item = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
+                        items = [item]
                         dirctx.modifyAttributes(matchingEntryResult.entry.dn, items)
-                    }
-                    catch (NoSuchAttributeException ignored) {
-                        ModificationItem addItem = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
-                        items = [addItem]
-                        dirctx.modifyAttributes(matchingEntryResult.entry.dn, items)
+                    } else {
+                        // Active Directory requires this approach when user
+                        // changes own password.  First try remove and add and
+                        // if that fails, try just an add.
+                        try {
+                            ModificationItem removeItem = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(attributeName, oldAttributeValue))
+                            ModificationItem addItem = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
+                            items = [removeItem, addItem]
+                            dirctx.modifyAttributes(matchingEntryResult.entry.dn, items)
+                        }
+                        catch (NoSuchAttributeException ignored) {
+                            ModificationItem addItem = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(attributeName, newAttributeValue))
+                            items = [addItem]
+                            dirctx.modifyAttributes(matchingEntryResult.entry.dn, items)
+                        }
                     }
                 }
-            }
-            finally {
-                dirctx.close()
+                finally {
+                    dirctx.close()
+                }
             }
 
             return true
@@ -1739,7 +1786,7 @@ class LdapConnector implements Connector {
     void addDnToGroup(LdapRequestContext reqCtx, String memberDN, Name groupDN) throws LdapConnectorException {
         try {
             ModificationItem mod = new ModificationItem(DirContext.ADD_ATTRIBUTE, new BasicAttribute(reqCtx.objectDef.groupMemberAttributeName, memberDN))
-            reqCtx.ldapTemplate.modifyAttributes(groupDN, [mod] as ModificationItem[])
+            execLdapTemplateOp(reqCtx.ldapTemplate) { it.modifyAttributes(groupDN, [mod] as ModificationItem[]) }
         }
         catch (Throwable t) {
             throw new LdapConnectorException(t)
@@ -1750,10 +1797,109 @@ class LdapConnector implements Connector {
     void removeDnFromGroup(LdapRequestContext reqCtx, String memberDN, Name groupDN) throws LdapConnectorException {
         try {
             ModificationItem mod = new ModificationItem(DirContext.REMOVE_ATTRIBUTE, new BasicAttribute(reqCtx.objectDef.groupMemberAttributeName, memberDN))
-            reqCtx.ldapTemplate.modifyAttributes(groupDN, [mod] as ModificationItem[])
+            execLdapTemplateOp(reqCtx.ldapTemplate) { ldapTemplate ->
+                ldapTemplate.modifyAttributes(groupDN, [mod] as ModificationItem[])
+            }
         }
         catch (Throwable t) {
             throw new LdapConnectorException(t)
         }
+    }
+
+    /**
+     * Execute an operation using a {@link LdapTemplate}.
+     * <p>
+     * An operation will be retried up to {@link #getRetryLimit} times if an
+     * exception is thrown where the message matches a patterns returned by
+     * {@link #getExceptionMsgRetryPatterns}.
+     *
+     * @param ldapTemplate The {@link LdapTemplate} object.
+     * @param executionClosure A closure where the first argument is the
+     *        {@link LdapTemplate} instance.  The closure may optionally
+     *        return a value.
+     *
+     * @return An optional value returned by the closure.
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected <V> V execLdapTemplateOp(
+            LdapTemplate ldapTemplate,
+            @ClosureParams(FirstParam) Closure<V> executionClosure
+    ) {
+        Exception lastException = null
+        V retVal = null
+        int attempt = 0
+        for (; attempt < getRetryLimit(); attempt++) {
+            try {
+                retVal = executionClosure.call(ldapTemplate)
+                // attempt succeeded - break the retry loop
+                if (attempt > 0) {
+                    log.info("Retry succeeded on attempt $attempt")
+                    lastException = null
+                }
+                break
+            } catch (Exception e) {
+                lastException = e
+                boolean doRetry = getExceptionMsgRetryPatterns().any { p ->
+                    Matcher m = p.matcher(e.message)
+                    m.find()
+                }
+                if (doRetry) {
+                    // is an exception where we should reattempt the ldap op
+                    log.warn("Attempt $attempt: encountered an exception that indicates a retry is warranted: ${e.message}")
+                    try {
+                        Thread.sleep(getRetryDelayMilliseconds())
+                    }
+                    catch (InterruptedException ignored) {
+                        // no-op
+                    }
+                } else {
+                    // not an exception where we should reattempt the ldap op
+                    throw e
+                }
+            }
+        }
+        if (lastException) {
+            log.warn("Maximum reattempts exceeded ($attempt)")
+            throw lastException
+        } else {
+            return retVal
+        }
+    }
+
+    /**
+     * A {@link LdapTemplate} operation should be retried if the exception
+     * messages matches a pattern in the list returned by this method.  This
+     * should be used for LDAP or AD exceptions that indicate the request
+     * was rejected due to server being busy.  For "server is busy" errors,
+     * it's appropriate to retry a few times before giving up.
+     *
+     * @return A list of {@link Pattern} objects that match exception
+     *         messages where the ldap operation should be retried.
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected List<Pattern> getExceptionMsgRetryPatterns() {
+        return DEFAULT_EXCEPTION_MSG_RETRY_PATTERNS
+    }
+
+    /**
+     * When the error matches a retry pattern, this is the maximum number of
+     * attempts before giving up on a {@link LdapTemplate} operation.
+     *
+     * @return Maximum number of attempts for an ldap operation
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected int getRetryLimit() {
+        return DEFAULT_RETRY_LIMIT
+    }
+
+    /**
+     * When the error matches a retry pattern, this is the delay, in
+     * milliseconds, between reattempts.
+     *
+     * @return The delay to use, in milliseconds, between reattempts.
+     */
+    @SuppressWarnings("GrMethodMayBeStatic")
+    protected int getRetryDelayMilliseconds() {
+        return DEFAULT_RETRY_DELAY_MILLISECONDS
     }
 }
