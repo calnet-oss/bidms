@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Regents of the University of California and
+ * Copyright (c) 2025, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -24,14 +24,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.registryModel.repo;
+package edu.berkeley.bidms.app.registryModel.model.type;
 
-import edu.berkeley.bidms.app.registryModel.model.TimeType;
-import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
+import edu.berkeley.bidms.app.registryModel.model.ActivityType;
+import edu.berkeley.bidms.app.registryModel.repo.ActivityTypeRepository;
 
 /**
- * Repository for {@link TimeType} entities.
+ * The different types of activities from SOR JSON that translate into a
+ * ActivityType.
  */
-public interface TimeTypeRepository extends ExtendedRepository<TimeType, Integer> {
-    TimeType findByTimeTypeName(String timeTypeName);
+public enum ActivityTypeEnum implements TypeEnum<ActivityType, ActivityTypeRepository> {
+
+    testActivity;
+
+    public ActivityType get(ActivityTypeRepository repo) {
+        ActivityType activityType = repo.findByActivityTypeName(name());
+        if (activityType == null) {
+            throw new RuntimeException("ActivityType " + name() + " could not be found");
+        }
+        return activityType;
+    }
+
+    public String getName() {
+        return name();
+    }
+
+    public Integer getId(ActivityTypeRepository repo) {
+        return get(repo).getId();
+    }
+
+    public static ActivityTypeEnum getEnum(ActivityType t) {
+        return valueOf(ActivityTypeEnum.class, t.getActivityTypeName());
+    }
 }

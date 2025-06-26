@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Regents of the University of California and
+ * Copyright (c) 2025, Regents of the University of California and
  * contributors.
  * All rights reserved.
  *
@@ -26,12 +26,22 @@
  */
 package edu.berkeley.bidms.app.registryModel.repo;
 
-import edu.berkeley.bidms.app.registryModel.model.TimeType;
+import edu.berkeley.bidms.app.registryModel.model.ActivityType;
+import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.PersonActivity;
+import edu.berkeley.bidms.app.registryModel.model.SORObject;
 import edu.berkeley.bidms.registryModel.repo.ExtendedRepository;
 
+import java.util.List;
+
 /**
- * Repository for {@link TimeType} entities.
+ * Repository for {@link PersonActivity} entities.
  */
-public interface TimeTypeRepository extends ExtendedRepository<TimeType, Integer> {
-    TimeType findByTimeTypeName(String timeTypeName);
+public interface PersonActivityRepository extends ExtendedRepository<PersonActivity, Long> {
+    List<PersonActivity> findAllByPerson(Person person);
+
+    List<PersonActivity> findAllBySorObject(SORObject sorObject);
+
+    PersonActivity findByPersonAndActivityType(Person person, ActivityType activityType);
+
 }

@@ -88,83 +88,71 @@ public class Person implements ValidateOnFlush {
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.AddressCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Address> addresses = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonNameCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonName> names = new RebuildableTreeSet<>();
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonPronounCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonPronoun> pronouns = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.DateOfBirthCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DateOfBirth> datesOfBirth = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Identifier> identifiers = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.EmailCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Email> emails = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.TelephoneCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<Telephone> telephones = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonRole> assignedRoles = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.TrackStatusCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<TrackStatus> trackStatuses = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.DelegateProxyCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DelegateProxy> delegations = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.DownstreamObjectCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<DownstreamObject> downstreamObjects = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "uid", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.JobAppointmentCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<JobAppointment> jobAppointments = new RebuildableTreeSet<>();
@@ -172,31 +160,33 @@ public class Person implements ValidateOnFlush {
     // archivedIdentifiers is read-only
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person")
-    //@OrderBy("originalIdentifierId")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.IdentifierArchiveCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<IdentifierArchive> archivedIdentifiers = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonRoleArchiveCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonRoleArchive> archivedRoles = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.SORTokenCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<SORToken> sorTokens = new RebuildableTreeSet<>();
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("id")
     @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonTimeCollectionType.class)
     @JsonDeserialize(as = RebuildableTreeSet.class)
     private RebuildableSortedSet<PersonTime> times = new RebuildableTreeSet<>();
+
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @CollectionType(type = edu.berkeley.bidms.registryModel.hibernate.usertype.person.PersonTimeCollectionType.class)
+    @JsonDeserialize(as = RebuildableTreeSet.class)
+    private RebuildableSortedSet<PersonActivity> activities = new RebuildableTreeSet<>();
 
     public Person addToAddresses(Address obj) {
         obj.setPerson(this);
@@ -372,9 +362,21 @@ public class Person implements ValidateOnFlush {
         return this;
     }
 
-    public Person removeFromSORTokens(PersonTime obj) {
+    public Person removeFromTimes(PersonTime obj) {
         obj.setPerson(null);
         times.remove(obj);
+        return this;
+    }
+
+    public Person addToActivities(PersonActivity obj) {
+        obj.setPerson(this);
+        activities.add(obj);
+        return this;
+    }
+
+    public Person removeFromActivities(PersonActivity obj) {
+        obj.setPerson(null);
+        activities.remove(obj);
         return this;
     }
 
@@ -536,6 +538,16 @@ public class Person implements ValidateOnFlush {
     public boolean safeRemoveFromTimes(PersonTime obj) {
         obj.setPerson(null);
         return safeRemoveFrom(getTimes(), obj);
+    }
+
+    public boolean safeAddToActivities(PersonActivity obj) {
+        obj.setPerson(this);
+        return safeAddTo(getActivities(), obj);
+    }
+
+    public boolean safeRemoveFromActivities(PersonActivity obj) {
+        obj.setPerson(null);
+        return safeRemoveFrom(getActivities(), obj);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -744,5 +756,13 @@ public class Person implements ValidateOnFlush {
 
     public void setTimes(RebuildableSortedSet<PersonTime> times) {
         this.times = times;
+    }
+
+    public RebuildableSortedSet<PersonActivity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(RebuildableSortedSet<PersonActivity> activities) {
+        this.activities = activities;
     }
 }
