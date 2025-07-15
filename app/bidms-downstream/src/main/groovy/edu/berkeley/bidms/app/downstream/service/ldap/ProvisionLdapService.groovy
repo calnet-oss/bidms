@@ -301,4 +301,27 @@ class ProvisionLdapService<PC extends ProvisioningContextProperties> extends Bas
         DownstreamObject downstreamObject = person.downstreamObjects.find { it.system.name == downstreamSystemName.toUpperCase() && it.ownershipLevel > 0 }
         return downstreamObject ? getDnByDownstreamObject(eventId, downstreamObject)?.toString() : null
     }
+
+    /**
+     * AD and LDAP typically use uid as the primary key.  This method
+     * returns a map as {@code [uid: "UIDHERE"]} which is used to search the
+     * directory for the uid when performing a delete operation.  The
+     * attribute name in this map can be overridden with
+     * {@link UidObjectDefinition#getPrimaryKeyAttributeName()}.
+     *
+     * @param uid UID of the entity being deleted.
+     * @param sysObjKey The sysObjKey column from the
+     *        DeletedDownstreamObject table (unused in default AD/LDAP
+     *        implementation).
+     * @param objJson The objJson column from the DeletedDownstreamObject
+     *        table (unused in default AD/LDAP implementation).
+     *
+     * @return A map with just the AD/LDAP primary key in it, typically the uid.
+     */
+    @Override
+    protected Map<String, Object> getDeleteMap(String uid, String sysObjKey, String objJson) {
+        return [
+                (uidObjectDefinition.primaryKeyAttributeName): uid
+        ] as Map<String, Object>
+    }
 }
