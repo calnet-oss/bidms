@@ -28,9 +28,14 @@ package edu.berkeley.bidms.app.common.config.properties.jms.endpoint;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class JmsDownstreamProvisioningProperties extends AbstractJmsServiceProviderProperties {
     @NotNull
     private JmsEndpointConfigProperties provisionUid;
+    @NotNull
+    private Map<String, JmsEndpointConfigProperties> provisionUidOverrides = new HashMap<>();
 
     public JmsEndpointConfigProperties getProvisionUid() {
         return provisionUid;
@@ -38,5 +43,13 @@ public class JmsDownstreamProvisioningProperties extends AbstractJmsServiceProvi
 
     public void setProvisionUid(JmsEndpointConfigProperties provisionUid) {
         this.provisionUid = provisionUid;
+    }
+
+    public Map<String, JmsEndpointConfigProperties> getProvisionUidOverrides() {
+        return provisionUidOverrides;
+    }
+
+    public void setProvisionUidOverrides(Map<String, JmsEndpointConfigProperties> provisionUidOverrides) {
+        this.provisionUidOverrides = provisionUidOverrides;
     }
 }
