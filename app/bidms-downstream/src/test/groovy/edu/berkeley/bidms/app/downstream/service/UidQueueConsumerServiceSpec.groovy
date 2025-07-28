@@ -42,7 +42,7 @@ class UidQueueConsumerServiceSpec extends Specification {
         def sut = new UidQueueConsumerService(ps)
 
         and: "a logger that captures log messages in a list appender"
-        def logger = (Logger) LoggerFactory.getLogger(UidQueueConsumerService)
+        def logger = (Logger) LoggerFactory.getLogger(BaseUidQueueConsumerService)
         def listAppender = new ListAppender()
         listAppender.start()
         logger.addAppender(listAppender)
