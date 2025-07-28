@@ -26,134 +26,20 @@
  */
 package edu.berkeley.bidms.app.downstream.service
 
-import edu.berkeley.bidms.connector.ldap.LdapConnectorException
-import edu.berkeley.bidms.downstream.service.ProvisioningResult
-import edu.berkeley.bidms.logging.AuditUtil
-import groovy.transform.Synchronized
-import groovy.util.logging.Slf4j
 import jakarta.jms.MapMessage
 import org.springframework.jms.annotation.JmsListener
 import org.springframework.stereotype.Service
 
 @Service
-@Slf4j
-class UidQueueConsumerService {
-
-    DownstreamProvisionService provisionService
+class UidQueueConsumerService extends BaseUidQueueConsumerService {
 
     UidQueueConsumerService(DownstreamProvisionService provisionService) {
-        this.provisionService = provisionService
+        super(provisionService)
     }
 
-    // fields for tracking timing statistics
-    private static final Map<String, Long> counterMap = [:]
-    private static final Map<String, Long> totalProcessingMillisecondsMap = [:]
-    private static final Map<String, Long> startBatchMillisecondsMap = [:]
-    private static final int batchSize = 1000
-
+    @Override
     @JmsListener(destination = '${bidms.jms.downstream.provision-uid.queue-name}', containerFactory = '${bidms.downstream.jms.downstream.jms-listener-container-factory-bean-name}')
     void consume(MapMessage message) {
-        try {
-            String eventId = message.getStringProperty("eventId") ?: AuditUtil.createEventId()
-
-            String downstreamSystemName = message.getString("downstreamSystemName")
-            if (!downstreamSystemName) {
-                throw new RuntimeException("downstreamSystemName is missing in the queue message")
-            }
-
-            String uid = message.getString("uid")
-            if (!uid) {
-                throw new RuntimeException("uid is missing in the queue message")
-            }
-
-            long start = new Date().time
-            // We're already consuming asynchronously off ActiveMQ with parallel
-            // consumers, so that's why we call provision() synchronously here.
-            ProvisioningResult result = provisionService.provision(eventId, downstreamSystemName, uid, false, true)
-            checkTimingStats(downstreamSystemName.toLowerCase(), start, result)
-        }
-        catch (Exception e) {
-            String msg = "There was an error trying to provision uid ${message.getString('uid')} downstream to ${message.getString('downstreamSystemName')}"
-            LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
-            if (ldapConnectorException) {
-                Long adErrorCode = ldapConnectorException.activeDirectoryErrorCode
-                Integer ldapErrorCode = ldapConnectorException.ldapErrorCode
-                if (ldapErrorCode) {
-                    msg += ": ldapErrorCode=$ldapErrorCode"
-                    if (adErrorCode) {
-                        msg += ", adErrorCode=$adErrorCode"
-                    }
-                }
-            }
-            String ldapConnectorExceptionStackTrace = getLdapConnectorExceptionStackTrace(e)
-            if (ldapConnectorExceptionStackTrace) {
-                // exception chain contains LdapConnectorException: we
-                // formulate a filtered stack trace to avoid null characters
-                // in the string
-                msg += ": $ldapConnectorExceptionStackTrace"
-                log.error(msg)
-            } else {
-                log.error(msg, e);
-            }
-        }
-    }
-
-    static String getLdapConnectorExceptionStackTrace(Exception e) {
-        LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
-        if (ldapConnectorException) {
-            // AD NamingExceptions have null characters embedded in the
-            // exception strings which are annoying in the log files.
-            // This strips out null characters from the stacktrace
-            // printout.
-            return LdapConnectorException.getFullExceptionStackTraceAsScrubbedString(e)
-        } else {
-            return null
-        }
-    }
-
-    @Synchronized
-    private final void checkTimingStats(String tagPrefix, long start, ProvisioningResult result) {
-        if (!counterMap.containsKey("${tagPrefix}Changed")) {
-            counterMap["${tagPrefix}Changed"] = 0
-            counterMap["${tagPrefix}Unchanged"] = 0
-            totalProcessingMillisecondsMap["${tagPrefix}Changed"] = 0
-            totalProcessingMillisecondsMap["${tagPrefix}Unchanged"] = 0
-            startBatchMillisecondsMap["${tagPrefix}Changed"] = 0
-            startBatchMillisecondsMap["${tagPrefix}Unchanged"] = 0
-        }
-
-        long end = new Date().time
-        boolean changed = result.count
-        boolean notChanged = result.unchangedCount
-        if (changed) {
-            totalProcessingMillisecondsMap["${tagPrefix}Changed"] += end - start
-        } else if (notChanged) {
-            totalProcessingMillisecondsMap["${tagPrefix}Unchanged"] += end - start
-        }
-
-        if (changed && counterMap["${tagPrefix}Changed"] > 0 && (counterMap["${tagPrefix}Changed"] % batchSize == 0)) {
-            reportBatchTime("${tagPrefix}Changed")
-        } else if (notChanged && counterMap["${tagPrefix}Unchanged"] > 0 && (counterMap["${tagPrefix}Unchanged"] % batchSize == 0)) {
-            reportBatchTime("${tagPrefix}Unchanged")
-        }
-
-        if (changed) {
-            counterMap["${tagPrefix}Changed"]++
-        } else if (notChanged) {
-            counterMap["${tagPrefix}Unchanged"]++
-        }
-    }
-
-    @SuppressWarnings("GrMethodMayBeStatic")
-    private final void reportBatchTime(String tag) {
-        int batch = counterMap[tag] / batchSize
-        long batchTimeMilliseconds = totalProcessingMillisecondsMap[tag] - startBatchMillisecondsMap[tag]
-        long avgSecondsPerBatch = Math.round((totalProcessingMillisecondsMap[tag] / 1000) / batch)
-        long avgEntriesPerMin = Math.round(counterMap[tag] / (totalProcessingMillisecondsMap[tag] / 1000 / 60))
-        log.info("From AMQ: $tag batch ${batch}: batchSize=$batchSize" +
-                ", ${tag}BatchTime=${batchTimeMilliseconds / 1000}s" +
-                ", ${tag}AvgSecondsPerBatch=${avgSecondsPerBatch}s" +
-                ", ${tag}AvgEntriesPerMin=${avgEntriesPerMin}")
-        startBatchMillisecondsMap[tag] = totalProcessingMillisecondsMap[tag]
+        consumeMessage(message)
     }
 }
