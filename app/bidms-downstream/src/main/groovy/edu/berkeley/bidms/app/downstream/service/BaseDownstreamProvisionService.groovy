@@ -119,7 +119,7 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
                                     downstreamSystem,
                                     row.getString("uid"),
                                     null,
-                                    deleteMap(row.getString("uid"), row.getString("sysObjKey"), row.getObject("objJson").toString()),
+                                    deleteMap(row.getString("uid"), row.getString("sysObjKey"), row.getString("globUniqId"), row.getObject("objJson").toString()),
                                     null,
                                     true,
                                     isSynchronous
@@ -193,7 +193,7 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
                             eventId,
                             downstreamSystem, uid,
                             null,
-                            deleteMap(uid, row.sysObjKey as String, row.objJson.toString()),
+                            deleteMap(uid, row.sysObjKey as String, row.globUniqId as String, row.objJson.toString()),
                             null,
                             true,
                             isSynchronous
@@ -241,12 +241,12 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
 
     @SuppressWarnings("GrMethodMayBeStatic")
     String getUidToDeleteSql() {
-        return "SELECT uid, sysObjKey, objJson, timeDeletedDownstream FROM DeletedDownstreamObject WHERE systemId = ? AND ownershipLevel > 0 AND uid = ?"
+        return "SELECT uid, sysObjKey, globUniqId, objJson, timeDeletedDownstream FROM DeletedDownstreamObject WHERE systemId = ? AND ownershipLevel > 0 AND uid = ?"
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
     String getBulkToDeleteSql() {
-        return "SELECT uid, sysObjKey, objJson FROM DeletedDownstreamObject WHERE systemId = ? AND timeDeletedDownstream IS NULL AND ownershipLevel > 0"
+        return "SELECT uid, sysObjKey, globUniqId, objJson FROM DeletedDownstreamObject WHERE systemId = ? AND timeDeletedDownstream IS NULL AND ownershipLevel > 0"
     }
 
     String getBulkToDeleteCountSql() {
@@ -298,8 +298,8 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
         }
     }
 
-    private Map<String, Object> deleteMap(String uid, String sysObjKey, String objJson) {
-        return getDeleteMap(uid, sysObjKey, objJson)
+    private Map<String, Object> deleteMap(String uid, String sysObjKey, String globUniqId, String objJson) {
+        return getDeleteMap(uid, sysObjKey, globUniqId, objJson)
     }
 
     /**
@@ -311,9 +311,10 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
      *
      * @param uid uid of the person whose DownstreamObject is being deleted
      * @param sysObjKey The sysObjKey column from the DeletedDownstreamObject table
+     * @param globUniqId The globUniqId column from the DeletedDownstreamObject table
      * @param objJson The objJson column from the DeletedDownstreamObject table
      *
      * @return A map of relevant values to search for in the downstream system.
      */
-    protected abstract Map<String, Object> getDeleteMap(String uid, String sysObjKey, String objJson)
+    protected abstract Map<String, Object> getDeleteMap(String uid, String sysObjKey, String globUniqId, String objJson)
 }
