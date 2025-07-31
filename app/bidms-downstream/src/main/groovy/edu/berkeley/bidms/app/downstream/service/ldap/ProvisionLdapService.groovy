@@ -313,13 +313,16 @@ class ProvisionLdapService<PC extends ProvisioningContextProperties> extends Bas
      * @param sysObjKey The sysObjKey column from the
      *        DeletedDownstreamObject table (unused in default AD/LDAP
      *        implementation).
+     * @param globUniqId The globUniqId column from the
+     *        DeletedDownstreamObject table (unused in default AD/LDAP
+     *        implementation).
      * @param objJson The objJson column from the DeletedDownstreamObject
      *        table (unused in default AD/LDAP implementation).
      *
      * @return A map with just the AD/LDAP primary key in it, typically the uid.
      */
     @Override
-    protected Map<String, Object> getDeleteMap(String uid, String sysObjKey, String objJson) {
+    protected Map<String, Object> getDeleteMap(String uid, String sysObjKey, String globUniqId, String objJson) {
         return [
                 (uidObjectDefinition.primaryKeyAttributeName): uid
         ] as Map<String, Object>
