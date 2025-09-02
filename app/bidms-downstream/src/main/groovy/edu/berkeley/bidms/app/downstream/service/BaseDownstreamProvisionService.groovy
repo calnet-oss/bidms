@@ -210,7 +210,7 @@ abstract class BaseDownstreamProvisionService<PC extends ProvisioningContextProp
                     return new ProvisioningResult(downstreamSystemName: downstreamSystemName, count: (wasModifiedOrSent ? 1 : 0), unchangedCount: (!wasModifiedOrSent ? 1 : 0), synchronous: isSynchronous)
                 } else if (row) {
                     // already deleted
-                    log.info("Request was received to reprovision already-deleted uid $uid to $downstreamSystemName.  Ignoring.")
+                    log.debug("Request was received to reprovision already-deleted uid $uid to $downstreamSystemName.  Ignoring.")
                     return new ProvisioningResult(downstreamSystemName: downstreamSystemName, count: 0, unchangedCount: 1, synchronous: isSynchronous)
                 } else {
                     // uid is not found OR ownershipLevel is <= 0 in either
