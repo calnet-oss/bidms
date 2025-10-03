@@ -33,7 +33,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
@@ -45,8 +45,8 @@ public class BidmsConfigServerSecurityConfig {
 
         http
                 .authorizeHttpRequests((ar) -> ar
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms/**")).fullyAuthenticated()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).fullyAuthenticated()
+                        .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/bidms/**")).fullyAuthenticated()
+                        .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/sgs/**")).fullyAuthenticated()
                         .anyRequest().denyAll()
                 )
                 .httpBasic(Customizer.withDefaults());
