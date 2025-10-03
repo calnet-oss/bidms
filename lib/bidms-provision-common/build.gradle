@@ -30,4 +30,7 @@ plugins {
 
 dependencies {
     implementation pdep(rootProject.bidmsRegistryModelDep)
+    compileOnly 'jakarta.persistence:jakarta.persistence-api'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
