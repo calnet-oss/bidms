@@ -90,12 +90,8 @@ import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.RefreshContext;
 import org.hibernate.event.spi.RefreshEvent;
 import org.hibernate.event.spi.RefreshEventListener;
-import org.hibernate.event.spi.ReplicateEvent;
-import org.hibernate.event.spi.ReplicateEventListener;
 import org.hibernate.event.spi.ResolveNaturalIdEvent;
 import org.hibernate.event.spi.ResolveNaturalIdEventListener;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
-import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,9 +168,7 @@ public class LogHibernateEventListenerConfigurer {
             PreLoadEventListener,
             PreUpdateEventListener,
             RefreshEventListener,
-            ReplicateEventListener,
-            ResolveNaturalIdEventListener,
-            SaveOrUpdateEventListener {
+            ResolveNaturalIdEventListener {
     }
 
     public static class CompositeEventListener implements CompositeEventListenerInterface {
@@ -345,17 +339,7 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onReplicate(ReplicateEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
-        }
-
-        @Override
         public void onResolveNaturalId(ResolveNaturalIdEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
-        }
-
-        @Override
-        public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
             log.debug("Event: " + event.getClass().getName());
         }
     }
