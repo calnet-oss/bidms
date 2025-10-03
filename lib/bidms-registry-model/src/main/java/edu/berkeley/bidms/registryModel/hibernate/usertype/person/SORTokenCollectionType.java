@@ -27,9 +27,10 @@
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.SORToken;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class SORTokenCollectionType extends RebuildableSortedSetType {
+public class SORTokenCollectionType extends RebuildableSortedSetType<SORToken> {
 
     private static final String PERSON_FIELD = "sorTokens";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

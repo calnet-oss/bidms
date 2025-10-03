@@ -26,10 +26,11 @@
  */
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
+import edu.berkeley.bidms.app.registryModel.model.IdentifierArchive;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class IdentifierArchiveCollectionType extends RebuildableSortedSetType {
+public class IdentifierArchiveCollectionType extends RebuildableSortedSetType<IdentifierArchive> {
 
     private static final String PERSON_FIELD = "archivedIdentifiers";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;
