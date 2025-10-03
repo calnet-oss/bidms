@@ -29,13 +29,13 @@ package edu.berkeley.bidms.app.springsecurity.config;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
 
     @SuppressWarnings("UnusedReturnValue")
     static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
-        return ar.requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**")).hasAuthority("sorGateway");
+        return ar.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/sgs/**")).hasAuthority("sorGateway");
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -45,7 +45,7 @@ public interface SgsSecurityConfigurer extends ServiceSecurityConfigurer {
 
     static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
         return http.securityMatchers((sm) -> {
-                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/sgs/**"));
+                    sm.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/sgs/**"));
                 })
                 .authorizeHttpRequests(SgsSecurityConfigurer::defaultAuthorizeRequests)
                 .httpBasic(SgsSecurityConfigurer::defaultHttpBasic);
