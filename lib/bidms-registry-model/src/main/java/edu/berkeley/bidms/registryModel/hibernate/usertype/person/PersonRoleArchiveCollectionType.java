@@ -27,9 +27,10 @@
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.PersonRoleArchive;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class PersonRoleArchiveCollectionType extends RebuildableSortedSetType {
+public class PersonRoleArchiveCollectionType extends RebuildableSortedSetType<PersonRoleArchive> {
 
     private static final String PERSON_FIELD = "archivedRoles";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

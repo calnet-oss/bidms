@@ -26,10 +26,11 @@
  */
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
+import edu.berkeley.bidms.app.registryModel.model.DownstreamObject;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class DownstreamObjectCollectionType extends RebuildableSortedSetType {
+public class DownstreamObjectCollectionType extends RebuildableSortedSetType<DownstreamObject> {
 
     private static final String PERSON_FIELD = "downstreamObjects";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

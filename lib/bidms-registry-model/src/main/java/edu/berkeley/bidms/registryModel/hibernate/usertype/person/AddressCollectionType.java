@@ -26,10 +26,11 @@
  */
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
+import edu.berkeley.bidms.app.registryModel.model.Address;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class AddressCollectionType extends RebuildableSortedSetType {
+public class AddressCollectionType extends RebuildableSortedSetType<Address> {
 
     private static final String PERSON_FIELD = "addresses";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

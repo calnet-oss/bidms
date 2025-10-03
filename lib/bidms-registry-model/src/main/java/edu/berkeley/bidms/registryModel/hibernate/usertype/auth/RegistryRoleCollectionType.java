@@ -26,10 +26,11 @@
  */
 package edu.berkeley.bidms.registryModel.hibernate.usertype.auth;
 
+import edu.berkeley.bidms.app.registryModel.model.auth.RegistryRole;
 import edu.berkeley.bidms.app.registryModel.model.auth.RegistryUser;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class RegistryRoleCollectionType extends RebuildableSortedSetType {
+public class RegistryRoleCollectionType extends RebuildableSortedSetType<RegistryRole> {
 
     private static final String REGISTRYUSER_FIELD = "roles";
     private static final String ROLE = RegistryUser.class.getName() + "." + REGISTRYUSER_FIELD;

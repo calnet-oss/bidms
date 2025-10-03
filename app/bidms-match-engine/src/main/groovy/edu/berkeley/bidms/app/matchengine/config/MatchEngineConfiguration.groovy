@@ -24,30 +24,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package edu.berkeley.bidms.app.matchengine.config;
+package edu.berkeley.bidms.app.matchengine.config
 
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
+import groovy.transform.CompileStatic
+import org.springframework.beans.factory.FactoryBean
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.Resource
 
-import java.lang.reflect.InvocationTargetException;
-
+@CompileStatic
 @Configuration
-public class MatchEngineConfiguration {
+class MatchEngineConfiguration {
 
-    @Value("${bidms.matchengine.match-config}")
-    private Resource matchConfigResourceLocation;
+    @Value('${bidms.matchengine.match-config}')
+    private Resource matchConfigResourceLocation
 
     @Bean
-    public FactoryBean<MatchConfig> getMatchConfigFactoryBean() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    FactoryBean<MatchConfig> getMatchConfigFactoryBean() {
         if (matchConfigResourceLocation == null) {
-            throw new RuntimeException("bidms.matchengine.match-config not configured");
+            throw new RuntimeException("bidms.matchengine.match-config not configured")
         }
-        //MatchConfigFactoryBean factoryBean = new MatchConfigFactoryBean();
-        Object matchConfigFactoryBean = Class.forName("edu.berkeley.bidms.app.matchengine.config.MatchConfigFactoryBean").newInstance();
-        matchConfigFactoryBean.getClass().getMethod("setResource", Resource.class).invoke(matchConfigFactoryBean, matchConfigResourceLocation);
-        return (FactoryBean<MatchConfig>) matchConfigFactoryBean;
+        MatchConfigFactoryBean matchConfigFactoryBean = new MatchConfigFactoryBean()
+        matchConfigFactoryBean.setResource(matchConfigResourceLocation)
+        return matchConfigFactoryBean
     }
 }

@@ -81,11 +81,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-configurations {
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntime.extendsFrom testRuntime
-}
-
 testing {
     suites {
         integrationTest(JvmTestSuite) {
@@ -94,6 +89,10 @@ testing {
             }
         }
     }
+}
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
 }
 tasks.named('check') {
     dependsOn(testing.suites.integrationTest)

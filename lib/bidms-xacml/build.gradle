@@ -11,13 +11,13 @@ dependencies {
     // Excluding transitive dependencies for the att-xacml libraries because
     // they are depending on other libraries that are not needed for what we
     // are doing.
-    api(group: 'com.att.research.xacml', name: 'att-xacml', version: versions.attXacml) {
+    api("com.att.research.xacml:att-xacml:${versions.attXacml}") {
         transitive = false
     }
-    api(group: 'com.att.research.xacml', name: 'xacml-pdp', version: versions.attXacml) {
+    api("com.att.research.xacml:xacml-pdp:${versions.attXacml}") {
         transitive = false
     }
-    api(group: 'com.att.research.xacml', name: 'xacml', version: versions.attXacml) {
+    api("com.att.research.xacml:xacml:${versions.attXacml}") {
         transitive = false
     }
 
@@ -38,11 +38,6 @@ dependencies {
     }
 }
 
-configurations {
-    integrationTestImplementation.extendsFrom testImplementation
-    integrationTestRuntime.extendsFrom testRuntime
-}
-
 testing {
     suites {
         integrationTest(JvmTestSuite) {
@@ -51,6 +46,10 @@ testing {
             }
         }
     }
+}
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
 }
 tasks.named('check') {
     dependsOn(testing.suites.integrationTest)

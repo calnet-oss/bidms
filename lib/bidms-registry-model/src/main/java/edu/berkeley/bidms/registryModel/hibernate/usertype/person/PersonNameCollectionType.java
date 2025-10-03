@@ -27,9 +27,10 @@
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
 import edu.berkeley.bidms.app.registryModel.model.Person;
+import edu.berkeley.bidms.app.registryModel.model.PersonName;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class PersonNameCollectionType extends RebuildableSortedSetType {
+public class PersonNameCollectionType extends RebuildableSortedSetType<PersonName> {
 
     private static final String PERSON_FIELD = "names";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

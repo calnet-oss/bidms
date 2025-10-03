@@ -90,12 +90,8 @@ import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.RefreshContext;
 import org.hibernate.event.spi.RefreshEvent;
 import org.hibernate.event.spi.RefreshEventListener;
-import org.hibernate.event.spi.ReplicateEvent;
-import org.hibernate.event.spi.ReplicateEventListener;
 import org.hibernate.event.spi.ResolveNaturalIdEvent;
 import org.hibernate.event.spi.ResolveNaturalIdEventListener;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
-import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,36 +141,34 @@ public class LogHibernateEventListenerConfigurer {
         return EventType.values().stream().collect(Collectors.groupingBy(EventType::baseListenerInterface));
     }
 
-    public interface CompositeEventListenerInterface extends LoadEventListener,
-            PostCollectionRemoveEventListener,
-            PreCollectionRecreateEventListener,
-            DirtyCheckEventListener,
-            PersistEventListener,
-            PreDeleteEventListener,
-            FlushEventListener,
-            SaveOrUpdateEventListener,
-            PreUpdateEventListener,
-            PostCollectionUpdateEventListener,
-            PostLoadEventListener,
-            RefreshEventListener,
-            DeleteEventListener,
-            LockEventListener,
-            PostCollectionRecreateEventListener,
-            PreLoadEventListener,
-            PostUpdateEventListener,
-            PreCollectionRemoveEventListener,
-            PostInsertEventListener,
+    public interface CompositeEventListenerInterface extends AutoFlushEventListener,
             ClearEventListener,
-            PreInsertEventListener,
-            PostDeleteEventListener,
-            ResolveNaturalIdEventListener,
+            DeleteEventListener,
+            DirtyCheckEventListener,
             EvictEventListener,
-            MergeEventListener,
-            PreCollectionUpdateEventListener,
-            ReplicateEventListener,
-            AutoFlushEventListener,
+            FlushEntityEventListener,
+            FlushEventListener,
             InitializeCollectionEventListener,
-            FlushEntityEventListener {
+            LoadEventListener,
+            LockEventListener,
+            MergeEventListener,
+            PersistEventListener,
+            PostCollectionRecreateEventListener,
+            PostCollectionRemoveEventListener,
+            PostCollectionUpdateEventListener,
+            PostDeleteEventListener,
+            PostInsertEventListener,
+            PostLoadEventListener,
+            PostUpdateEventListener,
+            PreCollectionRecreateEventListener,
+            PreCollectionRemoveEventListener,
+            PreCollectionUpdateEventListener,
+            PreDeleteEventListener,
+            PreInsertEventListener,
+            PreLoadEventListener,
+            PreUpdateEventListener,
+            RefreshEventListener,
+            ResolveNaturalIdEventListener {
     }
 
     public static class CompositeEventListener implements CompositeEventListenerInterface {
@@ -345,17 +339,7 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public void onReplicate(ReplicateEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
-        }
-
-        @Override
         public void onResolveNaturalId(ResolveNaturalIdEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
-        }
-
-        @Override
-        public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
             log.debug("Event: " + event.getClass().getName());
         }
     }

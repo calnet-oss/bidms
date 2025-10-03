@@ -29,13 +29,13 @@ package edu.berkeley.bidms.app.springsecurity.config;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 public interface RegistryProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
 
     @SuppressWarnings("UnusedReturnValue")
     static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
-        return ar.requestMatchers(AntPathRequestMatcher.antMatcher("/registry-provisioning/**")).hasAuthority("registryProvisioning");
+        return ar.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/registry-provisioning/**")).hasAuthority("registryProvisioning");
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -45,7 +45,7 @@ public interface RegistryProvisioningSecurityConfigurer extends ServiceSecurityC
 
     static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
         return http.securityMatchers((sm) -> {
-                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/registry-provisioning/**"));
+                    sm.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/registry-provisioning/**"));
                 })
                 .authorizeHttpRequests(RegistryProvisioningSecurityConfigurer::defaultAuthorizeRequests)
                 .httpBasic(RegistryProvisioningSecurityConfigurer::defaultHttpBasic);

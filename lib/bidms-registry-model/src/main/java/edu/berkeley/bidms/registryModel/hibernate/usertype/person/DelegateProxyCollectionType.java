@@ -26,10 +26,11 @@
  */
 package edu.berkeley.bidms.registryModel.hibernate.usertype.person;
 
+import edu.berkeley.bidms.app.registryModel.model.DelegateProxy;
 import edu.berkeley.bidms.app.registryModel.model.Person;
 import edu.berkeley.bidms.orm.hibernate.usertype.RebuildableSortedSetType;
 
-public class DelegateProxyCollectionType extends RebuildableSortedSetType {
+public class DelegateProxyCollectionType extends RebuildableSortedSetType<DelegateProxy> {
 
     private static final String PERSON_FIELD = "delegations";
     private static final String ROLE = Person.class.getName() + "." + PERSON_FIELD;

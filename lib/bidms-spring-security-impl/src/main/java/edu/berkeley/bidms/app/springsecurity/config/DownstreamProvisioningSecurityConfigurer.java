@@ -29,15 +29,15 @@ package edu.berkeley.bidms.app.springsecurity.config;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurityConfigurer {
 
     @SuppressWarnings("UnusedReturnValue")
     static AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry defaultAuthorizeRequests(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ar) {
         return ar
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/changePassword/**")).hasAuthority("bidmsDownstreamChangePassword")
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**")).hasAuthority("bidmsDownstream");
+                .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/bidms-downstream/changePassword/**")).hasAuthority("bidmsDownstreamChangePassword")
+                .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/bidms-downstream/**")).hasAuthority("bidmsDownstream");
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -47,7 +47,7 @@ public interface DownstreamProvisioningSecurityConfigurer extends ServiceSecurit
 
     static HttpSecurity defaultRules(HttpSecurity http) throws Exception {
         return http.securityMatchers((sm) -> {
-                    sm.requestMatchers(AntPathRequestMatcher.antMatcher("/bidms-downstream/**"));
+                    sm.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/bidms-downstream/**"));
                 })
                 .authorizeHttpRequests(DownstreamProvisioningSecurityConfigurer::defaultAuthorizeRequests)
                 .httpBasic(DownstreamProvisioningSecurityConfigurer::defaultHttpBasic);
