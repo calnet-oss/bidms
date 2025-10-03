@@ -48,12 +48,12 @@ import java.util.SortedSet;
  * PersistentSortedSet} to wrap {@link RebuildableTreeSet} as its underlying
  * collection.
  */
-public class RebuildableSortedSetType extends SortedSetType implements UserCollectionType {
+public class RebuildableSortedSetType<E> extends SortedSetType implements UserCollectionType {
 
     @SuppressWarnings("rawtypes")
-    private final Comparator comparator;
+    private final Comparator<E> comparator;
 
-    public RebuildableSortedSetType(String role, String propertyRef, Comparator comparator) {
+    public RebuildableSortedSetType(String role, String propertyRef, Comparator<E> comparator) {
         super(role, propertyRef, comparator);
         this.comparator = comparator;
     }
@@ -69,27 +69,26 @@ public class RebuildableSortedSetType extends SortedSetType implements UserColle
     }
 
     @Override
-    public PersistentCollection instantiate(SharedSessionContractImplementor session, CollectionPersister persister) {
-        return new PersistentRebuildableSortedSet(session, comparator);
+    public PersistentCollection<E> instantiate(SharedSessionContractImplementor session, CollectionPersister persister) {
+        return new PersistentRebuildableSortedSet<E>(session, comparator);
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked")
     @Override
-    public PersistentCollection wrap(SharedSessionContractImplementor session, Object collection) {
-        return new PersistentRebuildableSortedSet(session, (SortedSet) collection);
+    public PersistentCollection<E> wrap(SharedSessionContractImplementor session, Object collection) {
+        return new PersistentRebuildableSortedSet<E>(session, (SortedSet<E>) collection);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Object instantiate(int anticipatedSize) {
-        return new RebuildableTreeSet(comparator);
+        return new RebuildableTreeSet<E>(comparator);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
-    public Iterator getElementsIterator(Object collection) {
+    public Iterator<E> getElementsIterator(Object collection) {
         // the set is cloned to avoid ConcurrentModificationExceptions
-        return new RebuildableTreeSet((Collection) collection).iterator();
+        return new RebuildableTreeSet<E>((Collection<E>) collection).iterator();
     }
 
     @Override
