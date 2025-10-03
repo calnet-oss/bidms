@@ -42,7 +42,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
@@ -70,7 +70,7 @@ public class BidmsApplicationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/hello/**")).permitAll()
+                .requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/hello/**")).permitAll()
         );
 
         if (sgsSecurityConfigurer != null) {
