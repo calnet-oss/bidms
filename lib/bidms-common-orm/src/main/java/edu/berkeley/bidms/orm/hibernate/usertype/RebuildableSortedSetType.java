@@ -97,6 +97,7 @@ public class RebuildableSortedSetType extends SortedSetType implements UserColle
         return super.contains(collection, entity, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object replaceElements(
             Object original,

@@ -41,16 +41,16 @@ import java.util.SortedSet;
  * of the set.
  */
 @SuppressWarnings("rawtypes")
-public class PersistentRebuildableSortedSet extends PersistentSortedSet implements RebuildableSortedSet {
+public class PersistentRebuildableSortedSet<E> extends PersistentSortedSet<E> implements RebuildableSortedSet<E> {
     public PersistentRebuildableSortedSet() {
         super();
     }
 
-    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, Comparator comparator) {
+    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, Comparator<E> comparator) {
         super(session, comparator);
     }
 
-    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, SortedSet set) {
+    public PersistentRebuildableSortedSet(SharedSessionContractImplementor session, SortedSet<E> set) {
         super(session, set);
     }
 
