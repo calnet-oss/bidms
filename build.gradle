@@ -59,8 +59,8 @@ buildscript {
         //maven { url = 'https://repo.spring.io/snapshot' }
     }
     dependencies {
-        classpath group: 'io.spring.dependency-management', name: 'io.spring.dependency-management.gradle.plugin', version: gradle.versions.springDependencyManagement
-        classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: gradle.versions.springBoot
+        classpath "io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:${gradle.versions.springDependencyManagement}"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${gradle.versions.springBoot}"
     }
 }
 
