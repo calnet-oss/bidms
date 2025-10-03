@@ -64,9 +64,9 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifactId project.name
-            version project.version
-            groupId bidmsGroup
+            artifactId = project.name
+            version = project.version
+            groupId = bidmsGroup
             artifact sourceJar
             artifact javadocJar
             versionMapping {
@@ -81,10 +81,10 @@ publishing {
     }
     repositories {
         maven {
-            url "${project.property('default_deploy_url')}/${calnet_deploy_lib_repo}"
+            url = "${project.property('default_deploy_url')}/${calnet_deploy_lib_repo}"
             credentials {
-                username project.property("default_deploy_user")
-                password project.property("default_deploy_password")
+                username = project.property("default_deploy_user")
+                password = project.property("default_deploy_password")
             }
         }
     }
