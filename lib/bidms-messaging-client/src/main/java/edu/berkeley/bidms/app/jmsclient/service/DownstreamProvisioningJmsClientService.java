@@ -54,7 +54,11 @@ public class DownstreamProvisioningJmsClientService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void provisionUid(final JmsTemplate jmsTemplate, final String downstreamSystemName, final String uid, final Map<String, ?> headers) {
-        JmsEndpointConfigProperties jmsEndpointConfigProperties = bidmsConfigProperties.getJms().getDownstream().getProvisionUid();
+        JmsEndpointConfigProperties jmsEndpointConfigProperties = bidmsConfigProperties.getJms().getDownstream().getProvisionUidOverrides().get(downstreamSystemName);
+        if (jmsEndpointConfigProperties == null) {
+            // use default queue
+            jmsEndpointConfigProperties = bidmsConfigProperties.getJms().getDownstream().getProvisionUid();
+        }
         jmsTemplate.send(jmsEndpointConfigProperties.getQueueName(), new MessageCreator() {
             @Override
             public Message createMessage(Session session) throws JMSException {
