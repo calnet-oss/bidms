@@ -46,7 +46,7 @@ public class MatchEngineConfiguration {
             throw new RuntimeException("bidms.matchengine.match-config not configured");
         }
         //MatchConfigFactoryBean factoryBean = new MatchConfigFactoryBean();
-        Object matchConfigFactoryBean = Class.forName("edu.berkeley.bidms.app.matchengine.config.MatchConfigFactoryBean").newInstance();
+        Object matchConfigFactoryBean = Class.forName("edu.berkeley.bidms.app.matchengine.config.MatchConfigFactoryBean").getDeclaredConstructor().newInstance();
         matchConfigFactoryBean.getClass().getMethod("setResource", Resource.class).invoke(matchConfigFactoryBean, matchConfigResourceLocation);
         return (FactoryBean<MatchConfig>) matchConfigFactoryBean;
     }
