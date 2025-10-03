@@ -28,7 +28,7 @@
 pluginManagement {
     repositories {
         // temporary for spring boot release candidates
-        maven { url 'https://repo.spring.io/milestone' }
+        //maven { url 'https://repo.spring.io/milestone' }
         gradlePluginPortal()
     }
     resolutionStrategy {

@@ -30,11 +30,11 @@ buildscript {
         // ~/.gradle/gradle.properties.
         if (project.hasProperty("defaultCentral_proxy_url")) {
             maven {
-                url project.property("defaultCentral_proxy_url")
+                url = project.property("defaultCentral_proxy_url")
                 if (project.hasProperty("default_proxy_username")) {
                     credentials {
-                        username project.property("default_proxy_username")
-                        password project.property("default_proxy_password")
+                        username = project.property("default_proxy_username")
+                        password = project.property("default_proxy_password")
                     }
                 }
             }
@@ -43,11 +43,11 @@ buildscript {
         }
         if (project.hasProperty("gradlePlugins_proxy_url")) {
             maven {
-                url project.property("gradlePlugins_proxy_url")
+                url = project.property("gradlePlugins_proxy_url")
                 if (project.hasProperty("default_proxy_username")) {
                     credentials {
-                        username project.property("default_proxy_username")
-                        password project.property("default_proxy_password")
+                        username = project.property("default_proxy_username")
+                        password = project.property("default_proxy_password")
                     }
                 }
             }
@@ -55,8 +55,8 @@ buildscript {
             gradlePluginPortal()
         }
         // temporary for spring boot release candidates
-        maven { url 'https://repo.spring.io/milestone' }
-        maven { url 'https://repo.spring.io/snapshot' }
+        //maven { url = 'https://repo.spring.io/milestone' }
+        //maven { url = 'https://repo.spring.io/snapshot' }
     }
     dependencies {
         classpath group: 'io.spring.dependency-management', name: 'io.spring.dependency-management.gradle.plugin', version: gradle.versions.springDependencyManagement
@@ -84,11 +84,11 @@ allprojects {
         // ~/.gradle/gradle.properties.
         if (project.hasProperty("defaultCentral_proxy_url")) {
             maven {
-                url project.property("defaultCentral_proxy_url")
+                url = project.property("defaultCentral_proxy_url")
                 if (project.hasProperty("default_proxy_username")) {
                     credentials {
-                        username project.property("default_proxy_username")
-                        password project.property("default_proxy_password")
+                        username = project.property("default_proxy_username")
+                        password = project.property("default_proxy_password")
                     }
                 }
             }
@@ -99,11 +99,11 @@ allprojects {
         // (Probably no longer necessary.)
         if (project.hasProperty("calnetLibs_proxy_url")) {
             maven {
-                url project.property("calnetLibs_proxy_url")
+                url = project.property("calnetLibs_proxy_url")
                 if (project.hasProperty("default_proxy_username")) {
                     credentials {
-                        username project.property("default_proxy_username")
-                        password project.property("default_proxy_password")
+                        username = project.property("default_proxy_username")
+                        password = project.property("default_proxy_password")
                     }
                 }
             }
@@ -112,11 +112,11 @@ allprojects {
         // (Probably no longer necessary.)
         if (project.hasProperty("calnetOssLibs_proxy_url")) {
             maven {
-                url project.property("calnetOssLibs_proxy_url")
+                url = project.property("calnetOssLibs_proxy_url")
                 if (project.hasProperty("default_proxy_username")) {
                     credentials {
-                        username project.property("default_proxy_username")
-                        password project.property("default_proxy_password")
+                        username = project.property("default_proxy_username")
+                        password = project.property("default_proxy_password")
                     }
                 }
             }
