@@ -27,13 +27,12 @@
 package edu.berkeley.bidms.app.downstream.service
 
 import edu.berkeley.bidms.connector.ldap.LdapConnectorException
+import edu.berkeley.bidms.downstream.service.PersistWarningException
 import edu.berkeley.bidms.downstream.service.ProvisioningResult
 import edu.berkeley.bidms.logging.AuditUtil
 import groovy.transform.Synchronized
 import groovy.util.logging.Slf4j
 import jakarta.jms.MapMessage
-import org.springframework.jms.annotation.JmsListener
-import org.springframework.stereotype.Service
 
 @Slf4j
 abstract class BaseUidQueueConsumerService {
@@ -74,6 +73,17 @@ abstract class BaseUidQueueConsumerService {
         }
         catch (Exception e) {
             String msg = "There was an error trying to provision uid ${message.getString('uid')} downstream to ${message.getString('downstreamSystemName')}"
+
+            PersistWarningException persistWarningException = PersistWarningException.findPersistWarningExceptionInChain(e)
+            if (persistWarningException) {
+                // This type of exception is to be logged as a warning
+                // rather than an error: the downstream persistence failed,
+                // but the failure is detected as a temporary failure state
+                // where it's expected to be rectified on its own later.
+                log.warn(persistWarningException.message)
+                return
+            }
+
             LdapConnectorException ldapConnectorException = LdapConnectorException.findLdapConnectorExceptionInChain(e)
             if (ldapConnectorException) {
                 Long adErrorCode = ldapConnectorException.activeDirectoryErrorCode
