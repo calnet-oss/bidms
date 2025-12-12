@@ -82,7 +82,7 @@ include bidmsBomDep, // convention is BOMs end with '-bom'
         bidmsRegistryProvisioningDep,
         bidmsDownstreamDep,
         // WARs - convention is these end with '-boot' or '-config-server'
-        bidmsConfigServerWebapp,
+        //bidmsConfigServerWebapp,
         bidmsBootWebapp,
         // Docs - convention is these end with 'docs'
         ":bidms-aggregate-javadocs"

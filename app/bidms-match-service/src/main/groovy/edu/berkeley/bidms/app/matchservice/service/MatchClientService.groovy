@@ -67,16 +67,16 @@ class MatchClientService {
      *      dateOfBirth: 'DOB', email: 'some@email.com', socialSecurityNumber: 'SSN', otherIds: [studentId: 'abc', employeeId: 'xyz'], matchOnly: false
      * ]
      * @return PersonMatch object
-     * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK, FOUND or MULTIPLE_CHOICES
+     * @throws RuntimeException a runtime exception if the match-engine returns other status codes than NOT_FOUND, OK, ACCEPTED or MULTIPLE_CHOICES
      */
     PersonMatch match(String eventId, Map<String, Object> sorKeyData) {
         Map matchInputData = buildMatchInputData(sorKeyData)
         ResponseEntity<Map> response = matchEngineRestClientService.match(restTemplate, matchInputData)
-        // The difference between OK and FOUND (I think) is that OK
+        // The difference between OK and ACCEPTED (I think) is that OK
         // indicates the SORObject matches up to an existing uid, where
-        // as FOUND indicates the SORObject is already matched.  See
+        // as ACCEPTED indicates the SORObject is already matched.  See
         // difference between the ExactMatchResponse (OK) and
-        // ExistingMatchResponse (FOUND) in ucb-match.
+        // ExistingMatchResponse (ACCEPTED) in ucb-match.
         Map jsonResponse = response.body
         switch (response.statusCode) {
             case HttpStatus.NOT_FOUND:
@@ -84,7 +84,7 @@ class MatchClientService {
                 return new PersonNoMatch(eventId: eventId, matchOnly: matchInputData.matchOnly as Boolean)
             case HttpStatus.OK:
                 return exactMatch(eventId, jsonResponse)
-            case HttpStatus.FOUND:
+            case HttpStatus.ACCEPTED:
                 return existingMatch(eventId, jsonResponse)
             case HttpStatus.MULTIPLE_CHOICES:
                 return partialMatch(eventId, jsonResponse)

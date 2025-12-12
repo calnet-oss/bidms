@@ -28,10 +28,10 @@ package edu.berkeley.bidms.app.matchengine
 
 import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import spock.lang.Specification
@@ -143,7 +143,7 @@ class MatchEngineRulesIntegrationSpec extends Specification {
         sql.executeUpdate("DELETE FROM MatchView WHERE uid=?" as String, "20000000")
 
         then:
-        response.statusCode == HttpStatus.FOUND
+        response.statusCode == HttpStatus.ACCEPTED
         response.body.matchingRecord.referenceId == "20000000"
         response.body.matchingRecord.exactMatch
     }

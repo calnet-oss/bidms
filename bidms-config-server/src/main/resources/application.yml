@@ -17,6 +17,9 @@ spring:
           uri: file:${user.home}/bidms-config-repo
           default-label: main
           timeout: 20
+    compatibility-verifier:
+      # FIXME temporary while using Spring Boot 4 snapshots/milestones
+      enabled: false
   security:
     user:
       name: user

@@ -31,8 +31,8 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.common.json.JsonUtil
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import spock.lang.Specification
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -101,12 +101,12 @@ class SORObjectSpec extends Specification {
         }
     }
 
-    def "test that finding a SORObject with unknown sor or key returns null"() {
-        expect:
-        !sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName('HR'), '123')
+    def "test that finding a SORObject with unknown key returns null"() {
+        when:
+        SORSpec.insertSorNames(sorRepository)
 
-        and:
-        !sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName('SIS'), '321')
+        then:
+        !sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName('HR_PERSON'), '321')
     }
 
     def "test json"() {

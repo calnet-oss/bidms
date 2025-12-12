@@ -29,8 +29,8 @@ package edu.berkeley.bidms.app.registryModel.model
 import edu.berkeley.bidms.app.registryModel.model.type.DelegateProxyTypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.DelegateProxyTypeRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import spock.lang.Ignore
 
 // ignored because there are no "generic" delegate proxy types yet

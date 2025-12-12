@@ -1,5 +1,7 @@
 package edu.berkeley.bidms.common.json
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeType
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -19,6 +21,29 @@ class JsonUtilSpec extends Specification {
         "multiple names without spacing" | MULTI_NAME_XML  | false       || EXPTD_MULTI_NAME_JSON
         "single name with spacing"       | SINGLE_NAME_XML | true        || EXPTD_SINGLE_NAME_JSON
         "multiple names with spacing"    | MULTI_NAME_XML  | true        || EXPTD_MULTI_NAME_JSON
+    }
+
+    @Unroll
+    void "test convertJsonToJsonNode and converting nodes to native objects: #description"() {
+        when:
+        JsonNode node = JsonUtil.convertJsonToJsonNode(input)
+
+        and:
+        def nativeObject
+        if (exptdType == JsonNodeType.OBJECT) {
+            nativeObject = JsonUtil.convertJsonNodeToMap(node)
+        } else if (exptdType == JsonNodeType.ARRAY) {
+            nativeObject = JsonUtil.convertJsonNodeToList(node)
+        }
+
+        then:
+        node.nodeType == exptdType
+        nativeObject == exptdNative
+
+        where:
+        description      | input                 || exptdType           | exptdNative
+        "convert a map"  | '{"hello":"world"}'   || JsonNodeType.OBJECT | [hello: "world"]
+        "convert a list" | '[{"hello":"world"}]' || JsonNodeType.ARRAY  | [[hello: "world"]]
     }
 
     static final String EXPTD_SINGLE_NAME_JSON = '{"MSG":{"PERSON":{"ID":"1","NAMES":{"NAME":{"FIRST_NAME":"First1","LAST_NAME":"Last1","ALT_NAMES":[],"TYPES":[{"CODE":"PRI"},{"CODE":"PRF"}]}},"GROUPS":[]}}}'

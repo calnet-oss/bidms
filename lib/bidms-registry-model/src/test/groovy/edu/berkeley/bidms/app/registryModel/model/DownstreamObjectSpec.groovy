@@ -35,8 +35,8 @@ import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
 import edu.berkeley.bidms.common.json.JsonUtil
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import spock.lang.Specification
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -86,7 +86,7 @@ class DownstreamObjectSpec extends Specification {
         downstreamObjectRepository.findBySystemAndSystemPrimaryKey(downstreamSystemRepository.findByName(DownstreamSystemEnum.LDAP.name()), '123')
     }
 
-    def "test that finding a DownstreamObject with unknown system or key returns null"() {
+    def "test that finding a DownstreamObject with unknown key returns null"() {
         when:
         DownstreamSystem testDownstreamSystem = downstreamSystemRepository.save(new DownstreamSystem(name: DownstreamSystemEnum.LDAP.name()))
         Person testPerson = personRepository.save(new Person(uid: "person1"))
@@ -104,7 +104,7 @@ class DownstreamObjectSpec extends Specification {
         obj.id
 
         and:
-        !downstreamObjectRepository.findBySystemAndSystemPrimaryKey(null, '123')
+        !downstreamObjectRepository.findBySystemAndSystemPrimaryKey(testDownstreamSystem, 'bogus')
     }
 
     def "test parsing json"() {

@@ -26,7 +26,7 @@
  */
 package edu.berkeley.bidms.app.orm.config;
 
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
+import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,10 +38,10 @@ public class BidmsCommonOrmConfiguration {
     public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(JsonUtil.getSortedKeysObjectMapper());
         // so JPA objects can be serialized with JsonUtil without lazy loading exceptions
-        Hibernate6Module module = new Hibernate6Module();
-        module.enable(Hibernate6Module.Feature.FORCE_LAZY_LOADING);
+        Hibernate7Module module = new Hibernate7Module();
+        module.enable(Hibernate7Module.Feature.FORCE_LAZY_LOADING);
         // use @Transient in JPA classes to control persistence, not to control what gets serialized as JSON
-        module.disable(Hibernate6Module.Feature.USE_TRANSIENT_ANNOTATION);
+        module.disable(Hibernate7Module.Feature.USE_TRANSIENT_ANNOTATION);
         JsonUtil.registerModule(module);
         return converter;
     }

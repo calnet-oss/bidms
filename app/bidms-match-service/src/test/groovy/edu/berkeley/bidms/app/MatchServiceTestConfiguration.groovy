@@ -42,10 +42,13 @@ import edu.berkeley.bidms.app.matchservice.config.MatchServiceConfiguration
 import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigProperties
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate
+import org.jspecify.annotations.Nullable
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.DefaultResponseErrorHandler
 
@@ -116,13 +119,13 @@ class MatchServiceTestConfiguration {
     @SuppressWarnings("GrMethodMayBeStatic")
     private RestTemplateBuilder getRestTemplateBuilder() {
         return new RestTemplateBuilder()
-                .setConnectTimeout(Duration.ofSeconds(10))
-                .setReadTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(10))
+                .readTimeout(Duration.ofSeconds(10))
                 .errorHandler(new DefaultResponseErrorHandler() {
                     @Override
-                    void handleError(ClientHttpResponse response) throws IOException {
+                    protected void handleError(ClientHttpResponse response, HttpStatusCode statusCode, @Nullable URI url, @Nullable HttpMethod method) throws IOException {
                         // no-op: caller of restTemplate methods checks for http response error codes
                     }
-                });
+                })
     }
 }

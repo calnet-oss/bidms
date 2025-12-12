@@ -27,11 +27,13 @@
 package edu.berkeley.bidms.common.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import org.w3c.dom.Document;
@@ -134,7 +136,7 @@ public class JsonUtil {
      *                                 string to a map.
      */
     public static Map convertJsonToMap(String json) throws JsonProcessingException {
-        return json != null && json.length() > 0 ? objectMapper.readValue(json, Map.class) : new HashMap();
+        return json != null && !json.isEmpty() ? objectMapper.readValue(json, Map.class) : new HashMap();
     }
 
     /**
@@ -185,7 +187,7 @@ public class JsonUtil {
      *                                 string to a list.
      */
     public static List convertJsonToList(String json) throws JsonProcessingException {
-        return json != null ? objectMapper.readValue(json, List.class) : new ArrayList();
+        return json != null && !json.isEmpty() ? objectMapper.readValue(json, List.class) : new ArrayList();
     }
 
     /**
@@ -305,6 +307,58 @@ public class JsonUtil {
      */
     public static <T> T convertMapToObject(Map<?, ?> map, Class<T> clazz) throws IllegalArgumentException {
         return map != null ? objectMapper.convertValue(map, clazz) : null;
+    }
+
+    /**
+     * Convert a JSON string to a {@link JsonNode}.
+     *
+     * @param json The JSON string to convert to a {@link JsonNode}.
+     * @return A {@link JsonNode} built from the JSON string.
+     * @throws JsonProcessingException If an error occurs converting the JSON
+     *                                 string to a {@link JsonNode}.
+     */
+    public static JsonNode convertJsonToJsonNode(String json) throws JsonProcessingException {
+        return json != null && !json.isEmpty() ? objectMapper.readTree(json) : null;
+    }
+
+    /**
+     * Convert a {@link JsonNode} to a map.  The node must be non-null and of type {@link JsonNodeType#OBJECT} otherwise an exception will be thrown.
+     *
+     * @param node The {@link JsonNode} to convert to a map.  The node must be of type {@link JsonNodeType#OBJECT}.
+     * @return A map built from the {@link JsonNode}.
+     * @throws JsonProcessingException  If an error occurs converting the node to a map.
+     * @throws IllegalArgumentException If the node is null or not of type {@link JsonNodeType#OBJECT}.
+     */
+    public static Map convertJsonNodeToMap(JsonNode node) throws JsonProcessingException, IllegalArgumentException {
+        if (node != null) {
+            if (node.getNodeType().equals(JsonNodeType.OBJECT)) {
+                return objectMapper.treeToValue(node, Map.class);
+            } else {
+                throw new IllegalArgumentException("node is not a JSON object type: instead it is a " + node.getNodeType());
+            }
+        } else {
+            throw new IllegalArgumentException("node may not be null");
+        }
+    }
+
+    /**
+     * Convert a {@link JsonNode} to a list.  The node must be non-null and of type {@link JsonNodeType#ARRAY} otherwise an exception will be thrown.
+     *
+     * @param node The {@link JsonNode} to convert to a list.  The node must be of type {@link JsonNodeType#ARRAY}.
+     * @return A list built from the {@link JsonNode}.
+     * @throws JsonProcessingException  If an error occurs converting the node to a list.
+     * @throws IllegalArgumentException If the node is null or not of type {@link JsonNodeType#ARRAY}.
+     */
+    public static List convertJsonNodeToList(JsonNode node) throws JsonProcessingException, IllegalArgumentException {
+        if (node != null) {
+            if (node.getNodeType().equals(JsonNodeType.ARRAY)) {
+                return objectMapper.treeToValue(node, List.class);
+            } else {
+                throw new IllegalArgumentException("node is not a JSON array type: instead it is a " + node.getNodeType());
+            }
+        } else {
+            throw new IllegalArgumentException("node may not be null");
+        }
     }
 
     /**

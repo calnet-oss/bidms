@@ -33,7 +33,7 @@ import edu.berkeley.bidms.provision.jms.ProvisionJmsTemplate;
 import edu.berkeley.bidms.provision.rest.DownstreamProvisioningRestTemplate;
 import edu.berkeley.bidms.restclient.util.RestClientUtil;
 import jakarta.jms.ConnectionFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

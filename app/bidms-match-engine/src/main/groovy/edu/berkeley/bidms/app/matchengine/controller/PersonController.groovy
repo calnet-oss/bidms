@@ -28,7 +28,6 @@ package edu.berkeley.bidms.app.matchengine.controller
 
 import edu.berkeley.bidms.app.matchengine.response.Response
 import edu.berkeley.bidms.app.matchengine.service.PersonService
-import edu.berkeley.bidms.app.restservice.common.response.NotFoundException
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -57,8 +56,7 @@ class PersonController {
             return new ResponseEntity<Map>(result.jsonMap, HttpStatus.valueOf(result.responseCode))
         } else {
             log.info("No Match found with params: " + personService.getRedactedParams(incomingJson))
-            throw new NotFoundException("not found")
+            return new ResponseEntity<Map>([error: "not found"], HttpStatus.NOT_FOUND)
         }
     }
 }
-

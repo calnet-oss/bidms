@@ -30,8 +30,8 @@ package edu.berkeley.bidms.app.registryModel.model
 import edu.berkeley.bidms.app.registryModel.model.type.TypeEnum
 import edu.berkeley.bidms.app.registryModel.repo.SORTokenTypeRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest

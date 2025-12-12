@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletResponse
 class ExistingMatchResponse extends Response {
     String systemOfRecord
     String identifier
-    int responseCode = HttpServletResponse.SC_FOUND
+    int responseCode = HttpServletResponse.SC_ACCEPTED
     Record responseData
 
     Map getJsonMap() {

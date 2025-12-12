@@ -44,8 +44,8 @@ import edu.berkeley.bidms.app.registryModel.repo.history.MatchHistoryRepository
 import edu.berkeley.bidms.common.json.JsonUtil
 import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import spock.lang.Specification
 import spock.lang.Unroll
 

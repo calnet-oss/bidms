@@ -31,7 +31,7 @@ import edu.berkeley.bidms.app.matchservice.config.properties.MatchServiceConfigP
 import edu.berkeley.bidms.app.matchservice.rest.MatchEngineRestTemplate;
 import edu.berkeley.bidms.app.matchservice.rest.ProvisionRestTemplate;
 import edu.berkeley.bidms.restclient.util.RestClientUtil;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

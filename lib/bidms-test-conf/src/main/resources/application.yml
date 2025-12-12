@@ -31,6 +31,9 @@ spring:
   cloud:
     config:
       enabled: false
+    compatibility-verifier:
+      # FIXME temporary while using Spring Boot 4 snapshots/milestones
+      enabled: false
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testDb;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;INIT=create domain if not exists jsonb as other

@@ -27,6 +27,7 @@
 package edu.berkeley.bidms.app.matchservice
 
 import edu.berkeley.bidms.app.matchservice.service.NewSORConsumerService
+import edu.berkeley.bidms.app.registryModel.model.SOR
 import edu.berkeley.bidms.app.registryModel.model.SORObject
 import edu.berkeley.bidms.app.registryModel.repo.SORObjectRepository
 import edu.berkeley.bidms.app.registryModel.repo.SORRepository
@@ -67,7 +68,12 @@ class SorKeyDataCommand {
     @NotNull
     SORObject getSorObject() {
         log.debug("Loading SORObject for $systemOfRecord/$sorPrimaryKey")
-        def sorObject = sorObjectRepository.findBySorAndSorPrimaryKey(sorRepository.findByName(systemOfRecord), sorPrimaryKey)
+        SOR sor = sorRepository.findByName(systemOfRecord)
+        if (!sor) {
+            log.warn("$systemOfRecord could not be found")
+            return null
+        }
+        def sorObject = sorObjectRepository.findBySorAndSorPrimaryKey(sor, sorPrimaryKey)
         log.debug("-- found: $sorObject")
         return sorObject
     }

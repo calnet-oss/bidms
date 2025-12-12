@@ -85,13 +85,18 @@ public class ExtendedDelegatingPasswordEncoder extends DelegatingPasswordEncoder
      * <p>
      * I.e, when {@code defaultIdForDecode} is non-null, if
      * {@code prefixEncodedPassword} is {@code password} rather
-     * than {@code {id}password}, the super.matches() method will be
+     * than {@code {id}password}, the super.matchesNonNull() method will be
      * called as
-     * {@code super.matches(rawPassword, "{"+getDefaultIdForDecode()+"}"+prefixEncodedPassword))}.
+     * {@code super.matchesNonNull(rawPassword, "{"+getDefaultIdForDecode()+"}"+prefixEncodedPassword))}.
      * </p>
      */
     @Override
-    public boolean matches(CharSequence rawPassword, String prefixEncodedPassword) {
-        return super.matches(rawPassword, prefixEncodedPassword != null && getDefaultIdForDecode() != null && !prefixEncodedPassword.startsWith("{") ? "{" + getDefaultIdForDecode() + "}" + prefixEncodedPassword : prefixEncodedPassword);
+    protected boolean matchesNonNull(String rawPassword, String prefixEncodedPassword) {
+        return super.matchesNonNull(
+                rawPassword,
+                prefixEncodedPassword != null &&
+                        getDefaultIdForDecode() != null &&
+                        !prefixEncodedPassword.startsWith("{") ? "{" + getDefaultIdForDecode() + "}" + prefixEncodedPassword : prefixEncodedPassword
+        );
     }
 }
