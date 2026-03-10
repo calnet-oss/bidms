@@ -31,6 +31,8 @@ import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
+import org.hibernate.event.spi.AbstractEvent;
+import org.hibernate.event.spi.AbstractSessionEvent;
 import org.hibernate.event.spi.AutoFlushEvent;
 import org.hibernate.event.spi.AutoFlushEventListener;
 import org.hibernate.event.spi.ClearEvent;
@@ -65,6 +67,9 @@ import org.hibernate.event.spi.PostCollectionRemoveEvent;
 import org.hibernate.event.spi.PostCollectionRemoveEventListener;
 import org.hibernate.event.spi.PostCollectionUpdateEvent;
 import org.hibernate.event.spi.PostCollectionUpdateEventListener;
+import org.hibernate.event.spi.PostCommitDeleteEventListener;
+import org.hibernate.event.spi.PostCommitInsertEventListener;
+import org.hibernate.event.spi.PostCommitUpdateEventListener;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostDeleteEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
@@ -73,6 +78,8 @@ import org.hibernate.event.spi.PostLoadEvent;
 import org.hibernate.event.spi.PostLoadEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.event.spi.PostUpsertEvent;
+import org.hibernate.event.spi.PostUpsertEventListener;
 import org.hibernate.event.spi.PreCollectionRecreateEvent;
 import org.hibernate.event.spi.PreCollectionRecreateEventListener;
 import org.hibernate.event.spi.PreCollectionRemoveEvent;
@@ -87,12 +94,11 @@ import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.PreUpdateEventListener;
+import org.hibernate.event.spi.PreUpsertEvent;
+import org.hibernate.event.spi.PreUpsertEventListener;
 import org.hibernate.event.spi.RefreshContext;
 import org.hibernate.event.spi.RefreshEvent;
 import org.hibernate.event.spi.RefreshEventListener;
-import org.hibernate.event.spi.ResolveNaturalIdEvent;
-import org.hibernate.event.spi.ResolveNaturalIdEventListener;
-import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,10 +162,14 @@ public class LogHibernateEventListenerConfigurer {
             PostCollectionRecreateEventListener,
             PostCollectionRemoveEventListener,
             PostCollectionUpdateEventListener,
+            PostCommitDeleteEventListener,
+            PostCommitInsertEventListener,
+            PostCommitUpdateEventListener,
             PostDeleteEventListener,
             PostInsertEventListener,
             PostLoadEventListener,
             PostUpdateEventListener,
+            PostUpsertEventListener,
             PreCollectionRecreateEventListener,
             PreCollectionRemoveEventListener,
             PreCollectionUpdateEventListener,
@@ -167,42 +177,50 @@ public class LogHibernateEventListenerConfigurer {
             PreInsertEventListener,
             PreLoadEventListener,
             PreUpdateEventListener,
-            RefreshEventListener,
-            ResolveNaturalIdEventListener {
+            PreUpsertEventListener,
+            RefreshEventListener {
     }
 
     public static class CompositeEventListener implements CompositeEventListenerInterface {
 
         private final Logger log = LoggerFactory.getLogger(CompositeEventListener.class);
 
+        private void defaultLogEvent(AbstractEvent event) {
+            log.debug("Event: " + event.getClass().getName());
+        }
+
+        private void defaultLogEvent(AbstractSessionEvent event) {
+            log.debug("Event: " + event.getClass().getName());
+        }
+
         @Override
         public void onAutoFlush(AutoFlushEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onClear(ClearEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onDelete(DeleteEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onDelete(DeleteEvent event, DeleteContext transientEntities) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onDirtyCheck(DirtyCheckEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onEvict(EvictEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -212,12 +230,12 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public void onFlush(FlushEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onInitializeCollection(InitializeCollectionEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -227,7 +245,7 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public void onLock(LockEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -251,33 +269,28 @@ public class LogHibernateEventListenerConfigurer {
         }
 
         @Override
-        public boolean requiresPostCommitHandling(EntityPersister persister) {
-            return false;
-        }
-
-        @Override
         public void onPostRecreateCollection(PostCollectionRecreateEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onPostRemoveCollection(PostCollectionRemoveEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onPostUpdateCollection(PostCollectionUpdateEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onPostDelete(PostDeleteEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onPostInsert(PostInsertEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -287,7 +300,7 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public void onPostUpdate(PostUpdateEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -297,7 +310,7 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public void onPreRemoveCollection(PreCollectionRemoveEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
@@ -307,13 +320,13 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public boolean onPreDelete(PreDeleteEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
             return false;
         }
 
         @Override
         public boolean onPreInsert(PreInsertEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
             return false;
         }
 
@@ -324,23 +337,44 @@ public class LogHibernateEventListenerConfigurer {
 
         @Override
         public boolean onPreUpdate(PreUpdateEvent event) {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
             return false;
         }
 
         @Override
         public void onRefresh(RefreshEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
         public void onRefresh(RefreshEvent event, RefreshContext refreshedAlready) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+            defaultLogEvent(event);
         }
 
         @Override
-        public void onResolveNaturalId(ResolveNaturalIdEvent event) throws HibernateException {
-            log.debug("Event: " + event.getClass().getName());
+        public void onPostDeleteCommitFailed(PostDeleteEvent event) {
+            defaultLogEvent(event);
+        }
+
+        @Override
+        public void onPostInsertCommitFailed(PostInsertEvent event) {
+            defaultLogEvent(event);
+        }
+
+        @Override
+        public void onPostUpdateCommitFailed(PostUpdateEvent event) {
+            defaultLogEvent(event);
+        }
+
+        @Override
+        public void onPostUpsert(PostUpsertEvent event) {
+            defaultLogEvent(event);
+        }
+
+        @Override
+        public boolean onPreUpsert(PreUpsertEvent event) {
+            defaultLogEvent(event);
+            return false;
         }
     }
 }

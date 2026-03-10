@@ -38,8 +38,8 @@ import edu.berkeley.bidms.app.registryModel.model.Person
 import edu.berkeley.bidms.app.registryModel.repo.PersonRepository
 import edu.berkeley.bidms.app.restclient.service.MatchEngineRestClientService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -158,7 +158,7 @@ class MatchClientServiceSpec extends Specification {
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().string('{"systemOfRecord":"b","identifier":"BB00002","dateOfBirth":"1930-04-20","names":[{"givenName":"Pat","surName":"Stone","type":"official"}],"identifiers":[{"type":"socialSecurityNumber","identifier":"000-00-0002"}]}'))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
-                .andRespond((withStatus(HttpStatus.FOUND)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
+                .andRespond((withStatus(HttpStatus.ACCEPTED)).body(EXISTING_RECORD_RESPONSE).contentType(MediaType.APPLICATION_JSON))
 
         when:
         def result = service.match('eventId', [systemOfRecord: 'b', sorPrimaryKey: 'BB00002', dateOfBirth: '1930-04-20', givenName: 'Pat', surName: 'Stone', socialSecurityNumber: '000-00-0002'])
@@ -202,7 +202,7 @@ class MatchClientServiceSpec extends Specification {
     }
 
     static EXACT_MATCH_RESPONSE = '{"matchingRecord":{"exactMatch":true,"referenceId":"1","ruleNames":["Canonical #1"]}}'
-    static PARTIAL_MATCH_RESPONSE = ' {"partialMatchingRecords":[{"exactMatch":false,"referenceId":"1","ruleNames":["Potential #1"]},{"exactMatch":false,"referenceId":"2","ruleNames":["Potential #2"]}]}}'
+    static PARTIAL_MATCH_RESPONSE = '{"partialMatchingRecords":[{"exactMatch":false,"referenceId":"1","ruleNames":["Potential #1"]},{"exactMatch":false,"referenceId":"2","ruleNames":["Potential #2"]}]}'
     static EXISTING_RECORD_RESPONSE = '{"matchingRecord":{"exactMatch":true,"referenceId":"1","ruleNames":[]}}'
 
     void createPeople() {

@@ -31,8 +31,8 @@ import edu.berkeley.bidms.app.registryModel.model.type.AssignableRoleEnum
 import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleCategoryRepository
 import edu.berkeley.bidms.app.registryModel.repo.AssignableRoleRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest

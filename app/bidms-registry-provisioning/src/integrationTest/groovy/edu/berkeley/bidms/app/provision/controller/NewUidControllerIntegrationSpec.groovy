@@ -32,10 +32,10 @@ import edu.berkeley.bidms.app.registryModel.repo.auth.RegistryUserRepository
 import edu.berkeley.bidms.app.springsecurity.service.RegistryUserCredentialService
 import edu.berkeley.bidms.orm.transaction.JpaTransactionTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod

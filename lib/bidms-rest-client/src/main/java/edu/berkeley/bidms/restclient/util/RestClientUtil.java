@@ -26,34 +26,22 @@
  */
 package edu.berkeley.bidms.restclient.util;
 
+import edu.berkeley.bidms.restclient.util.hc5.Hc5RestClientUtil;
 import org.apache.hc.client5.http.auth.AuthCache;
-import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.CredentialsProvider;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.apache.hc.core5.ssl.SSLContexts;
-import org.apache.hc.core5.util.Timeout;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -61,7 +49,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.time.Duration;
 
 public class RestClientUtil {
 
@@ -69,67 +56,20 @@ public class RestClientUtil {
             CredentialsProvider credentialsProvider,
             AuthCache authCache
     ) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        return getSslClientHttpRequestFactory(credentialsProvider, authCache, null, null);
-    }
-
-    private static ClientHttpRequestFactory getSslClientHttpRequestFactory(
-            CredentialsProvider credentialsProvider,
-            AuthCache authCache,
-            URL trustStoreUrl,
-            char[] trustStorePassword
-    ) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        SSLContextBuilder sslContextBuilder = SSLContexts.custom();
-        if (trustStoreUrl != null) {
-            sslContextBuilder = sslContextBuilder.loadTrustMaterial(
-                    trustStoreUrl,
-                    trustStorePassword
-            );
-        }
-        SSLContext sslContext = sslContextBuilder.build();
-        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext);
-        final HttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
-                .setTlsSocketStrategy(tlsStrategy)
-                .build();
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(cm)
-                .setDefaultCredentialsProvider(credentialsProvider)
-                .setDefaultRequestConfig(
-                        RequestConfig.custom()
-                                .setConnectionRequestTimeout(Timeout.of(Duration.ofSeconds(20)))
-                                .setResponseTimeout(Timeout.of(Duration.ofSeconds(60)))
-                                .build()
-                )
-                .build();
+        CloseableHttpClient httpClient = Hc5RestClientUtil.getSslHttpClient(credentialsProvider);
         return new HttpComponentsClientHttpRequestFactory(httpClient) {
             @Override
             protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-                HttpClientContext context = HttpClientContext.create();
-                // An authCache is optional and only useful when preemptive authentication is possible.
-                if (authCache != null) {
-                    context.setAuthCache(authCache);
-                }
-                context.setCredentialsProvider(credentialsProvider);
-                return context;
+                return Hc5RestClientUtil.createHttpContext(credentialsProvider, authCache);
             }
         };
     }
 
-    private static CredentialsProvider getHttpCredentialsProvider(HttpHost targetHost, String username, String password) {
-        BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(
-                new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials(username, password.toCharArray()));
-        return credsProvider;
-    }
-
-    private static AuthCache getBasicAuthCache(HttpHost target) {
-        AuthCache authCache = new BasicAuthCache();
-        BasicScheme basicScheme = new BasicScheme();
-        authCache.put(target, basicScheme);
-        return authCache;
-    }
-
-    public static RestTemplateBuilder getSslRestTemplateBuilder(RestTemplateBuilder builder, CredentialsProvider credentialsProvider, AuthCache authCache) {
+    public static RestTemplateBuilder getSslRestTemplateBuilder(
+            RestTemplateBuilder builder,
+            CredentialsProvider credentialsProvider,
+            AuthCache authCache
+    ) {
         return builder
                 .requestFactory(() -> {
                     try {
@@ -141,7 +81,7 @@ public class RestClientUtil {
                 })
                 .errorHandler(new DefaultResponseErrorHandler() {
                     @Override
-                    public void handleError(ClientHttpResponse response) throws IOException {
+                    protected void handleError(ClientHttpResponse response, HttpStatusCode statusCode, @Nullable URI url, @Nullable HttpMethod method) throws IOException {
                         // no-op: caller of restTemplate methods checks for http response error codes
                     }
                 });
@@ -149,14 +89,14 @@ public class RestClientUtil {
 
     public static <T extends RestTemplate> T configureSslBasicAuthRestTemplate(RestTemplateBuilder builder, URI baseUrl, String username, String password, T restTemplate) {
         HttpHost target = new HttpHost(baseUrl.getScheme(), baseUrl.getHost(), baseUrl.getPort());
-        return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), getBasicAuthCache(target))
+        return getSslRestTemplateBuilder(builder, Hc5RestClientUtil.getHttpCredentialsProvider(target, username, password), Hc5RestClientUtil.getBasicAuthCache(target))
                 .basicAuthentication(username, password)
                 .configure(restTemplate);
     }
 
     public static <T extends RestTemplate> T configureSslDigestAuthRestTemplate(RestTemplateBuilder builder, URI baseUrl, String username, String password, T restTemplate) {
         HttpHost target = new HttpHost(baseUrl.getScheme(), baseUrl.getHost(), baseUrl.getPort());
-        return getSslRestTemplateBuilder(builder, getHttpCredentialsProvider(target, username, password), null)
+        return getSslRestTemplateBuilder(builder, Hc5RestClientUtil.getHttpCredentialsProvider(target, username, password), null)
                 .configure(restTemplate);
     }
 }

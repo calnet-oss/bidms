@@ -209,12 +209,10 @@ subprojects {
             from { [licenseFile, noticeFile] }
         }
 
-        bootWar {
+        tasks.named("bootWar") {
             // use different classifier when a bootWar is built to not
             // conflict with conventional war
             archiveClassifier = 'boot'
-            // make the war executable as a unix script
-            launchScript()
             from { [licenseFile, noticeFile] }
         }
     }
