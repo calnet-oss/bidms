@@ -26,23 +26,40 @@
  */
 package edu.berkeley.bidms.app.orm.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 import edu.berkeley.bidms.common.json.JsonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Configuration
 public class BidmsCommonOrmConfiguration {
     @Bean
     public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(JsonUtil.getSortedKeysObjectMapper());
-        // so JPA objects can be serialized with JsonUtil without lazy loading exceptions
+        // so JPA objects can be serialized with JsonUtil without lazy
+        // loading exceptions
         Hibernate7Module module = new Hibernate7Module();
         module.enable(Hibernate7Module.Feature.FORCE_LAZY_LOADING);
-        // use @Transient in JPA classes to control persistence, not to control what gets serialized as JSON
+        // use @Transient in JPA classes to control persistence, not to
+        // control what gets serialized as JSON
         module.disable(Hibernate7Module.Feature.USE_TRANSIENT_ANNOTATION);
         JsonUtil.registerModule(module);
+        // register a no-op mapper for Strings: don't try and convert
+        // application/json strings since it's assumed to already be a JSON
+        // string
+        converter.registerObjectMappersForType(String.class, new Consumer<Map<MediaType, ObjectMapper>>() {
+            @Override
+            public void accept(Map<MediaType, ObjectMapper> mediaTypeObjectMapperMap) {
+                // no-op: no conversion of strings: the assumption is the
+                // string is already a JSON string
+            }
+        });
         return converter;
     }
 }
