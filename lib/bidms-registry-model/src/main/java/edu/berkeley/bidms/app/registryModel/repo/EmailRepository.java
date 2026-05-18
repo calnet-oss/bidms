@@ -50,6 +50,4 @@ public interface EmailRepository extends ExtendedRepository<Email, Long> {
     List<Email> findAllBySorObject(SORObject sorObject);
 
     Email findByPersonAndEmailType(Person person, EmailType emailType);
-
-    Email findByEmailTypeAndEmailAddressIgnoreCase(EmailType emailType, String emailAddressLowerCase);
 }
