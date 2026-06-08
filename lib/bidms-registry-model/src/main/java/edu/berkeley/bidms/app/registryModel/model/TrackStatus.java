@@ -109,8 +109,8 @@ public class TrackStatus implements Comparable<TrackStatus> {
     @Column(insertable = false, updatable = false)
     private Date timeCreated;
 
-    @Size(max = 256)
-    @Column(length = 256)
+    @Size(max = 4000)
+    @Column(length = 4000)
     private String description;
 
     @JsonIgnore
